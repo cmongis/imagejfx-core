@@ -23,13 +23,15 @@ import ijfx.core.activity.Activity;
 import ijfx.core.hint.Hint;
 import ijfx.ui.UiPlugin;
 import javafx.concurrent.Task;
+import javafx.scene.Parent;
 import javax.management.Notification;
+import org.scijava.plugin.SciJavaPlugin;
 
 /**
  *
  * @author cyril
  */
-public interface MainWindow {
+public interface MainWindow extends SciJavaPlugin{
     
     void displayHint(Hint hint);
     void displayActivity(Activity activity);
@@ -40,6 +42,6 @@ public interface MainWindow {
     void addBackgroundTask(Task task);
     void setReady(boolean ready);
             
-    
+    Parent getUiComponent();
     
 }
