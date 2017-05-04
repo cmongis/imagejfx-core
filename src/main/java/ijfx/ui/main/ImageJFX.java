@@ -71,7 +71,7 @@ public final class ImageJFX  {
         return logger;
     }
 
-    protected static String STYLESHEET_NAME = "flatterfx.css";
+    protected static String STYLESHEET_NAME = "/ijfx/ui/flatterfx.css";
 
     public static final String CSS_DARK_FILL = "dark-fill";
     public static final String IMAGEJFX_PREF_NODE = "/imagejfx/";

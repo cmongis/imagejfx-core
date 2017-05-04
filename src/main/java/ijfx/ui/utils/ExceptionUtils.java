@@ -17,34 +17,23 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.mainwindow;
+package ijfx.ui.utils;
 
-import ijfx.core.activity.Activity;
-import ijfx.core.hint.Hint;
-import ijfx.ui.UiPlugin;
-import javafx.concurrent.Task;
-import javafx.scene.Parent;
-import javax.management.Notification;
-import org.scijava.plugin.SciJavaPlugin;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  *
  * @author cyril
  */
-public interface MainWindow extends SciJavaPlugin{
-    
-    
-    void init();
-    
-    void displayHint(Hint hint);
-    void displayActivity(Activity activity);
-    void displayNotification(Notification notification);
-    void displaySideMenuAction(SideMenuAction action);
-    void registerUiPlugin(UiPlugin uiPlugin);
-    void addForegroundTask(Task task);
-    void addBackgroundTask(Task task);
-    void setReady(boolean ready);
-            
-    Parent getUiComponent();
-    
+public class ExceptionUtils {
+
+    public static String toString(Throwable throwable) {
+
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        throwable.printStackTrace(pw);
+        return sw.toString();
+
+    }
 }

@@ -349,6 +349,9 @@ public class UiContextService extends AbstractService implements UiContextManage
         } catch (IOException ex) {
             logger.log(Level.SEVERE,"Failed to load the ContextService.json file",ex);
         }
+        catch(Exception e) {
+            logger.log(Level.SEVERE,"Error when exporting configuration");
+        }
 
     }
 
