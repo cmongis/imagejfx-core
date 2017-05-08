@@ -36,16 +36,14 @@ public class DefaultTimer implements Timer {
     long last;
 
     Logger logger = ImageJFX.getLogger();
-    
+
     String id = "DefaultTimer";
-    
-    
-    
+
     public DefaultTimer(String id) {
         this();
         this.id = id;
     }
-    
+
     public DefaultTimer() {
         start();
     }
@@ -69,7 +67,7 @@ public class DefaultTimer implements Timer {
     public long now() {
         return System.currentTimeMillis();
     }
-    
+
     @Override
     public long measure(String text) {
         long now = System.currentTimeMillis();
@@ -82,32 +80,36 @@ public class DefaultTimer implements Timer {
     @Override
     public long elapsed(String text) {
         long elapsed = measure(text);
-        logger.info(String.format("[%s] %s : %dms",id,text,elapsed));
+        logger.info(String.format("[%s] %s : %dms", id, text, elapsed));
         return elapsed;
     }
-    
-    
+
     protected String getLog(String id) {
-        return  new StringBuilder()
+        return new StringBuilder()
                 .append(getColumns())
                 .append(getRow(id, getStats(id)))
                 .toString();
-        
+
     }
 
     @Override
     public void logAll() {
-        
-        
+
         final StringBuilder builder = new StringBuilder()
-                .append(String.format("[%s]",id))
+                .append(String.format("[%s]", id))
                 .append(getColumns());
-        stats.forEach((key,value)->{
-            builder.append(getRow(key,value));
-        });
-        
+        stats
+                .entrySet()
+                .stream()
+                .sequential()
+                .forEach(entry -> {
+                    String key = entry.getKey();
+                    SummaryStatistics value = entry.getValue();
+                    builder.append(getRow(key, value));
+                });
+
         logger.info(builder.toString());
-        
+
     }
 
     @Override
@@ -115,22 +117,21 @@ public class DefaultTimer implements Timer {
         //logger.info("");
     }
 
-    
-    private static String COLUMNS = String.format("\n+--------------\n%30s | %8s | %8s | %8s\n+--------------\n","Action","Mean","Std. Dev","N");
+    private static String COLUMNS = String.format("\n+--------------\n%30s | %8s | %8s | %8s\n+--------------\n", "Action", "Mean", "Std. Dev", "N");
+
     protected String getColumns() {
         return COLUMNS;
     }
-    
-    protected String getRow(String id,SummaryStatistics statics) {
-        
-        return String.format("%30s | %6.0fms | %6.0fms | %8d\n",id.length() > 22 ? id.substring(0, 21) : id,statics.getMean(),statics.getStandardDeviation(),statics.getN());
-        
+
+    protected String getRow(String id, SummaryStatistics statics) {
+
+        return String.format("%30s | %6.0fms | %6.0fms | %8d\n", id.length() > 22 ? id.substring(0, 21) : id, statics.getMean(), statics.getStandardDeviation(), statics.getN());
+
     }
 
     @Override
     public String getName() {
         return id;
     }
-    
-    
+
 }
