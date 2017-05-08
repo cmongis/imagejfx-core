@@ -27,7 +27,7 @@ import java.util.List;
  *
  * @author Cyril MONGIS, 2015
  */
-public abstract class AbstractContextUIController<T> extends ArrayList<ContextualWidget<T>> implements ContextualView<T> {
+public abstract class AbstractContextUIController<T> extends ArrayList<ContextualWidget<T>> implements ContextualContainer<T> {
 
     String name = "";
 
@@ -52,10 +52,10 @@ public abstract class AbstractContextUIController<T> extends ArrayList<Contextua
      * @param widget
      * @return
      */
-    public AbstractContextUIController registerWidget(ContextualWidget widget) {
+    public void registerWidget(ContextualWidget<T> widget) {
         add(widget);
 
-        return this;
+       
     }
 
     /**
@@ -90,6 +90,6 @@ public abstract class AbstractContextUIController<T> extends ArrayList<Contextua
      * @param toHide
      * @return
      */
-    abstract public ContextualView onContextChanged(List<? extends ContextualWidget<T>> toShow, List<? extends ContextualWidget<T>> toHide);
+    abstract public ContextualContainer onContextChanged(List<? extends ContextualWidget<T>> toShow, List<? extends ContextualWidget<T>> toHide);
 
 }

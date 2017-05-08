@@ -21,7 +21,7 @@
 package ijfx.core.uicontext;
 
 /**
- *
+ * 
  * @author Cyril MONGIS, 2015
  */
 public interface ContextualWidget<T> {
@@ -108,4 +108,7 @@ public interface ContextualWidget<T> {
     public T getObject();
 
     public double getPriority();
+    
+    public String getContextualView();
+    
 }

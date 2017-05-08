@@ -26,14 +26,17 @@ import java.util.List;
  *
  * @author Cyril MONGIS, 2015
  */
-public interface ContextualView<T> {
+public interface ContextualContainer<T> {
 
     /**
-     *
+     * A ContextualContainer hold ContextualWidget and is in charged of hiding them or showing depending on the context.
      * @return
      */
     public String getName();
 
+    
+    public void registerWidget(ContextualWidget<T> widget);
+    
     /**
      *
      * @return
@@ -46,5 +49,5 @@ public interface ContextualView<T> {
      * @param toHide
      * @return
      */
-    public ContextualView<T> onContextChanged(List<? extends ContextualWidget<T>> toShow, List<? extends ContextualWidget<T>> toHide);
+    public ContextualContainer<T> onContextChanged(List<? extends ContextualWidget<T>> toShow, List<? extends ContextualWidget<T>> toHide);
 }

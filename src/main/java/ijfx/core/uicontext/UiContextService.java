@@ -61,7 +61,7 @@ public class UiContextService extends AbstractService implements UiContextManage
     
     private ContextLinkSet linkSet = new ContextLinkSet();
 
-    private HashMap<String, ContextualView> viewMap = new HashMap<>();
+    private HashMap<String, ContextualContainer> viewMap = new HashMap<>();
 
     private static final Logger logger = ImageJFX.getLogger();
 
@@ -78,6 +78,10 @@ public class UiContextService extends AbstractService implements UiContextManage
     
     public UiContextManager registerWidget(ContextualWidget widget) {
         widgets.put(widget.getName(), widget);
+        
+        if(widget.getContextualView() != null) {
+           viewMap.get(widget.getContextualView()).registerWidget(widget);
+        }
         
         return this;
     }
@@ -191,7 +195,7 @@ public class UiContextService extends AbstractService implements UiContextManage
         
     }
 
-    public <T> void updateController(ContextualView<T> view) {
+    public <T> void updateController(ContextualContainer<T> view) {
 
         ArrayList<ContextualWidget<T>> toShow = new ArrayList<>();
         ArrayList<ContextualWidget<T>> toHide = new ArrayList<>();
@@ -282,6 +286,9 @@ public class UiContextService extends AbstractService implements UiContextManage
 
             return this;
         }
+        
+        
+        
         linkSet.add(new UiContextLink(widget, context, linkType));
         return this;
     }
@@ -304,7 +311,7 @@ public class UiContextService extends AbstractService implements UiContextManage
     }
 
     @Override
-    public <T> UiContextManager addContextualView(ContextualView<T> contextualView) {
+    public <T> UiContextManager addContextualView(ContextualContainer<T> contextualView) {
         
         logger.info(String.format("Registering the contextual view : %s", contextualView.getName()));
         viewMap.put(contextualView.getName(), contextualView);

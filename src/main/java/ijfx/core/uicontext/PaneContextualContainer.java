@@ -30,7 +30,7 @@ import javafx.scene.layout.Pane;
  *
  * @author Cyril MONGIS, 2016
  */
-public class PaneContextualView implements ContextualView<Node> {
+public class PaneContextualContainer implements ContextualContainer<Node> {
 
     final Pane pane;
 
@@ -40,12 +40,17 @@ public class PaneContextualView implements ContextualView<Node> {
 
     ArrayList<ContextualWidget<Node>> wrapperList = new ArrayList<>();
 
-    public PaneContextualView(UiContextManager manager, Pane pane, String name) {
+    public PaneContextualContainer(UiContextManager manager, Pane pane, String name) {
         this.pane = pane;
         this.name = name;
         this.manager = manager;
         manager.addContextualView(this);
     }
+    
+    public void registerWidget(ContextualWidget<Node> widget) {
+        wrapperList.add(widget);
+    }
+    
     //TODO: check code validity
     public void registerNode(Node node, String context) {
         //ContextualPaneIconWrapper wrapper = new ContextualPaneIconWrapper(pane, node, context);
@@ -65,7 +70,7 @@ public class PaneContextualView implements ContextualView<Node> {
     }
 
     @Override
-    public ContextualView<Node> onContextChanged(List<? extends ContextualWidget<Node>> toShow, List<? extends ContextualWidget<Node>> toHide) {
+    public ContextualContainer<Node> onContextChanged(List<? extends ContextualWidget<Node>> toShow, List<? extends ContextualWidget<Node>> toHide) {
 
         final List<Node> actual = new ArrayList();
         actual.addAll(pane.getChildren());

@@ -160,6 +160,10 @@ public class NodeContextualWidget implements ContextualWidget<Node>{
     public double getPriority() {
         return priority;
     }
+    
+    public String getContextualView() {
+        return null;
+    }
 
 }
 

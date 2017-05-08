@@ -28,7 +28,7 @@ import javafx.scene.Node;
  *
  * @author Cyril MONGIS, 2015
  */
-public class NodeContextualView extends ArrayList<ContextualWidget<Node>> implements ContextualView<Node> {
+public class NodeContextualContainer extends ArrayList<ContextualWidget<Node>> implements ContextualContainer<Node> {
 
     String name;
 
@@ -36,7 +36,7 @@ public class NodeContextualView extends ArrayList<ContextualWidget<Node>> implem
      *
      * @param name
      */
-    public NodeContextualView(String name) {
+    public NodeContextualContainer(String name) {
         setName(name);
     }
 
@@ -61,9 +61,9 @@ public class NodeContextualView extends ArrayList<ContextualWidget<Node>> implem
      * @param widget
      * @return
      */
-    public NodeContextualView registerWidget(ContextualWidget widget) {
+    public void registerWidget(ContextualWidget widget) {
         add(widget);
-        return this;
+        
     }
 
     /**
@@ -81,7 +81,7 @@ public class NodeContextualView extends ArrayList<ContextualWidget<Node>> implem
      * @return
      */
     @Override
-    public ContextualView<Node> onContextChanged(List<? extends ContextualWidget<Node>> toShow, List<? extends ContextualWidget<Node>> toHide) {
+    public ContextualContainer<Node> onContextChanged(List<? extends ContextualWidget<Node>> toShow, List<? extends ContextualWidget<Node>> toHide) {
         toShow.forEach(widget -> widget.show());
         toHide.forEach(widget -> widget.hide());
         return this;
