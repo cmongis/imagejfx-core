@@ -22,10 +22,13 @@ package ijfx.core.mainwindow;
 import ijfx.core.activity.Activity;
 import ijfx.core.hint.Hint;
 import ijfx.ui.UiPlugin;
+import java.util.List;
 import javafx.concurrent.Task;
 import javafx.scene.Parent;
 import javax.management.Notification;
 import org.scijava.plugin.SciJavaPlugin;
+import ijfx.core.uicontext.ContextualContainer;
+import javafx.scene.Node;
 
 /**
  *
@@ -45,6 +48,8 @@ public interface MainWindow extends SciJavaPlugin{
     void addBackgroundTask(Task task);
     void setReady(boolean ready);
             
+    List<ContextualContainer<Node>> getContextualContainerList();
+    
     Parent getUiComponent();
     
 }
