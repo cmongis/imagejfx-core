@@ -35,9 +35,9 @@ public interface ActivityService extends IjfxService{
     public Activity getActivityByName(String id);
     public <T extends Activity> T getActivity(Class<T> activityClass);
     
-    public void openByName(String string); 
+    public void open(String string); 
     
-    public void openByType(Class<? extends Activity> activity);
+    public void open(Class<? extends Activity> activity);
     
     public void open(Activity activity);
     

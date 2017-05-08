@@ -87,13 +87,13 @@ public class DefaultActivityService extends AbstractService implements ActivityS
 
     @Override
 
-    public void openByName(String activityId) {
+    public void open(String activityId) {
 
         open(getActivityByName(activityId));
     }
 
     @Override
-    public void openByType(Class<? extends Activity> activityClass) {
+    public void open(Class<? extends Activity> activityClass) {
 
         open(getActivity(activityClass));
     }
@@ -102,7 +102,7 @@ public class DefaultActivityService extends AbstractService implements ActivityS
     public void reloadCurrentActivity() {
         activityMap.clear();
         activityMapById.clear();
-        openByType(getCurrentActivity().getClass());
+        open(getCurrentActivity().getClass());
     }
 
     @Override
