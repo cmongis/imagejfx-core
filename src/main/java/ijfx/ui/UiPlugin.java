@@ -35,5 +35,12 @@ public interface UiPlugin extends SciJavaPlugin{
 
     public UiPlugin init();
     
+     default String getId() {
+       return getClass().getAnnotation(UiConfiguration.class).id();
+    }
+    
+    default String getContext() {
+        return getClass().getAnnotation(UiConfiguration.class).context();
+    }
     
 }
