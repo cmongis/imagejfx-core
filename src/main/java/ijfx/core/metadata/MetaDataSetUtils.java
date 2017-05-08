@@ -19,7 +19,6 @@
  */
 package ijfx.core.metadata;
 
-import ijfx.core.datamodel.Explorable;
 import static ijfx.core.utils.DimensionUtils.readLongArray;
 import java.util.Collection;
 import java.util.HashSet;
@@ -42,7 +41,7 @@ public class MetaDataSetUtils {
         return possibleKeys;
     }
 
-    public static double[] getMetadatas(Explorable explorable, List<String> metadataKeys) {
+    public static double[] getMetadatas(MetaDataOwner explorable, List<String> metadataKeys) {
 
         final double[] result = new double[metadataKeys.size()];
         for (int i = 0; i < metadataKeys.size(); i++) {
