@@ -1,11 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-
-<AnchorPane id="AnchorPane" fx:id="root" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.65">
+<AnchorPane fx:id="mainAnchorPane" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Label layoutX="267.0" layoutY="192.0" text="Hello world" />
+   
+   <BorderPane fx:id="mainBorderPane" maxHeight="-Infinity" prefHeight="700.0" prefWidth="1200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="55.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+       <bottom>
+           <BorderPane fx:id="bottomBorderPane" BorderPane.alignment="CENTER">
+               <left>
+                   <HBox fx:id="bottomLeftHBox" spacing="10.0" styleClass="hbox" BorderPane.alignment="CENTER" />
+               </left>
+               <padding>
+                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+               <right>
+                   <HBox fx:id="bottomRightHBox" styleClass="hbox" BorderPane.alignment="CENTER" />
+               </right>
+               <center>
+                   <HBox fx:id="bottomCenterHBox" styleClass="hbox" BorderPane.alignment="CENTER" />
+               </center>
+           </BorderPane>
+       </bottom>
+       <top>
+           <BorderPane fx:id="topBorderBane" BorderPane.alignment="CENTER">
+               <left>
+                   <HBox fx:id="topLeftHBox" spacing="10.0" BorderPane.alignment="CENTER">
+                       <BorderPane.margin>
+                           <Insets left="5.0" />
+                       </BorderPane.margin>
+                       <padding>
+                           <Insets bottom="10.0" right="10.0" top="10.0" />
+                       </padding>
+                   </HBox>
+               </left>
+               <right>
+                   <HBox fx:id="topRightHBox" spacing="10.0" BorderPane.alignment="CENTER">
+                       <padding>
+                           <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                       </padding>
+                   </HBox>
+               </right>
+               <center>
+                   <HBox fx:id="topCenterHBox" spacing="10.0" BorderPane.alignment="CENTER">
+                       <padding>
+                           <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                       </padding>
+                   </HBox>
+               </center>
+               <bottom>
+                  <VBox fx:id="topToolBarVBox" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER" />
+               </bottom>
+           </BorderPane>
+       </top>
+       <center>
+           <StackPane fx:id="centerStackPane" BorderPane.alignment="CENTER" />
+       </center>
+       <left>
+           <VBox fx:id="leftVBox" BorderPane.alignment="CENTER" />
+       </left>
+       <right>
+           <VBox fx:id="rightVBox" BorderPane.alignment="CENTER" />
+       </right>
+         <BorderPane.margin>
+            <Insets left="60.0" />
+         </BorderPane.margin>
+   </BorderPane>
    </children>
 </AnchorPane>
