@@ -64,12 +64,9 @@ public final class DefaultUiPluginService extends AbstractService implements UiP
 
     HashMap<String, String> localizationMap = new HashMap<>();
 
-    
-    
     @Parameter
     Context context;
 
- 
     @Parameter
     EventService eventService;
 
@@ -79,8 +76,6 @@ public final class DefaultUiPluginService extends AbstractService implements UiP
     @Parameter
     UiContextService contextService;
 
-    
-    
     Logger logger = ImageJFX.getLogger();
 
     public static final String MSG_INITALIZE = "[%s] Initializing...";
@@ -91,7 +86,7 @@ public final class DefaultUiPluginService extends AbstractService implements UiP
     public static final String MSG_NODE_NULL = "[%s] getWidget() returns null !";
     public static final String MSG_LOADING_COUNT = "Loading widget %d / %d";
 
-    public Collection<UiPlugin> loadAll(final ProgressHandler handler) throws Exception{
+    public Collection<UiPlugin> loadAll(final ProgressHandler handler) throws Exception {
 
         Timer timer = timerService.getTimer(this.getClass());
 
@@ -107,7 +102,7 @@ public final class DefaultUiPluginService extends AbstractService implements UiP
 
             timer.start();
             handler.setStatus("Initializing UI...");
-            Thread.sleep(5000);
+
             pluginService.getPluginsOfType(UiPlugin.class)
                     .stream()
                     .parallel()
@@ -122,7 +117,7 @@ public final class DefaultUiPluginService extends AbstractService implements UiP
 
             logger.info(String.format("%d UiPlugins created", count));
         }
-        
+
         timer.logAll();
         return uiPluginMap.values();
     }
@@ -143,7 +138,7 @@ public final class DefaultUiPluginService extends AbstractService implements UiP
 
         // starting a timer
         Timer timer = timerService.getTimer(this.getClass());
-      
+
         timer.start();
         //getting the class name for further use
         String widgetClassName = uiPluginInfos.getClassName();
@@ -171,7 +166,7 @@ public final class DefaultUiPluginService extends AbstractService implements UiP
 
             if (uiPlugin.getUiElement() == null) {
                 logger.log(Level.SEVERE, String.format(MSG_NODE_NULL, widgetClassName));
-                
+
                 return null;
             }
 
@@ -190,7 +185,7 @@ public final class DefaultUiPluginService extends AbstractService implements UiP
 
                 // in case of error, the user is also notified
                 logger.warning(String.format(MSG_NO_INFO_SPECIFIED, widgetClassName));
-                
+
                 return null;
             }
 
@@ -198,20 +193,17 @@ public final class DefaultUiPluginService extends AbstractService implements UiP
             uiPluginMap.put(pluginId, uiPlugin);
 
             String localization = getDefaultLocalization(uiPlugin);
-            
+
             localizationMap.put(pluginId, getDefaultLocalization(uiPlugin));
             orderMap.put(pluginId, getDefaultOrder(uiPlugin));
 
             // the widget has been launch successfully
             logger.info(String.format(MSG_INITALIZE, widgetClassName));
-            
-            contextService.registerWidget(new UiPluginContextualWidget(uiPlugin,getDefaultLocalization(uiPlugin)));
-            
-            contextService.link(uiPlugin.getId(),uiPlugin.getContext());
-            
-            
-            
-            
+
+            contextService.registerWidget(new UiPluginContextualWidget(uiPlugin, getDefaultLocalization(uiPlugin)));
+
+            contextService.link(uiPlugin.getId(), uiPlugin.getContext());
+
 //            uiPlugin.init();
         } catch (Exception ex) {
 
