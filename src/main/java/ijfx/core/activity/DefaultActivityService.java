@@ -170,7 +170,9 @@ public class DefaultActivityService extends AbstractService implements ActivityS
 
     @Override
     public void open(Activity activity) {
-
+        
+        if(activity == getCurrentActivity()) return;
+        
         // adding the activity to the back stack
         if (activity != null) {
             backStack.add(new State());
