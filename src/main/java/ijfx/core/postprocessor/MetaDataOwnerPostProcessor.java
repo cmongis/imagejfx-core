@@ -34,7 +34,7 @@ import org.scijava.ui.UIService;
  * @author cyril
  */
 @Plugin(type = PostprocessorPlugin.class)
-public class MetaDataOwnerPostProcessor extends DataDisplayPostProcessor{
+public class MetaDataOwnerPostProcessor extends DataDisplayPostprocessor{
     public MetaDataOwnerPostProcessor() {
         super(MetaDataOwnerList.class);
     }    
