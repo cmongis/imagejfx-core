@@ -173,6 +173,7 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
     
     @Override
     public void setLabel(String s) {
+        getWindow().setTitle(s);
     }
 
     @Override

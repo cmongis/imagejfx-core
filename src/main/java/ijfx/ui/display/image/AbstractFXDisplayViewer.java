@@ -28,12 +28,12 @@ import org.scijava.ui.viewer.AbstractDisplayViewer;
  *
  * @author cyril
  */
-public abstract class FXDisplayViewer<T> extends AbstractDisplayViewer<T>{
+public abstract class AbstractFXDisplayViewer<T> extends AbstractDisplayViewer<T>{
 
     
     final Class<?> type;
 
-    public FXDisplayViewer(Class<?> type) {
+    public AbstractFXDisplayViewer(Class<?> type) {
         this.type = type;
     }
     
