@@ -31,11 +31,33 @@ import org.scijava.ui.UIService;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = PostprocessorPlugin.class)
-public class MetaDataOwnerPostProcessor extends DataDisplayPostProcessor{
-    public MetaDataOwnerPostProcessor() {
-        super(MetaDataOwnerList.class);
-    }    
+public abstract class DataDisplayPostProcessor extends AbstractPostprocessorPlugin{
+
+    private final Class<?> type;
+    
+    public DataDisplayPostProcessor(Class<?> type) {
+        this.type = type;
+    }
+    
+    @Parameter
+    ModuleService moduleService;
+    
+    @Parameter
+    UIService uiService;
+    
+    @Override
+    public void process(Module module) {
+        
+        ModuleItem<?> singleOutput = moduleService.getSingleOutput(module, type);
+        
+        if(singleOutput != null) {
+            Object output = module.getOutput(singleOutput.getName());
+            if(output != null)
+            uiService.show(output);
+        }
+        
+    }
 }
