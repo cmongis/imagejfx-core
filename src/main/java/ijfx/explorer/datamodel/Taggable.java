@@ -19,17 +19,20 @@
  */
 package ijfx.explorer.datamodel;
 
-import ijfx.core.datamodel.DatasetHolder;
-import ijfx.core.datamodel.Iconazable;
-import ijfx.core.datamodel.Selectable;
-import ijfx.core.metadata.MetaDataOwner;
+import java.util.Set;
 
 /**
  *
- * @author Cyril MONGIS, 2016
+ * @author cyril
  */
-public interface Explorable extends Iconazable,MetaDataOwner,DatasetHolder,Selectable,Taggable{
-     
-   
- 
+public interface Taggable {
+
+    void addTag(Tag tag);
+
+    void deleteTag(Tag tag);
+
+    Set<Tag> getTagList();
+    
+    boolean has(Tag tag);
+
 }

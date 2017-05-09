@@ -19,17 +19,39 @@
  */
 package ijfx.explorer.datamodel;
 
-import ijfx.core.datamodel.DatasetHolder;
-import ijfx.core.datamodel.Iconazable;
-import ijfx.core.datamodel.Selectable;
-import ijfx.core.metadata.MetaDataOwner;
-
 /**
  *
- * @author Cyril MONGIS, 2016
+ * @author cyril
  */
-public interface Explorable extends Iconazable,MetaDataOwner,DatasetHolder,Selectable,Taggable{
-     
-   
- 
+public class DefaultTag implements Tag {
+
+    final String name;
+
+    public DefaultTag(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public int compareTo(Tag o) {
+        return name.compareTo(o.getName());
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object instanceof Tag) {
+            return ((Tag) object).getName().equals(getName());
+        }
+
+        if (object instanceof String) {
+            ((String) object).equals(getName());
+        }
+
+        return false;
+    }
+
 }

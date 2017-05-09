@@ -19,17 +19,25 @@
  */
 package ijfx.explorer.datamodel;
 
-import ijfx.core.datamodel.DatasetHolder;
-import ijfx.core.datamodel.Iconazable;
-import ijfx.core.datamodel.Selectable;
-import ijfx.core.metadata.MetaDataOwner;
+import ijfx.core.datamodel.MetaDataOwnerList;
+import org.scijava.display.AbstractDisplay;
+import org.scijava.display.Display;
+import org.scijava.plugin.Plugin;
 
 /**
  *
- * @author Cyril MONGIS, 2016
+ * @author cyril
  */
-public interface Explorable extends Iconazable,MetaDataOwner,DatasetHolder,Selectable,Taggable{
-     
-   
- 
+@Plugin(type = Display.class)
+public class MetaDataOwnerDisplay extends AbstractDisplay<MetaDataOwnerList>{
+    
+    public MetaDataOwnerDisplay() {
+        super(MetaDataOwnerList.class);
+    }
+    
+    
+    
+    
+    
+    
 }

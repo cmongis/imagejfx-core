@@ -23,6 +23,8 @@ import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataSet;
 import ijfx.ui.main.ImageJFX;
 import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -31,16 +33,15 @@ import javafx.beans.property.SimpleBooleanProperty;
  *
  * @author Cyril MONGIS, 2016
  */
-public abstract class AbstractExplorable implements Explorable{
-    
+public abstract class AbstractExplorable implements Explorable {
+
     private final BooleanProperty selectedProperty = new SimpleBooleanProperty();
 
-  
-    
     protected final MetaDataSet metadataSet = new MetaDataSet();
-    
+
     protected static final Logger logger = ImageJFX.getLogger();
-   
+
+    Set<Tag> tagList = new HashSet<>();
 
     @Override
     public BooleanProperty selectedProperty() {
@@ -52,15 +53,28 @@ public abstract class AbstractExplorable implements Explorable{
         return metadataSet;
     }
 
-    protected File getFile()  {
+    protected File getFile() {
         return new File(getMetaDataSet().get(MetaData.ABSOLUTE_PATH).getStringValue());
     }
-  
+
     @Override
     public void dispose() {
-        
+        tagList.clear();
     }
-   
-    
-    
+
+    @Override
+    public void addTag(Tag tag) {
+        getTagList().add(tag);
+    }
+
+    @Override
+    public void deleteTag(Tag tag) {
+        getTagList().remove(tag);
+    }
+
+    @Override
+    public Set<Tag> getTagList() {
+        return tagList;
+    }
+
 }
