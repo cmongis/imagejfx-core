@@ -20,6 +20,7 @@
 package ijfx.ui.activity;
 
 import ijfx.core.activity.Activity;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
@@ -31,22 +32,24 @@ import org.scijava.plugin.Plugin;
  *
  * @author cyril
  */
-@Plugin(type = Activity.class,name = "display container")
-public class DisplayContainer  extends StackPane implements Activity{
+@Plugin(type = Activity.class, name = "display container")
+public class DisplayContainer extends StackPane implements Activity {
 
-    
     public AnchorPane anchorPane = new AnchorPane();
 
     public DisplayContainer() {
         getChildren().add(anchorPane);
     }
-    
-    
-            
+
     public void addWindow(Window window) {
-        anchorPane.getChildren().add(window);
-    }        
+
+        Platform.runLater(() -> {
             
+            anchorPane.getChildren().add(window);
+            window.setPrefSize(500, 400);
+        });
+    }
+
     @Override
     public Node getContent() {
         return this;
@@ -56,5 +59,5 @@ public class DisplayContainer  extends StackPane implements Activity{
     public Task updateOnShow() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 }
