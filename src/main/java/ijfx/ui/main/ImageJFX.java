@@ -41,18 +41,7 @@ public final class ImageJFX  {
 
     public static final double MARGIN = 10;
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        
-        
-        
-        ImageJ imagej = new ImageJ();
-        imagej.ui().showUI(UI_NAME);
-        
-        
-    }
+   
 
     private static Logger logger;
 
@@ -106,61 +95,21 @@ public final class ImageJFX  {
     public static final String RESSOURCE_BUNDLE_ADDR = "ijfx/ui/res/MenuBundle";
     
     
-    
-    /**
-    @Override
-    public void start(Stage primaryStage) {
-
-        Parent root;
-        try {
-
-            PRIMARY_STAGE = primaryStage;
-
-            LogRecorderService.getInstance();
-
-            getLogger().info("You running Java " + System.getProperty("java.version"));
-            File pluginDir = new File("./", "plugins/");
-            if (pluginDir.exists() == false) {
-                pluginDir.mkdir();
-            }
-            getLogger().info(pluginDir.getAbsolutePath());
-            System.setProperty("imagej.dir", new File(".").getAbsolutePath());
-            System.setProperty("plugins.dir", pluginDir.getAbsolutePath());
-
-          
-            controller = new MainWindowController();//loader.<MainWindowController>getController();
-
-            Scene scene = new Scene(controller);
-
-            scene.getStylesheets().add(getStylesheet());
-
-            // scene.getStylesheets().add("http://fonts.googleapis.com/css?family=Open+Sans");
-            //scene.getStylesheets().add("http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css");
-            //Font.loadFont(FontAwesomeIconView.class.getResource("fontawesome-webfont.ttf").toExternalForm().toString(), 0);
-            primaryStage.setTitle("ImageJ FX");
-            primaryStage.setScene(scene);
-            primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-                @Override
-                public void handle(WindowEvent t) {
-                    Platform.exit();
-                    System.exit(0);
-                }
-            });
-            primaryStage.show();
-            controller.setScene(scene);
-            Platform.runLater(controller::init);
-
-            SplashScreen splashScreen = SplashScreen.getSplashScreen();
-            if (splashScreen != null) {
-                splashScreen.close();
-            }
-
-        } catch (IOException ex) {
-            ImageJFX.getLogger().log(Level.SEVERE, null, ex);;
-        }
-
+     /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        
+        
+        
+        ImageJ imagej = new ImageJ();
+        imagej.ui().setDefaultUI(imagej.ui().getUI(UI_NAME));
+        imagej.ui().showUI(UI_NAME);
+        
+        
     }
-    */
+    
+    
     public static String getStylesheet() {
         return STYLESHEET_ADDR;
     }
