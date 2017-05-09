@@ -17,7 +17,7 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.datamodel;
+package ijfx.explorer.datamodel;
 
 import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataSet;

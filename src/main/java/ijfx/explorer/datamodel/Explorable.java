@@ -17,10 +17,12 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.datamodel;
+package ijfx.explorer.datamodel;
 
+import ijfx.core.datamodel.DatasetHolder;
+import ijfx.core.datamodel.Iconazable;
+import ijfx.core.datamodel.Selectable;
 import ijfx.core.metadata.MetaDataOwner;
-import javafx.beans.property.BooleanProperty;
 
 /**
  *
