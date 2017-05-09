@@ -19,12 +19,18 @@
  */
 package ijfx.ui.display.image;
 
+import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventType;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Pane;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
+import jfxtras.scene.control.window.CloseIcon;
 import jfxtras.scene.control.window.Window;
-import org.scijava.Context;
 import org.scijava.display.Display;
+import org.scijava.display.DisplayService;
+import org.scijava.display.event.DisplayDeletedEvent;
+import org.scijava.event.EventService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.PluginService;
 import org.scijava.ui.viewer.DisplayPanel;
@@ -37,13 +43,30 @@ import org.scijava.ui.viewer.DisplayWindow;
 
 public class DisplayWindowFX extends Window implements DisplayWindow{
 
+    
+    static String TITLE_CLASS_NAME = "ijfx-window-titlebar";
+
+    static String WINDOW_CLASS_NAME = "ijfx-window";
+    
+    
     @Parameter
     PluginService pluginService;
     
+    @Parameter
+    EventService eventService;
+    
+    @Parameter
+    DisplayService displayService;
+    
     FXDisplayPanel panel;
+    
+    Display<?> display;
     
     public DisplayWindowFX(Display<?> display) {
         
+        setWidth(400);
+        setHeight(300);
+        this.display = display;
         display.getContext().inject(this);
         
         panel = pluginService
@@ -56,8 +79,9 @@ public class DisplayWindowFX extends Window implements DisplayWindow{
         panel.view(this,display);
         
         if(panel != null) {
-            panel.pack();
             panel.display(display);
+            panel.pack();
+            
             setContentPane(panel.getUIComponent());
         }
         else {
@@ -65,7 +89,32 @@ public class DisplayWindowFX extends Window implements DisplayWindow{
         }
         
         
+         for (EventType<? extends MouseEvent> t : new EventType[]{MouseEvent.MOUSE_CLICKED, MouseEvent.DRAG_DETECTED, MouseEvent.MOUSE_PRESSED}) {
+            addEventHandler(t, this::putInFront);
+            getContentPane().addEventHandler(t, this::putInFront);
+
+        }
+
+        // close icon
+        CloseIcon closeIcon = new CloseIcon(this);
+
+        getRightIcons().add(closeIcon);
+
+        setOnCloseAction(this::onWindowClosed);
+
+        getStyleClass().add(WINDOW_CLASS_NAME);
+        setTitleBarStyleClass(TITLE_CLASS_NAME);
+        setMovable(true);
+        
+        
+        
+        
     }
+
+    public Display<?> getDisplay() {
+        return display;
+    }
+    
     
     
     public FXDisplayPanel getDisplayPanel() {
@@ -100,4 +149,16 @@ public class DisplayWindowFX extends Window implements DisplayWindow{
       return 0;
     }
     
+    
+     protected void onWindowClosed(ActionEvent event) {
+
+        //mageDisplayService.getActiveDataset(imageDisplay).
+        getDisplay().close();
+        eventService.publishLater(new DisplayDeletedEvent(getDisplay()));
+    }
+
+    void putInFront(Event event) {
+        displayService.setActiveDisplay(getDisplay());
+
+    }
 }
