@@ -15,4 +15,9 @@ Any value defined here will override the pom.xml file value but is only applicab
 -->
         <netbeans.hint.licensePath>${project.basedir}/licenseheader.txt</netbeans.hint.licensePath>
     </properties>
+    <config-data xmlns="http://www.netbeans.org/ns/maven-config-data/1">
+        <configurations>
+            <configuration id="debug" profiles=""/>
+        </configurations>
+    </config-data>
 </project-shared-configuration>
