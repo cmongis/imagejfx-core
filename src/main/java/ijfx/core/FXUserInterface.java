@@ -188,10 +188,9 @@ public class FXUserInterface extends Application implements UserInterface {
     }
     
     public void onAllUiPluginLoaded(Collection<UiPlugin> plugins) {
-        
-        
         uiContextService.enter("imagej","visualize");
         uiContextService.update();
+        activityService.open(DisplayContainer.class);
         
     }
 
