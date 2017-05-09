@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<fx:root type="AnchorPane" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <AnchorPane fx:id="anchorPane" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="35.0">
+         <children>
+            <StackPane fx:id="stackPane" minHeight="100.0" minWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+         </children>
+      </AnchorPane>
+      <BorderPane fx:id="topBorderPane" prefHeight="35.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <left>
+            <Label fx:id="infoLabel" text="" BorderPane.alignment="CENTER" />
+         </left>
+         <right>
+            <HBox fx:id="buttonHBox" BorderPane.alignment="CENTER" />
+         </right>
+      </BorderPane>
+      <BorderPane fx:id="bottomPane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <bottom>
+            <VBox fx:id="sliderVBox" BorderPane.alignment="CENTER" />
+         </bottom>
+         <top>
+            <Label fx:id="pixelValueLabel" prefHeight="30.0" text="pixel label" BorderPane.alignment="CENTER" />
+         </top>
+      </BorderPane>
+   </children>
+</fx:root>
