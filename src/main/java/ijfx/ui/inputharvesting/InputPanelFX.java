@@ -71,28 +71,16 @@ public class InputPanelFX implements InputPanel<Node, Node> {
 
     public InputPanelFX() {
 
-        try {
-            FXMLLoader loader = new FXMLLoader();
-
-            loader.setLocation(this.getClass().getResource("InputPanelFX.fxml"));
-            loader.setController(this);
-            loader.load();
-
-            root = loader.getRoot();
-        } catch (IOException ex) {
-            Logger.getLogger(InputPanelFX.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
     }
 
     public void setName(String name) {
-        if(titleLabel.getText() == null || "".equals(titleLabel.getText())) {
-           Platform.runLater(()->{
+        if (titleLabel.getText() == null || "".equals(titleLabel.getText())) {
+            Platform.runLater(() -> {
                 titleLabel.setText(name);
-           });
+            });
         }
     }
-    
+
     @Override
     public boolean supports(InputWidget<?, ?> widget) {
         return widget.getComponentType().isAssignableFrom(Node.class);
@@ -112,16 +100,17 @@ public class InputPanelFX implements InputPanel<Node, Node> {
 
     @Override
     public void addWidget(InputWidget<?, Node> widget) {
-        
-        if(widget == null) return;
-        
+
+        if (widget == null) {
+            return;
+        }
+
         String name = widget.get().getItem().getName();
-        
+
         String title = widget.get().getModule().getInfo().getName();
-        
+
         setName(title);
-        
-        
+
         widgetList.put(name, widget);
 
         if (widget instanceof ButtonWidget) {
@@ -176,6 +165,21 @@ public class InputPanelFX implements InputPanel<Node, Node> {
 
     @Override
     public Parent getComponent() {
+
+        if (root == null) {
+            try {
+                FXMLLoader loader = new FXMLLoader();
+
+                loader.setLocation(this.getClass().getResource("InputPanelFX.fxml"));
+                loader.setController(this);
+                loader.load();
+
+                root = loader.getRoot();
+            } catch (IOException ex) {
+                Logger.getLogger(InputPanelFX.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
         return root;
     }
 
