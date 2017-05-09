@@ -257,7 +257,7 @@ public class FXUtilities {
         //FXMLLoader loader = new FXMLLoader();
         loader.setRoot(rootController);
         loader.setController(rootController);
-        loader.setResources(ImageJFX.getResourceBundle());
+        //loader.setResources(ImageJFX.getResourceBundle());
         loader.setLocation(rootController.getClass().getResource(location));
         loader.setClassLoader(rootController.getClass().getClassLoader());
 
