@@ -33,7 +33,6 @@ import org.scijava.ui.UIService;
  *
  * @author Cyril MONGIS
  */
-@Plugin(type = PostprocessorPlugin.class)
 public abstract class DataDisplayPostprocessor extends AbstractPostprocessorPlugin{
 
     private final Class<?> type;
