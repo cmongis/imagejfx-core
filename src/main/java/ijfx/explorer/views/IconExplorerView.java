@@ -1,0 +1,150 @@
+/*
+    This file is part of ImageJ FX.
+
+    ImageJ FX is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    ImageJ FX is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with ImageJ FX.  If not, see <http://www.gnu.org/licenses/>. 
+    
+     Copyright 2015,2016 Cyril MONGIS, Michael Knop
+	
+ */
+package ijfx.explorer.views;
+
+
+import ijfx.core.datamodel.Iconazable;
+import ijfx.explorer.datamodel.Explorable;
+import ijfx.explorer.widgets.ExplorerIconCell;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
+import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
+import javafx.scene.Node;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.TilePane;
+import mongis.utils.panecell.PaneCell;
+import mongis.utils.panecell.PaneCellController;
+import mongis.utils.panecell.ScrollBinder;
+import org.scijava.Context;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+
+/**
+ *
+ * @author Cyril MONGIS, 2016
+ */
+@Plugin(type = ExplorerView.class,priority = 0.8,label="Preview",iconPath="fa:picture_alt")
+public class IconExplorerView extends ScrollPane implements ExplorerView {
+
+    private final TilePane tilePane = new TilePane();
+
+    private ScrollBinder binder;
+
+    private final PaneCellController<Iconazable> cellPaneCtrl = new PaneCellController<>(tilePane);
+
+    private List<? extends Explorable> itemsList;
+    
+   
+    @Parameter
+    private Context context;
+   
+    
+    public IconExplorerView() {
+        setContent(tilePane);
+        setPrefWidth(400);
+        setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        tilePane.prefWidthProperty().bind(widthProperty());
+        tilePane.setPrefTileWidth(170);
+        tilePane.setPrefTileHeight(270);
+        //tilePane.setPrefTileHeight(Control.USE_PREF_SIZE);
+        tilePane.setVgap(5);
+        tilePane.setHgap(5);
+        binder = new ScrollBinder(this);
+        cellPaneCtrl.setCellFactory(this::createIcon);
+        
+        addEventHandler(MouseEvent.MOUSE_CLICKED, this::onMouseClick);
+         tilePane.getChildren().addListener(this::onDisplayedNodesChanged);
+    }
+    
+    public void setTileDimension(double width, double height, double vgap, double hgap) {
+        tilePane.setPrefTileWidth(width);
+        tilePane.setPrefTileHeight(height);
+        tilePane.setVgap(vgap);
+        tilePane.setHgap(hgap);
+    }
+
+    public void setCellFactory(Callable<PaneCell<? extends Iconazable>> callable) {
+        cellPaneCtrl.setCellFactory(callable);
+    }
+    
+    @Override
+    public Node getUIComponent() {
+
+        return this;
+    }
+
+    @Override
+    public void setItem(List<? extends Explorable> items) {
+        //loadingScreenService.frontEndTask(cellPaneCtrl.update(new ArrayList<Iconazable>(items)),false);
+        
+        this.itemsList = items;
+        cellPaneCtrl.update(new ArrayList<Iconazable>(items));
+       
+        
+    }
+
+    private PaneCell<Iconazable> createIcon() {
+        ExplorerIconCell cell = new ExplorerIconCell();
+        context.inject(cell);
+        return cell;
+    }
+
+    @Override
+    public List<? extends Explorable> getSelectedItems() {
+        return itemsList
+                .stream()
+                .map(item->(Explorable)item)
+                .filter(item->item.selectedProperty().getValue())
+                .collect(Collectors.toList());
+    }
+
+    
+    private void onMouseClick(MouseEvent event){
+        
+        if(event.getTarget() == tilePane) {
+            cellPaneCtrl.getItems().forEach(item->item.selectedProperty().setValue(false));
+        }
+        
+    }
+    
+    public void onMouseDrag(DragEvent event) {
+        
+        
+    }
+
+    @Override
+    public void setSelectedItem(List<? extends Explorable> items) {
+      
+    }
+    
+    private void onDisplayedNodesChanged(ListChangeListener.Change<? extends Node> change) {
+            
+        while(change.next());
+        
+       Platform.runLater(binder::update);
+        
+    }
+    
+}
