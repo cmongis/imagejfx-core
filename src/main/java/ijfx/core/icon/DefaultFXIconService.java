@@ -37,7 +37,7 @@ public class DefaultFXIconService extends AbstractService implements FXIconServi
     public Node getIconAsNode(String iconPath) {
 
         if(iconPath.startsWith("fa:")) {
-            return new FontAwesomeIconView(FontAwesomeIcon.valueOf(iconPath.substring(3)));
+            return new FontAwesomeIconView(FontAwesomeIcon.valueOf(iconPath.substring(3).toUpperCase()));
         }
         else {
             return new FontAwesomeIconView(FontAwesomeIcon.REMOVE);
