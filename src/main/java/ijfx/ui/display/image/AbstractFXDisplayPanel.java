@@ -52,7 +52,7 @@ public abstract class AbstractFXDisplayPanel<T extends Display> implements FXDis
 
     @Override
     public boolean canView(Display<?> display) {
-        return display.getClass().isAssignableFrom(supportedClass);
+        return supportedClass.isAssignableFrom(display.getClass());
     }
 
 
