@@ -167,26 +167,17 @@ public class DataDisplay extends AbstractDisplay() {
 }
 ~~~
 
-Then, create a DisplayViewer that inherit from ImageJFX **FXDisplayViewer>
+Then, create a DisplayViewer that inherit from ImageJFX **FXDisplayViewer** helper class : 
 
 ~~~java 
 
 @Plugin(type = DisplayViewer.class)
-public class DataDisplayViewer extends FXDisplayViewer<Data>{
-
+public class DataDisplayViewer extends FXDisplayViewer<DataDisplay>{
 	 // The display viewer will be associated
 	 // to the Data type.
     public MetaDataOwnerDisplayViewer() {
-        super(Data.class);
+        super(DataDisplay.class);
     }
-    
-    // method deciding if a display is
-    // compatible with displayviewer
-    @Override
-    public boolean canView(Display<?> d) {
-        return d instanceof DataDisplay;
-       }
-    
 }
 ~~~
 
@@ -196,10 +187,9 @@ Once done, the only missing elements is the DisplayPanel and the DisplayWindows.
 
 @Plugin(type = FXDisplayPanel.class)
 public class DataDisplayPanel extends AbstractFXDisplayPanel<DataDisplay> {
-
   
 
-    Pane somePane;
+    private Pane somePane;
     
     public MetaDataOwnerDisplayPanel() {
         super(DataDisplay.class);
@@ -208,7 +198,8 @@ public class DataDisplayPanel extends AbstractFXDisplayPanel<DataDisplay> {
     @Override
     public void pack() {
     		// this method should create the 
-    		// the UI Elements
+    		// the UI Elements here, not in the
+    		// constructor.
         pane = new AnchorPane();
     }
 
