@@ -20,7 +20,9 @@
 package ijfx.core.icon;
 
 import ijfx.core.IjfxService;
+import ijfx.core.utils.SciJavaUtils;
 import javafx.scene.Node;
+import org.scijava.plugin.SciJavaPlugin;
 
 /**
  *
@@ -30,6 +32,9 @@ public interface FXIconService extends IjfxService {
     
     
     Node getIconAsNode(String iconPath);
+    default Node getIconAsNode(SciJavaPlugin plugin) {
+        return getIconAsNode(SciJavaUtils.getIconPath(plugin));
+    }
     
     
     
