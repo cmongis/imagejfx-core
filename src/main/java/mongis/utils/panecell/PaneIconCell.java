@@ -129,7 +129,7 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
 
     public PaneIconCell() {
         try {
-            FXUtilities.injectFXML(this, "/ijfx/ui/explorer/ImageIconItem.fxml");
+            FXUtilities.injectFXML(this, "/ijfx/explorer/widgets/ImageIconItem.fxml");
             /*
             synchronized (LOADER) {
 
