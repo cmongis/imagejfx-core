@@ -47,6 +47,9 @@ public class DefaultExplorableDisplay extends AbstractDisplay<ExplorableList> im
     
     @Override
     public boolean add(ExplorableList list) {
+        
+        displayedItems.addAll(list);
+        
         return items.addAll(list);
     }
   

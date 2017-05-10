@@ -24,6 +24,7 @@ import ijfx.core.utils.SciJavaUtils;
 import ijfx.explorer.ExplorableDisplay;
 import ijfx.explorer.views.ExplorerView;
 import ijfx.ui.display.image.AbstractFXDisplayPanel;
+import ijfx.ui.display.image.FXDisplayPanel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,12 +33,14 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
 
 /**
  *
  * @author cyril
  */
+@Plugin(type = FXDisplayPanel.class)
 public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDisplay> {
 
     AnchorPane root;
@@ -62,9 +65,15 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
         root = new AnchorPane();
 
         tabPane = new TabPane();
-
+        
+        AnchorPane.setBottomAnchor(tabPane, 0d);
+        AnchorPane.setLeftAnchor(tabPane, 0d);
+        AnchorPane.setRightAnchor(tabPane, 0d);
+        AnchorPane.setTopAnchor(tabPane, 0d);
+        
         root.getChildren().add(tabPane);
-
+        redoLayout();
+        redraw();
     }
 
     private Tab createTab(ExplorerView view) {
@@ -109,6 +118,7 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
                 .stream()
                 .forEach(view->{
                     view.setItem(getDisplay().getDisplayedItems());
+                    System.out.println("Updating");
                 });
     }
 
