@@ -37,4 +37,9 @@ public class SciJavaUtils {
         return plugin.getClass().getAnnotation(Plugin.class).name();
         
     }
+    
+    public static String getIconPath(SciJavaPlugin plugin) {
+        return plugin.getClass().getAnnotation(Plugin.class).iconPath();
+        
+    }
 }
