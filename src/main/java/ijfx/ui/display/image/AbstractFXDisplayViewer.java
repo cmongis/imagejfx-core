@@ -28,15 +28,20 @@ import org.scijava.ui.viewer.AbstractDisplayViewer;
  *
  * @author cyril
  */
-public abstract class AbstractFXDisplayViewer<T> extends AbstractDisplayViewer<T>{
+public abstract class AbstractFXDisplayViewer<T extends Display> extends AbstractDisplayViewer<T>{
 
     
-    final Class<?> type;
+    final Class<T> type;
 
-    public AbstractFXDisplayViewer(Class<?> type) {
+    public AbstractFXDisplayViewer(Class<T> type) {
+       
         this.type = type;
     }
     
+    @Override
+    public boolean canView(Display<?> display) {
+        return type.isAssignableFrom(display.getClass());
+    }
     
     
     @Override
