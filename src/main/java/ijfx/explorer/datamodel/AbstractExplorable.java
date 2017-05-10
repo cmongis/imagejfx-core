@@ -76,5 +76,11 @@ public abstract class AbstractExplorable implements Explorable {
     public Set<Tag> getTagList() {
         return tagList;
     }
+    
+    
+    @Override
+    public boolean has(Tag tag) {
+        return tagList.contains(tag);
+    }
 
 }
