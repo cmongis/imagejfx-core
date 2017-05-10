@@ -25,6 +25,7 @@ import javafx.beans.property.BooleanProperty;
  *
  * @author Cyril MONGIS, 2016
  */
+@FunctionalInterface
 public interface Selectable {
     
     BooleanProperty selectedProperty();
