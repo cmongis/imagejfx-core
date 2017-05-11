@@ -19,10 +19,8 @@
  */
 package ijfx.ui.display.metadataowner;
 
-import ijfx.core.datamodel.MetaDataOwnerList;
 import ijfx.explorer.datamodel.MetaDataOwnerDisplay;
 import ijfx.ui.display.image.AbstractFXDisplayViewer;
-import org.scijava.display.Display;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.viewer.DisplayViewer;
 
@@ -31,17 +29,11 @@ import org.scijava.ui.viewer.DisplayViewer;
  * @author cyril
  */
 @Plugin(type = DisplayViewer.class)
-public class MetaDataOwnerDisplayViewer extends AbstractFXDisplayViewer<MetaDataOwnerList>{
+public class MetaDataOwnerDisplayViewer extends AbstractFXDisplayViewer<MetaDataOwnerDisplay>{
 
     public MetaDataOwnerDisplayViewer() {
-        super(MetaDataOwnerList.class);
+        super(MetaDataOwnerDisplay.class);
     }
 
-    
-
-    @Override
-    public boolean canView(Display<?> d) {
-        return d instanceof MetaDataOwnerDisplay;
-       }
-    
+  
 }
