@@ -19,6 +19,7 @@
  */
 package ijfx.ui.inputharvesting;
 
+import ijfx.ui.main.ImageJFX;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.Node;
@@ -56,8 +57,14 @@ public class TextWidgetFX extends AbstractFXInputWidget<String> implements TextW
     public void set(WidgetModel model) {
 
         super.set(model);
+        String[] choices = null;
 
-        if (model.getChoices() != null && model.getChoices().length > 0) {
+        try {
+            choices = model.getChoices();
+        } catch (NullPointerException exp) {
+            ImageJFX.getLogger().fine("No choices for " + model.getItem().getName());
+        }
+        if (choices != null && choices.length > 0) {
             comboBox = new ComboBox<>();
             comboBox.getItems().addAll(model.getChoices());
             bindProperty(comboBox.valueProperty());
