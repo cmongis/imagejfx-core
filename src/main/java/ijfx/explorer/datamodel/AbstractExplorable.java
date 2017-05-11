@@ -37,7 +37,7 @@ public abstract class AbstractExplorable implements Explorable {
 
     private final BooleanProperty selectedProperty = new SimpleBooleanProperty();
 
-    protected final MetaDataSet metadataSet = new MetaDataSet();
+    private MetaDataSet metadataSet;
 
     protected static final Logger logger = ImageJFX.getLogger();
 
@@ -50,6 +50,9 @@ public abstract class AbstractExplorable implements Explorable {
 
     @Override
     public MetaDataSet getMetaDataSet() {
+        if(metadataSet == null) {
+            metadataSet = new MetaDataSet();
+        }
         return metadataSet;
     }
 
