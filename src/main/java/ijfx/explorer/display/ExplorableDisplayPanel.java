@@ -28,6 +28,7 @@ import ijfx.ui.display.image.FXDisplayPanel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import javafx.application.Platform;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
@@ -65,12 +66,12 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
         root = new AnchorPane();
 
         tabPane = new TabPane();
-        
+
         AnchorPane.setBottomAnchor(tabPane, 0d);
         AnchorPane.setLeftAnchor(tabPane, 0d);
         AnchorPane.setRightAnchor(tabPane, 0d);
         AnchorPane.setTopAnchor(tabPane, 0d);
-        
+
         root.getChildren().add(tabPane);
         redoLayout();
         redraw();
@@ -114,12 +115,21 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
 
     @Override
     public void redraw() {
-        viewList
-                .stream()
-                .forEach(view->{
-                    view.setItem(getDisplay().getDisplayedItems());
-                    System.out.println("Updating");
-                });
+
+        Platform.runLater(() -> {
+            
+            
+            
+            viewList
+                    .stream()
+                    .forEach(view -> {
+                        
+                        
+                        
+                        view.setItem(getDisplay().getDisplayedItems());
+                        System.out.println("Updating");
+                    });
+        });
     }
 
 }
