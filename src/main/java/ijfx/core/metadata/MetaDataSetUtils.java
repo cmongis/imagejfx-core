@@ -33,6 +33,22 @@ import java.util.stream.IntStream;
  */
 public class MetaDataSetUtils {
 
+    
+    public static Set<String> getKeys(List<? extends MetaDataOwner> list) {
+        
+        
+        
+        Set<String> possibleKeys = new HashSet<>();
+        
+        if(list == null) return possibleKeys;
+        list
+                .parallelStream()
+                .forEach(set -> {
+            possibleKeys.addAll(set.getMetaDataSet().keySet());
+        });
+        return possibleKeys;
+    }
+    
     public static Set<String> getAllPossibleKeys(List<MetaDataSet> setList) {
         Set<String> possibleKeys = new HashSet<>();
         setList.forEach(set -> {
