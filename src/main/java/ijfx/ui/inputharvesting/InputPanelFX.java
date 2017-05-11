@@ -74,6 +74,7 @@ public class InputPanelFX implements InputPanel<Node, Node> {
     }
 
     public void setName(String name) {
+        getComponent();
         if (titleLabel.getText() == null || "".equals(titleLabel.getText())) {
             Platform.runLater(() -> {
                 titleLabel.setText(name);
