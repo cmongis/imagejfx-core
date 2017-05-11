@@ -21,6 +21,7 @@ package ijfx.explorer.views;
 
 import ijfx.core.hint.HintService;
 import ijfx.core.metadata.MetaDataKeyPriority;
+import ijfx.core.metadata.MetaDataSetUtils;
 import ijfx.explorer.ExplorerService;
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.events.ExplorerSelectionChangedEvent;
@@ -44,7 +45,7 @@ import org.scijava.plugin.Plugin;
  *
  * @author Cyril MONGIS, 2016
  */
-@Plugin(type = ExplorerView.class, priority = 0.9,label="Data Table",iconPath="fa:table")
+@Plugin(type = ExplorerView.class, priority = 0.9, label = "Data Table", iconPath = "fa:table")
 public class TableExplorerView implements ExplorerView {
 
     TableView<Explorable> tableView = new TableView<>();
@@ -57,14 +58,13 @@ public class TableExplorerView implements ExplorerView {
     @Parameter
     private ExplorerService explorerService;
 
-
     @Parameter
     HintService hintService;
-    
+
     SelectableManager<Explorable> selectableManager = new SelectableManager<>(this::onItemSelectionChanged);
-    
+
     private static final String TABLE_VIEW_ID = "tableViewView";
-    
+
     List<? extends Explorable> currentItems;
 
     Logger logger = ImageJFX.getLogger();
@@ -89,17 +89,25 @@ public class TableExplorerView implements ExplorerView {
     public void setItem(List<? extends Explorable> items) {
 
         ImageJFX.getLogger().info(String.format("Setting %d items", items.size()));
-        
-        
-        if(items == currentItems && items.size() == tableView.getItems().size()) return;
-        
-        if(items.size() >0)priority = MetaDataKeyPriority.getPriority(items.get(0).getMetaDataSet());
+
+        boolean columnsHasChanged = MetaDataSetUtils.getKeys(items).size() != MetaDataSetUtils.getKeys(currentItems).size();
+
+        // if checking the priority first
+        if (items.size() > 0) {
+            priority = MetaDataKeyPriority.getPriority(items.get(0).getMetaDataSet());
+        }
+        // reseting the priorirty
         helper.setPriority(priority);
+
         helper.setColumnsFromItems(items);
-        helper.setItem(items);
-        
+
+        // if the item number has changed, let's refresh it to
+        if (items != currentItems || items.size() != tableView.getItems().size()) {
+            helper.setItem(items);
+        }
+
         selectableManager.setItem(items);
-        
+
         currentItems = items;
 
         List<? extends Explorable> selected = items
@@ -109,7 +117,7 @@ public class TableExplorerView implements ExplorerView {
 
         setSelectedItem(selected);
         displayHints();
-        
+
     }
 
     @Override
@@ -122,12 +130,10 @@ public class TableExplorerView implements ExplorerView {
                 .collect(Collectors.toList());
     }
 
-  
     @Override
     public void setSelectedItem(List<? extends Explorable> items) {
-       items.forEach(tableView.getSelectionModel()::select);
-        
-        
+        items.forEach(tableView.getSelectionModel()::select);
+
     }
 
     private void onListChange(ListChangeListener.Change<? extends Explorable> changes) {
@@ -146,16 +152,14 @@ public class TableExplorerView implements ExplorerView {
                     .forEach(explo -> explo.selectedProperty().setValue(false));
 
         }
-        
-    
+
     }
 
     private void displayHints() {
-            
-            //hintService.displayHint(new DefaultHint(String.format("#%s",TABLE_VIEW_ID),"Double click on an element to open it."), false);
-        
+
+        //hintService.displayHint(new DefaultHint(String.format("#%s",TABLE_VIEW_ID),"Double click on an element to open it."), false);
     }
-    
+
     private void onSelectedItemChanged(Observable obs, Explorable oldValue, Explorable newValue) {
         currentItems.forEach(item -> {
             item.selectedProperty().setValue(tableView.getSelectionModel().getSelectedItems().contains(item));
@@ -181,9 +185,11 @@ public class TableExplorerView implements ExplorerView {
     }
 
     private void onItemSelectionChanged(Explorable explorable, Boolean selected) {
-        
-        if(selected)tableView.getSelectionModel().select(explorable);
-        
+
+        if (selected) {
+            tableView.getSelectionModel().select(explorable);
+        }
+
     }
-    
+
 }
