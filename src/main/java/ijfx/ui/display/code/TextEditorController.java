@@ -41,6 +41,9 @@ public class TextEditorController extends AnchorPane {
     @FXML
     BorderPane borderPane;
     
+    
+    Language LANGUAGE = Language.JAVASCRIPT;
+    
     public TextEditorController() throws IOException {
         System.out.println("Bonjour et bienvenue dans ce nouveau controlleur j'espere qu'il vous plaira");
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/ijfx/ui/display/code/TextEditorMain.fxml"));
@@ -48,9 +51,13 @@ public class TextEditorController extends AnchorPane {
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
-        
+        /*
         TextArea textAreaCreator = new TextArea();
         borderPane.setCenter(textAreaCreator.getCodeArea());
+        textAreaCreator.getCodeArea().getSelectedText();
+*/
+        RichTextEditor richTextEditor =new RichTextEditor();
+        this.getChildren().add(richTextEditor.init());
         
     }
     

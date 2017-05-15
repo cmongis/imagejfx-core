@@ -44,6 +44,7 @@ public class TexteEditorMain implements Command {
     
     @Override
     public void run() {
+        
         Parent root = null;
         try {
             root = new TextEditorController();
@@ -57,6 +58,7 @@ public class TexteEditorMain implements Command {
             stage.setScene(scene);
             stage.show();
         });
+
     }
     
 }
