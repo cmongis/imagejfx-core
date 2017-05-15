@@ -21,6 +21,7 @@
 package ijfx.core.history;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ijfx.core.IjfxService;
 import ijfx.core.activity.ActivityService;
 import ijfx.core.uicontext.UiContextService;
 import ijfx.core.uiextra.RichTextDialog;
@@ -30,7 +31,6 @@ import ijfx.core.workflow.Workflow;
 import ijfx.core.workflow.WorkflowStep;
 import ijfx.core.workflow.json.WorkflowMapperModule;
 import ijfx.ui.main.ImageJFX;
-import ijfx.ui.UiContexts;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -42,7 +42,6 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import net.imagej.Dataset;
-import net.imagej.ImageJService;
 import net.imagej.display.ImageDisplayService;
 import org.scijava.Context;
 import org.scijava.Priority;
@@ -61,7 +60,7 @@ import org.scijava.ui.UIService;
  * @author Cyril MONGIS, 2015
  */
 @Plugin(type = Service.class, priority = Priority.VERY_LOW_PRIORITY, description = "Service storing history of modules ran the user. Allow to play, replay, load or save. Uses JavaFX components.")
-public class HistoryService extends AbstractService implements ImageJService {
+public class HistoryService extends AbstractService implements IjfxService {
 
     Workflow currentWorkflow = new DefaultWorkflow();
 
@@ -82,19 +81,6 @@ public class HistoryService extends AbstractService implements ImageJService {
 
     @Parameter
     private UIExtraService uiExtraService;
-
- 
-    @Parameter
-    private ActivityService activityService;
-
-    @Parameter
-    private UiContextService uiContextService;
-
-    @Parameter
-    private EventService eventService;
-    
-    @Parameter
-    private ImageDisplayService imageDisplayService;
 
     
     @Parameter
