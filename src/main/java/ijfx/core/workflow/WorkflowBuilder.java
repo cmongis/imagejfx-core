@@ -20,7 +20,7 @@
 package ijfx.core.workflow;
 import ijfx.core.batch.BatchService;
 import ijfx.core.batch.BatchSingleInput;
-import ijfx.core.batch.input.BatchItemBuilder;
+import ijfx.core.batch.item.BatchItemBuilder;
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.ui.loading.LoadingScreenService;
 import ijfx.ui.save.SaveOptions;
