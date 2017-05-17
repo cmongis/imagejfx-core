@@ -24,6 +24,7 @@ import ijfx.core.usage.Usage;
 import ijfx.ui.main.ImageJFX;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -36,6 +37,7 @@ import org.scijava.menu.AbstractMenuCreator;
 import org.scijava.menu.ShadowMenu;
 import org.scijava.plugin.Parameter;
 import org.scijava.thread.ThreadService;
+import static ucar.nc2.util.net.EasyX509TrustManager.logger;
 
 /**
  * This class generates allows generation of JavaFX Menu by ImageJ
@@ -53,6 +55,8 @@ public class FxMenuCreator extends AbstractMenuCreator<MenuBar, Menu> {
     
     Map<ShadowMenu,MenuItem> menuMap = new HashMap<>();
     
+    
+    Logger logger = ImageJFX.getLogger();
     
     @Override
     protected void addLeafToMenu(ShadowMenu sm, Menu m) {
@@ -81,6 +85,7 @@ public class FxMenuCreator extends AbstractMenuCreator<MenuBar, Menu> {
 
     @Override
     protected void addLeafToTop(ShadowMenu sm, MenuBar t) {
+        
         t.getMenus().add(new Menu(sm.getName()));
     }
 
@@ -116,8 +121,9 @@ public class FxMenuCreator extends AbstractMenuCreator<MenuBar, Menu> {
     
     
     public void removeMenu(ShadowMenu sm) {
-        
+        logger.info("Removing "+sm.getName());
         MenuItem item = menuMap.get(sm);
+        if(item == null) return;
         Menu parent = item.getParentMenu();
         if(parent != null) {
             parent.getItems().remove(item);
