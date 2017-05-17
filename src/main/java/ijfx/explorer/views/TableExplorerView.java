@@ -20,10 +20,12 @@
 package ijfx.explorer.views;
 
 import ijfx.core.hint.HintService;
+import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataKeyPriority;
 import ijfx.core.metadata.MetaDataSetUtils;
 import ijfx.explorer.ExplorerService;
 import ijfx.explorer.datamodel.Explorable;
+import ijfx.explorer.datamodel.Tag;
 import ijfx.explorer.events.ExplorerSelectionChangedEvent;
 import ijfx.ui.display.metadataowner.MetaDataOwnerHelper;
 import ijfx.ui.main.ImageJFX;
@@ -32,9 +34,12 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.beans.Observable;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import org.scijava.event.EventService;
@@ -69,6 +74,8 @@ public class TableExplorerView implements ExplorerView {
 
     Logger logger = ImageJFX.getLogger();
 
+    TableColumn<Explorable,String> tagColumn = new TableColumn();
+    
     public TableExplorerView() {
 
         tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -76,6 +83,11 @@ public class TableExplorerView implements ExplorerView {
         tableView.getSelectionModel().selectedItemProperty().addListener(this::onSelectedItemChanged);
         tableView.setRowFactory(this::createRow);
         tableView.setId(TABLE_VIEW_ID);
+        
+        tagColumn.setCellValueFactory(this::getTagListProperty);
+        tagColumn.setText("Tags");
+        helper.addAdditionalColumn(tagColumn);
+        
     }
 
     @Override
@@ -190,6 +202,20 @@ public class TableExplorerView implements ExplorerView {
             tableView.getSelectionModel().select(explorable);
         }
 
+    }
+    
+    private ObservableValue<String> getTagListProperty(TableColumn.CellDataFeatures<Explorable, String> cell) {
+        
+        
+        return new ReadOnlyObjectWrapper<>(
+                cell
+                        .getValue()
+                        .getTagList()
+                        .stream()
+                        .map(Tag::toString)
+                        .collect(Collectors.joining(", "))
+        );
+        
     }
 
 }
