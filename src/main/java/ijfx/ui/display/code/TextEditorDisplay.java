@@ -21,6 +21,7 @@ package ijfx.ui.display.code;
 
 import net.imagej.Data;
 import org.scijava.display.AbstractDisplay;
+import org.scijava.display.DefaultTextDisplay;
 import org.scijava.display.Display;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Plugin;
@@ -30,15 +31,10 @@ import org.scijava.plugin.Plugin;
  * @author florian
  */
 @Plugin(type = Display.class)
-public class TextEditorDisplay extends AbstractDisplay {
+public class TextEditorDisplay extends DefaultTextDisplay{
     public TextEditorDisplay() {
-        super(Data.class);
    }
 
-    @Override
-    public int compareTo(Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
     @Override
     public LogService log() {

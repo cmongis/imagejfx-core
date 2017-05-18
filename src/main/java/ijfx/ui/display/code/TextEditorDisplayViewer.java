@@ -19,16 +19,39 @@
  */
 package ijfx.ui.display.code;
 
+import org.scijava.Prioritized;
+import org.scijava.log.LogService;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.UserInterface;
 import org.scijava.ui.viewer.DisplayViewer;
+import org.scijava.ui.viewer.text.AbstractTextDisplayViewer;
+import org.scijava.ui.viewer.text.TextDisplayViewer;
 
 /**
  *
  * @author florian
  */
-@Plugin(type = DisplayViewer.class)
-public class TextEditorDisplayViewer extends FXDisplayViewer<TextEditorDisplay>{
-    public TextEditorDisplayViewer() {
-        super(TextEditorDisplay.class);
+@Plugin(type = TextDisplayViewer.class)
+public class TextEditorDisplayViewer extends AbstractTextDisplayViewer{
+    
+
+    @Override
+    public int compareTo(Prioritized o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public LogService log() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getIdentifier() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean isCompatible(UserInterface ui) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
