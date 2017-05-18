@@ -137,7 +137,7 @@ public class ImageDisplayAdjuster extends BorderPane {
 
     }
 
-    public Property<FXImageDisplay> datasetViewProperty() {
+    public Property<FXImageDisplay> imageDisplayProperty() {
         return imageDisplayProperty;
     }
 
