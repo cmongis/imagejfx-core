@@ -19,13 +19,35 @@
  */
 package ijfx.ui.display.code;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.richtext.model.Codec;
+import org.fxmisc.richtext.model.ReadOnlyStyledDocument;
+import org.fxmisc.richtext.model.StyledDocument;
+import org.fxmisc.richtext.model.StyledText;
+import org.reactfx.util.Either;
+import org.reactfx.util.Tuple2;
 import org.scijava.plugin.Parameter;
 
 /**
@@ -38,11 +60,19 @@ public class TextEditorController extends AnchorPane {
     
     @Parameter
     Scene scene;
+    @Parameter
+    Stage stage;
     @FXML
     BorderPane borderPane;
+    @FXML
+    MenuButton fileButton;
+    @FXML
+    MenuButton editButton;
     
     
     Language LANGUAGE = Language.JAVASCRIPT;
+    
+    CodeArea codeArea = null;
     
     public TextEditorController() throws IOException {
         System.out.println("Bonjour et bienvenue dans ce nouveau controlleur j'espere qu'il vous plaira");
@@ -51,18 +81,85 @@ public class TextEditorController extends AnchorPane {
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
-        /*
-        TextArea textAreaCreator = new TextArea();
-        borderPane.setCenter(textAreaCreator.getCodeArea());
-        textAreaCreator.getCodeArea().getSelectedText();
-*/
+        
+        
         RichTextEditor richTextEditor =new RichTextEditor();
-        this.getChildren().add(richTextEditor.init());
+        
+        TextArea textAreaCreator = new TextArea();
+        this.codeArea = textAreaCreator.getCodeArea();
+        init();
+        borderPane.setCenter(codeArea);
+        //borderPane.setTop(richTextEditor.init());
+        //textAreaCreator.getCodeArea().getSelectedText();
+
+        
+        //VBox mainBox = richTextEditor.init();
+        //mainBox.setPrefSize(USE_COMPUTED_SIZE, USE_COMPUTED_SIZE);
+        //this.getChildren().add(mainBox);
+        //this.setPrefSize(USE_COMPUTED_SIZE, USE_COMPUTED_SIZE);
         
     }
     
-    public void qqch (){
-        
+    public void init () {
+        fileButton.getItems().add(creatMenuItem("loadfile", this::loadDocument));
+        fileButton.getItems().add(creatMenuItem("savefile", this::saveDocument));
+        editButton.getItems().add(creatMenuItem("undo", codeArea::undo));
+        editButton.getItems().add(creatMenuItem("redo", codeArea::redo));
+        editButton.getItems().add(creatMenuItem("cut", codeArea::cut));
+        editButton.getItems().add(creatMenuItem("copy", codeArea::copy));
+        editButton.getItems().add(creatMenuItem("paste", codeArea::paste));
     }
     
+    public MenuItem creatMenuItem(String styleClass, Runnable action){
+        
+        MenuItem menuItem = new MenuItem();
+        menuItem.setText(styleClass);
+        menuItem.setOnAction(evt -> {
+            action.run();
+            
+        });
+        
+        return menuItem;
+    }
+    
+     private void loadDocument() {
+        String initialDir = System.getProperty("user.dir");
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Load document");
+        fileChooser.setInitialDirectory(new File(initialDir));
+        File selectedFile = fileChooser.showOpenDialog(stage);
+        if (selectedFile != null) {
+            //area.clear();
+            load(selectedFile);
+        }
+    }
+
+    private void load(File file) {
+        //TODO
+        System.out.println("loading");
+        List<String> text = null;
+        try {
+            text = Files.readAllLines(file.toPath());
+        } catch (IOException ex) {
+            Logger.getLogger(TextEditorController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        codeArea.replaceText(0,0,  String.join("\n", text));
+    }
+
+
+    private void saveDocument() {
+        String initialDir = System.getProperty("user.dir");
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save document");
+        fileChooser.setInitialDirectory(new File(initialDir));
+        File selectedFile = fileChooser.showSaveDialog(stage);
+        if (selectedFile != null) {
+            save(selectedFile);
+        }
+    }
+
+
+    private void save(File file) {
+        //TODO
+    }
 }

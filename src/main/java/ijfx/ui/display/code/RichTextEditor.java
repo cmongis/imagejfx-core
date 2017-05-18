@@ -163,6 +163,9 @@ public class RichTextEditor {
         cutBtn.disableProperty().bind(selectionEmpty);
         copyBtn.disableProperty().bind(selectionEmpty);
 
+        /*
+        toute cette partie c'est pour changer la police
+        */
         area.beingUpdatedProperty().addListener((o, old, beingUpdated) -> {
             if(!beingUpdated) {
                 boolean bold, italic, underline, strike;
@@ -279,7 +282,9 @@ public class RichTextEditor {
                 });
             }
         });
-
+/*
+        fin de la partie sur la police
+        */
         HBox panel1 = new HBox(3.0);
         HBox panel2 = new HBox(3.0);
         panel1.getChildren().addAll(
@@ -290,10 +295,11 @@ public class RichTextEditor {
                 paragraphBackgroundPicker);
         panel2.getChildren().addAll(sizeCombo, familyCombo, textColorPicker, backgroundColorPicker);
 
-        VirtualizedScrollPane<GenericStyledArea<ParStyle, Either<StyledText<TextStyle>,LinkedImage<TextStyle>>, TextStyle>> vsPane = new VirtualizedScrollPane<>(area);
+        //VirtualizedScrollPane<GenericStyledArea<ParStyle, Either<StyledText<TextStyle>,LinkedImage<TextStyle>>, TextStyle>> vsPane = new VirtualizedScrollPane<>(area);
+        //TextArea textAreaCreator = new TextArea();
         VBox vbox = new VBox();
-        VBox.setVgrow(vsPane, Priority.ALWAYS);
-        vbox.getChildren().addAll(panel1, panel2, vsPane);
+        //VBox.setVgrow(vsPane, Priority.ALWAYS);
+        vbox.getChildren().addAll(panel1, panel2);
         return vbox;
         /*
         Scene scene = new Scene(vbox, 600, 400);
