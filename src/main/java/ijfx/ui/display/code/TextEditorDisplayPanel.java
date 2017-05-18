@@ -19,81 +19,59 @@
  */
 package ijfx.ui.display.code;
 
+import ijfx.ui.display.image.AbstractFXDisplayPanel;
 import ijfx.ui.display.image.FXDisplayPanel;
-import ijfx.ui.display.image.FXImageDisplay;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import org.fxmisc.richtext.CodeArea;
 import org.scijava.display.Display;
 import org.scijava.display.TextDisplay;
 import org.scijava.plugin.Plugin;
-import org.scijava.ui.viewer.DisplayWindow;
-import org.scijava.ui.viewer.text.TextDisplayPanel;
 
 /**
  *
  * @author florian
  */
 @Plugin(type = FXDisplayPanel.class)
-public class TextEditorDisplayPanel extends AnchorPane implements TextDisplayPanel, FXDisplayPanel<FXImageDisplay>  {
+public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<TextDisplay>  {
 
-    @Override
-    public void append(String string) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void clear() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public TextDisplay getDisplay() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public DisplayWindow getWindow() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void redoLayout() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void setLabel(String string) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void redraw() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void view(DisplayWindow window, FXImageDisplay display) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean canView(Display<?> display) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    AnchorPane root;
+    BorderPane borderPane;
+    
+    public TextEditorDisplayPanel(Class<? extends Display> supportedClass) {
+        super(TextDisplay.class);
     }
 
     @Override
     public void pack() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        borderPane = new BorderPane();
+        root = new AnchorPane();
+        root.getChildren().add(borderPane);
+        TextArea textAreaCreator = new TextArea();
+        CodeArea codeArea = textAreaCreator.getCodeArea();
+        borderPane.setCenter(codeArea);
+
     }
 
     @Override
     public Pane getUIComponent() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.root;
     }
 
     @Override
-    public void display(FXImageDisplay t) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void redoLayout() {
     }
+
+    @Override
+    public void setLabel(String string) {
+    }
+
+    @Override
+    public void redraw() {
+    }
+
     
 }

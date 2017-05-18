@@ -19,8 +19,6 @@
  */
 package ijfx.ui.display.code;
 
-import net.imagej.Data;
-import org.scijava.display.AbstractDisplay;
 import org.scijava.display.DefaultTextDisplay;
 import org.scijava.display.Display;
 import org.scijava.log.LogService;
@@ -33,16 +31,19 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = Display.class)
 public class TextEditorDisplay extends DefaultTextDisplay{
     public TextEditorDisplay() {
+        //super(TextDisplay.class);
    }
 
 
     @Override
     public LogService log() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println("on passe ici");
+        LogService logService = new LogService();
+        return logService;
     }
 
     @Override
     public String getIdentifier() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return ("no identifier");
     }
 }

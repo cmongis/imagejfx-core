@@ -19,19 +19,17 @@
  */
 package ijfx.ui.display.code;
 
-import ijfx.ui.display.image.AbstractFXDisplayViewer;
+import ijfx.core.postprocessor.DataDisplayPostprocessor;
 import org.scijava.display.TextDisplay;
-import org.scijava.plugin.Plugin;
-import org.scijava.ui.viewer.DisplayViewer;
 
 /**
  *
  * @author florian
  */
+public class TextDisplayPostprocessor extends DataDisplayPostprocessor{
 
-@Plugin(type = DisplayViewer.class)
-public class TextEditorDisplayViewer extends AbstractFXDisplayViewer<TextDisplay> {
-    public TextEditorDisplayViewer() {
+    public TextDisplayPostprocessor(Class<?> type) {
         super(TextDisplay.class);
     }
+    
 }
