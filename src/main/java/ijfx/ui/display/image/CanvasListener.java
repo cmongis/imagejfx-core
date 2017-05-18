@@ -67,7 +67,7 @@ public class CanvasListener {
         
         double percent = 100 * display.getCanvas().getZoomFactor();
         
-        if (event.getDeltaY() > 0) {
+        if (event.getDeltaY() < 0) {
             percent-=5;
            
 
@@ -75,14 +75,18 @@ public class CanvasListener {
             percent+=5;
         }
         
+        double eventX = event.getX();
+        double eventY = event.getY();
+        
         IntCoords center = new IntCoords(toInt(event.getX()),toInt(event.getY()));
         
-        RealCoords centerReal = display.getCanvas().panelToDataCoords(center);
+        RealCoords centerReal = display.getCanvas().getPanCenter();//display.getCanvas().panelToDataCoords(center);
+        
         
         zoomService.zoomSet(display, percent, centerReal.x, centerReal.y);
         
         
-        ImageCanvasUtils.checkPosition(display.getCanvas());
+        //ImageCanvasUtils.checkPosition(display.getCanvas());
         display.update();
     }
 

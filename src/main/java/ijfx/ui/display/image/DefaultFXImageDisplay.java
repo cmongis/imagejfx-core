@@ -47,7 +47,6 @@ import org.scijava.plugin.Plugin;
  * @author cyril
  */
 @Plugin(type = Display.class, priority = Priority.HIGH_PRIORITY)
-
 public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImageDisplay {
 
     /*
