@@ -36,7 +36,7 @@ import org.scijava.plugin.Parameter;
  *
  * @author cyril
  */
-public class ControlableProperty<R, T> extends ObjectPropertyBase<T> {
+public class SuppliedProperty<R, T> extends ObjectPropertyBase<T> {
 
     private Getter<T> getter;
     private Setter<T> setter;
@@ -47,11 +47,11 @@ public class ControlableProperty<R, T> extends ObjectPropertyBase<T> {
     @Parameter
     private EventService eventService;
 
-    public ControlableProperty() {
+    public SuppliedProperty() {
         beanProperty().addListener(this::onBeanChanged);
     }
 
-    public ControlableProperty<R, T> setBean(R bean) {
+    public SuppliedProperty<R, T> setBean(R bean) {
         beanProperty.setValue(bean);
         return this;
     }
@@ -60,12 +60,12 @@ public class ControlableProperty<R, T> extends ObjectPropertyBase<T> {
         return beanProperty;
     }
 
-    public ControlableProperty<R, T> bindBeanTo(ObservableValue<R> property) {
+    public SuppliedProperty<R, T> bindBeanTo(ObservableValue<R> property) {
         beanProperty.bind(property);
         return this;
     }
 
-    public ControlableProperty<R, T> inject(Context context) {
+    public SuppliedProperty<R, T> inject(Context context) {
         context.inject(this);
         return this;
     }
@@ -90,29 +90,29 @@ public class ControlableProperty<R, T> extends ObjectPropertyBase<T> {
 
     }
 
-    public ControlableProperty<R, T> setSilently(T t) {
+    public SuppliedProperty<R, T> setSilently(T t) {
         super.setValue(t);
         return this;
     }
 
-    public ControlableProperty<R, T> setGetter(Getter<T> g) {
+    public SuppliedProperty<R, T> setGetter(Getter<T> g) {
         this.getter = g;
-        getValue();
+        
         return this;
     }
 
-    public ControlableProperty<R, T> setCaller(Callback<R, T> callback) {
+    public SuppliedProperty<R, T> setCaller(Callback<R, T> callback) {
         doubleGetter = callback;
-        getValue();
+        
         return this;
     }
 
-    public ControlableProperty<R, T> setBiSetter(BiConsumer<R, T> biConsumer) {
+    public SuppliedProperty<R, T> setBiSetter(BiConsumer<R, T> biConsumer) {
         doubleSetter = biConsumer;
         return this;
     }
 
-    public ControlableProperty<R, T> setSetter(Setter<T> s) {
+    public SuppliedProperty<R, T> setSetter(Setter<T> s) {
         this.setter = s;
         return this;
     }
@@ -158,6 +158,10 @@ public class ControlableProperty<R, T> extends ObjectPropertyBase<T> {
             }
         }
 
+    }
+    
+    public void refresh() {
+        checkFromGetter();
     }
 
 }

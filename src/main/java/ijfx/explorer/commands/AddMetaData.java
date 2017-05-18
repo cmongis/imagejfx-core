@@ -46,7 +46,9 @@ public class AddMetaData extends ContextCommand{
     
     @Override
     public void run() {
-        display.getSelected().forEach(item->{
+        display
+                .getSelected()
+                .forEach(item->{
             item.getMetaDataSet().put(key, MetaData.create(key, value));
         });
     }
