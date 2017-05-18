@@ -28,10 +28,15 @@ import ijfx.ui.main.ImageJFX;
 import ijfx.ui.widgets.ImageDisplayAdjuster;
 import ijfx.ui.widgets.LUTSwitchButton;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.Observable;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
@@ -43,7 +48,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 import mongis.utils.FXUtilities;
+import mongis.utils.transition.TransitionBinding;
 import net.imagej.display.DatasetView;
 import net.imagej.display.ImageCanvas;
 import net.imagej.display.ImageDisplay;
@@ -51,6 +58,7 @@ import net.imagej.display.ImageDisplayService;
 import net.imagej.ui.viewer.image.ImageDisplayPanel;
 import net.imglib2.display.screenimage.awt.ARGBScreenImage;
 import net.imglib2.type.numeric.RealType;
+import org.reactfx.EventStreams;
 import org.scijava.Context;
 import org.scijava.display.Display;
 import org.scijava.plugin.Parameter;
@@ -118,7 +126,22 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
 
     private WritableImage buffer;
 
-    Logger logger = ImageJFX.getLogger();
+    private static final Logger logger = ImageJFX.getLogger();
+
+    private ImageDisplayAdjuster adjuster;
+
+    private boolean packed = false;
+
+    private final List<AxisSlider> axisSliderList = new ArrayList<>();
+
+    /*
+        Properties
+     */
+    private final BooleanProperty showTopPanel = new SimpleBooleanProperty(true);
+
+    private final BooleanProperty showBottomPanel = new SimpleBooleanProperty(true);
+
+    private final BooleanProperty anyAxisSliderInUse = new SimpleBooleanProperty(true);
 
     public ImageDisplayPanelFX() {
 
@@ -127,6 +150,13 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
 
             widthProperty().addListener(this::onPanelSizeChanged);
             heightProperty().addListener(this::onPanelSizeChanged);
+
+            Rectangle clip = new Rectangle();
+            clip.widthProperty().bind(widthProperty());
+            clip.heightProperty().bind(heightProperty().add(-5));
+
+            getStyleClass().add("image-display-pane");
+            setClip(clip);
 
         } catch (IOException ex) {
             logger.log(Level.SEVERE, null, ex);
@@ -137,7 +167,38 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
     @Override
     public void pack() {
 
-        redoLayout();
+        // abort if it's been already pack
+        if (packed) {
+            return;
+        }
+
+        showBottomPanel
+                .bind(
+                        anyAxisSliderInUse
+                                .or(bottomPane.hoverProperty()));
+
+        pixelValueLabel.setText("For now nothing to show but it's coming");
+        
+        new TransitionBinding<Number>()
+                .bindOnFalse(sliderVBox.heightProperty())
+                .setOnTrue(0.0)
+                .bind(showBottomPanel, bottomPane.translateYProperty());
+
+        new TransitionBinding<Number>()
+                .bindOnFalse(sliderVBox.heightProperty())
+                .setOnTrue(0.0)
+                .bind(showBottomPanel, bottomPane.translateYProperty());
+
+        /*
+            Creating fixed UI elements and properties
+         */
+        //.addButton("Split channels", FontAwesomeIcon.COPY, "Split all the channels into separate images", SeparateChannels.class)
+        //.addButton("Convert to RGB", FontAwesomeIcon.CIRCLE, "Use the current channels settings and create a RGB image.", ChannelMerger.class)
+        //.addAction("Spread the settings of this channel...",FontAwesomeIcon.UPLOAD,"Copy the color settings of this channel and apply it to all open images.",SpreadCurrentChannelSettings.class)
+        //.addAction("Spread all channels settings...",FontAwesomeIcon.UPLOAD,"Take the color settings of each channels and apply it to all opened images.",SpreadChannelSettings.class);;
+        // adjuster.datasetViewProperty().setValue((DefaultFXImageDisplay)display);
+        packed = true;
+
     }
 
     private int getViewPortWidth() {
@@ -165,30 +226,70 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
 
     @Override
     public void redoLayout() {
-        canvas = new Canvas();
 
-        new CanvasListener(display, canvas);
+        // removing the adjuster if exists
+        if (adjuster != null) {
+            anchorPane.getChildren().remove(adjuster);
+        }
 
-        stackPane.getChildren().add(canvas);
-        toolService.setActiveTool(toolService.getTool(HandTool.class));
-        redraw();
-
-       ImageDisplayAdjuster adjuster = new ImageDisplayAdjuster(context)
+        // creating a new one
+        adjuster = new ImageDisplayAdjuster(context)
                 .addButton("Auto contrast", FontAwesomeIcon.MAGIC, "Calculate the min and max of each channel and adjust their display range accordingly", AutoContrast.class);
-        //.addButton("Split channels", FontAwesomeIcon.COPY, "Split all the channels into separate images", SeparateChannels.class)
-        //.addButton("Convert to RGB", FontAwesomeIcon.CIRCLE, "Use the current channels settings and create a RGB image.", ChannelMerger.class)
 
-        //.addAction("Spread the settings of this channel...",FontAwesomeIcon.UPLOAD,"Copy the color settings of this channel and apply it to all open images.",SpreadCurrentChannelSettings.class)
-        //.addAction("Spread all channels settings...",FontAwesomeIcon.UPLOAD,"Take the color settings of each channels and apply it to all opened images.",SpreadChannelSettings.class);;
-       // adjuster.datasetViewProperty().setValue((DefaultFXImageDisplay)display);
+        // adding it to the AnchorPane
         anchorPane.getChildren().add(1, adjuster);
         anchorPane.setTopAnchor(adjuster, 0d);
         anchorPane.setLeftAnchor(adjuster, 0d);
         anchorPane.setRightAnchor(adjuster, 0d);
-        
-        adjuster.datasetViewProperty().setValue(display);
-        
-        createColorButtons();
+
+        // creating the binding that will display it
+        new TransitionBinding<Number>()
+                .bindOnFalse(adjuster.heightProperty().multiply(-1.1))
+                .setOnTrue(-2)
+                .bind(showTopPanel, adjuster.translateYProperty());
+
+        // binding the showTopPanel to it
+        showTopPanel.bind(Bindings.or(adjuster.inUseProperty(), topBorderPane.hoverProperty()));
+
+        // tying the new adjuster to the display
+        adjuster.imageDisplayProperty().setValue(display);
+
+        // creating a new canvas
+        canvas = new Canvas();
+
+        new CanvasListener(display, canvas);
+
+        // adding the canvas
+        stackPane.getChildren().add(canvas);
+        toolService.setActiveTool(toolService.getTool(HandTool.class));
+
+        // redrawing
+        redraw();
+
+        // creating the channel switches
+        createChannelSwitchs();
+
+        resetAxisSliders();
+
+    }
+
+    private void resetAxisSliders() {
+
+        // reseting the list
+        sliderVBox.getChildren().clear();
+        axisSliderList.clear();
+
+        // creating the sliders
+        for (int i = 2; i != display.numDimensions(); i++) {
+
+            AxisSlider slider = new AxisSlider(display, i);
+
+            sliderVBox.getChildren().add(slider);
+            axisSliderList.add(slider);
+            EventStreams
+                    .valuesOf(slider.usedProperty())
+                    .feedTo(anyAxisSliderInUse::setValue);
+        }
 
     }
 
@@ -203,7 +304,7 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
 
     @Override
     public void setLabel(String s) {
-        Platform.runLater(() -> pixelValueLabel.setText(s));
+        Platform.runLater(() -> infoLabel.setText(s));
     }
 
     @Override
@@ -213,6 +314,8 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
 
             updateViewPort();
             useIjfxRender();
+            axisSliderList
+                    .forEach(AxisSlider::refresh);
         });
     }
 
@@ -260,7 +363,7 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
         final ARGBScreenImage screenImage = view.getScreenImage();
 
         WritableImage buffer = getBuffer(screenImage);
-
+        System.out.println("screenImage Width");
         System.out.println(screenImage.dimension(0));
 
         t.elapsed("getting screen image");
@@ -275,13 +378,17 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
         ImageCanvas viewport = getDisplay().getCanvas();
 
         IntCoords panOffset = viewport.getPanOffset();
-
+        
         final double sx = panOffset.x;
         final double sy = panOffset.y;
 
+         
+        
         final double sw = 1.0 * viewport.getViewportWidth() / viewport.getZoomFactor();
         final double sh = 1.0 * viewport.getViewportHeight() / viewport.getZoomFactor();
 
+        System.out.println(String.format("sx = %.0f, sy = %.0f, sw = %.0f, sh =%.0f",sx,sy,sw,sh));
+        
         // the target image (which is the canvas itself
         final double tx = 0;
         final double ty = 0;
@@ -346,8 +453,8 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
     private DatasetView getDatasetview() {
         return imageDisplayService.getActiveDatasetView(display);
     }
-    
-    private void createColorButtons() {
+
+    private void createChannelSwitchs() {
 
         buttonHBox.getChildren().clear();
 
@@ -355,7 +462,7 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
 
             for (int i = 1; i != getDatasetview().getChannelCount() + 1; i++) {
                 LUTSwitchButton button = new LUTSwitchButton(display);
-                
+
                 context.inject(button);
                 final int channel = i - 1;
                 button.imageDisplayProperty().setValue(display);

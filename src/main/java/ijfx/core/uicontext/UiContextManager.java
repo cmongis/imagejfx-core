@@ -79,6 +79,7 @@ public interface UiContextManager {
     
     public default UiContextManager toggleContext(String context, boolean toggle) {
         
+        if(toggle && isCurrent(context)) return this;
         if(toggle) enter(context);
         else leave(context);
         return this;

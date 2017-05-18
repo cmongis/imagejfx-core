@@ -156,14 +156,23 @@ ImageJ-FX uses the ImageJ API for displaying any type of object. In order to dis
 
 In order to create your own display, the easiest is to use Abstract classes provided by both ImageJ and ImageJ-FX. They implement most of the methods and logic necessary for each type of classes.
 
-First, create a display that will hold your data : 
+First, create a display that will hold your data and act as a model for the view.
 
 ~~~java 
 @Plugin(type = Display.class)
-public class DataDisplay extends AbstractDisplay() {
-	public DataDisplay() {
-		super(Data.class);
+public class MyDataDisplay extends AbstractDisplay() {
+	public MyDataDisplay() {
+		super(MyData.class);
    }
+   
+   // methods that should
+   // be called in order
+   // to modify the way the object
+   // is viewed.
+   public void setColor(Color color) {
+   	 ...
+   }
+   
 }
 ~~~
 
@@ -172,11 +181,14 @@ Then, create a DisplayViewer that inherit from ImageJFX **FXDisplayViewer** help
 ~~~java 
 
 @Plugin(type = DisplayViewer.class)
-public class DataDisplayViewer extends FXDisplayViewer<DataDisplay>{
+public class MyDataDisplayViewer extends FXDisplayViewer<MyDataDisplay>{
 	 // The display viewer will be associated
 	 // to the Data type.
-    public MetaDataOwnerDisplayViewer() {
-        super(DataDisplay.class);
+    public MyDataDisplayViewer() {
+    
+    		// put here the type of Display
+    		// the DisplayViewer should handle
+        super(MyDataDisplay.class);
     }
 }
 ~~~
@@ -186,13 +198,22 @@ Once done, the only missing elements is the DisplayPanel and the DisplayWindows.
 ~~~java
 
 @Plugin(type = FXDisplayPanel.class)
-public class DataDisplayPanel extends AbstractFXDisplayPanel<DataDisplay> {
+public class MyDataDisplayPanel extends AbstractFXDisplayPanel<DataDisplay> {
   
 
     private Pane somePane;
     
-    public MetaDataOwnerDisplayPanel() {
-        super(DataDisplay.class);
+    public MyDataDisplayPanel() {
+    		/* 
+    			Again, put here
+    		   the kind of Display 
+    		   the DisplayPanel should handle.
+    		
+    		 	Don't create any UI element !
+    		 	Create them in the pack method.
+    		*/
+    		
+        super(MyDataDisplay.class);
     }
     
     @Override

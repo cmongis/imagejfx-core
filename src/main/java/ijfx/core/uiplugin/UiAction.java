@@ -17,45 +17,22 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.explorer.datamodel;
+package ijfx.core.uiplugin;
+
+import org.scijava.plugin.Plugin;
+import org.scijava.plugin.SciJavaPlugin;
+import org.scijava.plugin.TypedPlugin;
 
 /**
  *
  * @author cyril
  */
-public class DefaultTag implements Tag {
 
-    final String name;
 
-    public DefaultTag(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public int compareTo(Tag o) {
-        return name.compareTo(o.getName());
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (object instanceof Tag) {
-            return ((Tag) object).getName().equals(getName());
-        }
-
-        if (object instanceof String) {
-            ((String) object).equals(getName());
-        }
-
-        return false;
-    }
-
-    @Override
-    public String toString() {
-        return name;
-    }
+public interface UiAction<T> extends SciJavaPlugin{
+    
+    void run(T t);
+    
+    boolean canHandle(Class<?> object);
+    
 }
