@@ -22,6 +22,7 @@ package ijfx.ui.service;
 import ijfx.core.IjfxService;
 import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataOwner;
+import ijfx.explorer.datamodel.Tag;
 import ijfx.explorer.datamodel.Taggable;
 import java.util.List;
 
@@ -36,14 +37,14 @@ public interface AnnotationService extends IjfxService{
      * Adds a tag to a taggable object
      * @param taggable 
      */
-    public void addTag(Taggable taggable);
+    public void addTag(Taggable taggable, Tag tag);
     
     
     /**
      * remove a tag from a taggable object
      * @param taggable 
      */
-    public void removeTag(Taggable taggable);
+    public void removeTag(Taggable taggable, Tag tag);
     
     /**
      * Add a metadata to a MetaDataOwner

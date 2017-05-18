@@ -34,17 +34,16 @@ import org.scijava.service.AbstractService;
  */
 public class DefaultAnnotationService extends AbstractService implements AnnotationService {
     
-    Tag tag;
 
     @Override
-    public void addTag(Taggable taggable) {
+    public void addTag(Taggable taggable, Tag tag) {
         taggable.addTag(tag);
         
         
     }
 
     @Override
-    public void removeTag(Taggable taggable) {
+    public void removeTag(Taggable taggable, Tag tag) {
         taggable.deleteTag(tag);
     }
 

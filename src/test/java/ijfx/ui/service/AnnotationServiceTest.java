@@ -22,7 +22,10 @@ package ijfx.ui.service;
 import ijfx.core.IjfxTest;
 import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataOwner;
+import ijfx.explorer.datamodel.DefaultTag;
+import ijfx.explorer.datamodel.Tag;
 import ijfx.explorer.datamodel.Taggable;
+import ijfx.explorer.views.GenerateDummyExplorables;
 import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -53,28 +56,22 @@ public class AnnotationServiceTest extends IjfxTest{
     @Test
     public void testAddTag() {
         System.out.println("addTag");
-        Taggable taggable = null;
-        /*
-        AnnotationService instance = new AnnotationService();
-        instance.addTag(taggable);
-        */
-        Assert.assertNotNull("Testing preinjection", annotationService);
-        //fail("The test case is a prototype.");
+        Taggable taggable  = (Taggable) new GenerateDummyExplorables();
+        Tag tag = new DefaultTag("prout");
+        annotationService.addTag(taggable, tag);
+        Assert.assertNotNull("Testing tag creation", tag);
     }
 
     /**
-     * Test of removeTag method, of class AnnotationService.
+     * Test of removeTag method, of class AnnotationServic
      */
     @Test
     public void testRemoveTag() {
         System.out.println("removeTag");
-        Taggable taggable = null;
-        /*
-        AnnotationService instance = new AnnotationServiceImpl();
-        instance.removeTag(taggable);
-        */
-        // TODO review the generated test code and remove the default call to fail.
-        Assert.assertNotNull("Testing preinjection", annotationService);
+        Taggable taggable  = (Taggable) new GenerateDummyExplorables();
+        Tag tag = new DefaultTag("prout");
+        annotationService.removeTag(taggable, tag);
+        Assert.assertNull("Testing preinjection", tag);
     }
 
     /**
