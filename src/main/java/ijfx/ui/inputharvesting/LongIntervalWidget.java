@@ -21,7 +21,7 @@ package ijfx.ui.inputharvesting;
 
 
 import ijfx.core.datamodel.LongInterval;
-import ijfx.core.property.ControlableProperty;
+import ijfx.core.property.SuppliedProperty;
 import javafx.beans.Observable;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -65,22 +65,22 @@ public class LongIntervalWidget extends AbstractFXInputWidget<LongInterval> {
 
         
         // initializing the properties
-        Property<Number> minValueProperty = new ControlableProperty<LongInterval, Number>()
+        Property<Number> minValueProperty = new SuppliedProperty<LongInterval, Number>()
                 .setCaller(LongInterval::getMinValue)
                 .setBiSetter(this::setMinValue)
                 .bindBeanTo(interval);
 
-        Property<Number> maxValueProperty = new ControlableProperty<LongInterval, Number>()
+        Property<Number> maxValueProperty = new SuppliedProperty<LongInterval, Number>()
                 .setCaller(LongInterval::getMaxValue)
                 .setBiSetter(this::setMaxValue)
                 .bindBeanTo(interval);
 
-        Property<Number> highValueProperty = new ControlableProperty<LongInterval, Number>()
+        Property<Number> highValueProperty = new SuppliedProperty<LongInterval, Number>()
                 .setCaller(LongInterval::getHighValue)
                 .setBiSetter(this::setHighValue)
                 .bindBeanTo(interval);
 
-        Property<Number> lowValueProperty = new ControlableProperty<LongInterval, Number>()
+        Property<Number> lowValueProperty = new SuppliedProperty<LongInterval, Number>()
                 .setCaller(LongInterval::getLowValue)
                 .setBiSetter(this::setLowValue)
                 .bindBeanTo(interval);

@@ -29,13 +29,12 @@ import org.scijava.widget.InputPanel;
  * @author cyril
  */
 public class WorkflowStepWidgetModel extends DefaultWidgetModel {
-    
+
     final WorkflowStep step;
 
-    
     final String parameterName;
-    
-    public WorkflowStepWidgetModel(Context context,WorkflowStep step,String parameter,InputPanel<?,?> panel) { 
+
+    public WorkflowStepWidgetModel(Context context, WorkflowStep step, String parameter, InputPanel<?, ?> panel) {
         super(context, panel, step.getModule(), step.getModule().getInfo().getInput(parameter), new ArrayList<>());
         this.step = step;
         this.parameterName = parameter;
@@ -44,20 +43,20 @@ public class WorkflowStepWidgetModel extends DefaultWidgetModel {
 
     @Override
     public Object getValue() {
-        
-        if(step.getParameters().get(parameterName) == null) {
+
+        if (step.getParameters().get(parameterName) == null) {
             return super.getValue();
         }
         return step.getParameters().get(parameterName);
     }
-  
+
     @Override
     public void setValue(Object object) {
-        super.setValue(object);
-        step.getParameters().put(parameterName, object);
+        if (step != null) {
+            super.setValue(object);
+
+            step.getParameters().put(parameterName, object);
+        }
     }
-    
-    
-    
-    
+
 }
