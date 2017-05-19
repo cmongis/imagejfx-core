@@ -26,6 +26,7 @@ import ijfx.core.metadata.MetaDataSet;
 import ijfx.core.metadata.MetaDataSetUtils;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -50,13 +51,18 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
     //LinkedHashSet<String> priority = new LinkedHashSet();
     MetaDataKeyPrioritizer priority = new MetaDataKeyPrioritizer(new String[0]);
 
-    
+    List<TableColumn<T,?>> additionalColumns = new ArrayList<>();
     
     
     public MetaDataOwnerHelper(TableView<T> tableView) {
         this.tableView = tableView;
     }
 
+    public void addAdditionalColumn(TableColumn<T,?> column) {
+        this.additionalColumns.add(column);
+        this.tableView.getColumns().add(column);
+    }
+    
     public void setItem(List<? extends T> mList) {
         tableView.getItems().clear();
         tableView.getItems().addAll(mList);
@@ -104,7 +110,7 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
     }
 
     private void setColumnNumber(Integer number) {
-        int actualSize = tableView.getColumns().size();
+        int actualSize = tableView.getColumns().size() - additionalColumns.size();
         System.out.println(String.format("Changing the number of column from %d to %d", actualSize, number));
 
         if (number == 0) {
@@ -119,7 +125,7 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
         if (actualSize > number) {
             tableView.getColumns().removeAll(tableView.getColumns().subList(number - 1, actualSize - 1));
         } else {
-            tableView.getColumns().addAll(IntStream
+            tableView.getColumns().addAll(0,IntStream
                     .range(0, number - actualSize)
                     .mapToObj(i -> generateColumn(""))
                     .collect(Collectors.toList()));

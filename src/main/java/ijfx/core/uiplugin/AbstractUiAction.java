@@ -17,45 +17,29 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.explorer.datamodel;
+package ijfx.core.uiplugin;
 
 /**
  *
  * @author cyril
  */
-public class DefaultTag implements Tag {
+public abstract class AbstractUiAction<T> implements UiAction<T>{
 
-    final String name;
+    
+    private final Class<?> type;
 
-    public DefaultTag(String name) {
-        this.name = name;
+    public AbstractUiAction(Class<?> type) {
+        this.type = type;
     }
+    
+    
+   
 
     @Override
-    public String getName() {
-        return name;
+    public boolean canHandle(Class object) {
+        if(object == null) return false;
+        return object.getClass().isAssignableFrom(type);
     }
 
-    @Override
-    public int compareTo(Tag o) {
-        return name.compareTo(o.getName());
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (object instanceof Tag) {
-            return ((Tag) object).getName().equals(getName());
-        }
-
-        if (object instanceof String) {
-            ((String) object).equals(getName());
-        }
-
-        return false;
-    }
-
-    @Override
-    public String toString() {
-        return name;
-    }
+    
 }

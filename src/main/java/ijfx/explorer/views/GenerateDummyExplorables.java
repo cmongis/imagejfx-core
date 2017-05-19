@@ -21,8 +21,9 @@ package ijfx.explorer.views;
 
 import ijfx.core.metadata.MetaData;
 import ijfx.explorer.ExplorableList;
+import ijfx.explorer.datamodel.Explorable;
+import ijfx.explorer.datamodel.Tag;
 import ijfx.explorer.wrappers.MetaDataSetExplorerWrapper;
-import ijfx.ui.test.DummyMetaData;
 import java.util.Random;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.scijava.ItemIO;
@@ -54,7 +55,10 @@ public class GenerateDummyExplorables extends ContextCommand{
             MetaData m3 = MetaData.create("Random double 1", new Random().nextDouble());
             MetaData m4 = MetaData.create("Random double 2", new Random().nextDouble());
             
-            output.add(new MetaDataSetExplorerWrapper(name,m1,m2,m3,m4));
+            Explorable explorable = new MetaDataSetExplorerWrapper(name,m1,m2,m3,m4);
+            explorable.addTag(Tag.create(RandomStringUtils.random(3,true,false)));
+            explorable.addTag(Tag.create(RandomStringUtils.random(3,true,false)));
+            output.add(explorable);
             
             
         }

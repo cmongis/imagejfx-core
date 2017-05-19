@@ -28,44 +28,45 @@ import org.scijava.util.RealCoords;
  * @author cyril
  */
 public class ImageCanvasUtils {
-    
+
     public static void checkPosition(ImageCanvas viewport) {
-            
+
         IntCoords offset = viewport.getPanOffset();
-        
-        double dx,dy;
-        
-        
+
+        double dx, dy;
+
         dx = offset.x < 0 ? -offset.x : 0;
         dy = offset.y < 0 ? -offset.y : 0;
         
-        if(dx != 0 || dy != 0)
-        viewport.pan(new RealCoords(dx,dy));
+        dx /= viewport.getZoomFactor();
+        dy /= viewport.getZoomFactor();
         
+        if (dx != 0 || dy != 0) {
+            viewport.pan(new RealCoords(dx, dy));
+        }
+
         offset = viewport.getPanOffset();
-        
-        IntCoords rightBottomOnPane = new IntCoords(offset.x + viewport.getViewportWidth(), offset.y+viewport.getViewportHeight());
-        
+
+        IntCoords rightBottomOnPane = new IntCoords(offset.x + viewport.getViewportWidth(), offset.y + viewport.getViewportHeight());
+
         RealCoords rightBottomOnImage = viewport.panelToDataCoords(rightBottomOnPane);
-        
+
         // calculating the difference bettween the viewport edge on the image
         dx = viewport.getDisplay().dimension(0) - rightBottomOnImage.x;
         dy = viewport.getDisplay().dimension(1) - rightBottomOnImage.y;
-        System.out.println("offset : "+offset.x);
-        System.out.println("dx : "+ dx);
-        
+        System.out.println("offset : " + offset.x);
+        System.out.println("dx : " + dx);
+
         dx = dx < 0 ? dx : 0;
         dy = dy < 0 ? dy : 0;
-       
-        if(dx <0 || dy < 0)
-        viewport.pan(new RealCoords(dx,dy));
-        
-        
-        
-        
-    }
-    
-   
 
-    
+        dx /= viewport.getZoomFactor();
+        dy /= viewport.getZoomFactor();
+        
+        if (dx < 0 || dy < 0) {
+           viewport.pan(new RealCoords(dx, dy));
+        }
+
+    }
+
 }

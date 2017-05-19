@@ -17,45 +17,40 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.explorer.datamodel;
+package ijfx.ui.display.image.actions;
+
+import ijfx.core.uiplugin.AbstractUiAction;
+import ijfx.core.uiplugin.UiAction;
+import ijfx.ui.display.image.AxisSlider;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.ui.UIService;
 
 /**
  *
  * @author cyril
  */
-public class DefaultTag implements Tag {
 
-    final String name;
+@Plugin(type = UiAction.class,label = "Isolate this plane",iconPath="fa:")
+public class IsolateChannelAction extends AbstractUiAction<AxisSlider> {
 
-    public DefaultTag(String name) {
-        this.name = name;
+    @Parameter
+    UIService uiService;
+
+    public IsolateChannelAction() {
+        super(AxisSlider.class);
     }
-
+    
+    
+    
     @Override
-    public String getName() {
-        return name;
+    public void run(AxisSlider t) {
+        
+        uiService.showDialog("I lied !");
+
     }
 
-    @Override
-    public int compareTo(Tag o) {
-        return name.compareTo(o.getName());
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (object instanceof Tag) {
-            return ((Tag) object).getName().equals(getName());
-        }
-
-        if (object instanceof String) {
-            ((String) object).equals(getName());
-        }
-
-        return false;
-    }
-
-    @Override
-    public String toString() {
-        return name;
-    }
+    
+    
+   
 }
