@@ -31,7 +31,7 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = Display.class)
 public class TextEditorDisplay extends DefaultTextDisplay{
     public TextEditorDisplay() {
-        //super(TextDisplay.class);
+        super();
    }
 
 
