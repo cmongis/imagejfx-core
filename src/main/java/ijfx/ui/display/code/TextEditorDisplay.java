@@ -19,6 +19,7 @@
  */
 package ijfx.ui.display.code;
 
+import org.scijava.Priority;
 import org.scijava.display.DefaultTextDisplay;
 import org.scijava.display.Display;
 import org.scijava.log.LogService;
@@ -28,19 +29,12 @@ import org.scijava.plugin.Plugin;
  *
  * @author florian
  */
-@Plugin(type = Display.class)
+@Plugin(type = Display.class, priority = Priority.HIGH_PRIORITY)
 public class TextEditorDisplay extends DefaultTextDisplay{
     public TextEditorDisplay() {
         super();
    }
 
-
-    @Override
-    public LogService log() {
-        System.out.println("on passe ici");
-        LogService logService = new LogService();
-        return logService;
-    }
 
     @Override
     public String getIdentifier() {
