@@ -34,7 +34,7 @@ public class CodeFormat extends AbstractTextFormat {
 
     
     private static final List<String> FORMATS = Arrays
-            .asList("py","js","json");
+            .asList("py","js","json","java");
     
     @Override
     public List<String> getExtensions() {
