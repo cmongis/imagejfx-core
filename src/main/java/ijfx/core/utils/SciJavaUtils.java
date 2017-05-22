@@ -19,6 +19,7 @@
  */
 package ijfx.core.utils;
 
+import ijfx.ui.display.tool.LineTool;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.SciJavaPlugin;
 
@@ -41,5 +42,9 @@ public class SciJavaUtils {
     public static String getIconPath(SciJavaPlugin plugin) {
         return plugin.getClass().getAnnotation(Plugin.class).iconPath();
         
+    }
+
+    public static String getDescription(SciJavaPlugin plugin) {
+        return plugin.getClass().getAnnotation(Plugin.class).description();
     }
 }
