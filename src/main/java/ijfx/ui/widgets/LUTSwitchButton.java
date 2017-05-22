@@ -99,7 +99,7 @@ public class LUTSwitchButton extends Button {
 
     public LUTSwitchButton(FXImageDisplay display) {
         super();
-
+        display.getContext().inject(this);
         rectangle.getStyleClass().add("rectangle");
         selector.getStyleClass().add("selector");
         selector.setWidth(RECTANGLE_SIZE);
