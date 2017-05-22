@@ -33,6 +33,9 @@ import org.apache.commons.lang3.ArrayUtils;
  */
 public interface FXImageDisplay extends ImageDisplay {
 
+    
+    int getChannelNumber();
+    
     /*
         Current LUT configuration
      */
