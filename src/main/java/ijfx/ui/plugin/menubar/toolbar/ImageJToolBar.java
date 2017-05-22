@@ -86,6 +86,7 @@ public class ImageJToolBar extends VBox implements UiPlugin {
                 .getTools()
                 .stream()
                 .filter(tool->tool.getClass().getSimpleName().contains("Swing") == false)
+                .filter(tool->!tool.isAlwaysActive())
                 .map(this::createButton)
                 .collect(Collectors.toList());
 
