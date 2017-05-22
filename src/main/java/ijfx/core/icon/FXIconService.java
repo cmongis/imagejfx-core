@@ -36,6 +36,8 @@ public interface FXIconService extends IjfxService {
         return getIconAsNode(SciJavaUtils.getIconPath(plugin));
     }
     
+    void registerEquivalent(Class<?> clazz, String fontawesomeId);
+  
     
     
 }

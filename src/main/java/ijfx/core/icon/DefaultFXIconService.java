@@ -21,8 +21,17 @@ package ijfx.core.icon;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import ijfx.core.utils.SciJavaUtils;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.scene.Node;
+import javafx.scene.image.ImageView;
+import org.apache.commons.io.IOUtils;
 import org.scijava.plugin.Plugin;
+import org.scijava.plugin.SciJavaPlugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 
@@ -33,15 +42,77 @@ import org.scijava.service.Service;
 @Plugin(type = Service.class)
 public class DefaultFXIconService extends AbstractService implements FXIconService{
 
+    
+    Map<Class<?>,String> fontawesomeIconEquivalent = new HashMap<>();
+    
+    public void initialize() {
+        
+        
+        try {
+            String toString = IOUtils.toString(getClass().getResourceAsStream("/ijfx/ui/icons/fontawesome_equivalents"), "utf8");
+        
+            for(String line : toString.split("\n")) {
+                
+                String[] split = line.split("=");
+                
+                if(split.length != 2) continue;
+                
+                try {
+                    registerEquivalent(Class.forName(split[0].trim()), split[1].trim());
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(DefaultFXIconService.class.getName()).log(Level.SEVERE, "No class found", ex);
+                }
+                
+            }
+            
+            
+        } catch (IOException ex) {
+            Logger.getLogger(DefaultFXIconService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+    
+    
+    @Override
+    public Node getIconAsNode(SciJavaPlugin plugin) {
+        
+        String menuPath = SciJavaUtils.getIconPath(plugin);
+        
+        if(fontawesomeIconEquivalent.containsKey(plugin.getClass())) {
+            return getIconAsNode("fa:"+fontawesomeIconEquivalent.get(plugin.getClass()));
+        }
+        else if(menuPath.contains("fa:")) {
+            return getIconAsNode(menuPath);
+        }
+        else {
+            return getIconAsNode(plugin.getClass().getResource(menuPath).toExternalForm());
+        }
+        
+    }
+    
     @Override
     public Node getIconAsNode(String iconPath) {
 
         if(iconPath.startsWith("fa:")) {
+            try {
             return new FontAwesomeIconView(FontAwesomeIcon.valueOf(iconPath.substring(3).toUpperCase()));
+            }
+            catch(Exception e) {
+                return new FontAwesomeIconView(FontAwesomeIcon.REMOVE); 
+            }
         }
         else {
-            return new FontAwesomeIconView(FontAwesomeIcon.REMOVE);
+            ImageView imageView = new ImageView(iconPath);
+            imageView.setFitWidth(24);
+            return imageView;
         }
+
+    }
+
+    @Override
+    public void registerEquivalent(Class<?> clazz, String fontawesomeId) {
+
+        fontawesomeIconEquivalent.put(clazz, fontawesomeId);
 
     }
     
