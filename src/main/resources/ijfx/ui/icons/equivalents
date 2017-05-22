@@ -1,0 +1,6 @@
+net.imagej.plugins.tools.WandTool = fa:magic
+net.imagej.plugins.tools.PencilTool = fa:pencil
+net.imagej.plugins.tools.ZoomTool = fa:search
+net.imagej.plugins.tools.PaintBrushTool = fa:paint_brush
+net.imagej.plugins.tools.ArrowTool = fa:long_arrow_right
+net.imagej.plugins.tools.PanTool = fa:hand_paper_alt
