@@ -19,6 +19,7 @@
  */
 package ijfx.ui.display.image;
 
+import java.util.List;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -66,6 +67,19 @@ public class CanvasListener {
         canvas.setOnScroll(this::onScrollEvent);
     }
 
+    private Tool getActiveTool() {
+        return toolService.getActiveTool();
+    }
+
+    private List<Tool> getAlwaysActiveTools() {
+
+        return toolService.getAlwaysActiveTools();
+
+    }
+
+    /*
+        Event handlers
+     */
     private void onScrollEvent(ScrollEvent event) {
 
         double percent = 100 * display.getCanvas().getZoomFactor();
@@ -86,63 +100,101 @@ public class CanvasListener {
 
         zoomService.zoomSet(display, percent, centerReal.x, centerReal.y);
 
-        //ImageCanvasUtils.checkPosition(display.getCanvas());
+       
         display.update();
-    }
-
-    private Tool getActiveTool() {
-        return toolService.getActiveTool();
     }
 
     private void onMousePressed(MouseEvent event) {
 
-        getActiveTool()
-                .onMouseDown(new MsPressedEvent(display, extractInputModifiers(event), toInt(event.getX()), toInt(event.getY()), MsButtonEvent.LEFT_BUTTON, 1, true));
+        onMousePressed(event, getActiveTool());
+
+          getAlwaysActiveTools()
+                .forEach(tool->onMousePressed(event,tool));
+        
+    }
+
+    private void onMousePressed(MouseEvent event, Tool tool) {
+        tool.onMouseDown(new MsPressedEvent(display, extractInputModifiers(event), toInt(event.getX()), toInt(event.getY()), MsButtonEvent.LEFT_BUTTON, 1, true));
 
     }
 
     private void onDragEvent(MouseEvent event) {
 
-        getActiveTool()
-                .onMouseDrag(
-                        new MsDraggedEvent(
-                                display,
-                                extractInputModifiers(event),
-                                toInt(event.getX()),
-                                toInt(event.getY()),
-                                MsButtonEvent.LEFT_BUTTON,
-                                1,
-                                false
-                        )
-                );
+        onDragEvent(event, getActiveTool());
+
+        getAlwaysActiveTools()
+                .forEach(tool->onDragEvent(event,tool));
+        
         event.consume();
     }
 
-    private void onMouseReleased(MouseEvent event) {
-        getActiveTool()
-                .onMouseUp(new MsReleasedEvent(display, extractInputModifiers(event), toInt(event.getX()), toInt(event.getY()), MsButtonEvent.LEFT_BUTTON, 0, true));
+    private void onDragEvent(MouseEvent event, Tool tool) {
+        tool.onMouseDrag(
+                new MsDraggedEvent(
+                        display,
+                        extractInputModifiers(event),
+                        toInt(event.getX()),
+                        toInt(event.getY()),
+                        MsButtonEvent.LEFT_BUTTON,
+                        1,
+                        false
+                )
+        );
     }
 
+    private void onMouseReleased(MouseEvent event) {
+        onMouseReleased(event, getActiveTool());
+        
+          getAlwaysActiveTools()
+                .forEach(tool->onMouseReleased(event,tool));
+        
+    }
+
+    private void onMouseReleased(MouseEvent event, Tool tool) {
+        tool.onMouseUp(new MsReleasedEvent(
+                display,
+                 extractInputModifiers(event),
+                 toInt(event.getX()),
+                 toInt(event.getY()),
+                 MsButtonEvent.LEFT_BUTTON,
+                 0,
+                 true));
+    }
+
+   
+    private void onMouseMoved(MouseEvent event) {
+        onMouseMoved(event,getActiveTool());
+        
+          getAlwaysActiveTools()
+                .forEach(tool->onMouseMoved(event,tool));
+        
+               
+    }
+    private void onMouseMoved(MouseEvent event, Tool tool) {
+        tool.onMouseMove(new MsMovedEvent(display, extractInputModifiers(event), 0, 0));
+    }
+
+      
+      /*
+        Helpers
+      */
+    
+    
     private int toInt(double d) {
         return new Double(d).intValue();
-    }
-
-    private void onMouseMoved(MouseEvent event) {
-        getActiveTool()
-                .onMouseMove(new MsMovedEvent(display,extractInputModifiers(event), 0, 0));
     }
 
     private InputModifiers extractInputModifiers(MouseEvent event) {
 
         return new InputModifiers(
                 event.isAltDown(),
-                 false,
-                 event.isControlDown(),
-                 event.isMetaDown(),
-                 event.isShiftDown(),
-                 event.isPrimaryButtonDown(),
-                 event.isMiddleButtonDown(),
-                 event.isSecondaryButtonDown()
+                false,
+                event.isControlDown(),
+                event.isMetaDown(),
+                event.isShiftDown(),
+                event.isPrimaryButtonDown(),
+                event.isMiddleButtonDown(),
+                event.isSecondaryButtonDown()
         );
 
     }
