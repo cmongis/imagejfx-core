@@ -89,7 +89,7 @@ public class OverlayUtilsService extends AbstractService implements IjfxService 
 
     @Parameter
     UiContextService uiContextService;
-    
+
     Logger logger = ImageJFX.getLogger();
 
     public void openOverlay(File file, Overlay selected) {
@@ -178,7 +178,7 @@ public class OverlayUtilsService extends AbstractService implements IjfxService 
 
     }
 
-    public void addOverlay(ImageDisplay imageDisplay, Overlay[] overlayArray) {
+    public void addOverlay(ImageDisplay imageDisplay, Overlay... overlayArray) {
         addOverlay(imageDisplay, Lists.newArrayList(overlayArray));
     }
 
@@ -250,16 +250,15 @@ public class OverlayUtilsService extends AbstractService implements IjfxService 
         }
         return overlay;
     }
-    
+
     public void updateOverlayView(ImageDisplay display, Overlay overlay) {
-        
+
         display
                 .stream()
-                .filter(view->view.getData() == overlay)
+                .filter(view -> view.getData() == overlay)
                 .map(DataViewUpdatedEvent::new)
                 .forEach(eventService::publish);
-        
-        
+
     }
 
     public BinaryMaskOverlay createBinaryMaskOverlay(ImageDisplay imageDisplay, Img<BitType> mask) {
