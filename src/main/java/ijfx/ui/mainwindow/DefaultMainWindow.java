@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.animation.Transition;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleListProperty;
 import javafx.concurrent.Task;
@@ -60,7 +59,7 @@ import mongis.utils.BindingsUtils;
 import mongis.utils.CallableTask;
 import mongis.utils.TaskList2;
 import mongis.utils.animation.Animations;
-import mongis.utils.animation.TransitionQueueNG;
+import org.scijava.display.Display;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
@@ -154,7 +153,6 @@ public class DefaultMainWindow implements MainWindow {
                 rightVBox.pseudoClassStateChanged(EMPTY, newValue);
             });
 
-           
             mainBorderPane.setOpacity(1.0);
             mainBorderPane.setCenter(new Label("Loading..."));
 
@@ -223,11 +221,11 @@ public class DefaultMainWindow implements MainWindow {
     }
 
     private void configureSideBar(SideBar sideBar) {
-       
+
         this.sideBar = sideBar;
-        
+
         mainAnchorPane.getChildren().add(sideBar.getNode());
-        
+
         BindingsUtils.bindNodeToPseudoClass(HIDDEN, sideBar.getNode(), Bindings.createBooleanBinding(() -> sideBar.getNode().getTranslateX() <= -1.0 * sideBar.getNode().getWidth() + 2, sideBar.getNode().translateXProperty()));
 
     }
@@ -277,18 +275,16 @@ public class DefaultMainWindow implements MainWindow {
 
     @Override
     public void displayActivity(Activity activity) {
-        
-       
+
         Transition configure = Animations.ZOOMOUT.configure(mainBorderPane.getCenter(), 400);
-        
-        configure.setOnFinished(event->{
+
+        configure.setOnFinished(event -> {
             mainBorderPane.setCenter(activity.getContent());
-             Animations.ZOOMIN.configure(mainBorderPane.getCenter(), 400).play();
+            Animations.ZOOMIN.configure(mainBorderPane.getCenter(), 400).play();
         });
-       
+
         configure.play();
-        
-        
+
     }
 
     @Override
