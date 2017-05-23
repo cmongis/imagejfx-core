@@ -50,6 +50,7 @@ import org.reactfx.util.Either;
 import org.reactfx.util.Tuple2;
 import org.scijava.plugin.Parameter;
 
+
 /**
  *
  * @author florian
@@ -108,6 +109,7 @@ public class TextEditorController extends AnchorPane {
         editButton.getItems().add(creatMenuItem("cut", codeArea::cut));
         editButton.getItems().add(creatMenuItem("copy", codeArea::copy));
         editButton.getItems().add(creatMenuItem("paste", codeArea::paste));
+       
     }
     
     public MenuItem creatMenuItem(String styleClass, Runnable action){
