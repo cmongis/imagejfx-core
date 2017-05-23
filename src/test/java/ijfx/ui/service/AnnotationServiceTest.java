@@ -20,9 +20,11 @@
 package ijfx.ui.service;
 
 import ijfx.core.IjfxTest;
+import ijfx.core.metadata.GenericMetaData;
 import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataOwner;
 import ijfx.explorer.datamodel.DefaultTag;
+import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.datamodel.Tag;
 import ijfx.explorer.datamodel.Taggable;
 import ijfx.explorer.views.GenerateDummyExplorables;
@@ -70,8 +72,9 @@ public class AnnotationServiceTest extends IjfxTest{
         System.out.println("removeTag");
         Taggable taggable  = (Taggable) new GenerateDummyExplorables();
         Tag tag = new DefaultTag("prout");
+        annotationService.addTag(taggable, tag);
         annotationService.removeTag(taggable, tag);
-        Assert.assertNull("Testing preinjection", tag);
+        Assert.assertNull("Testing tag remove", tag);
     }
 
     /**
@@ -80,14 +83,13 @@ public class AnnotationServiceTest extends IjfxTest{
     @Test
     public void testAddMetaData_MetaDataOwner_MetaData() {
         System.out.println("addMetaData");
-        MetaDataOwner owner = null;
-        MetaData m = null;
-        /*
-        AnnotationService instance = new AnnotationServiceImpl();
-        instance.addMetaData(owner, m);
-        */
-        // TODO review the generated test code and remove the default call to fail.
-        Assert.assertNotNull("Testing preinjection", annotationService);
+        String key = "key";
+        Object value = "Value";
+        Explorable owner = (Explorable) new GenericMetaData(key,value);
+        MetaData m = new GenericMetaData();
+        annotationService.addMetaData(owner, m);
+        assertNotNull("Testing addMetaDataOwner", owner);
+        assertNotNull("test Metadata",m);
     }
 
     /**
@@ -95,16 +97,16 @@ public class AnnotationServiceTest extends IjfxTest{
      */
     @Test
     public void testRemoveMetaData_3args() {
-        System.out.println("removeMetaData");
-        MetaDataOwner owner = null;
-        MetaData m = null;
+        System.out.println("removeMetaData with boolean");
+        String key = "key";
+        Object value = "Value";
+        Explorable owner = (Explorable) new GenericMetaData(key,value);
+        MetaData m = new GenericMetaData();
         boolean matchValue = false;
-        /*
-        AnnotationService instance = new AnnotationServiceImpl();
-        instance.removeMetaData(owner, m, matchValue);
-        */
-        // TODO review the generated test code and remove the default call to fail.
-        Assert.assertNotNull("Testing preinjection", annotationService);
+        annotationService.addMetaData(owner, m);
+        annotationService.removeMetaData(owner, m, matchValue);
+        assertNull("Testing remove metadata with boolean owner", owner);
+        assertNull("Testing remove metadata with boolean m",m);
     }
 
     /**
@@ -112,9 +114,9 @@ public class AnnotationServiceTest extends IjfxTest{
      */
     @Test
     public void testAddMetaData_List_MetaData() {
-        System.out.println("addMetaData");
+        System.out.println("addMetaData list");
         List<? extends MetaDataOwner> list = null;
-        MetaData m = null;
+        MetaData m = new GenericMetaData();
         /*
         AnnotationService instance = new AnnotationServiceImpl();
         instance.addMetaData(list, m);
