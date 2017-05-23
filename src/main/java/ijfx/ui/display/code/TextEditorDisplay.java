@@ -19,25 +19,40 @@
  */
 package ijfx.ui.display.code;
 
+import ijfx.core.formats.Script;
 import org.scijava.Priority;
-import org.scijava.display.DefaultTextDisplay;
+import org.scijava.display.AbstractDisplay;
 import org.scijava.display.Display;
-import org.scijava.log.LogService;
 import org.scijava.plugin.Plugin;
+import org.scijava.script.ScriptLanguage;
 
 /**
- *
+ * TODO : change to DefaultScriptDisplay
  * @author florian
  */
 @Plugin(type = Display.class, priority = Priority.HIGH_PRIORITY)
-public class TextEditorDisplay extends DefaultTextDisplay{
-    public TextEditorDisplay() {
-        super();
-   }
+public class TextEditorDisplay extends AbstractDisplay<Script> implements ScriptDisplay {
 
+    public TextEditorDisplay() {
+        super(Script.class);
+    }
+
+    private Script getScript() {
+        return get(0);
+    }
 
     @Override
     public String getIdentifier() {
-        return ("no identifier");
+        return getScript().getSourceFile();
+    }
+
+    @Override
+    public ScriptLanguage getLanguage() {
+        return get(0).getLanguage();
+    }
+
+    @Override
+    public void setLanguage(ScriptLanguage language) {
+        get(0).setLanguage(language);
     }
 }
