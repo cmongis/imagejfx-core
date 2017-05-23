@@ -19,33 +19,54 @@
  */
 package ijfx.core.formats;
 
-import io.scif.Format;
-import java.util.Arrays;
-import java.util.List;
-import org.scijava.plugin.Plugin;
-import org.scijava.text.AbstractTextFormat;
+import org.scijava.script.ScriptLanguage;
 
 /**
  *
  * @author cyril
  */
-@Plugin(type = Format.class)
-public class CodeFormat extends AbstractTextFormat {
+public class DefaultScript implements Script{
 
+    protected String code;
+
+    protected ScriptLanguage language;
     
-    private static final List<String> FORMATS = Arrays
-            .asList("py","js","json","java");
+    protected String sourceFile;
+    
+    public DefaultScript(String code) {
+        this.code = code;
+        
+       
+    }
+    
+    public void setSourceFile(String sourceFile) {
+        this.sourceFile = sourceFile;
+    }
+
+    public String getSourceFile() {
+        return sourceFile;
+    }
+    
+    
     
     @Override
-    public List<String> getExtensions() {
-        return FORMATS;
+    public String getCode() {
+        return code;
     }
 
     @Override
-    public String asHTML(String text) {
+    public void setCode(String code) {
+        this.code = code;
+    }
 
-        return text;
-        
+    @Override
+    public ScriptLanguage getLanguage() {
+       return language;
+    }
+
+    @Override
+    public void setLanguage(ScriptLanguage language) {
+        this.language = language;
     }
     
 }
