@@ -91,7 +91,7 @@ public class TextEditorController extends AnchorPane {
         this.codeArea = textAreaCreator.getCodeArea();
         init();
         borderPane.setCenter(codeArea);
-        
+        /*
         //File javascriptrc = new File("javascript.nanorc");
         Platform.runLater( () ->{
 
@@ -101,6 +101,7 @@ public class TextEditorController extends AnchorPane {
         System.out.println(javascriptrc.getAbsolutePath());
         
         textAreaCreator.nanorcParser(javascriptrc);
+*/
         //borderPane.setTop(richTextEditor.init());
         //textAreaCreator.getCodeArea().getSelectedText();
 

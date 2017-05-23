@@ -116,7 +116,8 @@ public class TextArea{
                 .subscribe(change -> {
                     this.codeArea.setStyleSpans(0, computeHighlighting(this.codeArea.getText()));
                 });
-        this.codeArea.replaceText(0, 0, sampleCode);
+        //this.codeArea.replaceText(0, 0, sampleCode);
+        
     }
     
     private static StyleSpans<Collection<String>> computeHighlighting(String text) {
@@ -146,33 +147,53 @@ public class TextArea{
         return this.codeArea;
     }
     
-    public void nanorcParser(File file){
+    public void nanorcParser(String path){
+        
         Hashtable keywords = new Hashtable(); // creation de la table de hashage
-        if (file.equals(null)){
+        if (path.equals(null)){
             System.out.println("Fichier null !");
             return;
         }
         List<String> text = new ArrayList<>();
+        File file = new File(path);
         try {
             text = Files.readAllLines(file.toPath(), Charset.defaultCharset());// lecture du fichier, tout est mis dans la list text
                     } catch (IOException ex) {
             Logger.getLogger(TextArea.class.getName()).log(Level.SEVERE, null, ex);
         }
+        //Pattern p = Pattern.compile("\"\\\\\\<\\(.*");
+        //System.out.println(")\\>\"");
+        
+        Boolean string = false;
+        Boolean comments = false;
+        
         
         for (String line : text){
             String[] splitedLine = line.split(" ");
-            if (splitedLine[0].equals("color")){
-                List<String> words = new ArrayList<>(); // creation d'une entree dans la table, la valeur est une liste qui contiendra les mots
-                String chain = splitedLine[2].substring(4,splitedLine[2].indexOf(")\\>"));
-                for (String word : chain.split("|")){
-                    words.add(word);
+            
+            if (splitedLine[0].equals("color") && !string){
+                if (splitedLine[2].matches("\"\\\\\\<\\(.*")){
+                    List<String> words = new ArrayList<>(); // creation d'une entree dans la table, la valeur est une liste qui contiendra les mots
+                    System.out.println();
+                    String chain = splitedLine[2].replace(")\\>\"", ""); // removing the unintersting end of the string
+                    chain = chain.replace("\"\\<(", "");                 // same for the beginning
+                    for (String word : chain.split("\\|")){ // spliting with |
+                        words.add(word);//                     adding in the list
+                    }
+                    keywords.put(splitedLine[1], words); // adding the list in the hash table
                 }
-                keywords.put(splitedLine[1], words);
+                
+            }
+            else if (splitedLine[0].equals("color") && string && !comments){
+                keywords.put("stringPattern", splitedLine[2]);
+            }
+            else if (splitedLine[0].equals("color") && string && comments){
+                keywords.put("commentPattern", splitedLine[2]);
             }
             
         }
         this.codeArea.replaceText(0, 0, keywords.toString());
-        System.out.println(keywords);
+        
     }
     
 }
