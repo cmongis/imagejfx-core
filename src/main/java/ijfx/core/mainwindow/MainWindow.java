@@ -29,27 +29,34 @@ import javax.management.Notification;
 import org.scijava.plugin.SciJavaPlugin;
 import ijfx.core.uicontext.ContextualContainer;
 import javafx.scene.Node;
+import org.scijava.display.Display;
 
 /**
  *
  * @author cyril
  */
-public interface MainWindow extends SciJavaPlugin{
-    
-    
+public interface MainWindow extends SciJavaPlugin {
+
     void init();
-    
+
     void displayHint(Hint hint);
+
     void displayActivity(Activity activity);
+
     void displayNotification(Notification notification);
+
     void displaySideMenuAction(SideMenuAction action);
+
     void registerUiPlugin(UiPlugin uiPlugin);
+
     void addForegroundTask(Task task);
+
     void addBackgroundTask(Task task);
+
     void setReady(boolean ready);
-            
+
     List<ContextualContainer<Node>> getContextualContainerList();
-    
+
     Parent getUiComponent();
-    
+
 }
