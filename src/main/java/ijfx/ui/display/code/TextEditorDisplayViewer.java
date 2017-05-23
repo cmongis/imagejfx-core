@@ -20,18 +20,19 @@
 package ijfx.ui.display.code;
 
 import ijfx.ui.display.image.AbstractFXDisplayViewer;
+import org.scijava.Priority;
 import org.scijava.display.TextDisplay;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.viewer.DisplayViewer;
 
 /**
- *
+ * TODO: change to ScriptDisplayViewerFX
  * @author florian
  */
 
-@Plugin(type = DisplayViewer.class)
-public class TextEditorDisplayViewer extends AbstractFXDisplayViewer<TextDisplay> {
+@Plugin(type = DisplayViewer.class,priority=Priority.HIGH_PRIORITY)
+public class TextEditorDisplayViewer extends AbstractFXDisplayViewer<ScriptDisplay> {
     public TextEditorDisplayViewer() {
-        super(TextDisplay.class);
+        super(ScriptDisplay.class);
     }
 }
