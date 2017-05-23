@@ -61,7 +61,7 @@ public class DisplayContainer extends StackPane implements Activity {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
-    void showContextMenu(String menuRoot, Display<?> display, int x, int y) {
+    public void showContextMenu(String menuRoot, Display<?> display, int x, int y) {
         
     }
 
