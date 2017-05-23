@@ -32,17 +32,17 @@ import org.scijava.display.TextDisplay;
 import org.scijava.plugin.Plugin;
 
 /**
- *
+ * TODO : Change to ScriptDisplayPanelFX
  * @author florian
  */
 @Plugin(type = FXDisplayPanel.class)
-public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<TextDisplay>  {
+public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay> {
 
     AnchorPane root;
     BorderPane borderPane;
-    
-    public TextEditorDisplayPanel(Class<? extends Display> supportedClass) {
-        super(TextDisplay.class);
+
+    public TextEditorDisplayPanel() {
+        super(ScriptDisplay.class);
     }
 
     @Override
@@ -50,6 +50,12 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<TextDisplay> 
         borderPane = new BorderPane();
         root = new AnchorPane();
         root.getChildren().add(borderPane);
+
+        AnchorPane.setBottomAnchor(borderPane, 15d);
+        AnchorPane.setTopAnchor(borderPane, 0d);
+        AnchorPane.setLeftAnchor(borderPane, 0d);
+        AnchorPane.setRightAnchor(borderPane, 0d);
+
         TextArea textAreaCreator = new TextArea();
         CodeArea codeArea = textAreaCreator.getCodeArea();
         borderPane.setCenter(codeArea);
@@ -73,5 +79,4 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<TextDisplay> 
     public void redraw() {
     }
 
-    
 }
