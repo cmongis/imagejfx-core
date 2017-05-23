@@ -22,6 +22,7 @@ package ijfx.core.icon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import ijfx.core.utils.SciJavaUtils;
+import ijfx.ui.main.ImageJFX;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,11 +46,13 @@ public class DefaultFXIconService extends AbstractService implements FXIconServi
     
     Map<Class<?>,String> fontawesomeIconEquivalent = new HashMap<>();
     
+    Logger logger = ImageJFX.getLogger();
+    
     public void initialize() {
         
         
         try {
-            String toString = IOUtils.toString(getClass().getResourceAsStream("/ijfx/ui/icons/fontawesome_equivalents"), "utf8");
+            String toString = IOUtils.toString(getClass().getResourceAsStream("/ijfx/ui/icons/equivalents"), "utf8");
         
             for(String line : toString.split("\n")) {
                 
@@ -79,7 +82,7 @@ public class DefaultFXIconService extends AbstractService implements FXIconServi
         String menuPath = SciJavaUtils.getIconPath(plugin);
         
         if(fontawesomeIconEquivalent.containsKey(plugin.getClass())) {
-            return getIconAsNode("fa:"+fontawesomeIconEquivalent.get(plugin.getClass()));
+            return getIconAsNode(fontawesomeIconEquivalent.get(plugin.getClass()));
         }
         else if(menuPath.contains("fa:")) {
             return getIconAsNode(menuPath);
@@ -98,6 +101,7 @@ public class DefaultFXIconService extends AbstractService implements FXIconServi
             return new FontAwesomeIconView(FontAwesomeIcon.valueOf(iconPath.substring(3).toUpperCase()));
             }
             catch(Exception e) {
+                logger.log(Level.WARNING,String.format("Couldn't load FA icon : %s",iconPath.substring(3).toUpperCase()));
                 return new FontAwesomeIconView(FontAwesomeIcon.REMOVE); 
             }
         }

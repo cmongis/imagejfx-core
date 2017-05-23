@@ -17,22 +17,25 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.ui.display.code;
+package ijfx.core.formats;
 
-import ijfx.ui.display.image.AbstractFXDisplayViewer;
-import org.scijava.Priority;
-import org.scijava.display.TextDisplay;
-import org.scijava.plugin.Plugin;
-import org.scijava.ui.viewer.DisplayViewer;
+import org.scijava.script.ScriptLanguage;
 
 /**
- * TODO: change to ScriptDisplayViewerFX
- * @author florian
+ *
+ * @author cyril
  */
-
-@Plugin(type = DisplayViewer.class,priority=Priority.HIGH_PRIORITY)
-public class TextEditorDisplayViewer extends AbstractFXDisplayViewer<ScriptDisplay> {
-    public TextEditorDisplayViewer() {
-        super(ScriptDisplay.class);
-    }
+public interface Script {
+    
+    String getCode();
+    
+    void setCode(String code);
+    
+    ScriptLanguage getLanguage();
+    
+    void setLanguage(ScriptLanguage language);
+    
+    String getSourceFile();
+    
+    
 }

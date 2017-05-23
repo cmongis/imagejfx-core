@@ -31,37 +31,35 @@ import org.scijava.util.RealCoords;
  *
  * @author cyril
  */
-@Plugin(type = Tool.class,iconPath = "fa:square_o",description="Draw a damn rectangle")
-public class RectangleTool extends AbstractPathTool<RectangleOverlay>{
+@Plugin(type = Tool.class, iconPath = "fa:square_alt", description = "Draw a damn rectangle")
+public class RectangleTool extends AbstractPathTool<RectangleOverlay> {
 
-   
     @Override
     protected void onPath(List<RealCoords> coords) {
-        
-        if(coords.size() >= 2) {
-            
+
+        if (coords.size() >= 2) {
+
             RealCoords first = coords.get(0);
-            
-            RealCoords last = coords.get(coords.size()-1);
-            
+
+            RealCoords last = coords.get(coords.size() - 1);
+
             RectangleOverlay overlay = getOverlay();
-           
-            overlay.setOrigin(first.getIntX(),0);
-            overlay.setOrigin(first.getIntY(),1);
+
+            overlay.setOrigin(first.getIntX(), 0);
+            overlay.setOrigin(first.getIntY(), 1);
             overlay.setExtent(last.getIntX() - first.getIntX(), 0);
             overlay.setExtent(last.getIntY() - first.getIntY(), 1);
-            
+
             Platform.runLater(getImageDisplay()::update);
-            
+
         }
-        
+
     }
-    
+
     protected RectangleOverlay createOverlay() {
         return new RectangleOverlay(getContext());
     }
-    
-    
+
     @Override
     public boolean isAlwaysActive() {
         return false;
@@ -81,5 +79,5 @@ public class RectangleTool extends AbstractPathTool<RectangleOverlay>{
     public String getDescription() {
         return "Draw a rectangle selection";
     }
-    
+
 }
