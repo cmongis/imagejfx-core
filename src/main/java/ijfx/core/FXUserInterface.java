@@ -282,7 +282,12 @@ public class FXUserInterface extends Application implements UserInterface {
 
     @Override
     public void showContextMenu(String menuRoot, Display<?> display, int x, int y) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        if(activityService.getCurrentActivityAsClass() == DisplayContainer.class) {
+            activityService.getActivity(DisplayContainer.class).showContextMenu(menuRoot,display,x,y);
+        }
+        //getMainWindow().showContextMenu(menuRoot, Display<?> display,x, y);
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
