@@ -24,8 +24,17 @@ import com.sun.javafx.geom.transform.BaseTransform;
 import com.sun.javafx.jmx.MXNodeAlgorithm;
 import com.sun.javafx.jmx.MXNodeAlgorithmContext;
 import com.sun.javafx.sg.prism.NGNode;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javafx.scene.Node;
@@ -137,5 +146,33 @@ public class TextArea{
         return this.codeArea;
     }
     
+    public void nanorcParser(File file){
+        Hashtable keywords = new Hashtable(); // creation de la table de hashage
+        if (file.equals(null)){
+            System.out.println("Fichier null !");
+            return;
+        }
+        List<String> text = new ArrayList<>();
+        try {
+            text = Files.readAllLines(file.toPath(), Charset.defaultCharset());// lecture du fichier, tout est mis dans la list text
+                    } catch (IOException ex) {
+            Logger.getLogger(TextArea.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        for (String line : text){
+            String[] splitedLine = line.split(" ");
+            if (splitedLine[0].equals("color")){
+                List<String> words = new ArrayList<>(); // creation d'une entree dans la table, la valeur est une liste qui contiendra les mots
+                String chain = splitedLine[2].substring(4,splitedLine[2].indexOf(")\\>"));
+                for (String word : chain.split("|")){
+                    words.add(word);
+                }
+                keywords.put(splitedLine[1], words);
+            }
+            
+        }
+        this.codeArea.replaceText(0, 0, keywords.toString());
+        System.out.println(keywords);
+    }
     
 }

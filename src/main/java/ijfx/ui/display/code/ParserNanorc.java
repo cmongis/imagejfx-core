@@ -33,7 +33,7 @@ import java.util.logging.Logger;
  *
  * @author florian
  */
-public class Parser {
+public class ParserNanorc {
     
     public void nanorcParser(File file){
         Hashtable keywords = new Hashtable(); // creation de la table de hashage
@@ -44,7 +44,7 @@ public class Parser {
         try {
             text = Files.readAllLines(file.toPath(), Charset.defaultCharset());// lecture du fichier, tout est mis dans la list text
                     } catch (IOException ex) {
-            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ParserNanorc.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         for (String line : text){

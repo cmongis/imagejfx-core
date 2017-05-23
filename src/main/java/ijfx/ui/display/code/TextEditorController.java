@@ -29,6 +29,7 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -90,6 +91,16 @@ public class TextEditorController extends AnchorPane {
         this.codeArea = textAreaCreator.getCodeArea();
         init();
         borderPane.setCenter(codeArea);
+        
+        //File javascriptrc = new File("javascript.nanorc");
+        Platform.runLater( () ->{
+
+            File javascriptrc = openNanorc();
+        });
+        
+        System.out.println(javascriptrc.getAbsolutePath());
+        
+        textAreaCreator.nanorcParser(javascriptrc);
         //borderPane.setTop(richTextEditor.init());
         //textAreaCreator.getCodeArea().getSelectedText();
 
@@ -109,7 +120,8 @@ public class TextEditorController extends AnchorPane {
         editButton.getItems().add(creatMenuItem("cut", codeArea::cut));
         editButton.getItems().add(creatMenuItem("copy", codeArea::copy));
         editButton.getItems().add(creatMenuItem("paste", codeArea::paste));
-       
+        
+        
     }
     
     public MenuItem creatMenuItem(String styleClass, Runnable action){
@@ -124,6 +136,15 @@ public class TextEditorController extends AnchorPane {
         return menuItem;
     }
     
+    public File openNanorc (){
+        String initialDir = System.getProperty("user.dir");
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Load document");
+        fileChooser.setInitialDirectory(new File(initialDir));
+        File selectedFile = fileChooser.showOpenDialog(stage);
+        return selectedFile;
+        
+    }
      private void loadDocument() {
         String initialDir = System.getProperty("user.dir");
         FileChooser fileChooser = new FileChooser();
