@@ -17,27 +17,35 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.icon;
+package ijfx.core.formats;
 
-import ijfx.core.IjfxService;
-import ijfx.core.utils.SciJavaUtils;
-import javafx.scene.Node;
-import org.scijava.plugin.SciJavaPlugin;
+import java.util.Arrays;
+import java.util.List;
+import org.scijava.plugin.Plugin;
+import org.scijava.text.AbstractTextFormat;
+import org.scijava.text.TextFormat;
 
 /**
  *
  * @author cyril
  */
-public interface FXIconService extends IjfxService {
+@Plugin(type = TextFormat.class)
+public class CodeFormat extends AbstractTextFormat {
+
     
+    private static final List<String> FORMATS = Arrays
+            .asList("py","js","json","java");
     
-    Node getIconAsNode(String iconPath);
-    default Node getIconAsNode(SciJavaPlugin plugin) {
-        return getIconAsNode(SciJavaUtils.getIconPath(plugin));
+    @Override
+    public List<String> getExtensions() {
+        return FORMATS;
     }
-    
-    void registerEquivalent(Class<?> clazz, String fontawesomeId);
-  
-    
+
+    @Override
+    public String asHTML(String text) {
+
+        return text;
+        
+    }
     
 }

@@ -20,6 +20,7 @@
 package ijfx.ui.display.image;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import ijfx.core.overlay.OverlayDrawingService;
 import ijfx.core.timer.Timer;
 import ijfx.core.timer.TimerService;
 import ijfx.plugins.display.AutoContrast;
@@ -119,13 +120,23 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
     @Parameter
     Context context;
 
+    @Parameter
+    OverlayDrawingService overlayDrawingService;
+
     /*
         Drawing related
      */
     private Canvas canvas;
 
+    private CanvasListener canvasListener;
+
     private WritableImage buffer;
 
+    private OverlayDrawingManager overlayDrawingManager;
+
+    /*
+        Extra UI Elements
+     */
     private static final Logger logger = ImageJFX.getLogger();
 
     private ImageDisplayAdjuster adjuster;
@@ -172,13 +183,17 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
             return;
         }
 
+        installCanvas();
+
+        toolService.setActiveTool(toolService.getTool(HandTool.class));
+
         showBottomPanel
                 .bind(
                         anyAxisSliderInUse
                                 .or(bottomPane.hoverProperty()));
 
         pixelValueLabel.setText("For now nothing to show but it's coming");
-        
+
         new TransitionBinding<Number>()
                 .bindOnFalse(sliderVBox.heightProperty())
                 .setOnTrue(0.0)
@@ -212,10 +227,13 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
     public void view(DisplayWindow window, FXImageDisplay display) {
         this.window = window;
         this.display = display;
+        installCanvas();
+        
+
     }
 
     @Override
-    public ImageDisplay getDisplay() {
+    public FXImageDisplay getDisplay() {
         return display;
     }
 
@@ -227,9 +245,38 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
     @Override
     public void redoLayout() {
 
+        Platform.runLater(this::redoLayoutSafe);
+    }
+
+    public void redoLayoutSafe() {
         // removing the adjuster if exists
+
+        installAdjuster();
+        
+        installCanvas();
+        
+        // redrawing
+        redraw();
+
+        // creating the channel switches
+        createChannelSwitchs();
+
+        resetAxisSliders();
+
+    }
+
+    private void installCanvas() {
+        if (display != null && canvas == null && canvasListener == null) {
+            canvas = new Canvas();
+            new CanvasListener(display, canvas);
+            // adding the canvas
+            stackPane.getChildren().add(canvas);
+        }
+    }
+
+    private void installAdjuster() {
         if (adjuster != null) {
-            anchorPane.getChildren().remove(adjuster);
+            return;
         }
 
         // creating a new one
@@ -253,24 +300,6 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
 
         // tying the new adjuster to the display
         adjuster.imageDisplayProperty().setValue(display);
-
-        // creating a new canvas
-        canvas = new Canvas();
-
-        new CanvasListener(display, canvas);
-
-        // adding the canvas
-        stackPane.getChildren().add(canvas);
-        toolService.setActiveTool(toolService.getTool(HandTool.class));
-
-        // redrawing
-        redraw();
-
-        // creating the channel switches
-        createChannelSwitchs();
-
-        resetAxisSliders();
-
     }
 
     private void resetAxisSliders() {
@@ -316,6 +345,8 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
             useIjfxRender();
             axisSliderList
                     .forEach(AxisSlider::refresh);
+
+            redrawOverlays();
         });
     }
 
@@ -378,17 +409,15 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
         ImageCanvas viewport = getDisplay().getCanvas();
 
         IntCoords panOffset = viewport.getPanOffset();
-        
+
         final double sx = panOffset.x;
         final double sy = panOffset.y;
 
-         
-        
         final double sw = 1.0 * viewport.getViewportWidth() / viewport.getZoomFactor();
         final double sh = 1.0 * viewport.getViewportHeight() / viewport.getZoomFactor();
 
-        System.out.println(String.format("sx = %.0f, sy = %.0f, sw = %.0f, sh =%.0f",sx,sy,sw,sh));
-        
+        System.out.println(String.format("sx = %.0f, sy = %.0f, sw = %.0f, sh =%.0f", sx, sy, sw, sh));
+
         // the target image (which is the canvas itself
         final double tx = 0;
         final double ty = 0;
@@ -456,14 +485,16 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
 
     private void createChannelSwitchs() {
 
+        if (buttonHBox.getChildren().size() == display.getChannelNumber()) {
+            return;
+        }
+
         buttonHBox.getChildren().clear();
 
         if (getDatasetview().getChannelCount() > 1) {
 
             for (int i = 1; i != getDatasetview().getChannelCount() + 1; i++) {
                 LUTSwitchButton button = new LUTSwitchButton(display);
-
-                context.inject(button);
                 final int channel = i - 1;
                 button.imageDisplayProperty().setValue(display);
                 button.channelProperty().set(channel);
@@ -474,4 +505,12 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
         }
 
     }
+
+    private void redrawOverlays() {
+        if (overlayDrawingManager == null) {
+            overlayDrawingManager = new OverlayDrawingManager(display, canvas);
+        }
+        overlayDrawingManager.redraw();
+    }
+
 }

@@ -26,8 +26,10 @@ import net.imagej.display.ImageDisplay;
 import net.imagej.display.ZoomService;
 import org.scijava.display.event.input.MsButtonEvent;
 import org.scijava.display.event.input.MsDraggedEvent;
+import org.scijava.display.event.input.MsMovedEvent;
 import org.scijava.display.event.input.MsPressedEvent;
 import org.scijava.display.event.input.MsReleasedEvent;
+import org.scijava.input.InputModifiers;
 import org.scijava.plugin.Parameter;
 import org.scijava.tool.Tool;
 import org.scijava.tool.ToolService;
@@ -52,7 +54,7 @@ public class CanvasListener {
 
     @Parameter
     ZoomService zoomService;
-    
+
     public CanvasListener(ImageDisplay display, Canvas canvas) {
         this.canvas = canvas;
         this.display = display;
@@ -60,32 +62,30 @@ public class CanvasListener {
         canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, this::onDragEvent);
         canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, this::onMousePressed);
         canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, this::onMouseReleased);
+        canvas.addEventHandler(MouseEvent.MOUSE_MOVED, this::onMouseMoved);
         canvas.setOnScroll(this::onScrollEvent);
     }
 
     private void onScrollEvent(ScrollEvent event) {
-        
+
         double percent = 100 * display.getCanvas().getZoomFactor();
-        
+
         if (event.getDeltaY() < 0) {
-            percent-=5;
-           
+            percent -= 5;
 
         } else {
-            percent+=5;
+            percent += 5;
         }
-        
+
         double eventX = event.getX();
         double eventY = event.getY();
-        
-        IntCoords center = new IntCoords(toInt(event.getX()),toInt(event.getY()));
-        
+
+        IntCoords center = new IntCoords(toInt(event.getX()), toInt(event.getY()));
+
         RealCoords centerReal = display.getCanvas().getPanCenter();//display.getCanvas().panelToDataCoords(center);
-        
-        
+
         zoomService.zoomSet(display, percent, centerReal.x, centerReal.y);
-        
-        
+
         //ImageCanvasUtils.checkPosition(display.getCanvas());
         display.update();
     }
@@ -97,7 +97,7 @@ public class CanvasListener {
     private void onMousePressed(MouseEvent event) {
 
         getActiveTool()
-                .onMouseDown(new MsPressedEvent(display, null, toInt(event.getX()), toInt(event.getY()), MsButtonEvent.LEFT_BUTTON, 1, true));
+                .onMouseDown(new MsPressedEvent(display, extractInputModifiers(event), toInt(event.getX()), toInt(event.getY()), MsButtonEvent.LEFT_BUTTON, 1, true));
 
     }
 
@@ -107,7 +107,7 @@ public class CanvasListener {
                 .onMouseDrag(
                         new MsDraggedEvent(
                                 display,
-                                null,
+                                extractInputModifiers(event),
                                 toInt(event.getX()),
                                 toInt(event.getY()),
                                 MsButtonEvent.LEFT_BUTTON,
@@ -120,15 +120,30 @@ public class CanvasListener {
 
     private void onMouseReleased(MouseEvent event) {
         getActiveTool()
-                .onMouseUp(new MsReleasedEvent(display, null, toInt(event.getX()), toInt(event.getY()), MsButtonEvent.LEFT_BUTTON, 0, true));
+                .onMouseUp(new MsReleasedEvent(display, extractInputModifiers(event), toInt(event.getX()), toInt(event.getY()), MsButtonEvent.LEFT_BUTTON, 0, true));
     }
 
     private int toInt(double d) {
         return new Double(d).intValue();
     }
 
-    private void onMouseEvent(MouseEvent event) {
-
+    private void onMouseMoved(MouseEvent event) {
+        getActiveTool()
+                .onMouseMove(new MsMovedEvent(display,extractInputModifiers(event), 0, 0));
     }
 
+    private InputModifiers extractInputModifiers(MouseEvent event) {
+
+        return new InputModifiers(
+                event.isAltDown(),
+                 false,
+                 event.isControlDown(),
+                 event.isMetaDown(),
+                 event.isShiftDown(),
+                 event.isPrimaryButtonDown(),
+                 event.isMiddleButtonDown(),
+                 event.isSecondaryButtonDown()
+        );
+
+    }
 }

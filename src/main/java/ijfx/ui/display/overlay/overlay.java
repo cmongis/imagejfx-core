@@ -17,27 +17,12 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.icon;
-
-import ijfx.core.IjfxService;
-import ijfx.core.utils.SciJavaUtils;
-import javafx.scene.Node;
-import org.scijava.plugin.SciJavaPlugin;
+package ijfx.ui.display.overlay;
 
 /**
  *
  * @author cyril
  */
-public interface FXIconService extends IjfxService {
-    
-    
-    Node getIconAsNode(String iconPath);
-    default Node getIconAsNode(SciJavaPlugin plugin) {
-        return getIconAsNode(SciJavaUtils.getIconPath(plugin));
-    }
-    
-    void registerEquivalent(Class<?> clazz, String fontawesomeId);
-  
-    
+public class overlay {
     
 }

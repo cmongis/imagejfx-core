@@ -285,7 +285,7 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
     /*
         Helper classes
      */
-    private int getChannelNumber() {
+    public int getChannelNumber() {
 
         if (AxisUtils.hasAxisType(this, Axes.CHANNEL)) {
             return (int) dimension(dimensionIndex(Axes.CHANNEL));

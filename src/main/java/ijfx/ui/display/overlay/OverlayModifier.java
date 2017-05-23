@@ -17,27 +17,22 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.icon;
+package ijfx.ui.display.overlay;
 
-import ijfx.core.IjfxService;
-import ijfx.core.utils.SciJavaUtils;
-import javafx.scene.Node;
-import org.scijava.plugin.SciJavaPlugin;
+import ijfx.ui.display.image.ViewPort;
+import java.util.List;
+import net.imagej.overlay.Overlay;
 
 /**
- *
- * @author cyril
+ * A modifier is a set of MoveablePoints which should be listened by the Modifier. Each time a point is moved
+ * the modifier should update the Overlay (and note its representation).
+ * @author Cyril MONGIS, 2016
  */
-public interface FXIconService extends IjfxService {
+
+public interface OverlayModifier<T extends Overlay> extends ClassHandler<Overlay>  {
     
+ 
     
-    Node getIconAsNode(String iconPath);
-    default Node getIconAsNode(SciJavaPlugin plugin) {
-        return getIconAsNode(SciJavaUtils.getIconPath(plugin));
-    }
-    
-    void registerEquivalent(Class<?> clazz, String fontawesomeId);
-  
-    
+    public List<MoveablePoint> getModifiers(ViewPort viewport, T overlay);
     
 }

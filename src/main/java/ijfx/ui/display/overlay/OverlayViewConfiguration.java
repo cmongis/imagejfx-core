@@ -17,27 +17,29 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.icon;
+package ijfx.ui.display.overlay;
 
-import ijfx.core.IjfxService;
-import ijfx.core.utils.SciJavaUtils;
-import javafx.scene.Node;
-import org.scijava.plugin.SciJavaPlugin;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Paint;
+import net.imagej.overlay.Overlay;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS, 2016
  */
-public interface FXIconService extends IjfxService {
-    
-    
-    Node getIconAsNode(String iconPath);
-    default Node getIconAsNode(SciJavaPlugin plugin) {
-        return getIconAsNode(SciJavaUtils.getIconPath(plugin));
-    }
-    
-    void registerEquivalent(Class<?> clazz, String fontawesomeId);
-  
-    
-    
+public interface OverlayViewConfiguration<T extends Overlay> {
+    boolean isSelected();
+    Paint getStrokeColor();
+    T getOverlay();
+    double getStrokeWidth();
+     Paint getFillCollor();
+     
+     default void configureContext(GraphicsContext context) {
+         
+         context.setStroke(getStrokeColor());
+         context.setFill(getFillCollor());
+         context.setLineWidth(getStrokeWidth());
+         
+     }
+     
 }
