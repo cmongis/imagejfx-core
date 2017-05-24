@@ -31,8 +31,10 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -51,7 +53,9 @@ import org.fxmisc.richtext.model.StyleSpansBuilder;
  */
 public class TextArea{
     CodeArea codeArea = null;
-    private static final String[] KEYWORDS = new String[] {
+    private static Hashtable KEYWORDS_TABLE = new Hashtable();
+    
+    private static String[] KEYWORDS = new String[] {
             "abstract", "assert", "boolean", "break", "byte",
             "case", "catch", "char", "class", "const",
             "continue", "default", "do", "double", "else",
@@ -64,15 +68,15 @@ public class TextArea{
             "transient", "try", "void", "volatile", "while"
     };
 
-    private static final String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
+    private static  String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
     private static final String PAREN_PATTERN = "\\(|\\)";
     private static final String BRACE_PATTERN = "\\{|\\}";
     private static final String BRACKET_PATTERN = "\\[|\\]";
     private static final String SEMICOLON_PATTERN = "\\;";
-    private static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
+    private static String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
     private static final String COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
 
-    private static final Pattern PATTERN = Pattern.compile(
+    private static  Pattern PATTERN = Pattern.compile(
             "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
             + "|(?<PAREN>" + PAREN_PATTERN + ")"
             + "|(?<BRACE>" + BRACE_PATTERN + ")"
@@ -109,6 +113,7 @@ public class TextArea{
      
     public TextArea() {
         codeArea = new CodeArea();
+        nanorcParser(getClass().getResource("/ijfx/ui/display/code/javascript.nanorc").getFile());
         this.codeArea.setParagraphGraphicFactory(LineNumberFactory.get(this.codeArea));
 
         this.codeArea.richChanges()
@@ -127,6 +132,7 @@ public class TextArea{
                 = new StyleSpansBuilder<>();
         while(matcher.find()) {
             String styleClass =
+                    
                     matcher.group("KEYWORD") != null ? "keyword" :
                     matcher.group("PAREN") != null ? "paren" :
                     matcher.group("BRACE") != null ? "brace" :
@@ -170,7 +176,13 @@ public class TextArea{
         
         for (String line : text){
             String[] splitedLine = line.split(" ");
-            
+            if (splitedLine.length <= 1) continue;
+            if (splitedLine[1].matches("Strings.")) { // checking if we arrive in the "strings" paragraph
+                string = true;
+            }
+            else if (splitedLine[1].matches("Comments.")){ // checking if we arrive in the "Comments" paragraph
+                comments = true;
+            }
             if (splitedLine[0].equals("color") && !string){
                 if (splitedLine[2].matches("\"\\\\\\<\\(.*")){
                     List<String> words = new ArrayList<>(); // creation d'une entree dans la table, la valeur est une liste qui contiendra les mots
@@ -192,8 +204,57 @@ public class TextArea{
             }
             
         }
-        this.codeArea.replaceText(0, 0, keywords.toString());
         
+        convertNanoToRichText(keywords);
+        //System.out.println(KEYWORDS_TABLE);
+    }
+    
+    public void convertNanoToRichText (Hashtable keywords){
+        for (Object key : keywords.keySet()){
+            System.out.println(key.toString().equals("stringPattern"));
+            System.out.println("");
+            
+            if ((!key.toString().equals("stringPattern")) && (!key.toString().equals("commentPattern"))){
+                List<String> list = (List<String>) keywords.get(key);
+                KEYWORDS_TABLE.put((String) key, list);
+            }
+            /*
+            else if(key.toString().equals("stringPattern")){
+                STRING_PATTERN = "";
+                STRING_PATTERN+=keywords.get(key);
+                
+                list.forEach((String e) -> {
+                    STRING_PATTERN += e + "|";
+                });
+
+            }
+*/
+        }
+        
+        /*
+        /!\ a partir d'ici c'est vraiment fait a l'arrache, mais ca marche, y'a plus qu' ranger un peut mieux, en faisant une fonction "init" par exemple
+        */
+        
+        //KEYWORDS = (String[]) KEYWORDS_TABLE.get("brightyellow");
+        List<String> length = new ArrayList<>();
+        length.addAll((List) KEYWORDS_TABLE.get("magenta"));
+        length.addAll((List) KEYWORDS_TABLE.get("green"));
+        length.addAll((List) KEYWORDS_TABLE.get("brightyellow"));
+        KEYWORDS = new String[length.size()];
+        for (int i = 0; i < length.size(); i++) {
+            KEYWORDS[i]= length.get(i).toString();
+        }
+        
+        KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
+        this.PATTERN = Pattern.compile(
+            "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
+            + "|(?<PAREN>" + PAREN_PATTERN + ")"
+            + "|(?<BRACE>" + BRACE_PATTERN + ")"
+            + "|(?<BRACKET>" + BRACKET_PATTERN + ")"
+            + "|(?<SEMICOLON>" + SEMICOLON_PATTERN + ")"
+            + "|(?<STRING>" + STRING_PATTERN + ")"
+            + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
+        );
     }
     
 }

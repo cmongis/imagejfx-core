@@ -53,7 +53,7 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
         borderPane = new BorderPane();
         root = new AnchorPane();
         root.getChildren().add(borderPane);
-        //scene.getStylesheets().add(getClass().getResource("/ijfx/ui/display/code/JavaRichtext.css").toExternalForm());
+        root.getStylesheets().add(getClass().getResource("/ijfx/ui/display/code/JavaRichtext.css").toExternalForm());
         
         AnchorPane.setBottomAnchor(borderPane, 15d);
         AnchorPane.setTopAnchor(borderPane, 0d);
