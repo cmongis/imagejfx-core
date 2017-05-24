@@ -55,6 +55,7 @@ public class DefaultAnnotationService extends AbstractService implements Annotat
 
     @Override
     public void removeMetaData(MetaDataOwner owner, MetaData m, boolean matchValue) {
+        owner.getMetaDataSet();
     }
 
     @Override
