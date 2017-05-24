@@ -64,10 +64,12 @@ public class AnnotationServiceTest extends IjfxTest{
     protected void setUp() throws Exception {
         key = "key";
         value = "value";
-        taggable = (Taggable) new GenerateDummyExplorables();
+        taggable = (Taggable) new GenerateDummyExplorables(); // doesn this work ??? If yes, why ?
         tag = new DefaultTag("bieber");
         owner = (MetaDataOwner) new GenerateDummyExplorables();
         m = new GenericMetaData(key, value);
+	    
+	// your list should contain at least 3 metadata 
         list = new ArrayList<MetaDataOwner>();
 
     }
@@ -123,6 +125,11 @@ public class AnnotationServiceTest extends IjfxTest{
     public void testRemoveMetaData_3args() {
         System.out.println("removeMetaData with boolean");
         boolean matchValue = true;
+	    
+	//TODO: create an other test with matchValue = False
+	//Make sure that it would fail removing if the metadata used
+	//as input parameters only matches the key but not the value
+	//of the metadata owned by the MetaDataOwner
         annotationService.addMetaData(owner, m);
         annotationService.removeMetaData(owner, m, matchValue);
         assertNull("Metadata not null",m);
@@ -134,6 +141,11 @@ public class AnnotationServiceTest extends IjfxTest{
      */
     @Test
     public void testAddMetaData_List_MetaData() {
+	//TODO: make a test assert that all the 
+	// metadataOwner contains the MetaData
+	// Use the Stream API to do count the
+	// MetaDataOwners that contains the
+	// the MetaData
         System.out.println("addMetaData list");
         annotationService.addMetaData(list, m);
         int expectedSize = 1;
