@@ -134,6 +134,40 @@ public class AnnotationServiceTest extends IjfxTest{
         annotationService.removeMetaData(owner, m, matchValue);
         assertNull("Metadata not null",m);
         assertFalse("m is not in owner", owner.getMetaDataSet().containMetaData(m));
+        
+        //--------------------------------------
+        //In the case of the boolean is false
+        
+        matchValue = false;
+        
+        annotationService.addMetaData(owner, m);
+        annotationService.removeMetaData(owner, m, matchValue);
+        assertTrue("m is in owner", owner.getMetaDataSet().containMetaData(m));
+        
+        //--------------------------------------
+        //In the case of the key match but not the value
+        
+        String key2 = "key2";
+        Object value2 = value;
+        matchValue = true;
+        
+        MetaData n = new GenericMetaData(key2, value2);
+        annotationService.addMetaData(owner, n);
+        annotationService.removeMetaData(owner, n, matchValue);
+        assertTrue("m is in owner", owner.getMetaDataSet().containMetaData(n));
+        
+        //--------------------------------------
+        //In the case of the value match but not the key
+        
+        key2 = key;
+        value2 = "value2";
+        matchValue = true;
+        
+        MetaData o = new GenericMetaData(key2, value2);
+        annotationService.addMetaData(owner, o);
+        annotationService.removeMetaData(owner, o, matchValue);
+        assertTrue("m is in owner", owner.getMetaDataSet().containMetaData(o));
+        
     }
 
     /**
@@ -146,9 +180,14 @@ public class AnnotationServiceTest extends IjfxTest{
 	// Use the Stream API to do count the
 	// MetaDataOwners that contains the
 	// the MetaData
+        
+        //Trouble one : how can I know in which metadataOwner i 
+        //have to put a metadata if i don't have any informations
+        //about this metadataowner ? 
         System.out.println("addMetaData list");
         annotationService.addMetaData(list, m);
         int expectedSize = 1;
+        long num = list.stream().count();
         assertEquals("Size wrong", expectedSize, list.size());
         
     }
@@ -158,7 +197,7 @@ public class AnnotationServiceTest extends IjfxTest{
      */
     @Test
     public void testRemoveMetaData_List_MetaData() {
-        System.out.println("removeMetaData");
+        System.out.println("removeMetaData list");
         annotationService.addMetaData(list, m);
         annotationService.removeMetaData(list, m);
         int expectedSize = 0;

@@ -49,21 +49,34 @@ public class DefaultAnnotationService extends AbstractService implements Annotat
 
     @Override
     public void addMetaData(MetaDataOwner owner, MetaData m) {
+        if (m != null) {
+            owner.getMetaDataSet().put(m);
+        }
         
         
     }
 
     @Override
     public void removeMetaData(MetaDataOwner owner, MetaData m, boolean matchValue) {
-        owner.getMetaDataSet();
+        if (matchValue) {
+            if (owner.getMetaDataSet().containMetaData(m)){
+                m = null;
+            }
+            
+        }
+        
     }
 
     @Override
     public void addMetaData(List<? extends MetaDataOwner> list, MetaData m) {
+        if (m !=null){
+            list.add(m);
+        }
     }
 
     @Override
     public void removeMetaData(List<? extends MetaDataOwner> list, MetaData m) {
+        
     }
     
 }
