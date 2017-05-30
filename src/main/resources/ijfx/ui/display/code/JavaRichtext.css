@@ -24,6 +24,70 @@
     -fx-fill: purple;
     -fx-font-weight: bold;
 }
+.white {
+    -fx-fill: white;
+    -fx-font-weight: bold;
+}
+.black {
+    -fx-fill: black;
+    -fx-font-weight: bold;
+}
+.red {
+    -fx-fill: red;
+    -fx-font-weight: bold;
+}
+.blue {
+    -fx-fill: blue;
+    -fx-font-weight: bold;
+}
+.green {
+    -fx-fill: green;
+    -fx-font-weight: bold;
+}
+.yellow {
+    -fx-fill: yellow;
+    -fx-font-weight: bold;
+}
+.magenta {
+    -fx-fill: magenta;
+    -fx-font-weight: bold;
+}
+.cyan {
+    -fx-fill: cyan;
+    -fx-font-weight: bold;
+}
+.brightwhite {
+    -fx-fill: white;
+    -fx-font-weight: bold;
+}
+.brightblack {
+    -fx-fill: black;
+    -fx-font-weight: bold;
+}
+.brightred {
+    -fx-fill: red;
+    -fx-font-weight: bold;
+}
+.brightblue {
+    -fx-fill: blue;
+    -fx-font-weight: bold;
+}
+.brightgreen {
+    -fx-fill: green;
+    -fx-font-weight: bold;
+}
+.brightyellow {
+    -fx-fill: yellow;
+    -fx-font-weight: bold;
+}
+.brightmagenta {
+    -fx-fill: magenta;
+    -fx-font-weight: bold;
+}
+.brightcyan {
+    -fx-fill: cyan;
+    -fx-font-weight: bold;
+}
 .semicolon {
     -fx-font-weight: bold;
 }

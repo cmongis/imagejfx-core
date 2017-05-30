@@ -202,7 +202,8 @@ public class TextEditorController extends AnchorPane {
     }
     */
     public void changeLanguage(ScriptLanguage language){
-        //TODO
+        String path = findFileLanguage(language);
+        textAreaCreator.initLanguage(path);
     }
     
     public static String findFileLanguage(ScriptLanguage language) {
