@@ -19,37 +19,26 @@
  */
 package ijfx.ui.display.code;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.model.Codec;
-import org.fxmisc.richtext.model.ReadOnlyStyledDocument;
-import org.fxmisc.richtext.model.StyledDocument;
-import org.fxmisc.richtext.model.StyledText;
-import org.reactfx.util.Either;
-import org.reactfx.util.Tuple2;
 import org.scijava.plugin.Parameter;
+import org.scijava.script.ScriptLanguage;
+import org.scijava.script.ScriptService;
+import org.scijava.util.FileUtils;
 
 
 /**
@@ -64,20 +53,24 @@ public class TextEditorController extends AnchorPane {
     Scene scene;
     @Parameter
     Stage stage;
+    @Parameter
+    private ScriptService scriptService;
     @FXML
     BorderPane borderPane;
     @FXML
     MenuButton fileButton;
     @FXML
     MenuButton editButton;
+    @FXML
+    MenuButton LanguageButtom;
     
-    
+    String fileName;
     Language LANGUAGE = Language.JAVASCRIPT;
     
     CodeArea codeArea = null;
+    TextArea textAreaCreator;
     
     public TextEditorController() throws IOException {
-        System.out.println("Bonjour et bienvenue dans ce nouveau controlleur j'espere qu'il vous plaira");
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/ijfx/ui/display/code/TextEditorMain.fxml"));
         getStylesheets().add(getClass().getResource("/ijfx/ui/display/code/JavaRichtext.css").toExternalForm());
         loader.setRoot(this);
@@ -85,12 +78,18 @@ public class TextEditorController extends AnchorPane {
         loader.load();
         
         
-        RichTextEditor richTextEditor =new RichTextEditor();
+        //RichTextEditor richTextEditor =new RichTextEditor();
         
-        TextArea textAreaCreator = new TextArea();
+        textAreaCreator = new TextArea();
         this.codeArea = textAreaCreator.getCodeArea();
         init();
         borderPane.setCenter(codeArea);
+        
+        this.setBottomAnchor(borderPane, 15d);
+        this.setTopAnchor(borderPane, 0d);
+        this.setLeftAnchor(borderPane, 0d);
+        this.setRightAnchor(borderPane, 0d);
+        
         /*
         //File javascriptrc = new File("javascript.nanorc");
         Platform.runLater( () ->{
@@ -112,6 +111,8 @@ public class TextEditorController extends AnchorPane {
         //this.setPrefSize(USE_COMPUTED_SIZE, USE_COMPUTED_SIZE);
         
     }
+
+   
     
     public void init () {
         fileButton.getItems().add(creatMenuItem("loadfile", this::loadDocument));
@@ -123,6 +124,12 @@ public class TextEditorController extends AnchorPane {
         editButton.getItems().add(creatMenuItem("paste", codeArea::paste));
         
         
+        
+    }
+    
+    public void initText(ScriptDisplay display){
+        changeLanguage(display.getLanguage());
+        this.textAreaCreator.setText(display.get(0).getCode());
     }
     
     public MenuItem creatMenuItem(String styleClass, Runnable action){
@@ -185,5 +192,20 @@ public class TextEditorController extends AnchorPane {
 
     private void save(File file) {
         //TODO
+    }
+    /*
+    private void initLangages(){
+        for(Language lang : Language.values()){
+            LanguageButtom.getItems().add(creatMenuItem(ScriptLanguage, ()-> changeLanguage(Language.JAVASCRIPT) ));
+        }
+       LanguageButtom.getItems().add(creatMenuItem(Language.JAVASCRIPT.getName(), ()-> changeLanguage(Language.JAVASCRIPT) )); 
+    }
+    */
+    public void changeLanguage(ScriptLanguage language){
+        //TODO
+    }
+    
+    public static String findFileLanguage(ScriptLanguage language) {
+       return String.format("/ijfx/ui/display/code/%s.nanorc",language.getLanguageName().toLowerCase().replace(" ", ""));
     }
 }

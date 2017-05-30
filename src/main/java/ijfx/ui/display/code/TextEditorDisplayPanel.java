@@ -19,8 +19,12 @@
  */
 package ijfx.ui.display.code;
 
+import ijfx.core.formats.Script;
 import ijfx.ui.display.image.AbstractFXDisplayPanel;
 import ijfx.ui.display.image.FXDisplayPanel;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.TabPane;
@@ -32,6 +36,7 @@ import org.scijava.display.Display;
 import org.scijava.display.TextDisplay;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.viewer.DisplayWindow;
 
 /**
  * TODO : Change to ScriptDisplayPanelFX
@@ -41,30 +46,43 @@ import org.scijava.plugin.Plugin;
 public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay> {
     @Parameter
     Scene scene;
-    AnchorPane root;
+    TextEditorController root;
     BorderPane borderPane;
-
+    ScriptDisplay display;
     public TextEditorDisplayPanel() {
         super(ScriptDisplay.class);
     }
 
     @Override
     public void pack() {
-        borderPane = new BorderPane();
-        root = new AnchorPane();
-        root.getChildren().add(borderPane);
-        root.getStylesheets().add(getClass().getResource("/ijfx/ui/display/code/JavaRichtext.css").toExternalForm());
-        
-        AnchorPane.setBottomAnchor(borderPane, 15d);
-        AnchorPane.setTopAnchor(borderPane, 0d);
-        AnchorPane.setLeftAnchor(borderPane, 0d);
-        AnchorPane.setRightAnchor(borderPane, 0d);
+        try {
+            this.root = new TextEditorController();
+            this.root.initText(this.display);
+            /*
+            root.getChildren().add(borderPane);
+            root.getStylesheets().add(getClass().getResource("/ijfx/ui/display/code/JavaRichtext.css").toExternalForm());
+            
+            AnchorPane.setBottomAnchor(borderPane, 15d);
+            AnchorPane.setTopAnchor(borderPane, 0d);
+            AnchorPane.setLeftAnchor(borderPane, 0d);
+            AnchorPane.setRightAnchor(borderPane, 0d);
+            
+            TextArea textAreaCreator = new TextArea();
+            CodeArea codeArea = textAreaCreator.getCodeArea();
+            borderPane.setCenter(codeArea);
+            textAreaCreator.nanorcParser(getClass().getResource("/ijfx/ui/display/code/javascript.nanorc").getFile());
+*/
+        } catch (IOException ex) {
+            Logger.getLogger(TextEditorDisplayPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
-        TextArea textAreaCreator = new TextArea();
-        CodeArea codeArea = textAreaCreator.getCodeArea();
-        borderPane.setCenter(codeArea);
-        textAreaCreator.nanorcParser(getClass().getResource("/ijfx/ui/display/code/javascript.nanorc").getFile());
-
+    }
+    
+    @Override
+    public void view(DisplayWindow window, ScriptDisplay display){
+        this.display = display;
+        //System.out.println("affichage : " + display.get(0));
+        //this.root.initText(display);
     }
 
     @Override

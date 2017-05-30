@@ -19,13 +19,37 @@
  */
 package ijfx.ui.display.code;
 
+import org.scijava.script.ScriptLanguage;
+
 /**
  *
  * @author florian
  */
 public enum Language {
-    JAVASCRIPT,
-    JAVA,
-    PYTHON;
+    JAVASCRIPT ("Javascript","/ijfx/ui/display/code/javascript.nanorc"),
+    JAVA ("Java","/ijfx/ui/display/code/java.nanorc"),
+    PYTHON ("Python","/ijfx/ui/display/code/python.nanorc");
+    
+    private String name = "";
+    private String path = "";
+
+    private Language(String name, String path) {
+        this.name = name;
+        this.path = path;
+    }
+    
+    public String getPath (){
+        return path;
+    }
+
+    public String getName() {
+        return name;
+    }
+    
+    
+    public static String findFile(ScriptLanguage language) {
+       return String.format("/ijfx/ui/display/code/%s.nanorc",language.getLanguageName().toLowerCase().replace(" ", ""));
+    }
+    
     
 }

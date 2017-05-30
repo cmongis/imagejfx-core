@@ -152,7 +152,9 @@ public class TextArea{
     public CodeArea getCodeArea() {
         return this.codeArea;
     }
-    
+    public void setText(String text){
+        this.codeArea.replaceText(0, 0, text);
+    }
     public void nanorcParser(String path){
         
         Hashtable keywords = new Hashtable(); // creation de la table de hashage
@@ -186,7 +188,6 @@ public class TextArea{
             if (splitedLine[0].equals("color") && !string){
                 if (splitedLine[2].matches("\"\\\\\\<\\(.*")){
                     List<String> words = new ArrayList<>(); // creation d'une entree dans la table, la valeur est une liste qui contiendra les mots
-                    System.out.println();
                     String chain = splitedLine[2].replace(")\\>\"", ""); // removing the unintersting end of the string
                     chain = chain.replace("\"\\<(", "");                 // same for the beginning
                     for (String word : chain.split("\\|")){ // spliting with |
