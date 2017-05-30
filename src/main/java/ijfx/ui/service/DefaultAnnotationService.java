@@ -23,7 +23,6 @@ import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataOwner;
 import ijfx.explorer.datamodel.Taggable;
 import ijfx.explorer.datamodel.Tag;
-import ijfx.ui.service.AnnotationService;
 import java.util.List;
 import org.scijava.service.AbstractService;
 
@@ -62,6 +61,9 @@ public class DefaultAnnotationService extends AbstractService implements Annotat
             if (owner.getMetaDataSet().containMetaData(m)){
                 m = null;
             }
+            else {
+                System.out.println("Pas de m correspondant");
+            }
             
         }
         
@@ -70,12 +72,15 @@ public class DefaultAnnotationService extends AbstractService implements Annotat
     @Override
     public void addMetaData(List<? extends MetaDataOwner> list, MetaData m) {
         if (m !=null){
-            list.add(m);
+            list.stream().map(c->c.getMetaDataSet().put(m));
         }
     }
 
     @Override
     public void removeMetaData(List<? extends MetaDataOwner> list, MetaData m) {
+        if (m!=null){
+            list.stream().filter(c -> c.getMetaDataSet().containMetaData(m)).forEach((c)-> removeMetaData(c, m, true));
+        }
         
     }
     

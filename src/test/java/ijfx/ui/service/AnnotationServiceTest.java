@@ -19,27 +19,26 @@
  */
 package ijfx.ui.service;
 
+import ijfx.ui.service.AnnotationService;
+import ijfx.ui.service.DefaultAnnotationService;
+
 import ijfx.core.IjfxTest;
 import ijfx.core.metadata.GenericMetaData;
 import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataOwner;
-import ijfx.core.metadata.MetaDataSet;
 import ijfx.explorer.datamodel.DefaultTag;
-import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.datamodel.Tag;
 import ijfx.explorer.datamodel.Taggable;
 import ijfx.explorer.views.GenerateDummyExplorables;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Before;
 import org.scijava.plugin.Parameter;
-import org.scijava.plugin.PluginService;
+import org.scijava.Context;
 
 /**
  *
@@ -61,7 +60,9 @@ public class AnnotationServiceTest extends IjfxTest{
     public AnnotationServiceTest() {
     }
     
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
+        annotationService = new DefaultAnnotationService();
         key = "key";
         value = "value";
         taggable = (Taggable) new GenerateDummyExplorables(); // doesn this work ??? If yes, why ?
@@ -74,7 +75,8 @@ public class AnnotationServiceTest extends IjfxTest{
 
     }
     
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         key = null;
         value = null;
         taggable = null;
@@ -154,7 +156,7 @@ public class AnnotationServiceTest extends IjfxTest{
         MetaData n = new GenericMetaData(key2, value2);
         annotationService.addMetaData(owner, n);
         annotationService.removeMetaData(owner, n, matchValue);
-        assertTrue("m is in owner", owner.getMetaDataSet().containMetaData(n));
+        assertTrue("n is in owner", owner.getMetaDataSet().containMetaData(n));
         
         //--------------------------------------
         //In the case of the value match but not the key
@@ -166,7 +168,7 @@ public class AnnotationServiceTest extends IjfxTest{
         MetaData o = new GenericMetaData(key2, value2);
         annotationService.addMetaData(owner, o);
         annotationService.removeMetaData(owner, o, matchValue);
-        assertTrue("m is in owner", owner.getMetaDataSet().containMetaData(o));
+        assertTrue("o is in owner", owner.getMetaDataSet().containMetaData(o));
         
     }
 
@@ -181,14 +183,16 @@ public class AnnotationServiceTest extends IjfxTest{
 	// MetaDataOwners that contains the
 	// the MetaData
         
-        //Trouble one : how can I know in which metadataOwner i 
-        //have to put a metadata if i don't have any informations
-        //about this metadataowner ? 
+        
         System.out.println("addMetaData list");
         annotationService.addMetaData(list, m);
-        int expectedSize = 1;
-        long num = list.stream().count();
-        assertEquals("Size wrong", expectedSize, list.size());
+        
+        long expectedSize = new Long(list.size());
+        long numMetadata = list.stream().filter(c->c.getMetaDataSet().containMetaData(m))
+                .count();
+        
+        assertNotNull("Metadata null", m);
+        assertEquals("MetaData is not containing by all MetaDataOwners", expectedSize, numMetadata);
         
     }
 
@@ -200,9 +204,13 @@ public class AnnotationServiceTest extends IjfxTest{
         System.out.println("removeMetaData list");
         annotationService.addMetaData(list, m);
         annotationService.removeMetaData(list, m);
-        int expectedSize = 0;
+        
+        long expectedSize = 0;
+        long numMetadata = list.stream().filter(c->c.getMetaDataSet().containMetaData(m))
+                .count();
+        
         assertNull("MetaData not null", m);
-        assertEquals("Size wrong", expectedSize, list.size());
+        assertEquals("MetaData is containing by several MetaDataOwners", expectedSize, numMetadata);
     }
 
     
