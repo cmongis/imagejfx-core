@@ -90,13 +90,17 @@ public class InputPanelFX implements InputPanel<Node, Node> {
     public void addWidgetInGridPane(InputWidget<?, Node> widget) {
 
         fieldCount++;
-        Node component = widget.getComponent();
-        Label label = new Label();
-        label.getStyleClass().add("input-label");
-        label.setText(widget.get().getWidgetLabel());
-        gridPane.add(label, labelColumn, fieldCount);
-        gridPane.add(component, fieldColumn, fieldCount);
 
+        if (widget.get().isMessage()) {
+            gridPane.add(widget.getComponent(), labelColumn, fieldCount, 2, 1);
+        } else {
+            Node component = widget.getComponent();
+            Label label = new Label();
+            label.getStyleClass().add("input-label");
+            label.setText(widget.get().getWidgetLabel());
+            gridPane.add(label, labelColumn, fieldCount);
+            gridPane.add(component, fieldColumn, fieldCount);
+        }
     }
 
     @Override
