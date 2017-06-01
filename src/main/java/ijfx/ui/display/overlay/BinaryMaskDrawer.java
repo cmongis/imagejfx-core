@@ -20,12 +20,13 @@
 package ijfx.ui.display.overlay;
 
 import ijfx.core.overlay.OverlayDrawingService;
-import ijfx.ui.display.image.ViewPort;
-import javafx.geometry.Rectangle2D;
+import ijfx.ui.display.image.ImageCanvasUtils;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
+import net.imagej.display.ImageCanvas;
+import net.imagej.display.ImageDisplay;
 import net.imagej.overlay.BinaryMaskOverlay;
 import net.imagej.overlay.Overlay;
 import net.imglib2.RandomAccess;
@@ -34,6 +35,7 @@ import net.imglib2.roi.BinaryMaskRegionOfInterest;
 import net.imglib2.type.logic.BitType;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.IntCoords;
 
 /**
  *
@@ -57,8 +59,10 @@ public class BinaryMaskDrawer implements OverlayDrawer<BinaryMaskOverlay> {
         return new Double(d).intValue();
     }
     
-    public void update(OverlayViewConfiguration<BinaryMaskOverlay> viewConfig, ViewPort viewport, Canvas canvas) {
+    public void update(OverlayViewConfiguration<BinaryMaskOverlay> viewConfig, ImageDisplay display, Canvas canvas) {
 
+        ImageCanvas viewport = display.getCanvas();
+        
         BinaryMaskOverlay overlay = viewConfig.getOverlay();
         
         BinaryMaskRegionOfInterest roi = (BinaryMaskRegionOfInterest) overlay.getRegionOfInterest();
@@ -72,18 +76,20 @@ public class BinaryMaskDrawer implements OverlayDrawer<BinaryMaskOverlay> {
         Color color = viewConfig.isSelected() ? selectedColor : unselectedColor;
         
         if (image == null) {
-            width = new Double(viewport.getImageWidth()).intValue();
-            height = new Double(viewport.getImageHeight()).intValue();
+            width = toInt(display.dimension(0));
+            height = toInt(display.dimension(1));
             image = new WritableImage(width, height);
         }
 
-        Rectangle2D seenRectangle = viewport.getSeenRectangle();
+       
  
+        IntCoords upperLeft = ImageCanvasUtils.getUpperLeftCornerOnData(viewport);
+        IntCoords topRight = ImageCanvasUtils.getBottomRightCornerOnData(viewport);
         
-        int minX = new Double(seenRectangle.getMinX()).intValue();
-        int minY = toInt(seenRectangle.getMinY());
-        int maxX = toInt(seenRectangle.getMaxX());
-        int maxY = toInt(seenRectangle.getMaxY());
+        int minX = upperLeft.x;
+        int minY = upperLeft.y;
+        int maxX = topRight.x;
+        int maxY = topRight.y;
         
         if(minX < 0) minX = 0;
         if(minY < 0) minY = 0;
@@ -115,10 +121,10 @@ public class BinaryMaskDrawer implements OverlayDrawer<BinaryMaskOverlay> {
 
         final double sx, sy, sw, sh;
 
-        sx = seenRectangle.getMinX();
-        sy = seenRectangle.getMinY();
-        sw = seenRectangle.getWidth();
-        sh = seenRectangle.getHeight();
+        sx = minX;
+        sy = minY;
+        sw = maxX - minX;
+        sh = maxY - minY;
 
         graphicsContext2D.drawImage(image, sx, sy, sw, sh, 0, 0, canvas.getWidth(), canvas.getHeight());
 
@@ -127,7 +133,7 @@ public class BinaryMaskDrawer implements OverlayDrawer<BinaryMaskOverlay> {
     public boolean canHandle(Class<?> t) {
         return t ==  BinaryMaskOverlay.class;
     }
-
+    /*
     @Override
     public boolean isOverlayOnViewPort(Overlay o, ViewPort p) {
         return true;
@@ -148,6 +154,8 @@ public class BinaryMaskDrawer implements OverlayDrawer<BinaryMaskOverlay> {
         randomAccess.setPosition(y,1);
         return randomAccess.get().get();
         
-    }
+    }*/
+    
+    
     
 }
