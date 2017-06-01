@@ -20,6 +20,10 @@
 package ijfx.ui.display.overlay;
 
 import ijfx.core.IjfxService;
+import ijfx.ui.main.ImageJFX;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
 import net.imagej.overlay.Overlay;
 import org.scijava.Context;
 import org.scijava.plugin.Parameter;
@@ -43,23 +47,27 @@ public class OverlayDisplayService extends AbstractService implements IjfxServic
     @Parameter
     Context context;
 
+    Logger logger = ImageJFX.getLogger();
+    
+    private final Map<Class<? extends Overlay>, OverlayDrawer> drawerMap = new HashMap<>();
+
     public OverlayModifier createModifier(Overlay overlay) {
         return findPluginFor(OverlayModifier.class, overlay);
     }
 
     //public OverlayDrawer createDrawer(Overlay overlay) {
-      //  return findPluginFor(OverlayDrawer.class, overlay);
+    //  return findPluginFor(OverlayDrawer.class, overlay);
     //}
+    public OverlayDrawer createDrawer(Class<?> o) {
 
-    public  OverlayDrawer createDrawer(Class<?> o) {
-        
         for (OverlayDrawer drawer : pluginService.createInstancesOfType(OverlayDrawer.class)) {
-            if(drawer.canHandle(o))
-            return drawer;
+            if (drawer.canHandle(o)) {
+                return drawer;
+            }
         }
         return null;
     }
-    
+
     private <T extends ClassHandler, C> T findPluginFor(Class<? extends T> handlerType, C overlay) {
 
         // if (map.containsKey(overlay) == false || map.get(overlay) == null) {
@@ -74,6 +82,22 @@ public class OverlayDisplayService extends AbstractService implements IjfxServic
         // }
 
         return null;
+    }
+
+    public OverlayDrawer getDrawer(Overlay overlay) {
+        //logger.info("Searching a drawer for "+overlay.getClass().getSimpleName());
+        if (drawerMap.get(overlay.getClass()) == null) {
+            OverlayDrawer drawer = createDrawer(overlay.getClass());
+            if (drawer == null) {
+                logger.warning("No overlay compatible for " + overlay.getClass().getSimpleName());
+                return null;
+            } else {
+                drawerMap.put(overlay.getClass(), drawer);
+                return drawer;
+            }
+        } else {
+            return drawerMap.get(overlay.getClass());
+        }
     }
 
 }

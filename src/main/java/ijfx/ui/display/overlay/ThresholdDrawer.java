@@ -20,12 +20,14 @@
 package ijfx.ui.display.overlay;
 
 import ijfx.core.overlay.OverlayDrawingService;
-import ijfx.ui.display.image.ViewPort;
+import ijfx.ui.display.image.ImageCanvasUtils;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
+import net.imagej.display.ImageCanvas;
+import net.imagej.display.ImageDisplay;
 import net.imagej.overlay.Overlay;
 import net.imagej.overlay.ThresholdOverlay;
 import org.scijava.plugin.Parameter;
@@ -49,17 +51,20 @@ public class ThresholdDrawer implements OverlayDrawer<ThresholdOverlay> {
 
     int height;
 
-    public void update(OverlayViewConfiguration<ThresholdOverlay> viewConfig, ViewPort viewport, Canvas canvas) {
+    public void update(OverlayViewConfiguration<ThresholdOverlay> viewConfig, ImageDisplay display, Canvas canvas) {
 
+        
+        ImageCanvas viewport = display.getCanvas();
+        
         ThresholdOverlay overlay = viewConfig.getOverlay();
         
         if (image == null) {
-            width = new Double(viewport.getImageWidth()).intValue();
-            height = new Double(viewport.getImageHeight()).intValue();
+            width = new Double(display.dimension(0)).intValue();
+            height = new Double(display.dimension(1)).intValue();
             image = new WritableImage(width, height);
         }
 
-        Rectangle2D r = viewport.getSeenRectangle();
+        int[] r = ImageCanvasUtils.getSeenRectangle(viewport);
         
         long[] point = new long[overlay.numDimensions()];
        
@@ -83,21 +88,16 @@ public class ThresholdDrawer implements OverlayDrawer<ThresholdOverlay> {
         graphicsContext2D.setFill(Color.TRANSPARENT);
         graphicsContext2D.fill();
 
-        double sx, sy, sw, sh;
+        
 
-        sx = viewport.getSeenRectangle().getMinX();
-        sy = viewport.getSeenRectangle().getMinY();
-        sw = viewport.getSeenRectangle().getWidth();
-        sh = viewport.getSeenRectangle().getHeight();
-
-        graphicsContext2D.drawImage(image, sx, sy, sw, sh, 0, 0, canvas.getWidth(), canvas.getHeight());
+        graphicsContext2D.drawImage(image, r[0], r[1], r[2], r[3], 0, 0, canvas.getWidth(), canvas.getHeight());
 
     }
 
     public boolean canHandle(Class<?> t) {
         return t ==  ThresholdOverlay.class;
     }
-
+/*
     @Override
     public boolean isOverlayOnViewPort(Overlay o, ViewPort p) {
         return true;
@@ -110,6 +110,6 @@ public class ThresholdDrawer implements OverlayDrawer<ThresholdOverlay> {
         long y = Math.round(yOnImage);
    
         return overlay.classify(new long[] {x,y}) == 0;
-    }
+    }*/
     
 }

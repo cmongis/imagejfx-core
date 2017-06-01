@@ -24,6 +24,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -51,6 +52,7 @@ public class TextWidgetFX extends AbstractFXInputWidget<String> implements TextW
 
     private ModelBinder<String> modelBinder;
 
+    private Label label;
     private Node node;
 
     @Override
@@ -80,7 +82,14 @@ public class TextWidgetFX extends AbstractFXInputWidget<String> implements TextW
             passwordField = new PasswordField();
             node = passwordField;
             bindProperty(passwordField.textProperty());
-        } else {
+        }
+        else if(model.isMessage()) {
+            label = new Label();
+            label.getStyleClass().add("input-message");
+            bindProperty(label.textProperty());
+            node = label;
+        }
+        else {
             textField = new TextField();
             node = textField;
             bindProperty(textField.textProperty());

@@ -19,16 +19,18 @@
  */
 package ijfx.ui.display.overlay;
 
-import ijfx.ui.display.image.ViewPort;
+import ijfx.core.property.CoordsHelper;
+import ijfx.ui.display.image.ImageCanvasUtils;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Point2D;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import net.imagej.display.ImageCanvas;
+import org.scijava.util.IntCoords;
+import org.scijava.util.RealCoords;
 
 /**
  *
@@ -36,12 +38,14 @@ import javafx.scene.shape.Rectangle;
  */
 public class MoveablePoint extends Rectangle {
 
-    ViewPort viewport;
+    ImageCanvas viewport;
+    
+    private CoordsHelper positionOnDataHelper = new CoordsHelper();
+    private CoordsHelper positionOnCanvasHelper = new CoordsHelper();
 
-    private Property<Point2D> positionOnScreen = new SimpleObjectProperty<>();
-    private Property<Point2D> positionOnImage = new SimpleObjectProperty<>();
+   
 
-    public MoveablePoint() {
+    private MoveablePoint() {
         super();
 
         setFill(Color.YELLOW);
@@ -52,34 +56,47 @@ public class MoveablePoint extends Rectangle {
         setHeight(9);
 
         setOnMouseDragged(this::onMouseDragged);
-        positionOnScreen.addListener(this::onPositionOnScreenChange);
+        
+        xProperty().bindBidirectional(positionOnCanvasHelper.intXProperty());
+        yProperty().bindBidirectional(positionOnCanvasHelper.intYProperty());
+        
+        positionOnCanvasHelper.intCoordsProperty().addListener(this::updateData);
+        
     }
 
-    public MoveablePoint(ViewPort camera) {
+    public MoveablePoint(ImageCanvas canvas) {
         this();
-        this.viewport = camera;
+        this.viewport = canvas;
         
     }
 
     public void redraw() {
 
-        Rectangle2D r = viewport.getSeenRectangle();
+        
+        updateFromData();
+        
 
-        Point2D newPosition = viewport.getPositionOnCamera(getPositionOnImage());
+        setVisible(viewport.isInImage(positionOnCanvasHelper.getIntCoords()));
 
-        setVisible(viewport.isOnCamera(newPosition));
-
-        if (isVisible()) {
-            setX(newPosition.getX());
-            setY(newPosition.getY());
-        }
+        
 
     }
+    
+    private void updateFromData() {
+        
 
-    public Point2D getPositionOnImage() {
-
-        return positionOnImage.getValue();
+        
+        positionOnCanvasHelper.setIntCoords(viewport.dataToPanelCoords(positionOnDataHelper.getRealCoords()));
     }
+    
+    private void updateData(Observable obs, IntCoords oldValue, IntCoords newValue) {
+        
+        
+        
+        //positionOnDataHelper.setRealCoords(viewport.panelToDataCoords(newValue));
+    }
+
+    
 
     // place the points without alerting the listeners
     public void placeOnScreen(Point2D positionOnScreen) {
@@ -93,13 +110,7 @@ public class MoveablePoint extends Rectangle {
         placeOnScreen(positionOnScreen);
     }
 
-    public void onPositionOnScreenChange(Observable value, Point2D oldValue, Point2D newValue) {
-        if (viewport != null) {
-            positionOnImage.setValue(viewport.getPositionOnImage(positionOnScreen.getValue()));
-        }
-
-    }
-
+   
     public Double calculateTranslateX() {
         return -getWidth() / 2;
     }
@@ -109,18 +120,31 @@ public class MoveablePoint extends Rectangle {
     }
 
     private void onMouseDragged(MouseEvent event) {
-        setX(event.getX());
-        setY(event.getY());
-        positionOnScreen.setValue(new Point2D(getX(), getY()));
+        
+        
+        
+        //setX(event.getX());
+        //setY(event.getY());
+        
+        positionOnCanvasHelper.setRealCoords(new RealCoords(event.getX(),event.getY()));
+        
+        // updating model only when there are movement
+        positionOnDataHelper.setRealCoords(viewport.panelToDataCoords(positionOnCanvasHelper.getIntCoords()));
         event.consume();
     }
 
-    public Property<Point2D> positionOnScreenProperty() {
-        return positionOnScreen;
+    public Property<IntCoords> positionOnCanvasProperty() {
+        return positionOnCanvasHelper.intCoordsProperty();
     }
 
-    public Property<Point2D> positionOnImageProperty() {
-        return positionOnImage;
+    public Property<RealCoords> positionOnDataProperty() {
+        return positionOnDataHelper.realCoordsProperty();
     }
+    
+    private int toInt(Double x) {
+        return x.intValue();
+    }
+    
+    
 
 }

@@ -20,8 +20,10 @@
  */
 package ijfx.ui.plugin.menubar;
 
+import ijfx.commands.script.ScriptCommand;
 import ijfx.ui.UiPlugin;
 import ijfx.core.legacy.ImageJ1PluginService;
+import ijfx.core.menu.MenuGenerator;
 import ijfx.ui.main.ImageJFX;
 
 import java.util.logging.Logger;
@@ -51,7 +53,7 @@ import org.scijava.menu.event.MenusRemovedEvent;
  * @author Cyril MONGIS, 2015
  */
 @Plugin(type = UiPlugin.class)
-@UiConfiguration(id = "imagej-menu-bar", context = "imagej+visualize", localization = "topCenterHBox")
+@UiConfiguration(id = "imagej-menu-bar", context = "imagej+visualize -script-open", localization = "topCenterHBox")
 public class ImageJMenuBar extends MenuBar implements UiPlugin {
 
     @Parameter
@@ -93,11 +95,15 @@ public class ImageJMenuBar extends MenuBar implements UiPlugin {
     
     @Override
     public UiPlugin init() {
-        creator = new FxMenuCreator();
-        context.inject(creator);
-        menuService.createMenus(creator, this);
+        creator = new FxMenuCreator(context);
         
         
+        MenuGenerator menuGenerator = new MenuGenerator(context);
+        
+        
+        menuGenerator.addModules(moduleService.getModules(),ScriptCommand.class);
+        menuGenerator.createMenus(creator, this);
+       
         addEventHandler(MouseEvent.MOUSE_ENTERED,event->isHover.setValue(true));
         addEventHandler(MouseEvent.MOUSE_EXITED,event->isHover.setValue(false));
         
@@ -105,6 +111,8 @@ public class ImageJMenuBar extends MenuBar implements UiPlugin {
                 .bind(isHover,opacityProperty().asObject());
         
       
+        
+        
         return this;
 
     }

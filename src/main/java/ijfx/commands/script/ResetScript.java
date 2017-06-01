@@ -17,34 +17,29 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.formats;
+package ijfx.commands.script;
 
-import io.scif.Format;
-import java.util.Arrays;
-import java.util.List;
+import ijfx.ui.display.code.ScriptDisplay;
+import org.scijava.command.ContextCommand;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.text.AbstractTextFormat;
 
 /**
  *
  * @author cyril
  */
-public class CodeFormat extends AbstractTextFormat {
+@Plugin(type = ScriptCommand.class,menuPath = "Edit > Reset (example)")
+public class ResetScript extends ContextCommand implements ScriptCommand{
 
-    
-    private static final List<String> FORMATS = Arrays
-            .asList("py","js","json","java");
+    @Parameter
+    ScriptDisplay scriptDisplay;
     
     @Override
-    public List<String> getExtensions() {
-        return FORMATS;
-    }
-
-    @Override
-    public String asHTML(String text) {
-
-        return text;
+    public void run() {
         
+        
+        scriptDisplay.get(0).setCode("Noooooo !");
+        scriptDisplay.update();
     }
     
 }

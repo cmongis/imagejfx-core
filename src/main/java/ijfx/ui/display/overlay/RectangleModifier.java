@@ -19,80 +19,102 @@
  */
 package ijfx.ui.display.overlay;
 
-import ijfx.ui.display.image.ViewPort;
+import ijfx.core.property.CoordsHelper;
 import java.util.ArrayList;
 import java.util.List;
-import net.imagej.overlay.Overlay;
+import javafx.beans.Observable;
+import net.imagej.display.ImageCanvas;
+import net.imagej.display.ImageDisplay;
 import net.imagej.overlay.RectangleOverlay;
-import org.scijava.Context;
-import org.scijava.plugin.Parameter;
+import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.RealCoords;
 
 /**
  *
- * @author Cyril MONGIS, 2016
+ * @author cyril
  */
-@Plugin(type = OverlayModifier.class)
-public class RectangleModifier implements OverlayModifier<RectangleOverlay>{
-    
-    MoveablePoint a;
-    MoveablePoint b;
-    
-    List<MoveablePoint> hashSet;
+@Plugin(type = OverlayModifier.class, priority = Priority.HIGH_PRIORITY)
+
+public class RectangleModifier extends AbstractOverlayModifier<RectangleOverlay> {
+
+    ImageCanvas viewport;
+
+    ImageDisplay display;
+
+    List<MoveablePoint> points;
+
+    CoordsHelper minEdgeOnCanvas = new CoordsHelper();
+
+    CoordsHelper maxEdgeOnCanvas = new CoordsHelper();
 
     RectangleOverlay overlay;
-    
-    RectangleOverlayHelper helper;
-    
-    @Parameter
-    Context context;
-    
-    @Override
-    public boolean canHandle(Overlay o) {
-        return o instanceof RectangleOverlay;
+
+    MoveablePoint a;
+    MoveablePoint b;
+
+    public RectangleModifier() {
+        super(RectangleOverlay.class);
     }
 
     @Override
-    public List<MoveablePoint> getModifiers(ViewPort viewport, RectangleOverlay overlay) {
-        
-    
-        if(hashSet == null || hashSet.size() == 0 || hashSet.get(1) == null) {
-            
-            
-            
+    public List<MoveablePoint> getModifiers(ImageDisplay display, RectangleOverlay overlay) {
+        if (viewport == null) {
+            points = new ArrayList<>();
+
+            this.overlay = overlay;
+            this.display = display;
+            viewport = display.getCanvas();
             a = new MoveablePoint(viewport);
             b = new MoveablePoint(viewport);
-            
-            // initialixing
-            hashSet = new ArrayList<>(2);
-            hashSet.add(a);
-            hashSet.add(b);
-            
-            // creating the helper 
-            helper = new RectangleOverlayHelper(overlay);
-            context.inject(helper);
-            a.placeOnScreen(viewport.getPositionOnCamera(helper.getMinEdge()));
-            b.placeOnScreen(viewport.getPositionOnCamera(helper.getMaxEdge()));
-            
-            
-            
-            a.positionOnImageProperty().setValue(helper.getMinEdge());
-            b.positionOnImageProperty().setValue(helper.getMaxEdge());
-            
-            
-            // change of A and B will update automatically the overlay via the helper
-            // because each time the point is moved on the screen, the position
-            // on the image is also updated
-            helper.minEdgeProperty().bind(a.positionOnImageProperty());
-            helper.maxEdgeProperty().bind(b.positionOnImageProperty());
 
+            points.add(a);
+            points.add(b);
+
+            refresh();
+            
+            a.positionOnDataProperty().addListener(this::onMinEdgeChanged);
+            b.positionOnDataProperty().addListener(this::onMaxEdgeChanged);
+
+            
         }
-        
-        return hashSet;
-    
+
+        return points;
     }
-    
-    
-    
-    
+
+    public void updateFromData() {
+        RealCoords minEdge = new RealCoords(overlay.getOrigin(0), overlay.getOrigin(1));
+        RealCoords maxEdge = new RealCoords(minEdge.x + overlay.getExtent(0), minEdge.y + overlay.getExtent(1));
+
+        a.positionOnDataProperty().setValue(minEdge);
+        b.positionOnDataProperty().setValue(maxEdge);
+
+        a.positionOnCanvasProperty().setValue(viewport.dataToPanelCoords(minEdge));
+        b.positionOnCanvasProperty().setValue(viewport.dataToPanelCoords(maxEdge));
+
+    }
+
+    public void onMinEdgeChanged(Observable obs, RealCoords oldValue, RealCoords newValue) {
+
+        overlay.setOrigin(newValue.x, 0);
+        overlay.setOrigin(newValue.y, 1);
+
+        display.update();
+    }
+
+    public void onMaxEdgeChanged(Observable obs, RealCoords oldValue, RealCoords newValue) {
+
+        overlay.setExtent(newValue.x - overlay.getOrigin(0), 0);
+        overlay.setExtent(newValue.y - overlay.getOrigin(1), 1);
+
+        display.update();
+
+    }
+
+    @Override
+    public void refresh() {
+        updateFromData();
+        points.forEach(MoveablePoint::redraw);
+    }
+
 }

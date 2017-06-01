@@ -17,34 +17,18 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.formats;
+package ijfx.commands.script;
 
-import io.scif.Format;
-import java.util.Arrays;
-import java.util.List;
 import org.scijava.plugin.Plugin;
-import org.scijava.text.AbstractTextFormat;
+import org.scijava.plugins.commands.io.OpenFile;
 
 /**
  *
  * @author cyril
  */
-public class CodeFormat extends AbstractTextFormat {
-
+@Plugin(type = ScriptCommand.class, menuPath = "File > Open...")
+public class OpenScript extends OpenFile implements ScriptCommand{
     
-    private static final List<String> FORMATS = Arrays
-            .asList("py","js","json","java");
     
-    @Override
-    public List<String> getExtensions() {
-        return FORMATS;
-    }
-
-    @Override
-    public String asHTML(String text) {
-
-        return text;
-        
-    }
     
 }

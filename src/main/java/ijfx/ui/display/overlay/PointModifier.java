@@ -19,20 +19,19 @@
  */
 package ijfx.ui.display.overlay;
 
-import ijfx.ui.display.image.ViewPort;
-import java.util.ArrayList;
 import java.util.List;
 import javafx.beans.Observable;
 import javafx.geometry.Point2D;
+import jdk.nashorn.internal.ir.annotations.Ignore;
+import net.imagej.display.ImageDisplay;
 import net.imagej.overlay.Overlay;
 import net.imagej.overlay.PointOverlay;
-import org.scijava.plugin.Plugin;
 
 /**
  *
  * @author Cyril MONGIS, 2016
  */
-@Plugin(type=OverlayModifier.class)
+@Ignore
 public class PointModifier implements OverlayModifier<PointOverlay>{
 
     List<MoveablePoint> points;
@@ -40,8 +39,8 @@ public class PointModifier implements OverlayModifier<PointOverlay>{
     PointOverlay overlay;
     
     @Override
-    public List<MoveablePoint> getModifiers(ViewPort viewport, PointOverlay overlay) {
-        
+    public List<MoveablePoint> getModifiers(ImageDisplay viewport, PointOverlay overlay) {
+        /*
         if(points == null) {
             points = new ArrayList<>();
             
@@ -49,14 +48,14 @@ public class PointModifier implements OverlayModifier<PointOverlay>{
             
             this.overlay = overlay;
             
-            mp.positionOnImageProperty().addListener(this::onPositionOnImageChanged);
+            mp.positionOnDataProperty().addListener(this::onPositionOnImageChanged);
             
             points.add(mp);
             
             mp.placeOnScreen(viewport.getPositionOnCamera(PointOverlayHelper.getOverlayPosition(overlay)));
             
         }
-        
+        */
         return points;
         
     }

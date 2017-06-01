@@ -29,32 +29,125 @@ import org.scijava.util.RealCoords;
  */
 public class ImageCanvasUtils {
 
+    /**
+     * Returns a int array that contains the [x,y,width,height] of the viewport
+     * as data coordinates.
+     *
+     * @param canvas
+     * @return
+     */
+    public static int[] getSeenRectangle(ImageCanvas canvas) {
+
+        IntCoords min = getUpperLeftCornerOnData(canvas);
+        IntCoords max = getBottomRightCornerOnData(canvas);
+
+        return new int[]{min.x, min.y, max.x - min.x, max.y - min.y};
+
+    }
+
+    public static IntCoords getUpperLeftCornerOnData(ImageCanvas viewport) {
+
+        return viewport.getPanOffset();
+
+    }
+
+    public static IntCoords getBottomRightCornerOnData(ImageCanvas viewport) {
+        return toInt(viewport
+                .panelToDataCoords(
+                        new IntCoords(viewport.getViewportWidth() - 1, viewport.getViewportHeight() - 1)));
+    }
+
+    public static IntCoords toInt(RealCoords realCoords) {
+        return new IntCoords(toInt(realCoords.x), toInt(realCoords.y));
+    }
+
+    private static int toInt(double d) {
+        return new Double(d).intValue();
+    }
+
+    /**
+     * Returns the x/y coordinates of the panel on the data space
+     */
+    public static RealCoords topLeftOnData(ImageCanvas viewport) {
+        final RealCoords center = viewport.getPanCenter();
+        final double zoomFactor = viewport.getZoomFactor();
+        final double sx = center.x - (viewport.getViewportWidth() / 2 / zoomFactor);
+        final double sy = center.y - (viewport.getViewportHeight() / 2 / zoomFactor);
+        return new RealCoords(sx, sy);
+    }
+
+    /**
+     * Returns the x/y coordinates of the left bottom corner of the panel in data space
+     * @param viewport
+     * @return 
+     */
+    public static RealCoords bottomRightOnData(ImageCanvas viewport) {
+
+        RealCoords topLeftOnData = topLeftOnData(viewport);
+        final double zoomFactor = viewport.getZoomFactor();
+        final double sx = topLeftOnData.x;
+        final double sy = topLeftOnData.y;
+        final double sw = 1.0 * viewport.getViewportWidth() / zoomFactor;
+        final double sh = 1.0 * viewport.getViewportHeight() / zoomFactor;
+        
+        return new RealCoords(sx+sw,sy+sh);
+    }
+    
+    public static boolean contains(RealCoords point, RealCoords topLeft, RealCoords bottomRight) {
+        return contains(point.x,point.y,topLeft,bottomRight);
+    }
+    
+    public static boolean contains (double x, double y, RealCoords topLeft, RealCoords bottomRight) {
+        return x >= topLeft.x && x <= bottomRight.x && y >= topLeft.y && y <= bottomRight.y;
+    }
+    
+    public static boolean contains(ImageCanvas imageCanvas,double x, double y) {
+        
+        return contains(x, y, topLeftOnData(imageCanvas), bottomRightOnData(imageCanvas));
+        
+    }
+
+    public static RealCoords dataToPanelCoords(ImageCanvas canvas, RealCoords dataCoords) {
+
+        final double viewportImageWidth = canvas.getViewportWidth() / canvas.getZoomFactor();
+        double leftImageX = canvas.getPanCenter().x - viewportImageWidth / 2d;
+
+        final double viewportImageHeight = canvas.getViewportHeight() / canvas.getZoomFactor();
+        double topImageY = canvas.getPanCenter().y - viewportImageHeight / 2d;
+
+        final double panelX
+                = canvas.getZoomFactor() * (dataCoords.x - leftImageX);
+        final double panelY
+                = canvas.getZoomFactor() * (dataCoords.y - topImageY);
+        return new RealCoords(panelX, panelY);
+    }
+
     public static void checkPosition(ImageCanvas viewport) {
 
-        IntCoords offset = viewport.getPanOffset();
-
+        RealCoords topLeftCorner = topLeftOnData(viewport);
+        
         double dx, dy;
 
-        dx = offset.x < 0 ? -offset.x : 0;
-        dy = offset.y < 0 ? -offset.y : 0;
-        
+        dx = topLeftCorner.x < 0 ? -topLeftCorner.x : 0;
+        dy = topLeftCorner.y < 0 ? -topLeftCorner.y : 0;
+
         dx /= viewport.getZoomFactor();
         dy /= viewport.getZoomFactor();
-        
+
         if (dx != 0 || dy != 0) {
             viewport.pan(new RealCoords(dx, dy));
         }
 
-        offset = viewport.getPanOffset();
-
-        IntCoords rightBottomOnPane = new IntCoords(offset.x + viewport.getViewportWidth(), offset.y + viewport.getViewportHeight());
-
-        RealCoords rightBottomOnImage = viewport.panelToDataCoords(rightBottomOnPane);
+        topLeftCorner = topLeftOnData(viewport);
+        
+        
+        
+        RealCoords bottomRightCorner = bottomRightOnData(viewport);
 
         // calculating the difference bettween the viewport edge on the image
-        dx = viewport.getDisplay().dimension(0) - rightBottomOnImage.x;
-        dy = viewport.getDisplay().dimension(1) - rightBottomOnImage.y;
-        System.out.println("offset : " + offset.x);
+        dx = viewport.getDisplay().dimension(0) - bottomRightCorner.x;
+        dy = viewport.getDisplay().dimension(1) - bottomRightCorner.y;
+        System.out.println("offset : " + topLeftCorner.x);
         System.out.println("dx : " + dx);
 
         dx = dx < 0 ? dx : 0;
@@ -62,9 +155,9 @@ public class ImageCanvasUtils {
 
         dx /= viewport.getZoomFactor();
         dy /= viewport.getZoomFactor();
-        
+
         if (dx < 0 || dy < 0) {
-           viewport.pan(new RealCoords(dx, dy));
+            viewport.pan(new RealCoords(dx, dy));
         }
 
     }

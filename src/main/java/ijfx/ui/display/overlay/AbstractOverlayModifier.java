@@ -17,34 +17,29 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.formats;
+package ijfx.ui.display.overlay;
 
-import io.scif.Format;
-import java.util.Arrays;
-import java.util.List;
-import org.scijava.plugin.Plugin;
-import org.scijava.text.AbstractTextFormat;
+import net.imagej.ops.Ops.Math.Abs;
+import net.imagej.overlay.Overlay;
 
 /**
  *
  * @author cyril
  */
-public class CodeFormat extends AbstractTextFormat {
+public abstract class AbstractOverlayModifier<T extends Overlay> implements OverlayModifier<T> {
+    
+    final Class<? extends Overlay> handledType;
 
     
-    private static final List<String> FORMATS = Arrays
-            .asList("py","js","json","java");
     
-    @Override
-    public List<String> getExtensions() {
-        return FORMATS;
+    
+    public AbstractOverlayModifier(Class<? extends Overlay> handledType) {
+        this.handledType = handledType;
     }
-
+    
     @Override
-    public String asHTML(String text) {
-
-        return text;
-        
+    public boolean canHandle(Overlay overlay) {
+        return overlay.getClass().isAssignableFrom(handledType);
     }
     
 }

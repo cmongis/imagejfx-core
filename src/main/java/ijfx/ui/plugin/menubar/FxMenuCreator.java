@@ -57,6 +57,13 @@ public class FxMenuCreator extends AbstractMenuCreator<MenuBar, Menu> {
     
     
     Logger logger = ImageJFX.getLogger();
+
+    public FxMenuCreator(Context context) {
+        context.inject(this);
+    }
+    
+    
+    
     
     @Override
     protected void addLeafToMenu(ShadowMenu sm, Menu m) {

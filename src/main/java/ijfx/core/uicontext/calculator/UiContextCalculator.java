@@ -17,34 +17,18 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.formats;
+package ijfx.core.uicontext.calculator;
 
-import io.scif.Format;
-import java.util.Arrays;
-import java.util.List;
-import org.scijava.plugin.Plugin;
-import org.scijava.text.AbstractTextFormat;
+import org.scijava.plugin.SciJavaPlugin;
+import org.scijava.plugin.TypedPlugin;
 
 /**
  *
  * @author cyril
  */
-public class CodeFormat extends AbstractTextFormat {
-
+public interface UiContextCalculator<T> extends SciJavaPlugin,TypedPlugin<T>{
     
-    private static final List<String> FORMATS = Arrays
-            .asList("py","js","json","java");
     
-    @Override
-    public List<String> getExtensions() {
-        return FORMATS;
-    }
-
-    @Override
-    public String asHTML(String text) {
-
-        return text;
-        
-    }
+    void calculate(T t);
     
 }

@@ -19,12 +19,19 @@
  */
 package ijfx.ui.display.image;
 
+import ijfx.core.overlay.OverlaySelectionService;
+import ijfx.core.overlay.OverlayUtilsService;
+import ijfx.ui.display.overlay.OverlayDisplayService;
+import ijfx.ui.display.overlay.OverlayDrawer;
 import java.util.List;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import net.imagej.display.ImageCanvas;
 import net.imagej.display.ImageDisplay;
+import net.imagej.display.OverlayService;
 import net.imagej.display.ZoomService;
+import net.imagej.overlay.Overlay;
 import org.scijava.display.event.input.MsButtonEvent;
 import org.scijava.display.event.input.MsDraggedEvent;
 import org.scijava.display.event.input.MsMovedEvent;
@@ -56,10 +63,28 @@ public class CanvasListener {
     @Parameter
     ZoomService zoomService;
 
+    @Parameter
+    OverlayDisplayService overlayDisplayService;
+    
+    @Parameter
+    OverlayService overlayService;
+    
+    @Parameter
+    OverlayUtilsService overlayUtilsService;
+    
+    @Parameter
+    OverlaySelectionService overlaySelectionService;
+    
+    final ImageCanvas viewport;
+    
     public CanvasListener(ImageDisplay display, Canvas canvas) {
         this.canvas = canvas;
         this.display = display;
+        
+        viewport = display.getCanvas();
+        
         display.getContext().inject(this);
+        canvas.addEventHandler(MouseEvent.MOUSE_CLICKED,this::onMouseClicked);
         canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, this::onDragEvent);
         canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, this::onMousePressed);
         canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, this::onMouseReleased);
@@ -174,6 +199,21 @@ public class CanvasListener {
         tool.onMouseMove(new MsMovedEvent(display, extractInputModifiers(event), 0, 0));
     }
 
+    
+    private void onMouseClicked(MouseEvent event) {
+        
+        
+        List<Overlay> overlays = overlayService
+                .getOverlays(display);
+        
+        for(Overlay overlay : overlays) {
+            if(isOnOverlay(event.getX(), event.getY(), overlay)) {
+                overlaySelectionService.selectOnlyOneOverlay(display, overlay);
+                return;
+            }
+        }
+        
+    }
       
       /*
         Helpers
@@ -197,5 +237,16 @@ public class CanvasListener {
                 event.isSecondaryButtonDown()
         );
 
+    }
+    
+    
+    private boolean isOnOverlay(double x, double y, Overlay overlay) {
+
+        OverlayDrawer drawer = overlayDisplayService.getDrawer(overlay);
+       
+        if(drawer == null) return false;
+        
+        boolean result =  drawer.isClickOnOverlay(overlay, viewport, x, y);
+        return result;
     }
 }

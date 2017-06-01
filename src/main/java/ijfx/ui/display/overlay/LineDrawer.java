@@ -19,13 +19,15 @@
  */
 package ijfx.ui.display.overlay;
 
-import ijfx.ui.display.image.ViewPort;
 import java.util.concurrent.Callable;
-import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import net.imagej.display.ImageCanvas;
+import net.imagej.display.ImageDisplay;
 import net.imagej.overlay.LineOverlay;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.IntCoords;
+import org.scijava.util.RealCoords;
 
 /**
  *
@@ -34,9 +36,7 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = OverlayDrawer.class)
 public class LineDrawer implements OverlayDrawer<LineOverlay> {
 
-    //Line line;
-
-    LineHelper helper;
+   
 
     @Override
     public boolean canHandle(Class<?> t) {
@@ -44,29 +44,21 @@ public class LineDrawer implements OverlayDrawer<LineOverlay> {
     }
 
     @Override
-    public void update(OverlayViewConfiguration<LineOverlay> viewConfig, ViewPort viewport, Canvas canvas) {
+    public void update(OverlayViewConfiguration<LineOverlay> viewConfig, ImageDisplay display, Canvas canvas) {
 
+        
+        ImageCanvas viewport = display.getCanvas();
         LineOverlay overlay = viewConfig.getOverlay();
         
+        IntCoords origin = viewport.dataToPanelCoords(new RealCoords(overlay.getLineStart(0), overlay.getLineStart(1)));
+        IntCoords end = viewport.dataToPanelCoords(new RealCoords(overlay.getLineEnd(0),overlay.getLineEnd(1)));
         
-        helper = new LineHelper(overlay);
-        
-        //if (line == null) {
-
-        //    line = new Line();
-
-        //}
-        
-
-        Point2D startOnScreen = viewport.getPositionOnCamera(helper.getLineStart());
-        Point2D endOnScreen = viewport.getPositionOnCamera(helper.getLineEnd());
+        int ox = origin.x;
+        int oy = origin.y;
+        int dx = end.x;
+        int dy = end.y;
         
         GraphicsContext graphicsContext2D = canvas.getGraphicsContext2D();
-        
-        int ox = getAsInt(startOnScreen::getX);
-        int oy = getAsInt(startOnScreen::getY);
-        int dx = getAsInt(endOnScreen::getX);
-        int dy = getAsInt(endOnScreen::getY);
         
         graphicsContext2D.setStroke(viewConfig.getStrokeColor());
         

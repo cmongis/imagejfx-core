@@ -17,34 +17,40 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.formats;
+package ijfx.core.uicontext.calculator;
 
-import io.scif.Format;
-import java.util.Arrays;
-import java.util.List;
-import org.scijava.plugin.Plugin;
-import org.scijava.text.AbstractTextFormat;
+import ijfx.core.uicontext.UiContextService;
+import org.scijava.plugin.AbstractTypedPlugin;
+import org.scijava.plugin.Parameter;
 
 /**
  *
  * @author cyril
  */
-public class CodeFormat extends AbstractTextFormat {
+public abstract class AbstractUiContextCalculator<T> extends AbstractTypedPlugin<T> implements UiContextCalculator<T>{
 
+    Class<T> type;
+
+    @Parameter
+    UiContextService uiContextService;
     
-    private static final List<String> FORMATS = Arrays
-            .asList("py","js","json","java");
+    public AbstractUiContextCalculator(Class<T> type) {
+        this.type = type;
+    }
+   
     
     @Override
-    public List<String> getExtensions() {
-        return FORMATS;
+    public Class<T> getType() {
+        return type;
+    }
+    @Override
+    public boolean supports(Object t) {
+        return type.isAssignableFrom(t.getClass());
     }
 
-    @Override
-    public String asHTML(String text) {
-
-        return text;
-        
+    protected void toggle(String context, boolean toggle) {
+        uiContextService.toggleContext(context, toggle);
     }
     
 }
+

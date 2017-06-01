@@ -21,9 +21,12 @@ package ijfx.ui.display.image;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import ijfx.core.overlay.OverlayDrawingService;
+import ijfx.core.overlay.OverlayUtilsService;
 import ijfx.core.timer.Timer;
 import ijfx.core.timer.TimerService;
 import ijfx.plugins.display.AutoContrast;
+import ijfx.ui.display.overlay.MoveablePoint;
+import ijfx.ui.display.overlay.OverlayModifier;
 import ijfx.ui.display.tool.HandTool;
 import ijfx.ui.main.ImageJFX;
 import ijfx.ui.widgets.ImageDisplayAdjuster;
@@ -56,6 +59,8 @@ import net.imagej.display.DatasetView;
 import net.imagej.display.ImageCanvas;
 import net.imagej.display.ImageDisplay;
 import net.imagej.display.ImageDisplayService;
+import net.imagej.display.OverlayService;
+import net.imagej.display.OverlayView;
 import net.imagej.ui.viewer.image.ImageDisplayPanel;
 import net.imglib2.display.screenimage.awt.ARGBScreenImage;
 import net.imglib2.type.numeric.RealType;
@@ -66,7 +71,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.tool.ToolService;
 import org.scijava.ui.viewer.DisplayWindow;
-import org.scijava.util.IntCoords;
+import org.scijava.util.RealCoords;
 
 /**
  *
@@ -105,6 +110,8 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
     @FXML
     private BorderPane topBorderPane;
 
+    private AnchorPane modifiersAnchorPane;
+    
     /*
         Services
      */
@@ -122,6 +129,12 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
 
     @Parameter
     OverlayDrawingService overlayDrawingService;
+
+    @Parameter
+    OverlayUtilsService overlayUtilsService;
+
+    @Parameter
+    OverlayService overlayService;
 
     /*
         Drawing related
@@ -228,7 +241,6 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
         this.window = window;
         this.display = display;
         installCanvas();
-        
 
     }
 
@@ -252,9 +264,9 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
         // removing the adjuster if exists
 
         installAdjuster();
-        
+
         installCanvas();
-        
+
         // redrawing
         redraw();
 
@@ -270,7 +282,14 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
             canvas = new Canvas();
             new CanvasListener(display, canvas);
             // adding the canvas
-            stackPane.getChildren().add(canvas);
+            modifiersAnchorPane = new AnchorPane();
+            modifiersAnchorPane.prefWidthProperty().bind(canvas.widthProperty());
+            modifiersAnchorPane.prefHeightProperty().bind(canvas.heightProperty());
+            modifiersAnchorPane.setPickOnBounds(false);
+            modifiersAnchorPane.maxWidthProperty().bind(canvas.widthProperty());
+            modifiersAnchorPane.maxHeightProperty().bind(canvas.heightProperty());
+            stackPane.getChildren().addAll(canvas,modifiersAnchorPane);
+            
         }
     }
 
@@ -408,13 +427,15 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
 
         ImageCanvas viewport = getDisplay().getCanvas();
 
-        IntCoords panOffset = viewport.getPanOffset();
+        RealCoords center = viewport.getPanCenter();
+        
+        double zoomFactor = viewport.getZoomFactor();
 
-        final double sx = panOffset.x;
-        final double sy = panOffset.y;
+        final double sx = center.x - (viewport.getViewportWidth() / 2 / zoomFactor);
+        final double sy = center.y - (viewport.getViewportHeight() / 2 / zoomFactor);
 
-        final double sw = 1.0 * viewport.getViewportWidth() / viewport.getZoomFactor();
-        final double sh = 1.0 * viewport.getViewportHeight() / viewport.getZoomFactor();
+        final double sw = 1.0 * viewport.getViewportWidth() / zoomFactor;
+        final double sh = 1.0 * viewport.getViewportHeight() / zoomFactor;
 
         System.out.println(String.format("sx = %.0f, sy = %.0f, sw = %.0f, sh =%.0f", sx, sy, sw, sh));
 
@@ -424,7 +445,7 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
         final double tw = canvas.getWidth();
         final double th = canvas.getHeight();
 
-        canvas.getGraphicsContext2D().clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        canvas.getGraphicsContext2D().clearRect(0, 0, tw, th);
         // drawing the part of the image seen by the camera into
         // the canvas
         canvas
@@ -511,6 +532,34 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
             overlayDrawingManager = new OverlayDrawingManager(display, canvas);
         }
         overlayDrawingManager.redraw();
+        refreshModifiers();
     }
 
+    private void refreshModifiers() {
+
+        display
+                .stream()
+                .filter((view) -> view instanceof OverlayView)
+                .map(o -> (OverlayView) o)
+                .forEach(this::checkModifier);
+
+    }
+
+    private void checkModifier(OverlayView overlayView) {
+
+        OverlayModifier modifier = overlayDrawingManager.getModifier(overlayView.getData());
+       
+        List<MoveablePoint> modifiers = modifier.getModifiers(display, overlayView.getData());
+        if (overlayView.isSelected()) {
+            if (modifiersAnchorPane.getChildren().containsAll(modifiers) == false) {
+                modifiersAnchorPane.getChildren().addAll(modifiers);
+            }
+        } else {
+            modifiersAnchorPane.getChildren().removeAll(modifiers);
+        }
+        System.out.println("modifier anchor pane width");
+        System.out.println(canvas.getWidth());
+        modifier.refresh();
+
+    }
 }

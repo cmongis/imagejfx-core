@@ -19,13 +19,16 @@
  */
 package ijfx.ui.display.overlay;
 
-import ijfx.ui.display.image.ViewPort;
-import javafx.geometry.Point2D;
+import ijfx.ui.display.image.ImageCanvasUtils;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import net.imagej.display.ImageCanvas;
+import net.imagej.display.ImageDisplay;
 import net.imagej.overlay.RectangleOverlay;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.IntCoords;
+import org.scijava.util.RealCoords;
 
 /**
  *
@@ -36,22 +39,30 @@ public class RectangleDrawer implements OverlayDrawer<RectangleOverlay> {
 
     RectangleOverlayHelper helper;
 
-    public void update(OverlayViewConfiguration<RectangleOverlay> viewConfig, ViewPort viewport, Canvas canvas) {
+    public void update(OverlayViewConfiguration<RectangleOverlay> viewConfig, ImageDisplay display, Canvas canvas) {
 
+        ImageCanvas viewport = display.getCanvas();
         RectangleOverlay overlay = viewConfig.getOverlay();
-        
-        GraphicsContext context2d = canvas.getGraphicsContext2D();
-        
-        helper = new RectangleOverlayHelper(overlay);
-        Point2D a = helper.getMinEdge();
-        Point2D b = helper.getMaxEdge();
-        a = viewport.getPositionOnCamera(a);
-        b = viewport.getPositionOnCamera(b);
 
-        double x = a.getX();
-        double y = a.getY();
-        double w = b.getX() - a.getX();
-        double h = b.getY() - a.getY();
+        GraphicsContext context2d = canvas.getGraphicsContext2D();
+
+        double originX = overlay.getOrigin(0);
+        double originY = overlay.getOrigin(1);
+        
+        double extentX = overlay.getExtent(0) + originX;
+        double extentY = overlay.getExtent(1) + originY;
+        System.out.println("Viewport width");
+        System.out.println(viewport.getViewportWidth());
+        
+        RealCoords minEdge = ImageCanvasUtils.dataToPanelCoords(viewport,new RealCoords(originX,originY));
+        RealCoords maxEdge = ImageCanvasUtils.dataToPanelCoords(viewport,new RealCoords(extentX,extentY));
+
+        double x = minEdge.x;
+        double y = minEdge.y;
+        double w = maxEdge.x - minEdge.x;
+        double h = maxEdge.y - minEdge.y;
+        
+       
         
         //viewConfig.configureContext(context2d);
         context2d.setFill(Color.YELLOW.deriveColor(1.0, 1.0, 1.0, 0.2));

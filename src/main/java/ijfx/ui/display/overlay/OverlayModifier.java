@@ -19,8 +19,8 @@
  */
 package ijfx.ui.display.overlay;
 
-import ijfx.ui.display.image.ViewPort;
 import java.util.List;
+import net.imagej.display.ImageDisplay;
 import net.imagej.overlay.Overlay;
 
 /**
@@ -33,6 +33,8 @@ public interface OverlayModifier<T extends Overlay> extends ClassHandler<Overlay
     
  
     
-    public List<MoveablePoint> getModifiers(ViewPort viewport, T overlay);
+    public List<MoveablePoint> getModifiers(ImageDisplay viewport, T overlay);
+    
+    public default void refresh() {}
     
 }
