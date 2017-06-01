@@ -37,7 +37,7 @@ import org.scijava.util.FileUtils;
  *
  * @author cyril
  */
-@Plugin(type = IOPlugin.class, priority = Priority.HIGH_PRIORITY)
+@Plugin(type = IOPlugin.class,priority = Priority.HIGH_PRIORITY)
 public class FXScriptIOPlugin extends AbstractIOPlugin<Script> {
 
     private static final List<String> FORMATS = Arrays

@@ -29,7 +29,6 @@ import org.scijava.text.AbstractTextFormat;
  *
  * @author cyril
  */
-@Plugin(type = Format.class)
 public class CodeFormat extends AbstractTextFormat {
 
     
