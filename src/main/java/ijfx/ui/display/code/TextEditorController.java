@@ -122,9 +122,7 @@ public class TextEditorController extends AnchorPane {
         editButton.getItems().add(creatMenuItem("cut", codeArea::cut));
         editButton.getItems().add(creatMenuItem("copy", codeArea::copy));
         editButton.getItems().add(creatMenuItem("paste", codeArea::paste));
-        
-        
-        
+                
     }
     
     public void initText(ScriptDisplay display){

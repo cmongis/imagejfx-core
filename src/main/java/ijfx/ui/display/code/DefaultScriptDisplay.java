@@ -20,9 +20,13 @@
 package ijfx.ui.display.code;
 
 import ijfx.core.formats.Script;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.value.ObservableValue;
+import org.scijava.Prioritized;
 import org.scijava.Priority;
 import org.scijava.display.AbstractDisplay;
 import org.scijava.display.Display;
+import org.scijava.log.LogService;
 import org.scijava.plugin.Plugin;
 import org.scijava.script.ScriptLanguage;
 
@@ -32,7 +36,9 @@ import org.scijava.script.ScriptLanguage;
  */
 @Plugin(type = Display.class, priority = Priority.HIGH_PRIORITY)
 public class DefaultScriptDisplay extends AbstractDisplay<Script> implements ScriptDisplay {
-
+    
+    private String copiedText;
+    
     public DefaultScriptDisplay() {
         super(Script.class);
     }
@@ -54,5 +60,35 @@ public class DefaultScriptDisplay extends AbstractDisplay<Script> implements Scr
     @Override
     public void setLanguage(ScriptLanguage language) {
         get(0).setLanguage(language);
+    }
+
+    @Override
+    public int compareTo(Prioritized o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public LogService log() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void copyText() {
+        
+        this.copiedText=selectedText.get().getValue();
+    }
+
+    @Override
+    public String pasteText() {
+        return this.copiedText;
+    }
+
+    @Override
+    public void setSelectedText(String text) {
+    }
+
+    @Override
+    public ObjectProperty<ObservableValue<String>> getSelectedText() {
+        return selectedText;
     }
 }

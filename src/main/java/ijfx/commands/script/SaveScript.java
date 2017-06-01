@@ -17,28 +17,19 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.ui.display.code;
+package ijfx.commands.script;
 
-import org.scijava.display.Display;
-import ijfx.core.formats.Script;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableValue;
-import org.scijava.script.ScriptLanguage;
+import org.scijava.plugin.Plugin;
+import org.scijava.plugins.commands.io.SaveFile;
 
 /**
  *
- * @author cyril
+ * @author florian
  */
+@Plugin(type = ScriptCommand.class, menuPath = "File > Save")
+public class SaveScript extends SaveFile implements ScriptCommand{
 
-public interface ScriptDisplay extends Display<Script> {
-    ObjectProperty<ObservableValue<String>> selectedText = new SimpleObjectProperty<>();
-    ScriptLanguage getLanguage();
+   
     
-    void setLanguage(ScriptLanguage language);
     
-    void copyText ();
-    String pasteText ();
-    void setSelectedText(String text);
-    ObjectProperty<ObservableValue<String>> getSelectedText();
 }

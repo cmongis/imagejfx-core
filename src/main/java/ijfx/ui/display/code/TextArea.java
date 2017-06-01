@@ -32,10 +32,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
+import org.scijava.plugin.Parameter;
+import org.scijava.script.ScriptService;
 //import org.fxmisc.richtext.model.StyleSpans;
 //import org.fxmisc.richtext.model.StyleSpansBuilder;
 
@@ -44,7 +51,14 @@ import org.fxmisc.richtext.model.StyleSpansBuilder;
  * @author florian
  */
 public class TextArea{
+    @Parameter
+    ScriptDisplay scriptDisplay;
     CodeArea codeArea = null;
+    
+    //private StringProperty selectedText;
+    
+    private final ObjectProperty<ObservableValue<String>> selectedText;
+    
     private static Hashtable KEYWORDS_TABLE = new Hashtable();
     private static Hashtable KEYWORDS_PATTERN_TABLE = new Hashtable();
     private static String[] KEYWORDS = new String[]{""};
@@ -104,7 +118,9 @@ public class TextArea{
                     this.codeArea.setStyleSpans(0, computeHighlighting(this.codeArea.getText()));
                 });
         //this.codeArea.replaceText(0, 0, sampleCode);
-        
+        selectedText = new SimpleObjectProperty<>();
+        selectedText.set(codeArea.selectedTextProperty());
+        scriptDisplay.getSelectedText().bind(selectedText);
     }
     
     private static StyleSpans<Collection<String>> computeHighlighting(String text) {
@@ -179,6 +195,18 @@ public class TextArea{
     }
     public void setText(String text){
         this.codeArea.replaceText(0, 0, text);
+    }
+    
+    public String getSelectedText(){
+        return this.codeArea.getSelectedText();
+    }
+    public void createListener(){
+        this.codeArea.selectedTextProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                scriptDisplay.setSelectedText(newValue);
+            }
+        });
     }
     /*
     public void nanorcParser(String path){
