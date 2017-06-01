@@ -20,12 +20,14 @@
  */
 package ijfx.ui.plugin.menubar;
 
+import ijfx.core.icon.FXIconService;
 import ijfx.core.usage.Usage;
 import ijfx.ui.main.ImageJFX;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;
+import javafx.scene.Node;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -37,7 +39,6 @@ import org.scijava.menu.AbstractMenuCreator;
 import org.scijava.menu.ShadowMenu;
 import org.scijava.plugin.Parameter;
 import org.scijava.thread.ThreadService;
-import static ucar.nc2.util.net.EasyX509TrustManager.logger;
 
 /**
  * This class generates allows generation of JavaFX Menu by ImageJ
@@ -46,53 +47,54 @@ import static ucar.nc2.util.net.EasyX509TrustManager.logger;
  */
 public class FxMenuCreator extends AbstractMenuCreator<MenuBar, Menu> {
 
-    
     @Parameter
     ThreadService threadService;
-    
+
     @Parameter
     Context context;
-    
-    Map<ShadowMenu,MenuItem> menuMap = new HashMap<>();
-    
-    
+
+    @Parameter
+    FXIconService fxIconService;
+
+    Map<ShadowMenu, MenuItem> menuMap = new HashMap<>();
+
     Logger logger = ImageJFX.getLogger();
 
     public FxMenuCreator(Context context) {
         context.inject(this);
     }
-    
-    
-    
-    
+
     @Override
     protected void addLeafToMenu(ShadowMenu sm, Menu m) {
         MenuItem item = new MenuItem(sm.getName());
-        
+
+        Node iconAsNode = fxIconService.getIconAsNode(sm.getModuleInfo().getIconPath());
+        if (iconAsNode != null) {
+            item.setGraphic(iconAsNode);
+        }
         menuMap.put(sm, item);
-        
-        item.addEventHandler(ActionEvent.ANY, event->{
+
+        item.addEventHandler(ActionEvent.ANY, event -> {
             Usage
                     .factory()
                     .createUsageLog(UsageType.CLICK, sm.getName(), Usage.MENUBAR)
                     .setValue(sm.getName())
                     .send();
         });
-        
-        item.setOnAction(event->{
+
+        item.setOnAction(event -> {
             //ImageJFX.getThreadPool().submit(sm);
-            
+
 //            context.inject(sm);
             threadService.run(sm);
-            
-            
+
         });
         m.getItems().add(item);
     }
 
     @Override
     protected void addLeafToTop(ShadowMenu sm, MenuBar t) {
-        
+
         t.getMenus().add(new Menu(sm.getName()));
     }
 
@@ -124,25 +126,24 @@ public class FxMenuCreator extends AbstractMenuCreator<MenuBar, Menu> {
     protected void addSeparatorToTop(MenuBar t) {
         ImageJFX.getLogger().warning("A seperator should have been inserted but was not.");
     }
-    
-    
-    
+
     public void removeMenu(ShadowMenu sm) {
-        logger.info("Removing "+sm.getName());
+        logger.info("Removing " + sm.getName());
         MenuItem item = menuMap.get(sm);
-        if(item == null) return;
+        if (item == null) {
+            return;
+        }
         Menu parent = item.getParentMenu();
-        if(parent != null) {
+        if (parent != null) {
             parent.getItems().remove(item);
         }
     }
-    
+
     public void addMenu(ShadowMenu sm) {
         Menu menu = (Menu) menuMap.get(sm.getParent());
-        if(sm.isLeaf()) {
+        if (sm.isLeaf()) {
             addLeafToMenu(sm, menu);
-        }
-        else {
+        } else {
             addNonLeafToMenu(sm, menu);
         }
     }
