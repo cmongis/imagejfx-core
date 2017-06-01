@@ -41,83 +41,89 @@ import org.scijava.service.Service;
  * @author cyril
  */
 @Plugin(type = Service.class)
-public class DefaultFXIconService extends AbstractService implements FXIconService{
+public class DefaultFXIconService extends AbstractService implements FXIconService {
 
-    
-    Map<Class<?>,String> fontawesomeIconEquivalent = new HashMap<>();
-    
+    Map<String, String> fontawesomeIconEquivalent = new HashMap<>();
+
     Logger logger = ImageJFX.getLogger();
-    
+
     public void initialize() {
-        
-        
+
         try {
             String toString = IOUtils.toString(getClass().getResourceAsStream("/ijfx/ui/icons/equivalents"), "utf8");
-        
-            for(String line : toString.split("\n")) {
-                
+
+            for (String line : toString.split("\n")) {
+
                 String[] split = line.split("=");
-                
-                if(split.length != 2) continue;
-                
-                try {
-                    registerEquivalent(Class.forName(split[0].trim()), split[1].trim());
-                } catch (ClassNotFoundException ex) {
-                    Logger.getLogger(DefaultFXIconService.class.getName()).log(Level.SEVERE, "No class found", ex);
+
+                if (split.length != 2) {
+                    continue;
                 }
-                
+
+                registerEquivalent(split[0].trim(), split[1].trim());
+
             }
-            
-            
+
         } catch (IOException ex) {
             Logger.getLogger(DefaultFXIconService.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }
-    
-    
+
     @Override
     public Node getIconAsNode(SciJavaPlugin plugin) {
-        
+
         String menuPath = SciJavaUtils.getIconPath(plugin);
+
+        if(menuPath == null) return null;
         
-        if(fontawesomeIconEquivalent.containsKey(plugin.getClass())) {
-            return getIconAsNode(fontawesomeIconEquivalent.get(plugin.getClass()));
+         if (fontawesomeIconEquivalent.containsKey(plugin.getClass().getName())) {
+            return getIconAsNode(fontawesomeIconEquivalent.get(plugin.getClass().getName()));
         }
-        else if(menuPath.contains("fa:")) {
+        
+         else if (menuPath.startsWith("fa:") == false) {
+            return getIconAsNode(plugin.getClass().getResource(menuPath).toExternalForm());
+        } else {
             return getIconAsNode(menuPath);
         }
-        else {
-            return getIconAsNode(plugin.getClass().getResource(menuPath).toExternalForm());
-        }
-        
     }
-    
+
     @Override
     public Node getIconAsNode(String iconPath) {
 
-        if(iconPath.startsWith("fa:")) {
-            try {
-            return new FontAwesomeIconView(FontAwesomeIcon.valueOf(iconPath.substring(3).toUpperCase()));
-            }
-            catch(Exception e) {
-                logger.log(Level.WARNING,String.format("Couldn't load FA icon : %s",iconPath.substring(3).toUpperCase()));
-                return new FontAwesomeIconView(FontAwesomeIcon.REMOVE); 
-            }
+        
+        if(iconPath == null) return null;
+        if("".equals(iconPath)) return null;
+        
+         if (fontawesomeIconEquivalent.containsKey(iconPath)) {
+            return getIconAsNode(fontawesomeIconEquivalent.get(iconPath));
         }
-        else {
+        
+         else if (iconPath.startsWith("fa:")) {
+            try {
+                return new FontAwesomeIconView(FontAwesomeIcon.valueOf(iconPath.substring(3).toUpperCase()));
+            } catch (Exception e) {
+                logger.log(Level.WARNING, String.format("Couldn't load FA icon : %s", iconPath.substring(3).toUpperCase()));
+                return new FontAwesomeIconView(FontAwesomeIcon.REMOVE);
+            }
+        } else {
+             
+            
             ImageView imageView = new ImageView(iconPath);
-            imageView.setFitWidth(24);
             return imageView;
         }
 
     }
 
+    public void registerEquivalent(String classPath, String fontawesomeId) {
+        fontawesomeIconEquivalent.put(classPath, fontawesomeId);
+    }
+
     @Override
     public void registerEquivalent(Class<?> clazz, String fontawesomeId) {
 
-        fontawesomeIconEquivalent.put(clazz, fontawesomeId);
+        registerEquivalent(clazz.getName(), fontawesomeId);
 
     }
-    
+
 }
