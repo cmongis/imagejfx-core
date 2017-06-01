@@ -21,13 +21,13 @@ package ijfx.ui.display.image;
 
 import ijfx.ui.display.overlay.DefaultOverlayViewConfiguration;
 import ijfx.ui.display.overlay.OverlayDisplayService;
-import ijfx.ui.display.overlay.OverlayDrawer;
 import ijfx.ui.display.overlay.OverlayModifier;
 import ijfx.ui.main.ImageJFX;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 import javafx.scene.canvas.Canvas;
+import net.imagej.display.ImageCanvas;
 import net.imagej.display.ImageDisplay;
 import net.imagej.display.OverlayView;
 import net.imagej.overlay.Overlay;
@@ -45,13 +45,11 @@ public class OverlayDrawingManager {
     
     private final Canvas canvas;
 
-    private final Map<Class<? extends Overlay>,OverlayDrawer> drawerMap = new HashMap<>();
     
     private final Map<Overlay, OverlayModifier> modifierMap = new HashMap<>();
     
     private final static Logger logger = ImageJFX.getLogger();
-    
-    private final ViewPort viewport;
+   
     
     @Parameter
     OverlayDisplayService overlayDisplayService;
@@ -63,25 +61,11 @@ public class OverlayDrawingManager {
         display.getContext().inject(this);
         this.display = display;
         this.canvas = canvas;
-        this.viewport = new ImageCanvasViewPortWrapper(display.getCanvas());
+       
     }
     
     
-    protected OverlayDrawer getDrawer(Overlay overlay) {
-        //logger.info("Searching a drawer for "+overlay.getClass().getSimpleName());
-        if (drawerMap.get(overlay.getClass()) == null) {
-            OverlayDrawer drawer = overlayDisplayService.createDrawer(overlay.getClass());
-            if (drawer == null) {
-                logger.warning("No overlay compatible for " + overlay.getClass().getSimpleName());
-                return null;
-            } else {
-                drawerMap.put(overlay.getClass(), drawer);
-                return drawer;
-            }
-        } else {
-            return drawerMap.get(overlay.getClass());
-        }
-    }
+   
 
     protected OverlayModifier getModifier(Overlay overlay) {
 
@@ -95,15 +79,19 @@ public class OverlayDrawingManager {
                 .map(view->(OverlayView)view)
                 .forEach(this::draw);
     
+     
+     
+     
     }
     
     private void draw(OverlayView view) {
         
-        getDrawer(view.getData())
-                .update(new DefaultOverlayViewConfiguration(view, view.getData()), viewport, canvas);
-        
+        overlayDisplayService.getDrawer(view.getData())
+                .update(new DefaultOverlayViewConfiguration(view, view.getData()), display, canvas);    
         
         
     }
+    
+    
     
 }

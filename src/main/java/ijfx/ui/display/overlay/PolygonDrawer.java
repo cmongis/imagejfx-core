@@ -19,14 +19,17 @@
  */
 package ijfx.ui.display.overlay;
 
-import ijfx.ui.display.image.ViewPort;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.shape.Polygon;
+import net.imagej.display.ImageCanvas;
+import net.imagej.display.ImageDisplay;
 import net.imagej.overlay.PolygonOverlay;
 import net.imglib2.RealLocalizable;
 import net.imglib2.roi.PolygonRegionOfInterest;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.IntCoords;
+import org.scijava.util.RealCoords;
 
 /**
  *
@@ -68,9 +71,11 @@ public class PolygonDrawer implements OverlayDrawer<PolygonOverlay> {
      */
     
     @Override
-    public void update(OverlayViewConfiguration<PolygonOverlay> viewConfig, ViewPort viewport, Canvas canvas) {
+    public void update(OverlayViewConfiguration<PolygonOverlay> viewConfig, ImageDisplay display, Canvas canvas) {
 
         PolygonOverlay overlay = viewConfig.getOverlay();
+        
+        ImageCanvas viewport = display.getCanvas();
         
         GraphicsContext context = canvas.getGraphicsContext2D();
         PolygonRegionOfInterest roi = overlay.getRegionOfInterest();
@@ -80,9 +85,9 @@ public class PolygonDrawer implements OverlayDrawer<PolygonOverlay> {
         for (int i = 0; i != roi.getVertexCount(); i++) {
             RealLocalizable vertex = roi.getVertex(i);
             vertex.localize(position);
-            viewport.localizeOnCamera(position);
-            xs[i] = position[0];
-            ys[i] = position[1];
+            IntCoords panelCoords = viewport.dataToPanelCoords(new RealCoords(position[0], position[1]));
+            xs[i] = panelCoords.x;
+            ys[i] = panelCoords.y;
         }
         context.setFill(viewConfig.getFillCollor());
         context.setLineWidth(viewConfig.getStrokeWidth());

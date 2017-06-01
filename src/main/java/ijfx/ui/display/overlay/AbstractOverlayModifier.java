@@ -19,22 +19,27 @@
  */
 package ijfx.ui.display.overlay;
 
-import java.util.List;
-import net.imagej.display.ImageDisplay;
+import net.imagej.ops.Ops.Math.Abs;
 import net.imagej.overlay.Overlay;
 
 /**
- * A modifier is a set of MoveablePoints which should be listened by the Modifier. Each time a point is moved
- * the modifier should update the Overlay (and note its representation).
- * @author Cyril MONGIS, 2016
+ *
+ * @author cyril
  */
+public abstract class AbstractOverlayModifier<T extends Overlay> implements OverlayModifier<T> {
+    
+    final Class<? extends Overlay> handledType;
 
-public interface OverlayModifier<T extends Overlay> extends ClassHandler<Overlay>  {
     
- 
     
-    public List<MoveablePoint> getModifiers(ImageDisplay viewport, T overlay);
     
-    public default void refresh() {}
+    public AbstractOverlayModifier(Class<? extends Overlay> handledType) {
+        this.handledType = handledType;
+    }
+    
+    @Override
+    public boolean canHandle(Overlay overlay) {
+        return overlay.getClass().isAssignableFrom(handledType);
+    }
     
 }

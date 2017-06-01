@@ -19,7 +19,7 @@
  */
 package ijfx.ui.display.overlay;
 
-import ijfx.ui.display.image.ViewPort;
+import com.sun.prism.image.ViewPort;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -30,14 +30,15 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
+import jdk.nashorn.internal.ir.annotations.Ignore;
+import net.imagej.display.ImageDisplay;
 import net.imagej.overlay.PointOverlay;
-import org.scijava.plugin.Plugin;
 
 /**
  *
  * @author Cyril MONGIS, 2016
  */
-@Plugin(type=OverlayDrawer.class)
+@Ignore
 public class PointOverlayDrawer implements OverlayDrawer<PointOverlay>{
 
     Group pointNode;
@@ -50,10 +51,10 @@ public class PointOverlayDrawer implements OverlayDrawer<PointOverlay>{
     Property<Paint> strokePaint = new SimpleObjectProperty<>(Color.YELLOW);
     
     Rectangle r;
+ 
     
-    ViewPort viewport;
-    
-    public void update(OverlayViewConfiguration<PointOverlay> viewConfig, ViewPort viewport, Canvas canvas) {
+    public void update(OverlayViewConfiguration<PointOverlay> viewConfig, ImageDisplay viewport, Canvas canvas) {
+        
         
         
         PointOverlay overlay = viewConfig.getOverlay();
@@ -79,7 +80,7 @@ public class PointOverlayDrawer implements OverlayDrawer<PointOverlay>{
     public boolean canHandle(Class<?> t) {
         return t ==  PointOverlay.class;
     }
-    
+    /*
     @Override
     public boolean isOnOverlay(PointOverlay overlay, ViewPort viewport, double xOnImage, double yOnImage) {
         
@@ -95,7 +96,7 @@ public class PointOverlayDrawer implements OverlayDrawer<PointOverlay>{
             return dx * dy < 10*10;
         }
         else return false;
-    }
+    }*/
     
    
    

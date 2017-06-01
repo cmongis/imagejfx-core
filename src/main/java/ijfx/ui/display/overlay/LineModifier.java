@@ -19,66 +19,63 @@
  */
 package ijfx.ui.display.overlay;
 
-import ijfx.ui.display.image.ViewPort;
-import java.util.ArrayList;
+import com.google.common.collect.Lists;
 import java.util.List;
-import javafx.geometry.Point2D;
 import net.imagej.overlay.LineOverlay;
-import net.imagej.overlay.Overlay;
-import org.scijava.Context;
-import org.scijava.convert.ConvertService;
-import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.RealCoords;
 
 /**
  *
- * @author Cyril MONGIS, 2016
+ * @author cyril
  */
 @Plugin(type = OverlayModifier.class)
-public class LineModifier implements OverlayModifier<LineOverlay> {
-
-    @Parameter
-    Context context;
-
-    LineHelper lineHelper;
+public class LineModifier extends EasyOverlayModifier<LineOverlay>{
 
     MoveablePoint a;
-    MoveablePoint b;
-
-    List<MoveablePoint> points = new ArrayList<>();
-
-    @Parameter
-    ConvertService convertService;
     
-    @Override
-    public List getModifiers(ViewPort viewport, LineOverlay overlay) {
-        if (lineHelper == null) {
-            lineHelper = new LineHelper(overlay);
-
-            context.inject(lineHelper);
-            a = new MoveablePoint(viewport);
-            b = new MoveablePoint(viewport);
-
-            a.positionOnImageProperty().setValue(lineHelper.getLineStart());
-            b.positionOnImageProperty().setValue(lineHelper.getLineEnd());
-            Point2D startOnScreen = lineHelper.getStartOnScreen(viewport);
-            Point2D endOnScreen = lineHelper.getEndOnScreen(viewport);
-            
-            a.setPositionSilently(startOnScreen);
-            b.setPositionSilently(endOnScreen);
-
-            lineHelper.lineStartProperty().bind(a.positionOnImageProperty());
-            lineHelper.lineEndProperty().bind(b.positionOnImageProperty());
-
-            points.add(a);
-            points.add(b);
-        }
-        return points;
+    MoveablePoint b;
+    
+    public LineModifier() {
+        super(LineOverlay.class);
     }
 
     @Override
-    public boolean canHandle(Overlay t) {
-        return t instanceof LineOverlay;
+    public List<MoveablePoint> initPoints() {
+         a = new MoveablePoint(getViewport());
+         b = new MoveablePoint(getViewport());
+         
+         return Lists.newArrayList(a,b);
+         
     }
 
+    @Override
+    public void updateData() {
+
+        LineOverlay lineOverlay = getOverlay();
+        
+        lineOverlay.setLineStart(toArray(a.positionOnDataProperty().getValue()));
+        lineOverlay.setLineEnd(toArray(b.positionOnDataProperty().getValue()));
+    }
+
+    @Override
+    public void updateFromData() {
+        LineOverlay lineOverlay = getOverlay();
+        double xStart = lineOverlay.getLineStart(0);
+        double yStart = lineOverlay.getLineStart(1);
+        double xEnd = lineOverlay.getLineEnd(1);
+        double yEnd = lineOverlay.getLineEnd(1);
+        
+        
+        
+        updateFromData(a,xStart,yStart);
+        updateFromData(b,xEnd,yEnd);
+        
+    }
+    
+    private double[] toArray(RealCoords realCoords) {
+        return new double[] {realCoords.x,realCoords.y};
+    }
+    
+     
 }
