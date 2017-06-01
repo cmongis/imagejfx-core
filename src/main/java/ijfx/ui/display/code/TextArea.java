@@ -47,8 +47,8 @@ public class TextArea{
     CodeArea codeArea = null;
     private static Hashtable KEYWORDS_TABLE = new Hashtable();
     private static Hashtable KEYWORDS_PATTERN_TABLE = new Hashtable();
-    //private static String[] KEYWORDS = new String[]{""};
-    
+    private static String[] KEYWORDS = new String[]{""};
+    /*
     private static String[] KEYWORDS = new String[] {
             "abstract", "assert", "boolean", "break", "byte",
             "case", "catch", "char", "class", "const",
@@ -61,7 +61,7 @@ public class TextArea{
             "switch", "synchronized", "this", "throw", "throws",
             "transient", "try", "void", "volatile", "while"
     };
-    
+    */
     private static String[] WHITE = {};
     private static String[] BLACK = {};
     private static String[] RED = {};
@@ -71,7 +71,7 @@ public class TextArea{
     private static String[] MAGENTA = {};
     private static String[] CYAN = {};
 
-    private static String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
+    //private static String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
     private static String PAREN_PATTERN = "\\(|\\)";
     private static String BRACE_PATTERN = "\\{|\\}";
     private static String BRACKET_PATTERN = "\\[|\\]";
@@ -81,8 +81,8 @@ public class TextArea{
     
     private static  Pattern PATTERN = Pattern.compile(
             
-            "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
-            + "|(?<PAREN>" + PAREN_PATTERN + ")"
+            //"(?<KEYWORD>" + KEYWORD_PATTERN + ")"
+             "|(?<PAREN>" + PAREN_PATTERN + ")"
             + "|(?<BRACE>" + BRACE_PATTERN + ")"
             + "|(?<BRACKET>" + BRACKET_PATTERN + ")"
             + "|(?<SEMICOLON>" + SEMICOLON_PATTERN + ")"
@@ -92,29 +92,6 @@ public class TextArea{
 
     
     
-     private static final String sampleCode = String.join("\n", new String[] {
-        "package com.example;",
-        "",
-        "import java.util.*;",
-        "",
-        "public class Foo extends Bar implements Baz {",
-        "",
-        "    /*",
-        "     * multi-line comment",
-        "     */",
-        "    public static void main(String[] args) {",
-        "        // single-line comment",
-        "        for(String arg: args) {",
-        "            if(arg.length() != 0)",
-        "                System.out.println(arg);",
-        "            else",
-        "                System.err.println(\"Warning: empty string as argument\");",
-        "        }",
-        "    }",
-        "",
-        "}"
-});
-     
     public TextArea() {
         codeArea = new CodeArea();
         //nanorcParser(getClass().getResource("/ijfx/ui/display/code/javascript.nanorc").getFile());
@@ -158,7 +135,7 @@ public class TextArea{
     }
     
     public void init(){
-        this.KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
+        //this.KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
         this.PAREN_PATTERN = "\\(|\\)";
         this.BRACE_PATTERN = "\\{|\\}";
         this.BRACKET_PATTERN = "\\[|\\]";
@@ -168,20 +145,21 @@ public class TextArea{
         
         this.PATTERN = Pattern.compile(
             //"(?<KEYWORD>" + KEYWORD_PATTERN + ")"
-             generatePattern()
-            + "|(?<PAREN>" + PAREN_PATTERN + ")"
+             
+             "(?<PAREN>" + PAREN_PATTERN + ")"
             + "|(?<BRACE>" + BRACE_PATTERN + ")"
             + "|(?<BRACKET>" + BRACKET_PATTERN + ")"
             + "|(?<SEMICOLON>" + SEMICOLON_PATTERN + ")"
             + "|(?<STRING>" + STRING_PATTERN + ")"
             + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
+            + generatePattern()
         );
     }
     
     public static String generatePattern(){
         String pat = "";
         for (Object key : KEYWORDS_PATTERN_TABLE.keySet()){
-            pat = pat.concat("(?<" + key.toString() + ">" + KEYWORDS_PATTERN_TABLE.get(key) + ")");
+            pat = pat.concat("|(?<" + key.toString() + ">" + KEYWORDS_PATTERN_TABLE.get(key) + ")");
         }
         return pat;
     }

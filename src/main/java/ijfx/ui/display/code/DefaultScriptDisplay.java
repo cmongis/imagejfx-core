@@ -19,31 +19,40 @@
  */
 package ijfx.ui.display.code;
 
+import ijfx.core.formats.Script;
+import org.scijava.Priority;
+import org.scijava.display.AbstractDisplay;
+import org.scijava.display.Display;
+import org.scijava.plugin.Plugin;
+import org.scijava.script.ScriptLanguage;
+
 /**
- *
+ * TODO : change to DefaultScriptDisplay
  * @author florian
  */
-import javafx.scene.Node;
+@Plugin(type = Display.class, priority = Priority.HIGH_PRIORITY)
+public class DefaultScriptDisplay extends AbstractDisplay<Script> implements ScriptDisplay {
 
-public class EmptyLinkedImage<S> implements LinkedImage<S> {
+    public DefaultScriptDisplay() {
+        super(Script.class);
+    }
 
-    @Override
-    public LinkedImage<S> setStyle(S style) {
-        return this;
+    private Script getScript() {
+        return get(0);
     }
 
     @Override
-    public S getStyle() {
-        return null;
+    public String getIdentifier() {
+        return getScript().getSourceFile();
     }
 
     @Override
-    public String getImagePath() {
-        return "";
+    public ScriptLanguage getLanguage() {
+        return get(0).getLanguage();
     }
 
     @Override
-    public Node createNode() {
-        throw new AssertionError("Unreachable code");
+    public void setLanguage(ScriptLanguage language) {
+        get(0).setLanguage(language);
     }
 }
