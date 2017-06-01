@@ -26,7 +26,7 @@ import org.scijava.plugins.commands.io.OpenFile;
  *
  * @author cyril
  */
-@Plugin(type = ScriptCommand.class, menuPath = "File > Open...")
+@Plugin(type = ScriptCommand.class, menuPath = "File > Open...",iconPath="fa:folder_open")
 public class OpenScript extends OpenFile implements ScriptCommand{
     
     

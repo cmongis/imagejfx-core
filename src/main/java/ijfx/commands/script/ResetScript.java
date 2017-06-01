@@ -21,6 +21,7 @@ package ijfx.commands.script;
 
 import ijfx.ui.display.code.ScriptDisplay;
 import org.scijava.command.ContextCommand;
+import org.scijava.display.DisplayService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
@@ -34,9 +35,12 @@ public class ResetScript extends ContextCommand implements ScriptCommand{
     @Parameter
     ScriptDisplay scriptDisplay;
     
+    @Parameter
+    DisplayService displayService;
+    
     @Override
     public void run() {
-        
+       
         
         scriptDisplay.get(0).setCode("Noooooo !");
         scriptDisplay.update();
