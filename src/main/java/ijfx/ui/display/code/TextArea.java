@@ -19,11 +19,6 @@
  */
 package ijfx.ui.display.code;
 
-import com.sun.javafx.geom.BaseBounds;
-import com.sun.javafx.geom.transform.BaseTransform;
-import com.sun.javafx.jmx.MXNodeAlgorithm;
-import com.sun.javafx.jmx.MXNodeAlgorithmContext;
-import com.sun.javafx.sg.prism.NGNode;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -31,15 +26,12 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javafx.scene.Node;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
@@ -55,6 +47,7 @@ public class TextArea{
     CodeArea codeArea = null;
     private static Hashtable KEYWORDS_TABLE = new Hashtable();
     private static Hashtable KEYWORDS_PATTERN_TABLE = new Hashtable();
+    //private static String[] KEYWORDS = new String[]{""};
     
     private static String[] KEYWORDS = new String[] {
             "abstract", "assert", "boolean", "break", "byte",
@@ -68,6 +61,7 @@ public class TextArea{
             "switch", "synchronized", "this", "throw", "throws",
             "transient", "try", "void", "volatile", "while"
     };
+    
     private static String[] WHITE = {};
     private static String[] BLACK = {};
     private static String[] RED = {};
@@ -78,16 +72,6 @@ public class TextArea{
     private static String[] CYAN = {};
 
     private static String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
-    /*
-    private static String WHITE_PATTERN = "\\b(" + String.join("|", WHITE) + ")\\b";
-    private static String BLACK_PATTERN = "\\b(" + String.join("|", BLACK) + ")\\b";
-    private static String RED_PATTERN = "\\b(" + String.join("|", RED) + ")\\b";
-    private static String BLUE_PATTERN = "\\b(" + String.join("|", BLUE) + ")\\b";
-    private static String GREEN_PATTERN = "\\b(" + String.join("|", GREEN) + ")\\b";
-    private static String YELLOW_PATTERN = "\\b(" + String.join("|", YELLOW) + ")\\b";
-    private static String MAGENTA_PATTERN = "\\b(" + String.join("|", MAGENTA) + ")\\b";
-    private static String CYAN_PATTERN = "\\b(" + String.join("|", CYAN) + ")\\b";
-    */
     private static String PAREN_PATTERN = "\\(|\\)";
     private static String BRACE_PATTERN = "\\{|\\}";
     private static String BRACKET_PATTERN = "\\[|\\]";
@@ -98,16 +82,6 @@ public class TextArea{
     private static  Pattern PATTERN = Pattern.compile(
             
             "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
-                    /*
-            + "|(?<WHITE>" + WHITE_PATTERN + ")"
-            + "|(?<BLACK>" + BLACK_PATTERN + ")"
-            + "|(?<RED>" + RED_PATTERN + ")"
-            + "|(?<BLUE>" + BLUE_PATTERN + ")"
-            + "|(?<GREEN>" + GREEN_PATTERN + ")"
-            + "|(?<YELLOW>" + YELLOW_PATTERN + ")"
-            + "|(?<MAGENTA>" + MAGENTA_PATTERN + ")"
-            + "|(?<CYAN>" + CYAN_PATTERN + ")"
-            */
             + "|(?<PAREN>" + PAREN_PATTERN + ")"
             + "|(?<BRACE>" + BRACE_PATTERN + ")"
             + "|(?<BRACKET>" + BRACKET_PATTERN + ")"
@@ -167,17 +141,7 @@ public class TextArea{
             String result = testMatcher(matcher);
             String styleClass =
                     result != null ? result : 
-                    matcher.group("KEYWORD") != null ? "keyword" :
-                    /*
-                    matcher.group("WHITE") != null ? "white" :
-                    matcher.group("BLACK") != null ? "black" :
-                    matcher.group("RED") != null ? "red" :
-                    matcher.group("BLUE") != null ? "blue" :
-                    matcher.group("GREEN") != null ? "green" :
-                    matcher.group("YELLOW") != null ? "yellow" :
-                    matcher.group("MAGENTA") != null ? "magenta" :
-                    matcher.group("CYAN") != null ? "cyan" :
-                    */
+                    //matcher.group("KEYWORD") != null ? "keyword" :
                     matcher.group("PAREN") != null ? "paren" :
                     matcher.group("BRACE") != null ? "brace" :
                     matcher.group("BRACKET") != null ? "bracket" :
@@ -195,16 +159,6 @@ public class TextArea{
     
     public void init(){
         this.KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
-        /*
-        this.WHITE_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
-        this.BLACK_PATTERN = "\\b(" + String.join("|", BLACK) + ")\\b";
-        this.RED_PATTERN = "\\b(" + String.join("|", RED) + ")\\b";
-        this.BLUE_PATTERN = "\\b(" + String.join("|", BLUE) + ")\\b";
-        this.GREEN_PATTERN = "\\b(" + String.join("|", GREEN) + ")\\b";
-        this.YELLOW_PATTERN = "\\b(" + String.join("|", YELLOW) + ")\\b";
-        this.MAGENTA_PATTERN = "\\b(" + String.join("|", MAGENTA) + ")\\b";
-        this.CYAN_PATTERN = "\\b(" + String.join("|", CYAN) + ")\\b";
-        */
         this.PAREN_PATTERN = "\\(|\\)";
         this.BRACE_PATTERN = "\\{|\\}";
         this.BRACKET_PATTERN = "\\[|\\]";
@@ -212,20 +166,9 @@ public class TextArea{
         this.STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
         this.COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
         
-        String keyword_multi_pattern = generatePattern();
         this.PATTERN = Pattern.compile(
-            "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
-            + generatePattern()
-                    /*
-            + "|(?<WHITE>" + WHITE_PATTERN + ")"
-            + "|(?<BLACK>" + BLACK_PATTERN + ")"
-            + "|(?<RED>" + RED_PATTERN + ")"
-            + "|(?<BLUE>" + BLUE_PATTERN + ")"
-            + "|(?<GREEN>" + GREEN_PATTERN + ")"
-            + "|(?<YELLOW>" + YELLOW_PATTERN + ")"
-            + "|(?<MAGENTA>" + MAGENTA_PATTERN + ")"
-            + "|(?<CYAN>" + CYAN_PATTERN + ")"
-                */
+            //"(?<KEYWORD>" + KEYWORD_PATTERN + ")"
+             generatePattern()
             + "|(?<PAREN>" + PAREN_PATTERN + ")"
             + "|(?<BRACE>" + BRACE_PATTERN + ")"
             + "|(?<BRACKET>" + BRACKET_PATTERN + ")"
@@ -238,7 +181,7 @@ public class TextArea{
     public static String generatePattern(){
         String pat = "";
         for (Object key : KEYWORDS_PATTERN_TABLE.keySet()){
-            pat = pat.concat("|(?<" + key.toString() + ">" + KEYWORDS_PATTERN_TABLE.get(key) + ")");
+            pat = pat.concat("(?<" + key.toString() + ">" + KEYWORDS_PATTERN_TABLE.get(key) + ")");
         }
         return pat;
     }
@@ -259,6 +202,7 @@ public class TextArea{
     public void setText(String text){
         this.codeArea.replaceText(0, 0, text);
     }
+    /*
     public void nanorcParser(String path){
         
         Hashtable keywords = new Hashtable(); // creation de la table de hashage
@@ -331,37 +275,18 @@ public class TextArea{
                 List<String> list = (List<String>) keywords.get(key);
                 KEYWORDS_TABLE.put((String) key, list);
             }
-            /*
-            else if(key.toString().equals("stringPattern")){
-                STRING_PATTERN = "";
-                STRING_PATTERN+=keywords.get(key);
-                
-                list.forEach((String e) -> {
-                    STRING_PATTERN += e + "|";
-                });
-
+            List<String> length = new ArrayList<>();
+            length.addAll((List) KEYWORDS_TABLE.get("magenta"));
+            length.addAll((List) KEYWORDS_TABLE.get("green"));
+            length.addAll((List) KEYWORDS_TABLE.get("brightyellow"));
+            KEYWORDS = new String[length.size()];
+            for (int i = 0; i < length.size(); i++) {
+                this.KEYWORDS[i]= length.get(i).toString();
             }
-*/
+        
         }
-        
-        /*
-        /!\ a partir d'ici c'est vraiment fait a l'arrache, mais ca marche, y'a plus qu' ranger un peut mieux, en faisant une fonction "init" par exemple
-        */
-        
-        //System.out.println(KEYWORDS_TABLE);
-        
-        //KEYWORDS = (String[]) KEYWORDS_TABLE.get("brightyellow");
-        List<String> length = new ArrayList<>();
-        length.addAll((List) KEYWORDS_TABLE.get("magenta"));
-        length.addAll((List) KEYWORDS_TABLE.get("green"));
-        length.addAll((List) KEYWORDS_TABLE.get("brightyellow"));
-        KEYWORDS = new String[length.size()];
-        for (int i = 0; i < length.size(); i++) {
-            this.KEYWORDS[i]= length.get(i).toString();
-        }
-        
     }
-    
+    */
     public void nanoRcParseV2(String path){
         List<String> text = new ArrayList<>();
         File file = new File(path);
@@ -386,7 +311,6 @@ public class TextArea{
                             String pattern = splitedLine[2];
                             pattern= pattern.replace("\"\\<(", "\\b(");
                             pattern = pattern.replace(")\\>\"", ")\\b");
-                            System.out.println("\"\\<(");
                             KEYWORDS_PATTERN_TABLE.put(splitedLine[1], pattern); //                                  adding the list in the hash table
                         }
                     }
