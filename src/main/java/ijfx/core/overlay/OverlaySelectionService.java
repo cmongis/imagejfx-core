@@ -64,7 +64,7 @@ public class OverlaySelectionService extends AbstractService implements ImageJSe
                 .stream()
                 .forEach(view -> {
                     if (view.isSelected() && view.getData() != overlay) {
-
+                        
                         setOverlaySelection(imageDisplay, view.getData(), false);
                     } else if (view.isSelected() == false && view.getData() == overlay) {
                         setOverlaySelection(imageDisplay, view.getData(), true);
@@ -167,6 +167,7 @@ public class OverlaySelectionService extends AbstractService implements ImageJSe
             overlayView.setSelected(selected);
             eventService.publishLater(new DataViewUpdatedEvent(overlayView));
             eventService.publishLater(new OverlaySelectedEvent(imageDisplay, selectedOverlay));
+            imageDisplay.update();
 
         } else {
             logger.warning(("Couldn't find Overlay in this ImageDisplay"));
