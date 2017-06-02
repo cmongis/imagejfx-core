@@ -47,6 +47,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.omg.CORBA.SystemException;
 import org.scijava.plugin.Parameter;
 import org.scijava.Context;
 
@@ -119,8 +120,17 @@ public class AnnotationServiceTest extends IjfxTest{
     public void testRemoveTag() {
         System.out.println("removeTag");
         annotationService.addTag(taggable, tag);
+        long num = taggable.getTagList().size();
         annotationService.removeTag(taggable, tag);
-        Assert.assertNull("Testing tag remove", tag);
+        
+        for (Tag i : taggable.getTagList()){
+            
+            assertNotSame("Tag not remove", tag, i);
+        }
+        
+        long expected = num -1;
+        assertEquals("Wrong size", expected, num);
+        
     }
 
     /**
@@ -131,7 +141,7 @@ public class AnnotationServiceTest extends IjfxTest{
         System.out.println("addMetaData");
         annotationService.addMetaData(owner, m);
         assertNotNull("metadata null", m);
-        assertTrue("m is really to owner", owner.getMetaDataSet().containMetaData(m));
+        assertTrue("m is not on owner", owner.getMetaDataSet().containMetaData(m));
     }
 
     /**
@@ -146,10 +156,14 @@ public class AnnotationServiceTest extends IjfxTest{
 	//Make sure that it would fail removing if the metadata used
 	//as input parameters only matches the key but not the value
 	//of the metadata owned by the MetaDataOwner
+        
         annotationService.addMetaData(owner, m);
+        long num = owner.getMetaDataSet().size();
+        
         annotationService.removeMetaData(owner, m, matchValue);
-        assertNull("Metadata not null",m);
-        assertFalse("m is not in owner", owner.getMetaDataSet().containMetaData(m));
+        long expected = num -1;
+        assertEquals ("Wrong size", expected, num );
+        //assertFalse("m is in owner", owner.getMetaDataSet().containMetaData(m));
         
         //--------------------------------------
         //In the case of the boolean is false
@@ -158,7 +172,7 @@ public class AnnotationServiceTest extends IjfxTest{
         
         annotationService.addMetaData(owner, m);
         annotationService.removeMetaData(owner, m, matchValue);
-        assertTrue("m is in owner", owner.getMetaDataSet().containMetaData(m));
+        assertTrue("m is not in owner", owner.getMetaDataSet().containMetaData(m));
         
         //--------------------------------------
         //In the case of the key match but not the value
@@ -170,7 +184,7 @@ public class AnnotationServiceTest extends IjfxTest{
         MetaData n = new GenericMetaData(key2, value2);
         annotationService.addMetaData(owner, n);
         annotationService.removeMetaData(owner, n, matchValue);
-        assertTrue("n is in owner", owner.getMetaDataSet().containMetaData(n));
+        assertTrue("n is not in owner", owner.getMetaDataSet().containMetaData(n));
         
         //--------------------------------------
         //In the case of the value match but not the key
@@ -182,7 +196,7 @@ public class AnnotationServiceTest extends IjfxTest{
         MetaData o = new GenericMetaData(key2, value2);
         annotationService.addMetaData(owner, o);
         annotationService.removeMetaData(owner, o, matchValue);
-        assertTrue("o is in owner", owner.getMetaDataSet().containMetaData(o));
+        assertTrue("o is not in owner", owner.getMetaDataSet().containMetaData(o));
         
     }
 
@@ -222,8 +236,7 @@ public class AnnotationServiceTest extends IjfxTest{
         long expectedSize = 0;
         long numMetadata = list.stream().filter(c->c.getMetaDataSet().containMetaData(m))
                 .count();
-        
-        assertNull("MetaData not null", m);
+        assertFalse("m is in owner", owner.getMetaDataSet().containMetaData(m));
         assertEquals("MetaData is containing by several MetaDataOwners", expectedSize, numMetadata);
     }
 
