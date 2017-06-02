@@ -19,6 +19,7 @@
  *
  */
 package ijfx.ui.plugin.history;
+
 import ijfx.core.workflow.WorkflowStep;
 import mongis.utils.DraggableListCell;
 
@@ -27,46 +28,42 @@ import org.scijava.plugin.Parameter;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 
-
 /**
  *
  * @author Cyril MONGIS, 2015
  */
 class HistoryStep extends DraggableListCell<WorkflowStep> {
 
-            @Parameter
-            Context context;
+    @Parameter
+    Context context;
 
-            HistoryStepCtrl ctrl;
+    HistoryStepCtrl ctrl;
+
+    public void refresh() {
+        if (ctrl != null) {
+            ctrl.refresh();
+        }
+    }
 
     @Override
     protected void onItemChanged(Observable obs, WorkflowStep oldValue, WorkflowStep newValue) {
-        
-        
-        if(Platform.isFxApplicationThread() == false) {
-            Platform.runLater(()->onItemChanged(obs, oldValue, newValue));
+
+        if (Platform.isFxApplicationThread() == false) {
+            Platform.runLater(() -> onItemChanged(obs, oldValue, newValue));
             return;
         }
-        
-        if(ctrl == null) {
+
+        if (ctrl == null) {
             ctrl = new HistoryStepCtrl(context);
         }
-        
-        
-        if(newValue == null) {
+
+        if (newValue == null) {
             setGraphic(null);
-        }
-        else {
+        } else {
             setGraphic(ctrl);
             ctrl.setStep(newValue);
         }
-        
-        
+
     }
-            
-            
-            
-            
-         
-    
+
 }
