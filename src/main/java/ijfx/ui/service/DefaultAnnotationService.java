@@ -23,20 +23,30 @@ import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataOwner;
 import ijfx.explorer.datamodel.Taggable;
 import ijfx.explorer.datamodel.Tag;
+import ijfx.ui.service.Events.AddTagEvent;
 import java.util.List;
+import org.scijava.event.EventService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 
 /**
  *
  * @author sapho
  */
+@Plugin(type = Service.class)
 public class DefaultAnnotationService extends AbstractService implements AnnotationService {
+    
+    @Parameter
+    EventService eventService;
     
 
     @Override
     public void addTag(Taggable taggable, Tag tag) {
         taggable.addTag(tag);
+        eventService.publish(new AddTagEvent());
         
         
     }
@@ -44,12 +54,14 @@ public class DefaultAnnotationService extends AbstractService implements Annotat
     @Override
     public void removeTag(Taggable taggable, Tag tag) {
         taggable.deleteTag(tag);
+        eventService.publis(new EventMachinChose(param));
     }
 
     @Override
     public void addMetaData(MetaDataOwner owner, MetaData m) {
         if (m != null) {
             owner.getMetaDataSet().put(m);
+            eventService.publish(new EventMachinChose(param));
         }
         
         
@@ -60,6 +72,7 @@ public class DefaultAnnotationService extends AbstractService implements Annotat
         if (matchValue) {
             if (owner.getMetaDataSet().containMetaData(m)){
                 m = null;
+                eventService.publish(new EventMachinChose(param));
             }
             else {
                 System.out.println("Pas de m correspondant");
@@ -73,6 +86,7 @@ public class DefaultAnnotationService extends AbstractService implements Annotat
     public void addMetaData(List<? extends MetaDataOwner> list, MetaData m) {
         if (m !=null){
             list.stream().map(c->c.getMetaDataSet().put(m));
+            eventService.publish(new EventMachinChose(param));
         }
     }
 
@@ -80,6 +94,7 @@ public class DefaultAnnotationService extends AbstractService implements Annotat
     public void removeMetaData(List<? extends MetaDataOwner> list, MetaData m) {
         if (m!=null){
             list.stream().filter(c -> c.getMetaDataSet().containMetaData(m)).forEach((c)-> removeMetaData(c, m, true));
+            eventService.publish(new EventMachinChose(param));
         }
         
     }

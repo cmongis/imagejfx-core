@@ -19,24 +19,34 @@
  */
 package ijfx.ui.service;
 
+import de.saxsys.javafx.test.JfxRunner;
+import de.saxsys.javafx.test.TestInJfxThread;
 import ijfx.ui.service.AnnotationService;
 import ijfx.ui.service.DefaultAnnotationService;
+
 
 import ijfx.core.IjfxTest;
 import ijfx.core.metadata.GenericMetaData;
 import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataOwner;
 import ijfx.explorer.datamodel.DefaultTag;
+import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.datamodel.Tag;
 import ijfx.explorer.datamodel.Taggable;
 import ijfx.explorer.views.GenerateDummyExplorables;
+import ijfx.explorer.wrappers.MetaDataSetExplorerWrapper;
+import ijfx.ui.test.DummyMetaData;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import javafx.scene.image.Image;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
+import org.junit.runner.RunWith;
 import org.scijava.plugin.Parameter;
 import org.scijava.Context;
 
@@ -44,6 +54,8 @@ import org.scijava.Context;
  *
  * @author sapho
  */
+
+@RunWith(JfxRunner.class)
 public class AnnotationServiceTest extends IjfxTest{
     
     @Parameter
@@ -56,23 +68,33 @@ public class AnnotationServiceTest extends IjfxTest{
     private Object value;
     private MetaData m; 
     private List<? extends MetaDataOwner> list;
+    private Image image;
+    
+    
     
     public AnnotationServiceTest() {
     }
     
     @Before
+    @TestInJfxThread
     public void setUp() throws Exception {
-        annotationService = new DefaultAnnotationService();
+        image = new Image ("http://tech.velmont.net/files/2009/04/lenna-lg.jpg");
+        
         key = "key";
         value = "value";
-        taggable = (Taggable) new GenerateDummyExplorables(); // doesn this work ??? If yes, why ?
-        tag = new DefaultTag("bieber");
-        owner = (MetaDataOwner) new GenerateDummyExplorables();
-        m = new GenericMetaData(key, value);
-	    
-	// your list should contain at least 3 metadata 
+        tag = Tag.create(key);
+        m = MetaData.create(key, value);
         list = new ArrayList<MetaDataOwner>();
-
+        
+        taggable = (Explorable) image; //this doen't work
+        owner = (MetaDataOwner) image; //the same
+        taggable = (Taggable) image; //the same
+        taggable = new Taggable (image); //impossible
+        image = (Taggable) new Image ("http://tech.velmont.net/files/2009/04/lenna-lg.jpg"); //already try
+        image = (Object) new Image("http://tech.velmont.net/files/2009/04/lenna-lg.jpg");
+        taggable = (Taggable) image;
+        
+        
     }
     
     @After
