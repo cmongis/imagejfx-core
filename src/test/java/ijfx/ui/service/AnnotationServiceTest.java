@@ -68,7 +68,6 @@ public class AnnotationServiceTest extends IjfxTest{
     private Object value;
     private MetaData m; 
     private List<? extends MetaDataOwner> list;
-    private Image image;
     
     
     
@@ -78,21 +77,14 @@ public class AnnotationServiceTest extends IjfxTest{
     @Before
     @TestInJfxThread
     public void setUp() throws Exception {
-        image = new Image ("http://tech.velmont.net/files/2009/04/lenna-lg.jpg");
         
         key = "key";
         value = "value";
         tag = Tag.create(key);
         m = MetaData.create(key, value);
         list = new ArrayList<MetaDataOwner>();
-        
-        taggable = (Explorable) image; //this doen't work
-        owner = (MetaDataOwner) image; //the same
-        taggable = (Taggable) image; //the same
-        taggable = new Taggable (image); //impossible
-        image = (Taggable) new Image ("http://tech.velmont.net/files/2009/04/lenna-lg.jpg"); //already try
-        image = (Object) new Image("http://tech.velmont.net/files/2009/04/lenna-lg.jpg");
-        taggable = (Taggable) image;
+        taggable = new MetaDataSetExplorerWrapper();
+        owner = new MetaDataSetExplorerWrapper();
         
         
     }
