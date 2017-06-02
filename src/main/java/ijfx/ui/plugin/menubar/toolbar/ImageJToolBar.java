@@ -20,7 +20,9 @@
  */
 package ijfx.ui.plugin.menubar.toolbar;
 
+import com.google.common.collect.Lists;
 import ijfx.core.icon.FXIconService;
+import ijfx.core.module.ModuleWrapper;
 import ijfx.core.uicontext.UiContextService;
 import ijfx.core.uiplugin.Localization;
 import ijfx.core.uiplugin.UiPluginService;
@@ -33,15 +35,24 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
 import ijfx.ui.UiConfiguration;
+import ijfx.ui.inputharvesting.ContextMenuInputPanel;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
+import org.scijava.module.ModuleItem;
+import org.scijava.module.ModuleService;
 import org.scijava.tool.Tool;
 import org.scijava.tool.ToolService;
+import org.scijava.widget.InputWidget;
+import org.scijava.widget.WidgetModel;
+import org.scijava.widget.WidgetService;
 
 /**
  *
@@ -66,6 +77,9 @@ public class ImageJToolBar extends VBox implements UiPlugin {
     @Parameter
     ToolService toolService;
 
+    @Parameter
+    ModuleService moduleService;
+    
     @Parameter
     FXIconService fxIconService;
 
@@ -107,6 +121,9 @@ public class ImageJToolBar extends VBox implements UiPlugin {
                 + tool.getDescription()
                 + " )"
         ));
+         
+       button.setContextMenu(createContextMenu(tool));
+        
         
         toggleGroup.getToggles().add(button);
         
@@ -115,6 +132,27 @@ public class ImageJToolBar extends VBox implements UiPlugin {
         return button;
     }
 
+    @Parameter
+    WidgetService widgetService;
+    
+    private ContextMenu createContextMenu(Tool tool) {
+        
+        ModuleWrapper<Tool> wrapper = new ModuleWrapper<>(tool);
+        ContextMenuInputPanel inputPanel = new ContextMenuInputPanel();
+        
+        for(ModuleItem<?> input : wrapper.getInfo().inputs()) {
+            WidgetModel model = widgetService.createModel(inputPanel, wrapper, input, new ArrayList<>());
+            InputWidget<?, ?> widget = widgetService.find(model);
+            if(widget == null) continue;
+            widget.set(model);
+            inputPanel.addWidget((InputWidget<?, Node>)widget);
+            
+        }
+        
+       return inputPanel.getComponent();
+        
+        
+    }
     
     private class ToolListener implements ChangeListener<Boolean>{
         private final  Tool tool;
