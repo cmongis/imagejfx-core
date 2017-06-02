@@ -44,7 +44,7 @@ public class RectangleTool extends AbstractPathTool<RectangleOverlay> {
             RealCoords last = coords.get(coords.size() - 1);
 
             RectangleOverlay overlay = getOverlay();
-
+            if(overlay == null) return;
             overlay.setOrigin(first.getIntX(), 0);
             overlay.setOrigin(first.getIntY(), 1);
             overlay.setExtent(last.getIntX() - first.getIntX(), 0);

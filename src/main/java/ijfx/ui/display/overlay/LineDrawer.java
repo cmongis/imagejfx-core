@@ -59,7 +59,7 @@ public class LineDrawer implements OverlayDrawer<LineOverlay> {
         int dy = end.y;
         
         GraphicsContext graphicsContext2D = canvas.getGraphicsContext2D();
-        
+        graphicsContext2D.setLineWidth(overlay.getLineWidth());
         graphicsContext2D.setStroke(viewConfig.getStrokeColor());
         
         graphicsContext2D.strokeLine(ox, oy, dx, dy);
