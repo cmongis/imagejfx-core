@@ -120,15 +120,15 @@ public class AnnotationServiceTest extends IjfxTest{
     public void testRemoveTag() {
         System.out.println("removeTag");
         annotationService.addTag(taggable, tag);
-        long num = taggable.getTagList().size();
-        annotationService.removeTag(taggable, tag);
         
+        annotationService.removeTag(taggable, tag);
+        long num = taggable.getTagList().size();
         for (Tag i : taggable.getTagList()){
             
             assertNotSame("Tag not remove", tag, i);
         }
         
-        long expected = num -1;
+        long expected = 0;
         assertEquals("Wrong size", expected, num);
         
     }
@@ -158,10 +158,9 @@ public class AnnotationServiceTest extends IjfxTest{
 	//of the metadata owned by the MetaDataOwner
         
         annotationService.addMetaData(owner, m);
-        long num = owner.getMetaDataSet().size();
-        
         annotationService.removeMetaData(owner, m, matchValue);
-        long expected = num -1;
+        long num = owner.getMetaDataSet().size();
+        long expected = 1;
         assertEquals ("Wrong size", expected, num );
         //assertFalse("m is in owner", owner.getMetaDataSet().containMetaData(m));
         

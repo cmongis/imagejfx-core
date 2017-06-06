@@ -33,28 +33,29 @@ public class DefaultTaggable implements Taggable {
     @Parameter
     AnnotationService annotationServce;
     
-    private Set<Tag> tagList = new HashSet<Tag> ();
+    private Set<Tag> tagSet = new HashSet<Tag> ();
 
     @Override
     public void addTag(Tag tag) {
-        tagList.add(tag);
+        tagSet.add(tag);
         
                 }
 
     @Override
     public void deleteTag(Tag tag) {
-        tagList.remove(tag);
+        tagSet.remove(tag);
+        
                 }
 
     @Override
     public Set<Tag> getTagList() {
-        return tagList;
+        return tagSet;
     }
 
     @Override
     public boolean has(Tag tag) {
         boolean state = false;
-        for (Tag i : tagList){
+        for (Tag i : tagSet){
            if ( i.equals(tag)){
             state = true;
         }
