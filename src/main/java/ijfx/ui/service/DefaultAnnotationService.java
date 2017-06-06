@@ -76,10 +76,12 @@ public class DefaultAnnotationService extends AbstractService implements Annotat
     public void removeMetaData(MetaDataOwner owner, MetaData m, boolean matchValue) {
         if (matchValue) {
             if (owner.getMetaDataSet().containMetaData(m)){
-                owner.getMetaDataSet().remove(m);
+                owner.getMetaDataSet().remove(m.getName());
                 eventService.publish(new RemoveMetaDataEvent(owner));
             }
-            
+            else {
+                System.out.println("Message");
+            }
             
         }
         
