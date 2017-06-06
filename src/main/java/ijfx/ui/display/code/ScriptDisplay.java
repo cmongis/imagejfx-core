@@ -23,7 +23,10 @@ import org.scijava.display.Display;
 import ijfx.core.formats.Script;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.control.IndexRange;
 import org.scijava.script.ScriptLanguage;
 
 /**
@@ -32,13 +35,23 @@ import org.scijava.script.ScriptLanguage;
  */
 
 public interface ScriptDisplay extends Display<Script> {
-    ObjectProperty<ObservableValue<String>> selectedText = new SimpleObjectProperty<>();
+    
+    final StringProperty selectedText = new SimpleStringProperty();
+    final StringProperty textProperty= new SimpleStringProperty();
+    ObjectProperty<IndexRange> selection = new SimpleObjectProperty<>();
     ScriptLanguage getLanguage();
     
     void setLanguage(ScriptLanguage language);
-    
+    void editText(String newValue);
     void copyText ();
-    String pasteText ();
+    void pasteText ();
     void setSelectedText(String text);
-    ObjectProperty<ObservableValue<String>> getSelectedText();
+    StringProperty selectedText();
+    StringProperty textProperty();
+    ObjectProperty<IndexRange> getSelection();
+    void setText(ObservableValue textValue);
+    void setSelection(IndexRange indexRange);
+    String getText();
+    
+    void print();
 }

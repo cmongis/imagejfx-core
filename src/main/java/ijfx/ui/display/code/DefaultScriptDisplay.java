@@ -20,13 +20,18 @@
 package ijfx.ui.display.code;
 
 import ijfx.core.formats.Script;
+import java.io.File;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.control.IndexRange;
 import org.scijava.Prioritized;
 import org.scijava.Priority;
 import org.scijava.display.AbstractDisplay;
 import org.scijava.display.Display;
 import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.script.ScriptLanguage;
 
@@ -37,10 +42,20 @@ import org.scijava.script.ScriptLanguage;
 @Plugin(type = Display.class, priority = Priority.HIGH_PRIORITY)
 public class DefaultScriptDisplay extends AbstractDisplay<Script> implements ScriptDisplay {
     
+    
+    
     private String copiedText;
     
     public DefaultScriptDisplay() {
         super(Script.class);
+        
+        textProperty.addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                get(0).setCode(newValue);
+            }
+        });
+        
     }
 
     private Script getScript() {
@@ -75,20 +90,61 @@ public class DefaultScriptDisplay extends AbstractDisplay<Script> implements Scr
     @Override
     public void copyText() {
         
-        this.copiedText=selectedText.get().getValue();
+        this.copiedText=selectedText.getValue();
     }
 
     @Override
-    public String pasteText() {
-        return this.copiedText;
+    public void pasteText() {
+        StringBuilder sb = new StringBuilder(get(0).getCode());
+        sb.replace(selection.getValue().getStart(),selection.getValue().getEnd(), copiedText);
+        get(0).setCode(sb.toString());
+        
     }
 
     @Override
     public void setSelectedText(String text) {
+        selectedText.set(text);
     }
 
     @Override
-    public ObjectProperty<ObservableValue<String>> getSelectedText() {
+    public StringProperty selectedText() {
         return selectedText;
     }
+
+    @Override
+    public void print() {
+        System.out.println(get(0).getCode());
+    }
+
+    @Override
+    public final StringProperty textProperty() {
+        return textProperty;
+    }
+
+    @Override
+    public ObjectProperty<IndexRange> getSelection() {
+        return selection;
+    }
+
+    @Override
+    public final void setText(ObservableValue textValue) {
+        textProperty.setValue(textValue.getValue().toString());
+    }
+
+    @Override
+    public final String getText() {
+        return textProperty.getValue();
+    }
+
+    @Override
+    public void editText(String newValue) {
+        get(0).setCode(newValue);
+    }
+
+    @Override
+    public void setSelection(IndexRange indexRange) {
+        selection.set(indexRange);
+    }
+    
+    
 }

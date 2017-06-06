@@ -19,22 +19,24 @@
  */
 package ijfx.commands.script;
 
+import ijfx.ui.display.code.ScriptDisplay;
+import org.scijava.command.ContextCommand;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.plugins.commands.io.OpenFile;
 
 /**
  *
  * @author florian
  */
-@Plugin(type = ScriptCommand.class, menuPath = "File > Save")
-public class SaveScript extends OpenFile implements ScriptCommand{
-
+@Plugin(type = ScriptCommand.class,menuPath = "Edit > Paste")
+public class PasteScript extends ContextCommand implements ScriptCommand{
+    @Parameter
+    ScriptDisplay scriptDisplay;
+    
     @Override
     public void run() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        scriptDisplay.pasteText();
+        scriptDisplay.update();
     }
-
-   
-    
     
 }

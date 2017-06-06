@@ -34,9 +34,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.control.IndexRange;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
@@ -51,13 +53,16 @@ import org.scijava.script.ScriptService;
  * @author florian
  */
 public class TextArea{
-    @Parameter
-    ScriptDisplay scriptDisplay;
+    
     CodeArea codeArea = null;
+    
     
     //private StringProperty selectedText;
     
-    private final ObjectProperty<ObservableValue<String>> selectedText;
+    //private final ObjectProperty<ObservableValue<String>> selectedText;
+    private final StringProperty textProperty;
+    //private final ObjectProperty<ObservableValue<IndexRange>> selection;
+    
     
     private static Hashtable KEYWORDS_TABLE = new Hashtable();
     private static Hashtable KEYWORDS_PATTERN_TABLE = new Hashtable();
@@ -106,8 +111,9 @@ public class TextArea{
 
     
     
-    public TextArea() {
-        codeArea = new CodeArea();
+    public TextArea(ScriptDisplay scriptDisplay) {
+        
+        this.codeArea = new CodeArea();
         //nanorcParser(getClass().getResource("/ijfx/ui/display/code/javascript.nanorc").getFile());
         //nanoRcParseV2(getClass().getResource("/ijfx/ui/display/code/javascript.nanorc").getFile());
         this.codeArea.setParagraphGraphicFactory(LineNumberFactory.get(this.codeArea));
@@ -117,12 +123,35 @@ public class TextArea{
                 .subscribe(change -> {
                     this.codeArea.setStyleSpans(0, computeHighlighting(this.codeArea.getText()));
                 });
-        //this.codeArea.replaceText(0, 0, sampleCode);
+        /*
         selectedText = new SimpleObjectProperty<>();
         selectedText.set(codeArea.selectedTextProperty());
         scriptDisplay.getSelectedText().bind(selectedText);
+        textProperty = new SimpleObjectProperty<>();
+        textProperty.set(codeArea.textProperty().getValue());
+        
+        //scriptDisplay.textProperty().bind(textProperty);
+        selection = new SimpleObjectProperty<>();
+        selection.set(codeArea.selectionProperty());
+        scriptDisplay.getSelection().bind(selection);
+        */
+        textProperty = new SimpleStringProperty();
+        textProperty.bind(this.codeArea.textProperty());
+        
+        
+        scriptDisplay.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                setText(newValue);
+            }
+        });
+        
     }
-    
+    /*
+    public StringProperty textProperty (){
+        return this.textProperty;
+    }
+    */
     private static StyleSpans<Collection<String>> computeHighlighting(String text) {
         Matcher matcher = PATTERN.matcher(text);
         int lastKwEnd = 0;
@@ -194,20 +223,15 @@ public class TextArea{
         return this.codeArea;
     }
     public void setText(String text){
-        this.codeArea.replaceText(0, 0, text);
+        this.codeArea.replaceText( text);
     }
-    
+    public StringProperty textProperty(){
+        return this.textProperty;
+    }
     public String getSelectedText(){
         return this.codeArea.getSelectedText();
     }
-    public void createListener(){
-        this.codeArea.selectedTextProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                scriptDisplay.setSelectedText(newValue);
-            }
-        });
-    }
+    
     /*
     public void nanorcParser(String path){
         
@@ -216,10 +240,10 @@ public class TextArea{
             System.out.println("Fichier null !");
             return;
         }
-        List<String> text = new ArrayList<>();
+        List<String> textProperty = new ArrayList<>();
         File file = new File(path);
         try {
-            text = Files.readAllLines(file.toPath(), Charset.defaultCharset());// lecture du fichier, tout est mis dans la list text
+            textProperty = Files.readAllLines(file.toPath(), Charset.defaultCharset());// lecture du fichier, tout est mis dans la list textProperty
                     } catch (IOException ex) {
             Logger.getLogger(TextArea.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -230,7 +254,7 @@ public class TextArea{
         Boolean comments = false;
         
         
-        for (String line : text){
+        for (String line : textProperty){
             String[] splitedLine = line.split(" ");
             if (splitedLine.length <= 1) continue;
             if (splitedLine[1].matches("Strings.")) { //                     checking if we arrive in the "strings" paragraph
@@ -297,7 +321,7 @@ public class TextArea{
         List<String> text = new ArrayList<>();
         File file = new File(path);
         try {
-            text = Files.readAllLines(file.toPath(), Charset.defaultCharset());// lecture du fichier, tout est mis dans la list text
+            text = Files.readAllLines(file.toPath(), Charset.defaultCharset());// lecture du fichier, tout est mis dans la list textProperty
                     } catch (IOException ex) {
             Logger.getLogger(TextArea.class.getName()).log(Level.SEVERE, null, ex);
         }

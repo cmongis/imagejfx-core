@@ -25,8 +25,13 @@ import ijfx.ui.display.image.FXDisplayPanel;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.adapter.JavaBeanStringProperty;
+import javafx.beans.property.adapter.JavaBeanStringPropertyBuilder;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.IndexRange;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -36,6 +41,7 @@ import org.scijava.display.Display;
 import org.scijava.display.TextDisplay;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.script.ScriptLanguage;
 import org.scijava.ui.viewer.DisplayWindow;
 
 /**
@@ -46,37 +52,78 @@ import org.scijava.ui.viewer.DisplayWindow;
 public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay> {
     @Parameter
     Scene scene;
-    TextEditorController root;
-    BorderPane borderPane;
+    AnchorPane root;
+    //BorderPane borderPane;
     ScriptDisplay display;
+    static TextArea textArea;
+    
+    static CodeArea codeArea;
+    JavaBeanStringProperty codeProperty; 
+    
     public TextEditorDisplayPanel() {
         super(ScriptDisplay.class);
     }
 
     @Override
     public void pack() {
-        try {
-            this.root = new TextEditorController();
-            this.root.initText(this.display);
-            /*
-            root.getChildren().add(borderPane);
-            root.getStylesheets().add(getClass().getResource("/ijfx/ui/display/code/JavaRichtext.css").toExternalForm());
-            
-            AnchorPane.setBottomAnchor(borderPane, 15d);
-            AnchorPane.setTopAnchor(borderPane, 0d);
-            AnchorPane.setLeftAnchor(borderPane, 0d);
-            AnchorPane.setRightAnchor(borderPane, 0d);
-            
-            TextArea textAreaCreator = new TextArea();
-            CodeArea codeArea = textAreaCreator.getCodeArea();
-            borderPane.setCenter(codeArea);
-            textAreaCreator.nanorcParser(getClass().getResource("/ijfx/ui/display/code/javascript.nanorc").getFile());
-*/
-        } catch (IOException ex) {
-            Logger.getLogger(TextEditorDisplayPanel.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
+        this.root = new AnchorPane();
+        //root.getChildren().add(borderPane);
+        root.getStylesheets().add(getClass().getResource("/ijfx/ui/display/code/JavaRichtext.css").toExternalForm());
+        this.textArea = new TextArea(display);
+        this.codeArea = textArea.getCodeArea();
+
+        root.setBottomAnchor(codeArea, 15d);
+        root.setTopAnchor(codeArea, 0d);
+        root.setLeftAnchor(codeArea, 0d);
+        root.setRightAnchor(codeArea, 0d);
+
+
+        root.getChildren().add(textArea.getCodeArea());
+        //initCode();
+        
+        textArea.getCodeArea().selectedTextProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                display.setSelectedText(newValue);
+            }
+        });
+        textArea.getCodeArea().selectionProperty().addListener(new ChangeListener<IndexRange>() {
+            @Override
+            public void changed(ObservableValue<? extends IndexRange> observable, IndexRange oldValue, IndexRange newValue) {
+                display.setSelection(newValue);
+            }
+        });
+        
+        //codeArea.textProperty().bindBidirectional(codeProperty); 
+        initCode();
+        display.textProperty().bind(textArea.textProperty());
+        //textArea.textProperty().bindBidirectional(display.textProperty());
+        /*
+        codeArea.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                display.editText(newValue);
+            }
+        });
+        */
+    }
+    
+    public void initCode(){
+        changeLanguage(display.getLanguage());
+        this.textArea.setText(display.get(0).getCode());
+        
+    }
+    
+    public void setCode(String code) {
+
+        display.get(0).setCode(code);
 
     }
+
+    public String getCode() {
+        return display.get(0).getCode();
+    } 
     
     @Override
     public void view(DisplayWindow window, ScriptDisplay display){
@@ -100,6 +147,15 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
 
     @Override
     public void redraw() {
+        initCode();
+        //root.setText(display.get(0).getCode());
     }
-
+    public void changeLanguage(ScriptLanguage language){
+        String path = findFileLanguage(language);
+        this.textArea.initLanguage(path);
+    }
+    
+    public static String findFileLanguage(ScriptLanguage language) {
+       return String.format("/ijfx/ui/display/code/%s.nanorc",language.getLanguageName().toLowerCase().replace(" ", ""));
+    }
 }

@@ -42,7 +42,7 @@ import org.scijava.util.FileUtils;
 
 
 /**
- *
+ * Deprecated
  * @author florian
  */
 
@@ -70,7 +70,7 @@ public class TextEditorController extends AnchorPane {
     CodeArea codeArea = null;
     TextArea textAreaCreator;
     
-    public TextEditorController() throws IOException {
+    public TextEditorController(ScriptDisplay scriptDisplay) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/ijfx/ui/display/code/TextEditorMain.fxml"));
         getStylesheets().add(getClass().getResource("/ijfx/ui/display/code/JavaRichtext.css").toExternalForm());
         loader.setRoot(this);
@@ -80,7 +80,7 @@ public class TextEditorController extends AnchorPane {
         
         //RichTextEditor richTextEditor =new RichTextEditor();
         
-        textAreaCreator = new TextArea();
+        textAreaCreator = new TextArea(scriptDisplay);
         this.codeArea = textAreaCreator.getCodeArea();
         init();
         borderPane.setCenter(codeArea);
@@ -90,26 +90,7 @@ public class TextEditorController extends AnchorPane {
         this.setLeftAnchor(borderPane, 0d);
         this.setRightAnchor(borderPane, 0d);
         
-        /*
-        //File javascriptrc = new File("javascript.nanorc");
-        Platform.runLater( () ->{
-
-            File javascriptrc = openNanorc();
-        });
-        
-        System.out.println(javascriptrc.getAbsolutePath());
-        
-        textAreaCreator.nanorcParser(javascriptrc);
-*/
-        //borderPane.setTop(richTextEditor.init());
-        //textAreaCreator.getCodeArea().getSelectedText();
-
-        
-        //VBox mainBox = richTextEditor.init();
-        //mainBox.setPrefSize(USE_COMPUTED_SIZE, USE_COMPUTED_SIZE);
-        //this.getChildren().add(mainBox);
-        //this.setPrefSize(USE_COMPUTED_SIZE, USE_COMPUTED_SIZE);
-        
+       
     }
 
    
@@ -142,6 +123,12 @@ public class TextEditorController extends AnchorPane {
         return menuItem;
     }
     
+    public void setText(String text){
+        this.codeArea.replaceText(text);
+    }
+    public CodeArea getCodeArea(){
+        return this.codeArea;
+    }
     public File openNanorc (){
         String initialDir = System.getProperty("user.dir");
         FileChooser fileChooser = new FileChooser();
