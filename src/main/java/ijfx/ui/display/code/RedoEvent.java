@@ -19,31 +19,15 @@
  */
 package ijfx.ui.display.code;
 
+import org.scijava.event.SciJavaEvent;
+
 /**
  *
  * @author florian
  */
-import javafx.scene.Node;
+public class RedoEvent extends SciJavaEvent{
 
-public class EmptyLinkedImage<S> implements LinkedImage<S> {
-
-    @Override
-    public LinkedImage<S> setStyle(S style) {
-        return this;
+    public RedoEvent() {
     }
-
-    @Override
-    public S getStyle() {
-        return null;
-    }
-
-    @Override
-    public String getImagePath() {
-        return "";
-    }
-
-    @Override
-    public Node createNode() {
-        throw new AssertionError("Unreachable code");
-    }
+    
 }

@@ -17,39 +17,24 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.ui.display.code;
+package ijfx.commands.script;
 
-import org.scijava.script.ScriptLanguage;
+import org.scijava.plugin.Plugin;
+import org.scijava.plugins.commands.io.OpenFile;
 
 /**
  *
  * @author florian
  */
-public enum Language {
-    JAVASCRIPT ("Javascript","/ijfx/ui/display/code/javascript.nanorc"),
-    JAVA ("Java","/ijfx/ui/display/code/java.nanorc"),
-    PYTHON ("Python","/ijfx/ui/display/code/python.nanorc");
-    
-    private String name = "";
-    private String path = "";
+@Plugin(type = ScriptCommand.class, menuPath = "File > Save")
+public class SaveScript extends OpenFile implements ScriptCommand{
 
-    private Language(String name, String path) {
-        this.name = name;
-        this.path = path;
-    }
-    
-    public String getPath (){
-        return path;
+    @Override
+    public void run() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public String getName() {
-        return name;
-    }
-    
-    
-    public static String findFile(ScriptLanguage language) {
-       return String.format("/ijfx/ui/display/code/%s.nanorc",language.getLanguageName().toLowerCase().replace(" ", ""));
-    }
+   
     
     
 }

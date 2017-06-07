@@ -19,20 +19,34 @@
  */
 package ijfx.ui.display.code;
 
-import com.sun.javafx.geom.BaseBounds;
-import com.sun.javafx.geom.transform.BaseTransform;
-import com.sun.javafx.jmx.MXNodeAlgorithm;
-import com.sun.javafx.jmx.MXNodeAlgorithmContext;
-import com.sun.javafx.sg.prism.NGNode;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javafx.scene.Node;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.scene.control.IndexRange;
+import javafx.scene.input.Clipboard;
+import javafx.scene.layout.AnchorPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
+import org.scijava.plugin.Parameter;
+import org.scijava.script.ScriptService;
 //import org.fxmisc.richtext.model.StyleSpans;
 //import org.fxmisc.richtext.model.StyleSpansBuilder;
 
@@ -40,9 +54,23 @@ import org.fxmisc.richtext.model.StyleSpansBuilder;
  *
  * @author florian
  */
-public class TextArea{
-    CodeArea codeArea = null;
-    private static final String[] KEYWORDS = new String[] {
+public class TextArea extends AnchorPane{
+    
+    static CodeArea codeArea = null;
+    
+    
+    //private StringProperty selectedText;
+    
+    private final StringProperty selectedTextProperty;
+    private final StringProperty textProperty;
+    private final ObjectProperty<IndexRange> selectionProperty;
+    
+    
+    private static Hashtable KEYWORDS_TABLE = new Hashtable();
+    private static Hashtable KEYWORDS_PATTERN_TABLE = new Hashtable();
+    private static String[] KEYWORDS = new String[]{""};
+    /*
+    private static String[] KEYWORDS = new String[] {
             "abstract", "assert", "boolean", "break", "byte",
             "case", "catch", "char", "class", "const",
             "continue", "default", "do", "double", "else",
@@ -54,18 +82,28 @@ public class TextArea{
             "switch", "synchronized", "this", "throw", "throws",
             "transient", "try", "void", "volatile", "while"
     };
+    */
+    private static String[] WHITE = {};
+    private static String[] BLACK = {};
+    private static String[] RED = {};
+    private static String[] BLUE = {};
+    private static String[] GREEN = {};
+    private static String[] YELLOW = {};
+    private static String[] MAGENTA = {};
+    private static String[] CYAN = {};
 
-    private static final String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
-    private static final String PAREN_PATTERN = "\\(|\\)";
-    private static final String BRACE_PATTERN = "\\{|\\}";
-    private static final String BRACKET_PATTERN = "\\[|\\]";
-    private static final String SEMICOLON_PATTERN = "\\;";
-    private static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
-    private static final String COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
-
-    private static final Pattern PATTERN = Pattern.compile(
-            "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
-            + "|(?<PAREN>" + PAREN_PATTERN + ")"
+    //private static String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
+    private static String PAREN_PATTERN = "\\(|\\)";
+    private static String BRACE_PATTERN = "\\{|\\}";
+    private static String BRACKET_PATTERN = "\\[|\\]";
+    private static String SEMICOLON_PATTERN = "\\;";
+    private static String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
+    private static String COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
+    
+    private static  Pattern PATTERN = Pattern.compile(
+            
+            //"(?<KEYWORD>" + KEYWORD_PATTERN + ")"
+             "|(?<PAREN>" + PAREN_PATTERN + ")"
             + "|(?<BRACE>" + BRACE_PATTERN + ")"
             + "|(?<BRACKET>" + BRACKET_PATTERN + ")"
             + "|(?<SEMICOLON>" + SEMICOLON_PATTERN + ")"
@@ -75,31 +113,11 @@ public class TextArea{
 
     
     
-     private static final String sampleCode = String.join("\n", new String[] {
-        "package com.example;",
-        "",
-        "import java.util.*;",
-        "",
-        "public class Foo extends Bar implements Baz {",
-        "",
-        "    /*",
-        "     * multi-line comment",
-        "     */",
-        "    public static void main(String[] args) {",
-        "        // single-line comment",
-        "        for(String arg: args) {",
-        "            if(arg.length() != 0)",
-        "                System.out.println(arg);",
-        "            else",
-        "                System.err.println(\"Warning: empty string as argument\");",
-        "        }",
-        "    }",
-        "",
-        "}"
-});
-     
     public TextArea() {
-        codeArea = new CodeArea();
+        
+        this.codeArea = new CodeArea();
+        //nanorcParser(getClass().getResource("/ijfx/ui/display/code/javascript.nanorc").getFile());
+        //nanoRcParseV2(getClass().getResource("/ijfx/ui/display/code/javascript.nanorc").getFile());
         this.codeArea.setParagraphGraphicFactory(LineNumberFactory.get(this.codeArea));
 
         this.codeArea.richChanges()
@@ -107,17 +125,46 @@ public class TextArea{
                 .subscribe(change -> {
                     this.codeArea.setStyleSpans(0, computeHighlighting(this.codeArea.getText()));
                 });
-        this.codeArea.replaceText(0, 0, sampleCode);
+        
+        selectedTextProperty = new SimpleStringProperty();
+        selectedTextProperty.bind(this.codeArea.selectedTextProperty());
+        
+        
+        //scriptDisplay.textProperty().bind(textProperty);
+        selectionProperty = new SimpleObjectProperty<>();
+        selectionProperty.bind(this.codeArea.selectionProperty());
+        
+        textProperty = new SimpleStringProperty();
+        textProperty.bind(this.codeArea.textProperty());
+        
+        this.getChildren().add(this.codeArea);
+        getStylesheets().add(getClass().getResource("/ijfx/ui/display/code/JavaRichtext.css").toExternalForm());
+        /*
+        scriptDisplay.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                setText(newValue);
+            }
+        });
+        */
     }
-    
+    /*
+    public StringProperty textProperty (){
+        return this.textProperty;
+    }
+    */
     private static StyleSpans<Collection<String>> computeHighlighting(String text) {
         Matcher matcher = PATTERN.matcher(text);
         int lastKwEnd = 0;
+        
         StyleSpansBuilder<Collection<String>> spansBuilder
                 = new StyleSpansBuilder<>();
+        
         while(matcher.find()) {
+            String result = testMatcher(matcher);
             String styleClass =
-                    matcher.group("KEYWORD") != null ? "keyword" :
+                    result != null ? result : 
+                    //matcher.group("KEYWORD") != null ? "keyword" :
                     matcher.group("PAREN") != null ? "paren" :
                     matcher.group("BRACE") != null ? "brace" :
                     matcher.group("BRACKET") != null ? "bracket" :
@@ -132,10 +179,204 @@ public class TextArea{
         spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
         return spansBuilder.create();
     }
-
+    
+    public void init(){
+        //this.KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
+        this.PAREN_PATTERN = "\\(|\\)";
+        this.BRACE_PATTERN = "\\{|\\}";
+        this.BRACKET_PATTERN = "\\[|\\]";
+        this.SEMICOLON_PATTERN = "\\;";
+        this.STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
+        this.COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
+        
+        this.PATTERN = Pattern.compile(
+            //"(?<KEYWORD>" + KEYWORD_PATTERN + ")"
+             
+             "(?<PAREN>" + PAREN_PATTERN + ")"
+            + "|(?<BRACE>" + BRACE_PATTERN + ")"
+            + "|(?<BRACKET>" + BRACKET_PATTERN + ")"
+            + "|(?<SEMICOLON>" + SEMICOLON_PATTERN + ")"
+            + "|(?<STRING>" + STRING_PATTERN + ")"
+            + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
+            + generatePattern()
+        );
+    }
+    
+    public static String generatePattern(){
+        String pat = "";
+        for (Object key : KEYWORDS_PATTERN_TABLE.keySet()){
+            pat = pat.concat("|(?<" + key.toString() + ">" + KEYWORDS_PATTERN_TABLE.get(key) + ")");
+        }
+        return pat;
+    }
+    
+    public static String testMatcher(Matcher matcher){
+        for (Object key : KEYWORDS_PATTERN_TABLE.keySet()){
+            if (matcher.group(key.toString()) != null) return key.toString();
+        }
+        return null;
+    }
+    public void initLanguage(String path){
+        nanoRcParseV2(getClass().getResource(path).getFile());
+        init();
+    }
     public CodeArea getCodeArea() {
         return this.codeArea;
     }
+    public void setText(String text){
+        //String newText = new String(text);
+        //this.codeArea.clear();
+        
+        //this.textProperty.unbind();
+        //this.textProperty.set(codeArea.getText());
+        //this.codeArea.clear();
+        
+        //codeArea.getText().replaceAll(this.codeArea.getText(), text);
+        /*
+        this.codeArea.selectAll();
+        this.codeArea.replaceSelection(text);
+        this.codeArea.deselect();
+        */
+        //String test = this.codeArea.getText();
+        this.codeArea.replaceText(text);
+        
+        //this.textProperty.bind(this.codeArea.textProperty());
+    }
+    public StringProperty textProperty(){
+        return this.textProperty;
+    }
+    public StringProperty selectedTextProperty(){
+        return this.selectedTextProperty;
+    }
+    public ObjectProperty selectionProperty(){
+        return this.selectionProperty;
+    }
+    public String getSelectedText(){
+        return this.codeArea.getSelectedText();
+    }
     
+    public void undo(){
+        this.codeArea.undo();
+    }
+    public void redo(){
+        this.codeArea.redo();
+    }
+    
+    /*
+    public void nanorcParser(String path){
+        
+        Hashtable keywords = new Hashtable(); // creation de la table de hashage
+        if (path.equals(null)){
+            System.out.println("Fichier null !");
+            return;
+        }
+        List<String> textProperty = new ArrayList<>();
+        File file = new File(path);
+        try {
+            textProperty = Files.readAllLines(file.toPath(), Charset.defaultCharset());// lecture du fichier, tout est mis dans la list textProperty
+                    } catch (IOException ex) {
+            Logger.getLogger(TextArea.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        //Pattern p = Pattern.compile("\"\\\\\\<\\(.*");
+        //System.out.println(")\\>\"");
+        
+        Boolean string = false;
+        Boolean comments = false;
+        
+        
+        for (String line : textProperty){
+            String[] splitedLine = line.split(" ");
+            if (splitedLine.length <= 1) continue;
+            if (splitedLine[1].matches("Strings.")) { //                     checking if we arrive in the "strings" paragraph
+                string = true;
+            }
+            else if (splitedLine[1].matches("Comments.")){ //                checking if we arrive in the "Comments" paragraph
+                comments = true;
+            }
+            if (splitedLine[0].equals("color") && !string){
+                if (splitedLine[2].matches("\"\\\\\\<\\(.*")){             // check if the regex start with ""\<(" = keywords in nanorc
+                    
+                    List<String> words = new ArrayList<>(); //               creation d'une entree dans la table, la valeur est une liste qui contiendra les mots
+                    String chain = splitedLine[2].replace(")\\>\"", ""); // removing the unintersting end of the string
+                    chain = chain.replace("\"\\<(", "");                 // same for the beginning
+                    for (String word : chain.split("\\|")){ //              spliting with |
+                        words.add(word);//                                  adding in the list
+                    }
+                     
+                    if (keywords.containsKey(splitedLine[1])){
+                        List list = (List) keywords.get(splitedLine[1]);
+                        list.addAll(words);
+                        keywords.put(splitedLine[1], list);
+                    }
+                    else {
+                        keywords.put(splitedLine[1], words); //                  adding the list in the hash table
+                    }
+                    
+                }
+                
+            }
+            else if (splitedLine[0].equals("color") && string && !comments){ // don't work all the time
+                keywords.put("stringPattern", splitedLine[2]);
+            }
+            else if (splitedLine[0].equals("color") && string && comments){
+                keywords.put("commentPattern", splitedLine[2]);
+            }
+            
+        }
+        
+        convertNanoToRichText(keywords);
+        //System.out.println(KEYWORDS_TABLE);
+    }
+    
+    public void convertNanoToRichText (Hashtable keywords){
+        for (Object key : keywords.keySet()){
+            
+            if ((!key.toString().equals("stringPattern")) && (!key.toString().equals("commentPattern"))){
+                List<String> list = (List<String>) keywords.get(key);
+                KEYWORDS_TABLE.put((String) key, list);
+            }
+            List<String> length = new ArrayList<>();
+            length.addAll((List) KEYWORDS_TABLE.get("magenta"));
+            length.addAll((List) KEYWORDS_TABLE.get("green"));
+            length.addAll((List) KEYWORDS_TABLE.get("brightyellow"));
+            KEYWORDS = new String[length.size()];
+            for (int i = 0; i < length.size(); i++) {
+                this.KEYWORDS[i]= length.get(i).toString();
+            }
+        
+        }
+    }
+    */
+    public void nanoRcParseV2(String path){
+        List<String> text = new ArrayList<>();
+        File file = new File(path);
+        try {
+            text = Files.readAllLines(file.toPath(), Charset.defaultCharset());// lecture du fichier, tout est mis dans la list textProperty
+                    } catch (IOException ex) {
+            Logger.getLogger(TextArea.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        for (String line : text){
+            String[] splitedLine = line.split(" ");
+            if (splitedLine.length <= 1) continue;
+            else {
+                if (splitedLine[0].equals("color")){
+                    if (splitedLine[2].matches("\"\\\\\\<\\(.*")){                                       // check if the regex start with ""\<(" = keywords in nanorc
+                        if (KEYWORDS_PATTERN_TABLE.containsKey(splitedLine[1])){
+                                String pattern = (String) KEYWORDS_PATTERN_TABLE.get(splitedLine[1]);
+                                pattern = pattern.replace(")\\b", "|"+splitedLine[2]);
+                                pattern = pattern.concat(")\\b");
+                                KEYWORDS_PATTERN_TABLE.put(splitedLine[1], pattern);
+                            }
+                        else {
+                            String pattern = splitedLine[2];
+                            pattern= pattern.replace("\"\\<(", "\\b(");
+                            pattern = pattern.replace(")\\>\"", ")\\b");
+                            KEYWORDS_PATTERN_TABLE.put(splitedLine[1], pattern); //                                  adding the list in the hash table
+                        }
+                    }
+                }
+            }
+        }
+    }
     
 }

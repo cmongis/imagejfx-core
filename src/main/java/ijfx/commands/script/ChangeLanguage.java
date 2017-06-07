@@ -17,39 +17,29 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.ui.display.code;
+package ijfx.commands.script;
 
-import org.scijava.script.ScriptLanguage;
+import ijfx.ui.display.code.ScriptDisplay;
+import org.scijava.command.ContextCommand;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  *
  * @author florian
  */
-public enum Language {
-    JAVASCRIPT ("Javascript","/ijfx/ui/display/code/javascript.nanorc"),
-    JAVA ("Java","/ijfx/ui/display/code/java.nanorc"),
-    PYTHON ("Python","/ijfx/ui/display/code/python.nanorc");
-    
-    private String name = "";
-    private String path = "";
+@Plugin(type = ScriptCommand.class,menuPath = "Language")
+public class ChangeLanguage extends ContextCommand implements ScriptCommand{
 
-    private Language(String name, String path) {
-        this.name = name;
-        this.path = path;
-    }
+    @Parameter
+    ScriptDisplay scriptDisplay;
     
-    public String getPath (){
-        return path;
+    @Override
+    public void run() {
+        
+        System.out.println("Changement de langue");
+        
     }
-
-    public String getName() {
-        return name;
-    }
-    
-    
-    public static String findFile(ScriptLanguage language) {
-       return String.format("/ijfx/ui/display/code/%s.nanorc",language.getLanguageName().toLowerCase().replace(" ", ""));
-    }
-    
     
 }
+
