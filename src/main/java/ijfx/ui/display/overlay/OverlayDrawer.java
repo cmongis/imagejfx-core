@@ -77,7 +77,7 @@ public interface OverlayDrawer<T extends Overlay> extends SciJavaPlugin {
         return contains(new double[]{x1,y1,x2,y2}, xOnImage, yOnImage);
         
     }
-
+    
     public static double[] getOverlayBounds(Overlay overlay) {
         double x1 = overlay.getRegionOfInterest().realMin(0);
         double y1 = overlay.getRegionOfInterest().realMin(1);
