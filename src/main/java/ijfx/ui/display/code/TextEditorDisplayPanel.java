@@ -19,27 +19,11 @@
  */
 package ijfx.ui.display.code;
 
-import ijfx.core.formats.Script;
 import ijfx.ui.display.image.AbstractFXDisplayPanel;
 import ijfx.ui.display.image.FXDisplayPanel;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.application.Platform;
 import javafx.beans.property.adapter.JavaBeanStringProperty;
-import javafx.beans.property.adapter.JavaBeanStringPropertyBuilder;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.IndexRange;
-import javafx.scene.control.TabPane;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
-import org.fxmisc.richtext.CodeArea;
-import org.scijava.display.Display;
-import org.scijava.display.TextDisplay;
 import org.scijava.event.EventHandler;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -69,21 +53,19 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     @Override
     public void pack() {
         
-        //this.root = new AnchorPane();
-        //root.getStylesheets().add(getClass().getResource("/ijfx/ui/display/code/JavaRichtext.css").toExternalForm());
-        if (root!=null) return;
         this.root = new TextArea();
-        //this.codeArea = textArea.getCodeArea();
         
         root.setBottomAnchor(this.root.getCodeArea(), 15d);
         root.setTopAnchor(this.root.getCodeArea(), 0d);
         root.setLeftAnchor(this.root.getCodeArea(), 0d);
         root.setRightAnchor(this.root.getCodeArea(), 0d);
-
-
-        //root.getChildren().add(this.textArea.getCodeArea());
         
         initCode();
+        
+        display.textProperty().bind(this.root.textProperty());
+        display.selectedTextProperty().bind(this.root.selectedTextProperty());
+        display.selectionProperty().bind(this.root.selectionProperty());
+        
        
         
     }
@@ -91,9 +73,7 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     public void initCode(){
         changeLanguage(display.getLanguage());
         this.root.setText(display.get(0).getCode());
-         display.textProperty().bind(this.root.textProperty());
-        display.selectedTextProperty().bind(this.root.selectedTextProperty());
-        display.selectionProperty().bind(this.root.selectionProperty());
+        
         
     }
     

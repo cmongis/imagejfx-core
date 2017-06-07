@@ -80,7 +80,7 @@ public class TextEditorController extends AnchorPane {
         
         //RichTextEditor richTextEditor =new RichTextEditor();
         
-        textAreaCreator = new TextArea(scriptDisplay);
+        textAreaCreator = new TextArea();
         this.codeArea = textAreaCreator.getCodeArea();
         init();
         borderPane.setCenter(codeArea);

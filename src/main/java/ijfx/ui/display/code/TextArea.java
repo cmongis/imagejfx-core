@@ -32,6 +32,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -56,7 +57,7 @@ import org.scijava.script.ScriptService;
  */
 public class TextArea extends AnchorPane{
     
-    static CodeArea codeArea = null;
+    private CodeArea codeArea = null;
     
     
     //private StringProperty selectedText;
@@ -123,7 +124,7 @@ public class TextArea extends AnchorPane{
         this.codeArea.richChanges()
                 .filter(ch -> !ch.getInserted().equals(ch.getRemoved())) // XXX
                 .subscribe(change -> {
-                    this.codeArea.setStyleSpans(0, computeHighlighting(this.codeArea.getText()));
+                    codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText()));
                 });
         
         selectedTextProperty = new SimpleStringProperty();
@@ -139,20 +140,9 @@ public class TextArea extends AnchorPane{
         
         this.getChildren().add(this.codeArea);
         getStylesheets().add(getClass().getResource("/ijfx/ui/display/code/JavaRichtext.css").toExternalForm());
-        /*
-        scriptDisplay.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                setText(newValue);
-            }
-        });
-        */
+        
     }
-    /*
-    public StringProperty textProperty (){
-        return this.textProperty;
-    }
-    */
+
     private static StyleSpans<Collection<String>> computeHighlighting(String text) {
         Matcher matcher = PATTERN.matcher(text);
         int lastKwEnd = 0;
@@ -238,7 +228,12 @@ public class TextArea extends AnchorPane{
         this.codeArea.deselect();
         */
         //String test = this.codeArea.getText();
-        this.codeArea.replaceText(text);
+        Platform.runLater( () ->{
+            this.codeArea.replaceText(text);
+        });
+         
+        
+        
         
         //this.textProperty.bind(this.codeArea.textProperty());
     }

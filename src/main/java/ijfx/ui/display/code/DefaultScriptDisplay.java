@@ -97,11 +97,9 @@ public class DefaultScriptDisplay extends AbstractDisplay<Script> implements Scr
 
     @Override
     public void pasteText() {
-        textProperty.unbind();
         StringBuilder sb = new StringBuilder(get(0).getCode());
         sb.replace(selectionProperty.getValue().getStart(),selectionProperty.getValue().getEnd(), copiedText);
         get(0).setCode(sb.toString());
-        String test = get(0).getCode();
     }
 
     @Override
