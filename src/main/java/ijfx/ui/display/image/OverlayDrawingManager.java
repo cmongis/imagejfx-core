@@ -68,8 +68,10 @@ public class OverlayDrawingManager {
    
 
     protected OverlayModifier getModifier(Overlay overlay) {
-
-        return modifierMap.computeIfAbsent(overlay, overlayDisplayService::createModifier);
+        if(modifierMap.containsKey(overlay) == false) {
+            modifierMap.put(overlay, overlayDisplayService.createModifier(overlay));
+        }
+        return modifierMap.get(overlay);
     }
     
     public void redraw() {

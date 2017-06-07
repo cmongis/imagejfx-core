@@ -20,6 +20,7 @@
 package ijfx.ui.display.image;
 
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyProperty;
@@ -78,6 +79,7 @@ public interface FXImageDisplay extends ImageDisplay {
 
     Property<Number> currentChannelProperty();
     
+    IntegerProperty refreshPerSecond();
     
     /*
         Channel activation

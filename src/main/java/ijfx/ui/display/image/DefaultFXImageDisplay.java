@@ -22,14 +22,16 @@ package ijfx.ui.display.image;
 import ijfx.core.image.DisplayRangeService;
 import ijfx.core.utils.AxisUtils;
 import ijfx.ui.main.ImageJFX;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
-import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.application.Platform;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.adapter.JavaBeanDoubleProperty;
 import javafx.beans.property.adapter.JavaBeanDoublePropertyBuilder;
 import javafx.beans.property.adapter.JavaBeanObjectPropertyBuilder;
 import javafx.beans.property.adapter.JavaBeanProperty;
-import javafx.beans.property.adapter.ReadOnlyJavaBeanDoubleProperty;
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
 import net.imagej.display.DatasetView;
@@ -41,6 +43,7 @@ import org.scijava.Priority;
 import org.scijava.display.Display;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import rx.subjects.PublishSubject;
 
 /**
  *
@@ -75,9 +78,18 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
 
     private JavaBeanProperty<int[]> compositeChannelsProperty;
 
+    private IntegerProperty refreshPerSecond = new SimpleIntegerProperty();
+    
+    private PublishSubject<Integer> publishSubject = PublishSubject.create();
+    
     public DefaultFXImageDisplay() {
         super();
 
+        
+        publishSubject
+                .buffer(1, TimeUnit.SECONDS)
+                .subscribe(list->Platform.runLater(()->refreshPerSecond.setValue(list.size())));
+        
     }
 
     private DatasetView getDatasetView() {
@@ -336,6 +348,7 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
     @Override
     public void update() {
         super.update();
+        publishSubject.onNext(1);
         checkProperties();
     }
 
@@ -346,4 +359,8 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
 
     }
 
+    
+    public IntegerProperty refreshPerSecond() {
+        return refreshPerSecond;
+    }
 }
