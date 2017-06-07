@@ -36,19 +36,22 @@ import org.scijava.script.ScriptLanguage;
 
 public interface ScriptDisplay extends Display<Script> {
     
-    final StringProperty selectedText = new SimpleStringProperty();
+    final StringProperty selectedTextProperty = new SimpleStringProperty();
     final StringProperty textProperty= new SimpleStringProperty();
-    ObjectProperty<IndexRange> selection = new SimpleObjectProperty<>();
+    ObjectProperty<IndexRange> selectionProperty = new SimpleObjectProperty<>();
     ScriptLanguage getLanguage();
     
     void setLanguage(ScriptLanguage language);
     void editText(String newValue);
     void copyText ();
     void pasteText ();
+    void undo();
+    void redo();
+    
     void setSelectedText(String text);
-    StringProperty selectedText();
+    StringProperty selectedTextProperty();
     StringProperty textProperty();
-    ObjectProperty<IndexRange> getSelection();
+    ObjectProperty<IndexRange> selectionProperty();
     void setText(ObservableValue textValue);
     void setSelection(IndexRange indexRange);
     String getText();

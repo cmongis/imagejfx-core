@@ -39,6 +39,8 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.IndexRange;
+import javafx.scene.input.Clipboard;
+import javafx.scene.layout.AnchorPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
@@ -52,16 +54,16 @@ import org.scijava.script.ScriptService;
  *
  * @author florian
  */
-public class TextArea{
+public class TextArea extends AnchorPane{
     
-    CodeArea codeArea = null;
+    static CodeArea codeArea = null;
     
     
     //private StringProperty selectedText;
     
-    //private final ObjectProperty<ObservableValue<String>> selectedText;
+    private final StringProperty selectedTextProperty;
     private final StringProperty textProperty;
-    //private final ObjectProperty<ObservableValue<IndexRange>> selection;
+    private final ObjectProperty<IndexRange> selectionProperty;
     
     
     private static Hashtable KEYWORDS_TABLE = new Hashtable();
@@ -111,7 +113,7 @@ public class TextArea{
 
     
     
-    public TextArea(ScriptDisplay scriptDisplay) {
+    public TextArea() {
         
         this.codeArea = new CodeArea();
         //nanorcParser(getClass().getResource("/ijfx/ui/display/code/javascript.nanorc").getFile());
@@ -123,29 +125,28 @@ public class TextArea{
                 .subscribe(change -> {
                     this.codeArea.setStyleSpans(0, computeHighlighting(this.codeArea.getText()));
                 });
-        /*
-        selectedText = new SimpleObjectProperty<>();
-        selectedText.set(codeArea.selectedTextProperty());
-        scriptDisplay.getSelectedText().bind(selectedText);
-        textProperty = new SimpleObjectProperty<>();
-        textProperty.set(codeArea.textProperty().getValue());
+        
+        selectedTextProperty = new SimpleStringProperty();
+        selectedTextProperty.bind(this.codeArea.selectedTextProperty());
+        
         
         //scriptDisplay.textProperty().bind(textProperty);
-        selection = new SimpleObjectProperty<>();
-        selection.set(codeArea.selectionProperty());
-        scriptDisplay.getSelection().bind(selection);
-        */
+        selectionProperty = new SimpleObjectProperty<>();
+        selectionProperty.bind(this.codeArea.selectionProperty());
+        
         textProperty = new SimpleStringProperty();
         textProperty.bind(this.codeArea.textProperty());
         
-        
+        this.getChildren().add(this.codeArea);
+        getStylesheets().add(getClass().getResource("/ijfx/ui/display/code/JavaRichtext.css").toExternalForm());
+        /*
         scriptDisplay.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 setText(newValue);
             }
         });
-        
+        */
     }
     /*
     public StringProperty textProperty (){
@@ -223,13 +224,42 @@ public class TextArea{
         return this.codeArea;
     }
     public void setText(String text){
-        this.codeArea.replaceText( text);
+        //String newText = new String(text);
+        //this.codeArea.clear();
+        
+        //this.textProperty.unbind();
+        //this.textProperty.set(codeArea.getText());
+        //this.codeArea.clear();
+        
+        //codeArea.getText().replaceAll(this.codeArea.getText(), text);
+        /*
+        this.codeArea.selectAll();
+        this.codeArea.replaceSelection(text);
+        this.codeArea.deselect();
+        */
+        //String test = this.codeArea.getText();
+        this.codeArea.replaceText(text);
+        
+        //this.textProperty.bind(this.codeArea.textProperty());
     }
     public StringProperty textProperty(){
         return this.textProperty;
     }
+    public StringProperty selectedTextProperty(){
+        return this.selectedTextProperty;
+    }
+    public ObjectProperty selectionProperty(){
+        return this.selectionProperty;
+    }
     public String getSelectedText(){
         return this.codeArea.getSelectedText();
+    }
+    
+    public void undo(){
+        this.codeArea.undo();
+    }
+    public void redo(){
+        this.codeArea.redo();
     }
     
     /*

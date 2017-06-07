@@ -25,6 +25,7 @@ import ijfx.ui.display.image.FXDisplayPanel;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.property.adapter.JavaBeanStringProperty;
 import javafx.beans.property.adapter.JavaBeanStringPropertyBuilder;
 import javafx.beans.value.ChangeListener;
@@ -39,6 +40,7 @@ import javafx.scene.layout.Pane;
 import org.fxmisc.richtext.CodeArea;
 import org.scijava.display.Display;
 import org.scijava.display.TextDisplay;
+import org.scijava.event.EventHandler;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.script.ScriptLanguage;
@@ -52,12 +54,12 @@ import org.scijava.ui.viewer.DisplayWindow;
 public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay> {
     @Parameter
     Scene scene;
-    AnchorPane root;
+    TextArea root;
     //BorderPane borderPane;
     ScriptDisplay display;
-    static TextArea textArea;
+    //static TextArea textArea;
     
-    static CodeArea codeArea;
+    //static CodeArea codeArea;
     JavaBeanStringProperty codeProperty; 
     
     public TextEditorDisplayPanel() {
@@ -67,56 +69,36 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     @Override
     public void pack() {
         
-        this.root = new AnchorPane();
-        //root.getChildren().add(borderPane);
-        root.getStylesheets().add(getClass().getResource("/ijfx/ui/display/code/JavaRichtext.css").toExternalForm());
-        this.textArea = new TextArea(display);
-        this.codeArea = textArea.getCodeArea();
-
-        root.setBottomAnchor(codeArea, 15d);
-        root.setTopAnchor(codeArea, 0d);
-        root.setLeftAnchor(codeArea, 0d);
-        root.setRightAnchor(codeArea, 0d);
-
-
-        root.getChildren().add(textArea.getCodeArea());
-        //initCode();
+        //this.root = new AnchorPane();
+        //root.getStylesheets().add(getClass().getResource("/ijfx/ui/display/code/JavaRichtext.css").toExternalForm());
+        if (root!=null) return;
+        this.root = new TextArea();
+        //this.codeArea = textArea.getCodeArea();
         
-        textArea.getCodeArea().selectedTextProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                display.setSelectedText(newValue);
-            }
-        });
-        textArea.getCodeArea().selectionProperty().addListener(new ChangeListener<IndexRange>() {
-            @Override
-            public void changed(ObservableValue<? extends IndexRange> observable, IndexRange oldValue, IndexRange newValue) {
-                display.setSelection(newValue);
-            }
-        });
+        root.setBottomAnchor(this.root.getCodeArea(), 15d);
+        root.setTopAnchor(this.root.getCodeArea(), 0d);
+        root.setLeftAnchor(this.root.getCodeArea(), 0d);
+        root.setRightAnchor(this.root.getCodeArea(), 0d);
+
+
+        //root.getChildren().add(this.textArea.getCodeArea());
         
-        //codeArea.textProperty().bindBidirectional(codeProperty); 
         initCode();
-        display.textProperty().bind(textArea.textProperty());
-        //textArea.textProperty().bindBidirectional(display.textProperty());
-        /*
-        codeArea.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                display.editText(newValue);
-            }
-        });
-        */
+       
+        
     }
     
     public void initCode(){
         changeLanguage(display.getLanguage());
-        this.textArea.setText(display.get(0).getCode());
+        this.root.setText(display.get(0).getCode());
+         display.textProperty().bind(this.root.textProperty());
+        display.selectedTextProperty().bind(this.root.selectedTextProperty());
+        display.selectionProperty().bind(this.root.selectionProperty());
         
     }
     
     public void setCode(String code) {
-
+        
         display.get(0).setCode(code);
 
     }
@@ -152,10 +134,20 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     }
     public void changeLanguage(ScriptLanguage language){
         String path = findFileLanguage(language);
-        this.textArea.initLanguage(path);
+        this.root.initLanguage(path);
     }
     
     public static String findFileLanguage(ScriptLanguage language) {
        return String.format("/ijfx/ui/display/code/%s.nanorc",language.getLanguageName().toLowerCase().replace(" ", ""));
+    }
+    @EventHandler
+    public void onUndoEvent(UndoEvent event){
+        this.root.undo();
+
+    }
+    @EventHandler
+    public void onRedoEvent(RedoEvent event){
+        this.root.redo();
+
     }
 }

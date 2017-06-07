@@ -30,6 +30,7 @@ import org.scijava.Prioritized;
 import org.scijava.Priority;
 import org.scijava.display.AbstractDisplay;
 import org.scijava.display.Display;
+import org.scijava.event.EventService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -41,7 +42,8 @@ import org.scijava.script.ScriptLanguage;
  */
 @Plugin(type = Display.class, priority = Priority.HIGH_PRIORITY)
 public class DefaultScriptDisplay extends AbstractDisplay<Script> implements ScriptDisplay {
-    
+    @Parameter
+    EventService eventService;
     
     
     private String copiedText;
@@ -90,25 +92,26 @@ public class DefaultScriptDisplay extends AbstractDisplay<Script> implements Scr
     @Override
     public void copyText() {
         
-        this.copiedText=selectedText.getValue();
+        this.copiedText=selectedTextProperty.getValue();
     }
 
     @Override
     public void pasteText() {
+        textProperty.unbind();
         StringBuilder sb = new StringBuilder(get(0).getCode());
-        sb.replace(selection.getValue().getStart(),selection.getValue().getEnd(), copiedText);
+        sb.replace(selectionProperty.getValue().getStart(),selectionProperty.getValue().getEnd(), copiedText);
         get(0).setCode(sb.toString());
-        
+        String test = get(0).getCode();
     }
 
     @Override
     public void setSelectedText(String text) {
-        selectedText.set(text);
+        selectedTextProperty.set(text);
     }
 
     @Override
-    public StringProperty selectedText() {
-        return selectedText;
+    public StringProperty selectedTextProperty() {
+        return selectedTextProperty;
     }
 
     @Override
@@ -122,8 +125,8 @@ public class DefaultScriptDisplay extends AbstractDisplay<Script> implements Scr
     }
 
     @Override
-    public ObjectProperty<IndexRange> getSelection() {
-        return selection;
+    public ObjectProperty<IndexRange> selectionProperty() {
+        return selectionProperty;
     }
 
     @Override
@@ -143,7 +146,17 @@ public class DefaultScriptDisplay extends AbstractDisplay<Script> implements Scr
 
     @Override
     public void setSelection(IndexRange indexRange) {
-        selection.set(indexRange);
+        selectionProperty.set(indexRange);
+    }
+
+    @Override
+    public void undo() {
+        eventService.publish(new UndoEvent());
+    }
+
+    @Override
+    public void redo() {
+        eventService.publish(new RedoEvent());
     }
     
     
