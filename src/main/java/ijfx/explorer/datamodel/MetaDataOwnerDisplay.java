@@ -20,6 +20,10 @@
 package ijfx.explorer.datamodel;
 
 import ijfx.core.datamodel.MetaDataOwnerList;
+import ijfx.core.metadata.MetaDataOwner;
+import ijfx.core.metadata.MetaDataSet;
+import ijfx.explorer.wrappers.MetaDataSetExplorerWrapper;
+import java.util.Collection;
 import org.scijava.display.AbstractDisplay;
 import org.scijava.display.Display;
 import org.scijava.plugin.Plugin;
@@ -35,8 +39,22 @@ public class MetaDataOwnerDisplay extends AbstractDisplay<MetaDataOwnerList>{
         super(MetaDataOwnerList.class);
     }
     
+    public boolean add(MetaDataOwner owner) {
+        
+        if(size() == 0) {
+            add(new MetaDataOwnerList());
+        }
+        
+        return get(0).add(owner);
+    }
     
+    public boolean add(MetaDataSet set) {
+       return add(new MetaDataSetExplorerWrapper(set));
+    }
     
+    public boolean add(Collection< ? extends MetaDataOwner> list) {
+       return get(0).addAll(list);
+    }
     
     
     
