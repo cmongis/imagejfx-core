@@ -37,7 +37,7 @@ public class RectangleTool extends AbstractPathTool<RectangleOverlay> {
     @Override
     protected void onPath(List<RealCoords> coords) {
 
-        if (coords.size() >= 2) {
+        if (coords.size() >= 10) {
 
             RealCoords first = coords.get(0);
 
