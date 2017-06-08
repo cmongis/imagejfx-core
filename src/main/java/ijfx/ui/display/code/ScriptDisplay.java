@@ -39,6 +39,7 @@ public interface ScriptDisplay extends Display<Script> {
     final StringProperty selectedTextProperty = new SimpleStringProperty();
     final StringProperty textProperty= new SimpleStringProperty();
     ObjectProperty<IndexRange> selectionProperty = new SimpleObjectProperty<>();
+    
     ScriptLanguage getLanguage();
     
     void setLanguage(ScriptLanguage language);
@@ -56,5 +57,4 @@ public interface ScriptDisplay extends Display<Script> {
     void setSelection(IndexRange indexRange);
     String getText();
     
-    void print();
 }

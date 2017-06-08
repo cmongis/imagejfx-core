@@ -214,28 +214,9 @@ public class TextArea extends AnchorPane{
         return this.codeArea;
     }
     public void setText(String text){
-        //String newText = new String(text);
-        //this.codeArea.clear();
-        
-        //this.textProperty.unbind();
-        //this.textProperty.set(codeArea.getText());
-        //this.codeArea.clear();
-        
-        //codeArea.getText().replaceAll(this.codeArea.getText(), text);
-        /*
-        this.codeArea.selectAll();
-        this.codeArea.replaceSelection(text);
-        this.codeArea.deselect();
-        */
-        //String test = this.codeArea.getText();
         Platform.runLater( () ->{
             this.codeArea.replaceText(text);
         });
-         
-        
-        
-        
-        //this.textProperty.bind(this.codeArea.textProperty());
     }
     public StringProperty textProperty(){
         return this.textProperty;

@@ -19,13 +19,40 @@
  */
 package ijfx.commands.script;
 
+import ijfx.ui.display.code.ScriptDisplay;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.script.ScriptException;
+import org.scijava.command.ContextCommand;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.script.ScriptService;
 
 /**
  *
  * @author florian
  */
-@Plugin(type = ScriptCommand.class, menuPath = "Run")
-public class RunScript extends org.scijava.plugins.commands.script.RunScript implements ScriptCommand{
+@Plugin(type = ScriptCommand.class, menuPath = "File > Run")
+public class RunScript extends ContextCommand implements ScriptCommand{    
+    @Parameter
+    private ScriptService scriptService;
+    @Parameter
+    private ScriptDisplay scriptDisplay;
+
+    @Override
+    public void run() {
+        String path = scriptDisplay.get(0).getSourceFile();
+        File scriptFile = new File(path);
+        try {
+            scriptService.run(scriptFile, true);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(RunScript.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ScriptException ex) {
+            Logger.getLogger(RunScript.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     
 }

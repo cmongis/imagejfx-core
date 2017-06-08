@@ -112,10 +112,6 @@ public class DefaultScriptDisplay extends AbstractDisplay<Script> implements Scr
         return selectedTextProperty;
     }
 
-    @Override
-    public void print() {
-        System.out.println(get(0).getCode());
-    }
 
     @Override
     public final StringProperty textProperty() {

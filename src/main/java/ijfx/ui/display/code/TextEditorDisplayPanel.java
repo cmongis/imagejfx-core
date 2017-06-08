@@ -21,9 +21,18 @@ package ijfx.ui.display.code;
 
 import ijfx.ui.display.image.AbstractFXDisplayPanel;
 import ijfx.ui.display.image.FXDisplayPanel;
+import java.lang.reflect.Field;
 import javafx.beans.property.adapter.JavaBeanStringProperty;
+import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import org.controlsfx.control.action.Action;
+import org.joda.time.chrono.AssembledChronology.Fields;
 import org.scijava.event.EventHandler;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -38,11 +47,11 @@ import org.scijava.ui.viewer.DisplayWindow;
 public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay> {
     @Parameter
     Scene scene;
-    TextArea root;
+    BorderPane root;
     //BorderPane borderPane;
     ScriptDisplay display;
     //static TextArea textArea;
-    
+    TextArea textArea;
     //static CodeArea codeArea;
     JavaBeanStringProperty codeProperty; 
     
@@ -53,27 +62,48 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     @Override
     public void pack() {
         
-        this.root = new TextArea();
+        this.root = new BorderPane();
+        this.textArea = new TextArea();
+        this.root.setCenter(this.textArea);
         
-        root.setBottomAnchor(this.root.getCodeArea(), 15d);
-        root.setTopAnchor(this.root.getCodeArea(), 0d);
-        root.setLeftAnchor(this.root.getCodeArea(), 0d);
-        root.setRightAnchor(this.root.getCodeArea(), 0d);
+        textArea.setBottomAnchor(this.textArea.getCodeArea(), 15d);
+        textArea.setTopAnchor(this.textArea.getCodeArea(), 0d);
+        textArea.setLeftAnchor(this.textArea.getCodeArea(), 0d);
+        textArea.setRightAnchor(this.textArea.getCodeArea(), 0d);
+        
+        //this.root.setPadding(Insets.EMPTY);
+        //this.root.setBottom(createLanguageButton(display.getLanguage().toString()));
         
         initCode();
         
-        display.textProperty().bind(this.root.textProperty());
-        display.selectedTextProperty().bind(this.root.selectedTextProperty());
-        display.selectionProperty().bind(this.root.selectionProperty());
+        display.textProperty().bind(this.textArea.textProperty());
+        display.selectedTextProperty().bind(this.textArea.selectedTextProperty());
+        display.selectionProperty().bind(this.textArea.selectionProperty());
         
        
         
     }
-    
+    public MenuButton createLanguageButton(String name){
+        /*
+        I don't find an enumerator of the suported languages so it don't work
+        */
+        MenuButton mb = new MenuButton(name);
+        Field[] languages = ScriptLanguage.class.getDeclaredFields();
+        
+        for (ScriptLanguage language : ScriptLanguage.class.getEnumConstants()){
+            MenuItem mi = new MenuItem(language.toString());
+            mi.setOnAction(this::setLanguage);
+            mb.getItems().add(mi);
+        }
+        return mb;
+    }
+    public void setLanguage(ActionEvent actionEvent){
+        System.out.println(actionEvent.getSource().toString());
+    }
     public void initCode(){
         changeLanguage(display.getLanguage());
-        this.root.setText(display.get(0).getCode());
-        
+        this.textArea.setText(display.get(0).getCode());
+        String test = this.textArea.getCodeArea().getText();
         
     }
     
@@ -114,7 +144,7 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     }
     public void changeLanguage(ScriptLanguage language){
         String path = findFileLanguage(language);
-        this.root.initLanguage(path);
+        this.textArea.initLanguage(path);
     }
     
     public static String findFileLanguage(ScriptLanguage language) {
@@ -122,12 +152,12 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     }
     @EventHandler
     public void onUndoEvent(UndoEvent event){
-        this.root.undo();
+        this.textArea.undo();
 
     }
     @EventHandler
     public void onRedoEvent(RedoEvent event){
-        this.root.redo();
+        this.textArea.redo();
 
     }
 }
