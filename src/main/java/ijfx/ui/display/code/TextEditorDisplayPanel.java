@@ -22,6 +22,7 @@ package ijfx.ui.display.code;
 import ijfx.ui.display.image.AbstractFXDisplayPanel;
 import ijfx.ui.display.image.FXDisplayPanel;
 import java.lang.reflect.Field;
+import java.util.List;
 import javafx.beans.property.adapter.JavaBeanStringProperty;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -31,12 +32,14 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Font;
 import org.controlsfx.control.action.Action;
 import org.joda.time.chrono.AssembledChronology.Fields;
 import org.scijava.event.EventHandler;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.script.ScriptLanguage;
+import org.scijava.script.ScriptService;
 import org.scijava.ui.viewer.DisplayWindow;
 
 /**
@@ -47,11 +50,14 @@ import org.scijava.ui.viewer.DisplayWindow;
 public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay> {
     @Parameter
     Scene scene;
+    @Parameter
+    ScriptService scriptService;
     BorderPane root;
     //BorderPane borderPane;
     ScriptDisplay display;
     //static TextArea textArea;
     TextArea textArea;
+    MenuButton languageButton;
     //static CodeArea codeArea;
     JavaBeanStringProperty codeProperty; 
     
@@ -71,9 +77,12 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
         textArea.setLeftAnchor(this.textArea.getCodeArea(), 0d);
         textArea.setRightAnchor(this.textArea.getCodeArea(), 0d);
         
-        //this.root.setPadding(Insets.EMPTY);
-        //this.root.setBottom(createLanguageButton(display.getLanguage().toString()));
+        this.root.setPadding(Insets.EMPTY);
+        this.languageButton = createLanguageButton(display.getLanguage().toString());
+        this.root.setBottom(this.languageButton);
+        this.languageButton.setFont(new Font(12));
         
+        changeLanguage(display.getLanguage());
         initCode();
         
         display.textProperty().bind(this.textArea.textProperty());
@@ -90,18 +99,20 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
         MenuButton mb = new MenuButton(name);
         Field[] languages = ScriptLanguage.class.getDeclaredFields();
         
-        for (ScriptLanguage language : ScriptLanguage.class.getEnumConstants()){
+        for (ScriptLanguage language : scriptService.getInstances()){
             MenuItem mi = new MenuItem(language.toString());
-            mi.setOnAction(this::setLanguage);
+            mi.setOnAction((event) -> {
+                changeLanguage(language);
+                initCode();
+                this.languageButton.setText(language.toString());
+            });
             mb.getItems().add(mi);
         }
         return mb;
     }
-    public void setLanguage(ActionEvent actionEvent){
-        System.out.println(actionEvent.getSource().toString());
-    }
+
     public void initCode(){
-        changeLanguage(display.getLanguage());
+        
         this.textArea.setText(display.get(0).getCode());
         String test = this.textArea.getCodeArea().getText();
         
