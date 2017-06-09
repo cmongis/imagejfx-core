@@ -36,6 +36,7 @@ public interface AnnotationService extends IjfxService{
     /**
      * Adds a tag to a taggable object
      * @param taggable 
+     * @param tag
      */
     public void addTag(Taggable taggable, Tag tag);
     
@@ -43,6 +44,7 @@ public interface AnnotationService extends IjfxService{
     /**
      * remove a tag from a taggable object
      * @param taggable 
+     * @param tag
      */
     public void removeTag(Taggable taggable, Tag tag);
     
@@ -68,6 +70,12 @@ public interface AnnotationService extends IjfxService{
     public void addMetaData(List<? extends MetaDataOwner> list, MetaData m);
     
     public void removeMetaData(List<? extends MetaDataOwner> list, MetaData m);
+    
+    /**
+     * Add a Mapper to a MetaData
+     * @param m 
+     */
+    public void addMapper(MetaData m);
     
     
     

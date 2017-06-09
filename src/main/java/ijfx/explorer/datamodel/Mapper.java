@@ -29,8 +29,6 @@ import java.util.HashMap;
 public interface Mapper {
     
     MetaData map (MetaData m);
-    
-    HashMap associate (MetaData m, MetaData n);
-    
+        
     
 }
