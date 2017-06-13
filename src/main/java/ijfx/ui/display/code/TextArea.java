@@ -32,6 +32,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -101,11 +102,27 @@ public class TextArea extends AnchorPane{
     private static String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
     private static String COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
     
+    private static String OPEN_PAREN = "\\(";
+    private static String CLOSE_PAREN = "\\)";
+    private static String OPEN_BRACE = "\\[";
+    private static String CLOSE_BRACE = "\\]";
+    private static String OPEN_BRACKET = "\\{";
+    private static String CLOSE_BRACKET = "\\}";
+    
+    private static Pattern PAREN_PATTERNBIS = Pattern.compile(
+        "(?<OPENPAREN>" + OPEN_PAREN + ")" 
+        + "|(?<CLOSEPAREN>" + CLOSE_PAREN + ")"
+        +"|(?<OPENBRACE>" + OPEN_BRACE + ")" 
+        + "|(?<CLOSEBRACE>" + CLOSE_BRACE + ")"
+        + "|(?<OPENBRACKET>" + OPEN_BRACKET + ")" 
+        + "|(?<CLOSEBRACKET>" + CLOSE_BRACKET + ")"
+    );
+    
     private static  Pattern PATTERN = Pattern.compile(
             
             //"(?<KEYWORD>" + KEYWORD_PATTERN + ")"
-             "|(?<PAREN>" + PAREN_PATTERN + ")"
-            + "|(?<BRACE>" + BRACE_PATTERN + ")"
+            // "|(?<PAREN>" + PAREN_PATTERN + ")"
+             "|(?<BRACE>" + BRACE_PATTERN + ")"
             + "|(?<BRACKET>" + BRACKET_PATTERN + ")"
             + "|(?<SEMICOLON>" + SEMICOLON_PATTERN + ")"
             + "|(?<STRING>" + STRING_PATTERN + ")"
@@ -125,8 +142,21 @@ public class TextArea extends AnchorPane{
                 .filter(ch -> !ch.getInserted().equals(ch.getRemoved())) // XXX
                 .subscribe(change -> {
                     codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText()));
+                    //codeArea.setStyleSpans(0, computeBracket(codeArea.getText()));
                 });
-        
+        /*
+         this.codeArea.richChanges()
+                .filter(ch -> ch.getInserted().equals("(") || ch.getInserted().equals(")")) // XXX
+                 
+                .subscribe(change -> {
+                    
+                    Platform.runLater( () ->{
+                        codeArea.setStyleSpans(0, computeBracket(codeArea.getText()));
+                    });
+                    
+                    
+                });
+        */
         selectedTextProperty = new SimpleStringProperty();
         selectedTextProperty.bind(this.codeArea.selectedTextProperty());
         
@@ -149,23 +179,29 @@ public class TextArea extends AnchorPane{
         
         StyleSpansBuilder<Collection<String>> spansBuilder
                 = new StyleSpansBuilder<>();
-        
+        Hashtable<String,List> orphan = detectBracket(text);
         while(matcher.find()) {
             String result = testMatcher(matcher);
+            String orphelinBracket = higlightOrphelinBracket(lastKwEnd, matcher.start(), orphan);
             String styleClass =
                     result != null ? result : 
+                    orphelinBracket != null ? orphelinBracket:
                     //matcher.group("KEYWORD") != null ? "keyword" :
-                    matcher.group("PAREN") != null ? "paren" :
-                    matcher.group("BRACE") != null ? "brace" :
-                    matcher.group("BRACKET") != null ? "bracket" :
+                    //matcher.group("PAREN") != null ? "paren" :
+                    //matcher.group("BRACE") != null ? "brace" :
+                    //matcher.group("BRACKET") != null ? "bracket" :
                     matcher.group("SEMICOLON") != null ? "semicolon" :
                     matcher.group("STRING") != null ? "string" :
                     matcher.group("COMMENT") != null ? "comment" :
                     null;  assert styleClass != null;
-            spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
-            spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
+            
+            
+            spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);               // ajoute un style null entre les deux styles 
+             spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start()); // ajout du style en question sur le nombre de characteres apropriés
             lastKwEnd = matcher.end();
         }
+        //spansBuilder = computeBracket(spansBuilder,text);
+        
         spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
         return spansBuilder.create();
     }
@@ -182,7 +218,7 @@ public class TextArea extends AnchorPane{
         this.PATTERN = Pattern.compile(
             //"(?<KEYWORD>" + KEYWORD_PATTERN + ")"
              
-             "(?<PAREN>" + PAREN_PATTERN + ")"
+            "(?<PAREN>" + PAREN_PATTERN + ")"
             + "|(?<BRACE>" + BRACE_PATTERN + ")"
             + "|(?<BRACKET>" + BRACKET_PATTERN + ")"
             + "|(?<SEMICOLON>" + SEMICOLON_PATTERN + ")"
@@ -206,6 +242,65 @@ public class TextArea extends AnchorPane{
         }
         return null;
     }
+    public static String higlightOrphelinBracket(int previous, int next, Hashtable<String,List> orphan ){
+      for (List<Integer[]> list : orphan.values()){
+          for (Integer[] i : list){
+                if (i[0] == next){
+                    return "uncompleteBracket";
+                }
+            }
+        } 
+      return null;
+    }
+    
+    
+    public static Hashtable<String,List> detectBracket (String text){
+        Matcher matcher = PAREN_PATTERNBIS.matcher(text);
+        int lastKwEnd = 0; 
+        Hashtable<String,List> orphan = new Hashtable();
+        
+        orphan.put("OPENPAREN", new ArrayList<Integer[]>());
+        orphan.put("CLOSEPAREN", new ArrayList<Integer[]>());
+        orphan.put("OPENBRACE", new ArrayList<Integer[]>());
+        orphan.put("CLOSEBRACE", new ArrayList<Integer[]>());
+        orphan.put("OPENBRACKET", new ArrayList<Integer[]>());
+        orphan.put("CLOSEBRACKET", new ArrayList<Integer[]>());
+        
+        List<Integer[]> uncompleteList = new ArrayList<>();
+        while(matcher.find()) {
+            if (matcher.group("OPENPAREN") != null ) orphan.get("OPENPAREN").add(new Integer[]{matcher.start(),matcher.end()});
+            else if (matcher.group("CLOSEPAREN") != null ){
+                if (orphan.get("OPENPAREN").size() != 0) {
+                    orphan.get("OPENPAREN").remove(orphan.get("OPENPAREN").size()-1);
+                }
+                else{
+                   orphan.get("CLOSEPAREN").add(new Integer[]{matcher.start(),matcher.end()});
+                }
+            }
+            if (matcher.group("OPENBRACE") != null ) orphan.get("OPENBRACE").add(new Integer[]{matcher.start(),matcher.end()});
+            else if (matcher.group("CLOSEBRACE") != null ){
+                if (orphan.get("OPENBRACE").size() != 0) {
+                    orphan.get("OPENBRACE").remove(orphan.get("OPENBRACE").size()-1);
+                }
+                else{
+                   orphan.get("CLOSEBRACE").add(new Integer[]{matcher.start(),matcher.end()});
+                }
+            }
+            if (matcher.group("OPENBRACKET") != null ) orphan.get("OPENBRACKET").add(new Integer[]{matcher.start(),matcher.end()});
+            else if (matcher.group("CLOSEBRACKET") != null ){
+                if (orphan.get("OPENBRACKET").size() != 0) {
+                    orphan.get("OPENBRACKET").remove(orphan.get("OPENBRACKET").size()-1);
+                }
+                else{
+                   orphan.get("CLOSEBRACKET").add(new Integer[]{matcher.start(),matcher.end()});
+                }
+            }
+            
+        }
+        return orphan;
+    }
+    
+   
     public void initLanguage(String path){
         nanoRcParseV2(getClass().getResource(path).getFile());
         init();
@@ -236,6 +331,10 @@ public class TextArea extends AnchorPane{
     }
     public void redo(){
         this.codeArea.redo();
+    }
+    
+    public void detectBracket(){
+        
     }
     
     /*
@@ -350,6 +449,7 @@ public class TextArea extends AnchorPane{
                             KEYWORDS_PATTERN_TABLE.put(splitedLine[1], pattern); //                                  adding the list in the hash table
                         }
                     }
+                    
                 }
             }
         }
