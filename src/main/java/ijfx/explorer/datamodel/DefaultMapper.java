@@ -27,16 +27,22 @@ import java.util.HashMap;
  *
  * @author sapho
  */
-public class DefaultMapper implements Mapper {
+public final class DefaultMapper implements Mapper {
 
     //final MetaData m;
     public HashMap <Object, Object> mapValue = new HashMap();
-    public String newKey = "newkey";
+    public String newKey;
+    public String filterKey;
+    
+    public DefaultMapper (String key1, String key2){
+        setNewKey(key1);
+        setFilterKey(key2);
+        
+    }
     
     public DefaultMapper (){
-        mapValue.put(5.0, "truc");
-        mapValue.put(0.0, "machin");
-        mapValue.put(1.0, "bidule");
+        setNewKey(null);
+        setFilterKey(null);
         
     }
 
@@ -49,7 +55,7 @@ public class DefaultMapper implements Mapper {
 
     @Override
     public MetaData map(MetaData m) {
-        Object newValue = lookInsideMap(m.getValue());
+        Object newValue = lookInsideMap(m.getName(), m.getValue());
         MetaData n = new GenericMetaData(newKey, newValue);
         return n;
         
@@ -66,6 +72,18 @@ public class DefaultMapper implements Mapper {
         return newKey;
     }
     
+    public String getFilterKey(){
+        return filterKey;
+    }
+    
+    public void setFilterKey(String key){
+        this.filterKey = key;
+    }
+    
+    public void setNewKey (String s){
+        this.newKey = s;
+    }
+    
     /**
      * Create the mapper associated Value:value for
      * the creation of new Metadata
@@ -78,23 +96,27 @@ public class DefaultMapper implements Mapper {
         }
     }
     
-    public void setNewKey (String s){
-        this.newKey = s;
-    }
+    
     
     /**
      * Looking for the conrresponding value on the mapper
      * @param base
      * @return 
      */
-    public Object lookInsideMap (Object base){
-        System.out.println("base " +base);
-        if (mapValue.containsKey(base)){
-            System.out.println(mapValue.get(base));
+    public Object lookInsideMap (String key, Object base){
+        if (key == filterKey) {
+            
+             if (mapValue.containsKey(base)){
             return mapValue.get(base);
             
         }
-        System.out.println("null !!!");
+        System.out.println("value not match");
+        return null;
+            
+            
+        }
+        
+       System.out.println("Wrong key");
         return null;
     
         

@@ -25,6 +25,7 @@ import ijfx.core.metadata.MetaDataOwner;
 import ijfx.core.metadata.MetaDataSet;
 import ijfx.explorer.datamodel.DefaultMapper;
 import ijfx.explorer.datamodel.Mapper;
+import ijfx.ui.service.AnnotationService;
 import java.util.Random;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -42,12 +43,25 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = Command.class, menuPath="Plugins > Test > Generate Dummy Mapper")
 public class DummyMapper extends ContextCommand {
     
+    
+    @Parameter
+    AnnotationService annotationService;
+    
     @Parameter(type = ItemIO.OUTPUT)
     MetaDataOwnerList list;
-    Mapper mapper = new DefaultMapper();
+    String newkey = "channel";
+    String filterKey = "NotRandom";
+    DefaultMapper mapper = new DefaultMapper(newkey, filterKey);
+    Object gfp = "Gfp";
+    Object ncherry = "ncherry";
+    Object bright = "bright";
 
     @Override
     public void run() {
+        
+        
+        
+        
         list  = new MetaDataOwnerList();
         
         for(int i = 0;i!= 10;i++) {
@@ -55,17 +69,18 @@ public class DummyMapper extends ContextCommand {
             int valeurMin = 0;
             int valeurMax = 6;
             Object valeur = valeurMin + r.nextInt(valeurMax - valeurMin );
+            
+            mapper.associatedValues(1.0, gfp);
+            mapper.associatedValues(5.0, ncherry);
+            mapper.associatedValues(3.0, bright);
+            
+            
+            
+            
             MetaData name = MetaData.create(MetaData.NAME, RandomStringUtils.random(3, true, false));
             MetaData m1 = MetaData.create("NotRandom", valeur);
-            MetaData m2 = MetaData.create("Random strings 2", RandomStringUtils.random(3,true,false));
-            MetaData m3 = MetaData.create("Random double 1", new Random().nextDouble());
-            MetaData m4 = MetaData.create("Random double 2", new Random().nextDouble());
-            MetaData mapper1 = mapper.map(name);
-            MetaData mapper2 =mapper.map(m4);
-            MetaData mapper3 =mapper.map(m3);
-            MetaData mapper4 =mapper.map(m2);
-            MetaData mapper5 =mapper.map(m1);
-            list.add(new DummyMapper.SimpleMetaDataOwnerMapper(name,mapper1, mapper2, mapper3, mapper4, mapper5, m1,m2,m3,m4));
+            MetaData mapper5 = mapper.map(m1);
+            list.add(new DummyMapper.SimpleMetaDataOwnerMapper(name, mapper5, m1));
             
             
             
