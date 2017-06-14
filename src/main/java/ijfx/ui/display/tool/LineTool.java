@@ -23,9 +23,11 @@ import ijfx.core.utils.SciJavaUtils;
 import java.util.List;
 import net.imagej.overlay.LineOverlay;
 import org.scijava.input.MouseCursor;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.tool.Tool;
 import org.scijava.util.RealCoords;
+import org.scijava.widget.NumberWidget;
 
 /**
  *
@@ -34,6 +36,10 @@ import org.scijava.util.RealCoords;
 @Plugin(type = Tool.class, iconPath="fa:arrows_v",description = "Line tool")
 public class LineTool extends AbstractPathTool<LineOverlay>{
 
+    @Parameter(label = "Line width", min = "1", max = "5", style = NumberWidget.SLIDER_STYLE)
+    double lineWidth = 1;
+    
+    
     @Override
     protected void onPath(List<RealCoords> coords) {
         
@@ -46,7 +52,7 @@ public class LineTool extends AbstractPathTool<LineOverlay>{
         
         overlay.setLineStart(new double[] { begin.x, begin.y});
         overlay.setLineEnd(new double[] {end.x, end.y});
-        
+        overlay.setLineWidth(lineWidth);
         getImageDisplay().update();
     }
 

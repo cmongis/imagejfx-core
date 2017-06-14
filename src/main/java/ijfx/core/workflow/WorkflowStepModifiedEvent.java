@@ -17,33 +17,14 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.commands.script;
+package ijfx.core.workflow;
 
-import ijfx.ui.display.code.ScriptDisplay;
-import org.scijava.command.ContextCommand;
-import org.scijava.display.DisplayService;
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
+import ijfx.ui.IjfxEvent;
 
 /**
  *
  * @author cyril
  */
-@Plugin(type = ScriptCommand.class,menuPath = "Edit > Reset (example)")
-public class ResetScript extends ContextCommand implements ScriptCommand{
-
-    @Parameter
-    ScriptDisplay scriptDisplay;
-    
-    @Parameter
-    DisplayService displayService;
-    
-    @Override
-    public void run() {
-       
-        
-        scriptDisplay.get(0).setCode("Noooooo !");
-        scriptDisplay.update();
-    }
+public class WorkflowStepModifiedEvent extends IjfxEvent<WorkflowStep>{
     
 }

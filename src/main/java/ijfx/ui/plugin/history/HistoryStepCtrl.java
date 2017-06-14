@@ -133,6 +133,13 @@ public class HistoryStepCtrl extends BorderPane {
         return step;
     }
 
+    public void refresh() {
+        if(step != null) {
+            titleLabel.setText(step.getId());
+            subtitleLabel.setText(getSubtitle());
+        }
+    }
+    
     public void setStep(WorkflowStep step) {
 
         if (this.step == step || step == null) {
@@ -144,7 +151,9 @@ public class HistoryStepCtrl extends BorderPane {
         moduleConfigPane.clear();
         moduleConfigPane.edit(step);
         //titleLabel.textProperty().unbind();
-        titleLabel.setText(step.getId());
+       // titleLabel.setText(step.getId());
+        
+        refresh();
         
         /*
         try {

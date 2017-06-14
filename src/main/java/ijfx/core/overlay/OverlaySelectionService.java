@@ -72,7 +72,7 @@ public class OverlaySelectionService extends AbstractService implements ImageJSe
                 }
                 );
         logger.info("Selecting only " + overlay);
-
+        imageDisplay.update();
     }
 
     public void selectedAll(ImageDisplay imageDisplay) {

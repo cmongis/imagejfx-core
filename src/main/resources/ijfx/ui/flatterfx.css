@@ -584,6 +584,10 @@
     -fx-stroke-fill:-txt-highlight;  
 }
 
+.context-menu.input-panel .menu-item:focused {
+    -fx-background-color:transparent;
+}
+
 .ij1-command {
     -fx-background-color: rgb(70,55,65);
 }
@@ -1687,6 +1691,10 @@ list-cell:filled:selected:focused, .list-cell:filled:selected{
 }
 .input-harvester .text-area {
     -fx-max-width:230px;
+}
+.input-harvester .input-message {
+    -fx-alignment:CENTER_LEFT;
+    
 }
 
 

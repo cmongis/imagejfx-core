@@ -34,58 +34,52 @@ import rx.schedulers.Schedulers;
  *
  * @author cyril
  */
-public abstract class AbstractPathTool<T extends Overlay> extends ReactiveTool{
-    
-    
+public abstract class AbstractPathTool<T extends Overlay> extends ReactiveTool {
+
     @Parameter
     protected OverlayUtilsService overlayUtilsService;
-    
+
     private T overlay;
-    
+
     @Override
     void onStart() {
-        
-        overlay = createOverlay();
-        
-        
-        overlayUtilsService.addOverlay(getImageDisplay(), overlay);
-        
+
         stream(MsDraggedEvent.class)
                 .observeOn(Schedulers.computation())
                 .map(this::positionOnImage)
                 .collect(ArrayList::new, this::collect)
                 .subscribe(this::onPath);
-                
-         
+
     }
-    
+
     private void collect(ArrayList<RealCoords> list, RealCoords coords) {
         list.add(coords);
         onPath(list);
     }
 
     protected abstract void onPath(List<RealCoords> coords);
-    
+
     protected abstract T createOverlay();
-    
-     @Override
+
+    @Override
     public void onMouseUp(MsReleasedEvent event) {
-        stopStream();      
+        stopStream();
         overlay = null;
     }
-    
+
     @Override
     public void onMouseDown(MsPressedEvent event) {
-       
-        
-        
-        
-         startStream();
+
+        startStream();
     }
-    
+
     protected T getOverlay() {
+        if (overlay == null) {
+            overlay = createOverlay();
+
+            overlayUtilsService.addOverlay(getImageDisplay(), overlay);
+        }
         return overlay;
     }
-    
-    
+
 }

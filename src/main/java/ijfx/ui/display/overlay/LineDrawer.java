@@ -25,6 +25,8 @@ import javafx.scene.canvas.GraphicsContext;
 import net.imagej.display.ImageCanvas;
 import net.imagej.display.ImageDisplay;
 import net.imagej.overlay.LineOverlay;
+import org.apache.commons.math3.geometry.euclidean.twod.PolygonsSet;
+import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.IntCoords;
 import org.scijava.util.RealCoords;
@@ -59,11 +61,48 @@ public class LineDrawer implements OverlayDrawer<LineOverlay> {
         int dy = end.y;
         
         GraphicsContext graphicsContext2D = canvas.getGraphicsContext2D();
-        
+        graphicsContext2D.setLineWidth(overlay.getLineWidth());
         graphicsContext2D.setStroke(viewConfig.getStrokeColor());
         
         graphicsContext2D.strokeLine(ox, oy, dx, dy);
       
+        
+    }
+    
+    /**
+     * Minimum distance for click validation as on overlay
+     */
+    private static final double MIN_DISTANCE = 100;
+    
+    @Override
+    public boolean isOnOverlay(LineOverlay overlay, double x0, double y0) {
+        
+        /*
+            Calculating the distance to the line using the formula
+            given by :
+            https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
+        */
+        
+        final double x1 = overlay.getLineStart(0);
+        final double y1 = overlay.getLineStart(1);
+        final double x2 = overlay.getLineEnd(0);
+        final double y2 = overlay.getLineEnd(1);
+        
+        double numerator = (y2 - y1)*x0;
+        numerator -= (x2-x1)*y0;
+        numerator += x2*y1;
+        numerator -= y2*x1;
+        
+        numerator = Math.abs(numerator);
+        
+        double denominator = Math.pow(y2-y1,2);
+        denominator += Math.pow(x2-x1,2);
+        denominator = Math.sqrt(denominator);
+        
+        final double distance = numerator / denominator;
+        
+        return distance < MIN_DISTANCE;
+        
         
     }
     

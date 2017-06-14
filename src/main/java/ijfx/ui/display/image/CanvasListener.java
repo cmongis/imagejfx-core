@@ -24,12 +24,14 @@ import ijfx.core.overlay.OverlayUtilsService;
 import ijfx.ui.display.overlay.OverlayDisplayService;
 import ijfx.ui.display.overlay.OverlayDrawer;
 import java.util.List;
+import java.util.stream.Collectors;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import net.imagej.display.ImageCanvas;
 import net.imagej.display.ImageDisplay;
 import net.imagej.display.OverlayService;
+import net.imagej.display.OverlayView;
 import net.imagej.display.ZoomService;
 import net.imagej.overlay.Overlay;
 import org.scijava.display.event.input.MsButtonEvent;
@@ -205,6 +207,12 @@ public class CanvasListener {
         
         List<Overlay> overlays = overlayService
                 .getOverlays(display);
+        
+        display
+                .stream()
+                .filter(view->view instanceof OverlayView)
+                .map(view->(OverlayView)view)
+                .collect(Collectors.toList());
         
         for(Overlay overlay : overlays) {
             if(isOnOverlay(event.getX(), event.getY(), overlay)) {

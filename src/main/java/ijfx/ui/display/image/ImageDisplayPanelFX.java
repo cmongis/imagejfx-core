@@ -24,6 +24,7 @@ import ijfx.core.overlay.OverlayDrawingService;
 import ijfx.core.overlay.OverlayUtilsService;
 import ijfx.core.timer.Timer;
 import ijfx.core.timer.TimerService;
+import ijfx.core.uicontext.UiContextService;
 import ijfx.plugins.display.AutoContrast;
 import ijfx.ui.display.overlay.MoveablePoint;
 import ijfx.ui.display.overlay.OverlayModifier;
@@ -40,7 +41,9 @@ import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
@@ -112,6 +115,10 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
 
     private AnchorPane modifiersAnchorPane;
     
+    private Label fpsLabel = new Label();
+    
+    private IntegerProperty fpsProperty = new SimpleIntegerProperty();
+    
     /*
         Services
      */
@@ -135,7 +142,12 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
 
     @Parameter
     OverlayService overlayService;
+    
+    @Parameter
+    UiContextService uiContextService;
 
+    
+    
     /*
         Drawing related
      */
@@ -167,6 +179,9 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
 
     private final BooleanProperty anyAxisSliderInUse = new SimpleBooleanProperty(true);
 
+    
+    
+    
     public ImageDisplayPanelFX() {
 
         try {
@@ -217,6 +232,17 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
                 .setOnTrue(0.0)
                 .bind(showBottomPanel, bottomPane.translateYProperty());
 
+        
+        Label fpsLabel = new Label();
+        
+        fpsLabel.textProperty().bind(fpsProperty.asString());
+        
+        
+        AnchorPane.setBottomAnchor(fpsLabel, 10d);
+        AnchorPane.setRightAnchor(fpsLabel,10d);
+        
+        modifiersAnchorPane.getChildren().add(fpsLabel);
+        
         /*
             Creating fixed UI elements and properties
          */
@@ -240,6 +266,9 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
     public void view(DisplayWindow window, FXImageDisplay display) {
         this.window = window;
         this.display = display;
+        
+        fpsProperty.bind(display.refreshPerSecond());
+        
         installCanvas();
 
     }
@@ -382,6 +411,9 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
     @Override
     public void display(FXImageDisplay t) {
         this.display = t;
+        
+       fpsProperty.bind(t.refreshPerSecond());
+        
         redoLayout();
         redraw();
     }
@@ -553,13 +585,11 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
         if (overlayView.isSelected()) {
             if (modifiersAnchorPane.getChildren().containsAll(modifiers) == false) {
                 modifiersAnchorPane.getChildren().addAll(modifiers);
+                 modifier.refresh();
             }
-        } else {
+        }
+        else {
             modifiersAnchorPane.getChildren().removeAll(modifiers);
         }
-        System.out.println("modifier anchor pane width");
-        System.out.println(canvas.getWidth());
-        modifier.refresh();
-
     }
 }
