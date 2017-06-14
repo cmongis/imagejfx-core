@@ -19,13 +19,18 @@
  */
 package ijfx.ui.display.code;
 
+import ijfx.commands.script.RunScript;
 import ijfx.core.formats.Script;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.IndexRange;
+import javax.script.ScriptException;
 import org.scijava.Prioritized;
 import org.scijava.Priority;
 import org.scijava.display.AbstractDisplay;
@@ -35,6 +40,7 @@ import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.script.ScriptLanguage;
+import org.scijava.script.ScriptService;
 
 /**
  * TODO : change to DefaultScriptDisplay
@@ -44,6 +50,8 @@ import org.scijava.script.ScriptLanguage;
 public class DefaultScriptDisplay extends AbstractDisplay<Script> implements ScriptDisplay {
     @Parameter
     EventService eventService;
+    @Parameter
+    ScriptService scriptService;
     
     
     private String copiedText;
@@ -151,6 +159,19 @@ public class DefaultScriptDisplay extends AbstractDisplay<Script> implements Scr
     @Override
     public void redo() {
         eventService.publish(new RedoEvent());
+    }
+
+    @Override
+    public void runScript() {
+        String path = get(0).getSourceFile();
+        File scriptFile = new File(path);
+        try {
+            scriptService.run(scriptFile, true);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(RunScript.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ScriptException ex) {
+            Logger.getLogger(RunScript.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     

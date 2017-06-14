@@ -119,7 +119,7 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     public Button createRunButton(){
         Button rb = new Button("Run script");
         rb.setOnAction((event) -> {
-                
+                display.runScript();
             });
         return rb;
     }

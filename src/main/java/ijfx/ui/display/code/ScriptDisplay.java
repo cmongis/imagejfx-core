@@ -48,7 +48,7 @@ public interface ScriptDisplay extends Display<Script> {
     void pasteText ();
     void undo();
     void redo();
-    
+    void runScript();
     void setSelectedText(String text);
     StringProperty selectedTextProperty();
     StringProperty textProperty();
