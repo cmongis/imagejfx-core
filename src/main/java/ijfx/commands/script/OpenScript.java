@@ -19,6 +19,9 @@
  */
 package ijfx.commands.script;
 
+import org.scijava.menu.MenuConstants;
+import org.scijava.plugin.Attr;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugins.commands.io.OpenFile;
 
@@ -26,7 +29,11 @@ import org.scijava.plugins.commands.io.OpenFile;
  *
  * @author cyril
  */
-@Plugin(type = ScriptCommand.class, menuPath = "File > Open...",iconPath="fa:folder_open")
+@Plugin(type = ScriptCommand.class, menuPath = "File > Open...", menu = {
+		@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
+			mnemonic = MenuConstants.FILE_MNEMONIC),
+		@Menu(label = "Open...", weight = 1, mnemonic = 'o', accelerator = "^O") },
+	attrs = { @Attr(name = "no-legacy") })
 public class OpenScript extends OpenFile implements ScriptCommand{
     
     

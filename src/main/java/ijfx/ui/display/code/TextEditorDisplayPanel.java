@@ -19,31 +19,27 @@
  */
 package ijfx.ui.display.code;
 
-import ijfx.core.formats.Script;
 import ijfx.ui.display.image.AbstractFXDisplayPanel;
 import ijfx.ui.display.image.FXDisplayPanel;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.application.Platform;
+import java.lang.reflect.Field;
+import java.util.List;
 import javafx.beans.property.adapter.JavaBeanStringProperty;
-import javafx.beans.property.adapter.JavaBeanStringPropertyBuilder;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.fxml.FXMLLoader;
+import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.IndexRange;
-import javafx.scene.control.TabPane;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
-import org.fxmisc.richtext.CodeArea;
-import org.scijava.display.Display;
-import org.scijava.display.TextDisplay;
+import javafx.scene.text.Font;
+import org.controlsfx.control.action.Action;
+import org.joda.time.chrono.AssembledChronology.Fields;
 import org.scijava.event.EventHandler;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.script.ScriptLanguage;
+import org.scijava.script.ScriptService;
 import org.scijava.ui.viewer.DisplayWindow;
 
 /**
@@ -54,11 +50,14 @@ import org.scijava.ui.viewer.DisplayWindow;
 public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay> {
     @Parameter
     Scene scene;
-    TextArea root;
+    @Parameter
+    ScriptService scriptService;
+    BorderPane root;
     //BorderPane borderPane;
     ScriptDisplay display;
     //static TextArea textArea;
-    
+    TextArea textArea;
+    MenuButton languageButton;
     //static CodeArea codeArea;
     JavaBeanStringProperty codeProperty; 
     
@@ -69,31 +68,53 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     @Override
     public void pack() {
         
-        //this.root = new AnchorPane();
-        //root.getStylesheets().add(getClass().getResource("/ijfx/ui/display/code/JavaRichtext.css").toExternalForm());
-        if (root!=null) return;
-        this.root = new TextArea();
-        //this.codeArea = textArea.getCodeArea();
+        this.root = new BorderPane();
+        this.textArea = new TextArea();
+        this.root.setCenter(this.textArea);
         
-        root.setBottomAnchor(this.root.getCodeArea(), 15d);
-        root.setTopAnchor(this.root.getCodeArea(), 0d);
-        root.setLeftAnchor(this.root.getCodeArea(), 0d);
-        root.setRightAnchor(this.root.getCodeArea(), 0d);
-
-
-        //root.getChildren().add(this.textArea.getCodeArea());
+        textArea.setBottomAnchor(this.textArea.getCodeArea(), 15d);
+        textArea.setTopAnchor(this.textArea.getCodeArea(), 0d);
+        textArea.setLeftAnchor(this.textArea.getCodeArea(), 0d);
+        textArea.setRightAnchor(this.textArea.getCodeArea(), 0d);
         
+        this.root.setPadding(Insets.EMPTY);
+        this.languageButton = createLanguageButton(display.getLanguage().toString());
+        this.root.setBottom(this.languageButton);
+        this.languageButton.setFont(new Font(12));
+        
+        changeLanguage(display.getLanguage());
         initCode();
+        
+        display.textProperty().bind(this.textArea.textProperty());
+        display.selectedTextProperty().bind(this.textArea.selectedTextProperty());
+        display.selectionProperty().bind(this.textArea.selectionProperty());
+        
        
         
     }
-    
+    public MenuButton createLanguageButton(String name){
+        /*
+        I don't find an enumerator of the suported languages so it don't work
+        */
+        MenuButton mb = new MenuButton(name);
+        Field[] languages = ScriptLanguage.class.getDeclaredFields();
+        
+        for (ScriptLanguage language : scriptService.getInstances()){
+            MenuItem mi = new MenuItem(language.toString());
+            mi.setOnAction((event) -> {
+                changeLanguage(language);
+                initCode();
+                this.languageButton.setText(language.toString());
+            });
+            mb.getItems().add(mi);
+        }
+        return mb;
+    }
+
     public void initCode(){
-        changeLanguage(display.getLanguage());
-        this.root.setText(display.get(0).getCode());
-         display.textProperty().bind(this.root.textProperty());
-        display.selectedTextProperty().bind(this.root.selectedTextProperty());
-        display.selectionProperty().bind(this.root.selectionProperty());
+        
+        this.textArea.setText(display.get(0).getCode());
+        String test = this.textArea.getCodeArea().getText();
         
     }
     
@@ -134,7 +155,7 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     }
     public void changeLanguage(ScriptLanguage language){
         String path = findFileLanguage(language);
-        this.root.initLanguage(path);
+        this.textArea.initLanguage(path);
     }
     
     public static String findFileLanguage(ScriptLanguage language) {
@@ -142,12 +163,12 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     }
     @EventHandler
     public void onUndoEvent(UndoEvent event){
-        this.root.undo();
+        this.textArea.undo();
 
     }
     @EventHandler
     public void onRedoEvent(RedoEvent event){
-        this.root.redo();
+        this.textArea.redo();
 
     }
 }
