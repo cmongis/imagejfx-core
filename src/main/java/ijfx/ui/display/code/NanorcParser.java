@@ -79,7 +79,7 @@ public class NanorcParser implements LanguageKeywords{
             text = Files.readAllLines(file.toPath(), Charset.defaultCharset());// lecture du fichier, tout est mis dans la list textProperty
                     } 
         catch (IOException ex) {
-            Logger.getLogger(TextArea.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DefaultTextArea.class.getName()).log(Level.SEVERE, null, ex);
         }
         for (String line : text){
             String[] splitedLine = line.split(" ");

@@ -27,10 +27,12 @@ import javafx.beans.property.adapter.JavaBeanStringProperty;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 import org.controlsfx.control.action.Action;
@@ -55,9 +57,10 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     BorderPane root;
     //BorderPane borderPane;
     ScriptDisplay display;
-    //static TextArea textArea;
-    TextArea textArea;
+    //static DefaultTextArea textArea;
+    DefaultTextArea textArea;
     MenuButton languageButton;
+    Button runButton;
     //static CodeArea codeArea;
     JavaBeanStringProperty codeProperty; 
     
@@ -69,7 +72,7 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     public void pack() {
         
         this.root = new BorderPane();
-        this.textArea = new TextArea();
+        this.textArea = new DefaultTextArea();
         this.root.setCenter(this.textArea);
         
         textArea.setBottomAnchor(this.textArea.getCodeArea(), 15d);
@@ -79,7 +82,9 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
         
         this.root.setPadding(Insets.EMPTY);
         this.languageButton = createLanguageButton(display.getLanguage().toString());
-        this.root.setBottom(this.languageButton);
+        this.runButton = new Button("Run script");
+        
+        this.root.setBottom(new HBox(this.runButton,this.languageButton));
         this.languageButton.setFont(new Font(12));
         
         changeLanguage(display.getLanguage());
@@ -110,7 +115,15 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
         }
         return mb;
     }
-
+    
+    public Button createRunButton(){
+        Button rb = new Button("Run script");
+        rb.setOnAction((event) -> {
+                
+            });
+        return rb;
+    }
+    
     public void initCode(){
         
         this.textArea.setText(display.get(0).getCode());

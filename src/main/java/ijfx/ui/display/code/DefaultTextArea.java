@@ -35,7 +35,7 @@ import org.scijava.script.ScriptLanguage;
  *
  * @author florian
  */
-public class TextArea extends AnchorPane{
+public class DefaultTextArea extends AnchorPane{
     
     private CodeArea codeArea = null;
     private LanguageKeywords languageKeywords;
@@ -49,7 +49,7 @@ public class TextArea extends AnchorPane{
     private Hashtable KEYWORDS_PATTERN_TABLE = new Hashtable();
    
     
-    public TextArea() {
+    public DefaultTextArea() {
         this.languageKeywords = new NanorcParser();
         this.scriptHighlight = new DefaultScriptHighlighting(this.KEYWORDS_PATTERN_TABLE);
         

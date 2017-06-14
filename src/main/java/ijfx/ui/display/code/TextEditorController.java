@@ -68,7 +68,7 @@ public class TextEditorController extends AnchorPane {
     Language LANGUAGE = Language.JAVASCRIPT;
     
     CodeArea codeArea = null;
-    TextArea textAreaCreator;
+    DefaultTextArea textAreaCreator;
     
     public TextEditorController(ScriptDisplay scriptDisplay) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/ijfx/ui/display/code/TextEditorMain.fxml"));
@@ -80,7 +80,7 @@ public class TextEditorController extends AnchorPane {
         
         //RichTextEditor richTextEditor =new RichTextEditor();
         
-        textAreaCreator = new TextArea();
+        textAreaCreator = new DefaultTextArea();
         this.codeArea = textAreaCreator.getCodeArea();
         init();
         borderPane.setCenter(codeArea);
@@ -188,7 +188,7 @@ public class TextEditorController extends AnchorPane {
     */
     public void changeLanguage(ScriptLanguage language){
         String path = findFileLanguage(language);
-        textAreaCreator.initLanguage(path);
+        textAreaCreator.initLanguage(language);
     }
     
     public static String findFileLanguage(ScriptLanguage language) {
