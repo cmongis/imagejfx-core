@@ -56,18 +56,15 @@ import org.scijava.script.ScriptService;
  *
  * @author florian
  */
-public class TextArea extends AnchorPane{
-    
+public class TextArea extends AnchorPane {
+
     private CodeArea codeArea = null;
-    
-    
+
     //private StringProperty selectedText;
-    
     private final StringProperty selectedTextProperty;
     private final StringProperty textProperty;
     private final ObjectProperty<IndexRange> selectionProperty;
-    
-    
+
     private static Hashtable KEYWORDS_TABLE = new Hashtable();
     private static Hashtable KEYWORDS_PATTERN_TABLE = new Hashtable();
     private static String[] KEYWORDS = new String[]{""};
@@ -84,7 +81,7 @@ public class TextArea extends AnchorPane{
             "switch", "synchronized", "this", "throw", "throws",
             "transient", "try", "void", "volatile", "while"
     };
-    */
+     */
     private static String[] WHITE = {};
     private static String[] BLACK = {};
     private static String[] RED = {};
@@ -101,38 +98,35 @@ public class TextArea extends AnchorPane{
     private static String SEMICOLON_PATTERN = "\\;";
     private static String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
     private static String COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
-    
+
     private static String OPEN_PAREN = "\\(";
     private static String CLOSE_PAREN = "\\)";
     private static String OPEN_BRACE = "\\[";
     private static String CLOSE_BRACE = "\\]";
     private static String OPEN_BRACKET = "\\{";
     private static String CLOSE_BRACKET = "\\}";
-    
+
     private static Pattern PAREN_PATTERNBIS = Pattern.compile(
-        "(?<OPENPAREN>" + OPEN_PAREN + ")" 
-        + "|(?<CLOSEPAREN>" + CLOSE_PAREN + ")"
-        +"|(?<OPENBRACE>" + OPEN_BRACE + ")" 
-        + "|(?<CLOSEBRACE>" + CLOSE_BRACE + ")"
-        + "|(?<OPENBRACKET>" + OPEN_BRACKET + ")" 
-        + "|(?<CLOSEBRACKET>" + CLOSE_BRACKET + ")"
+            "(?<OPENPAREN>" + OPEN_PAREN + ")"
+            + "|(?<CLOSEPAREN>" + CLOSE_PAREN + ")"
+            + "|(?<OPENBRACE>" + OPEN_BRACE + ")"
+            + "|(?<CLOSEBRACE>" + CLOSE_BRACE + ")"
+            + "|(?<OPENBRACKET>" + OPEN_BRACKET + ")"
+            + "|(?<CLOSEBRACKET>" + CLOSE_BRACKET + ")"
     );
-    
-    private static  Pattern PATTERN = Pattern.compile(
-            
+
+    private static Pattern PATTERN = Pattern.compile(
             //"(?<KEYWORD>" + KEYWORD_PATTERN + ")"
             // "|(?<PAREN>" + PAREN_PATTERN + ")"
-             "|(?<BRACE>" + BRACE_PATTERN + ")"
+            "|(?<BRACE>" + BRACE_PATTERN + ")"
             + "|(?<BRACKET>" + BRACKET_PATTERN + ")"
             + "|(?<SEMICOLON>" + SEMICOLON_PATTERN + ")"
             + "|(?<STRING>" + STRING_PATTERN + ")"
             + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
     );
 
-    
-    
     public TextArea() {
-        
+
         this.codeArea = new CodeArea();
         //nanorcParser(getClass().getResource("/ijfx/ui/display/code/javascript.nanorc").getFile());
         //nanoRcParseV2(getClass().getResource("/ijfx/ui/display/code/javascript.nanorc").getFile());
@@ -141,7 +135,9 @@ public class TextArea extends AnchorPane{
         this.codeArea.richChanges()
                 .filter(ch -> !ch.getInserted().equals(ch.getRemoved())) // XXX
                 .subscribe(change -> {
-                    codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText()));
+                    if ("".equals(codeArea.getText().trim()) == false) {
+                        codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText()));
+                    }
                     //codeArea.setStyleSpans(0, computeBracket(codeArea.getText()));
                 });
         /*
@@ -156,57 +152,56 @@ public class TextArea extends AnchorPane{
                     
                     
                 });
-        */
+         */
         selectedTextProperty = new SimpleStringProperty();
         selectedTextProperty.bind(this.codeArea.selectedTextProperty());
-        
-        
+
         //scriptDisplay.textProperty().bind(textProperty);
         selectionProperty = new SimpleObjectProperty<>();
         selectionProperty.bind(this.codeArea.selectionProperty());
-        
+
         textProperty = new SimpleStringProperty();
         textProperty.bind(this.codeArea.textProperty());
-        
+
         this.getChildren().add(this.codeArea);
         getStylesheets().add(getClass().getResource("/ijfx/ui/display/code/JavaRichtext.css").toExternalForm());
-        
+
     }
 
     private static StyleSpans<Collection<String>> computeHighlighting(String text) {
         Matcher matcher = PATTERN.matcher(text);
         int lastKwEnd = 0;
-        
+
         StyleSpansBuilder<Collection<String>> spansBuilder
                 = new StyleSpansBuilder<>();
-        Hashtable<String,List> orphan = detectBracket(text);
-        while(matcher.find()) {
+        Hashtable<String, List> orphan = detectBracket(text);
+        while (matcher.find()) {
             String result = testMatcher(matcher);
             String orphelinBracket = higlightOrphelinBracket(lastKwEnd, matcher.start(), orphan);
-            String styleClass =
-                    result != null ? result : 
-                    orphelinBracket != null ? orphelinBracket:
-                    //matcher.group("KEYWORD") != null ? "keyword" :
-                    //matcher.group("PAREN") != null ? "paren" :
-                    //matcher.group("BRACE") != null ? "brace" :
-                    //matcher.group("BRACKET") != null ? "bracket" :
-                    matcher.group("SEMICOLON") != null ? "semicolon" :
-                    matcher.group("STRING") != null ? "string" :
-                    matcher.group("COMMENT") != null ? "comment" :
-                    null;  assert styleClass != null;
-            
-            
+            String styleClass
+                    = result != null ? result
+                            : orphelinBracket != null ? orphelinBracket
+                                    : //matcher.group("KEYWORD") != null ? "keyword" :
+                                    //matcher.group("PAREN") != null ? "paren" :
+                                    //matcher.group("BRACE") != null ? "brace" :
+                                    //matcher.group("BRACKET") != null ? "bracket" :
+                                    matcher.group("SEMICOLON") != null ? "semicolon"
+                                    : matcher.group("STRING") != null ? "string"
+                                    : matcher.group("COMMENT") != null ? "comment"
+                                    : null;
+            assert styleClass != null;
+
             spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);               // ajoute un style null entre les deux styles 
-             spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start()); // ajout du style en question sur le nombre de characteres apropriés
+            spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start()); // ajout du style en question sur le nombre de characteres apropriés
             lastKwEnd = matcher.end();
         }
         //spansBuilder = computeBracket(spansBuilder,text);
-        
+
         spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
         return spansBuilder.create();
     }
-    
-    public void init(){
+
+    public void init() {
         //this.KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
         this.PAREN_PATTERN = "\\(|\\)";
         this.BRACE_PATTERN = "\\{|\\}";
@@ -214,129 +209,137 @@ public class TextArea extends AnchorPane{
         this.SEMICOLON_PATTERN = "\\;";
         this.STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
         this.COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
-        
+
         this.PATTERN = Pattern.compile(
-            //"(?<KEYWORD>" + KEYWORD_PATTERN + ")"
-             
-            "(?<PAREN>" + PAREN_PATTERN + ")"
-            + "|(?<BRACE>" + BRACE_PATTERN + ")"
-            + "|(?<BRACKET>" + BRACKET_PATTERN + ")"
-            + "|(?<SEMICOLON>" + SEMICOLON_PATTERN + ")"
-            + "|(?<STRING>" + STRING_PATTERN + ")"
-            + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
-            + generatePattern()
+                //"(?<KEYWORD>" + KEYWORD_PATTERN + ")"
+
+                "(?<PAREN>" + PAREN_PATTERN + ")"
+                + "|(?<BRACE>" + BRACE_PATTERN + ")"
+                + "|(?<BRACKET>" + BRACKET_PATTERN + ")"
+                + "|(?<SEMICOLON>" + SEMICOLON_PATTERN + ")"
+                + "|(?<STRING>" + STRING_PATTERN + ")"
+                + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
+                + generatePattern()
         );
     }
-    
-    public static String generatePattern(){
+
+    public static String generatePattern() {
         String pat = "";
-        for (Object key : KEYWORDS_PATTERN_TABLE.keySet()){
+        for (Object key : KEYWORDS_PATTERN_TABLE.keySet()) {
             pat = pat.concat("|(?<" + key.toString() + ">" + KEYWORDS_PATTERN_TABLE.get(key) + ")");
         }
         return pat;
     }
-    
-    public static String testMatcher(Matcher matcher){
-        for (Object key : KEYWORDS_PATTERN_TABLE.keySet()){
-            if (matcher.group(key.toString()) != null) return key.toString();
+
+    public static String testMatcher(Matcher matcher) {
+        for (Object key : KEYWORDS_PATTERN_TABLE.keySet()) {
+            if (matcher.group(key.toString()) != null) {
+                return key.toString();
+            }
         }
         return null;
     }
-    public static String higlightOrphelinBracket(int previous, int next, Hashtable<String,List> orphan ){
-      for (List<Integer[]> list : orphan.values()){
-          for (Integer[] i : list){
-                if (i[0] == next){
+
+    public static String higlightOrphelinBracket(int previous, int next, Hashtable<String, List> orphan) {
+        for (List<Integer[]> list : orphan.values()) {
+            for (Integer[] i : list) {
+                if (i[0] == next) {
                     return "uncompleteBracket";
                 }
             }
-        } 
-      return null;
+        }
+        return null;
     }
-    
-    
-    public static Hashtable<String,List> detectBracket (String text){
+
+    public static Hashtable<String, List> detectBracket(String text) {
         Matcher matcher = PAREN_PATTERNBIS.matcher(text);
-        int lastKwEnd = 0; 
-        Hashtable<String,List> orphan = new Hashtable();
-        
+        int lastKwEnd = 0;
+        Hashtable<String, List> orphan = new Hashtable();
+
         orphan.put("OPENPAREN", new ArrayList<Integer[]>());
         orphan.put("CLOSEPAREN", new ArrayList<Integer[]>());
         orphan.put("OPENBRACE", new ArrayList<Integer[]>());
         orphan.put("CLOSEBRACE", new ArrayList<Integer[]>());
         orphan.put("OPENBRACKET", new ArrayList<Integer[]>());
         orphan.put("CLOSEBRACKET", new ArrayList<Integer[]>());
-        
+
         List<Integer[]> uncompleteList = new ArrayList<>();
-        while(matcher.find()) {
-            if (matcher.group("OPENPAREN") != null ) orphan.get("OPENPAREN").add(new Integer[]{matcher.start(),matcher.end()});
-            else if (matcher.group("CLOSEPAREN") != null ){
+        while (matcher.find()) {
+            if (matcher.group("OPENPAREN") != null) {
+                orphan.get("OPENPAREN").add(new Integer[]{matcher.start(), matcher.end()});
+            } else if (matcher.group("CLOSEPAREN") != null) {
                 if (orphan.get("OPENPAREN").size() != 0) {
-                    orphan.get("OPENPAREN").remove(orphan.get("OPENPAREN").size()-1);
-                }
-                else{
-                   orphan.get("CLOSEPAREN").add(new Integer[]{matcher.start(),matcher.end()});
+                    orphan.get("OPENPAREN").remove(orphan.get("OPENPAREN").size() - 1);
+                } else {
+                    orphan.get("CLOSEPAREN").add(new Integer[]{matcher.start(), matcher.end()});
                 }
             }
-            if (matcher.group("OPENBRACE") != null ) orphan.get("OPENBRACE").add(new Integer[]{matcher.start(),matcher.end()});
-            else if (matcher.group("CLOSEBRACE") != null ){
+            if (matcher.group("OPENBRACE") != null) {
+                orphan.get("OPENBRACE").add(new Integer[]{matcher.start(), matcher.end()});
+            } else if (matcher.group("CLOSEBRACE") != null) {
                 if (orphan.get("OPENBRACE").size() != 0) {
-                    orphan.get("OPENBRACE").remove(orphan.get("OPENBRACE").size()-1);
-                }
-                else{
-                   orphan.get("CLOSEBRACE").add(new Integer[]{matcher.start(),matcher.end()});
+                    orphan.get("OPENBRACE").remove(orphan.get("OPENBRACE").size() - 1);
+                } else {
+                    orphan.get("CLOSEBRACE").add(new Integer[]{matcher.start(), matcher.end()});
                 }
             }
-            if (matcher.group("OPENBRACKET") != null ) orphan.get("OPENBRACKET").add(new Integer[]{matcher.start(),matcher.end()});
-            else if (matcher.group("CLOSEBRACKET") != null ){
+            if (matcher.group("OPENBRACKET") != null) {
+                orphan.get("OPENBRACKET").add(new Integer[]{matcher.start(), matcher.end()});
+            } else if (matcher.group("CLOSEBRACKET") != null) {
                 if (orphan.get("OPENBRACKET").size() != 0) {
-                    orphan.get("OPENBRACKET").remove(orphan.get("OPENBRACKET").size()-1);
-                }
-                else{
-                   orphan.get("CLOSEBRACKET").add(new Integer[]{matcher.start(),matcher.end()});
+                    orphan.get("OPENBRACKET").remove(orphan.get("OPENBRACKET").size() - 1);
+                } else {
+                    orphan.get("CLOSEBRACKET").add(new Integer[]{matcher.start(), matcher.end()});
                 }
             }
-            
+
         }
         return orphan;
     }
-    
-   
-    public void initLanguage(String path){
+
+    public void initLanguage(String path) {
         nanoRcParseV2(getClass().getResource(path).getFile());
         init();
     }
+
     public CodeArea getCodeArea() {
         return this.codeArea;
     }
-    public void setText(String text){
-        Platform.runLater( () ->{
+
+    public void setText(String text) {
+        Platform.runLater(() -> {
             this.codeArea.replaceText(text);
         });
     }
-    public StringProperty textProperty(){
+
+    public StringProperty textProperty() {
         return this.textProperty;
     }
-    public StringProperty selectedTextProperty(){
+
+    public StringProperty selectedTextProperty() {
         return this.selectedTextProperty;
     }
-    public ObjectProperty selectionProperty(){
+
+    public ObjectProperty selectionProperty() {
         return this.selectionProperty;
     }
-    public String getSelectedText(){
+
+    public String getSelectedText() {
         return this.codeArea.getSelectedText();
     }
-    
-    public void undo(){
+
+    public void undo() {
         this.codeArea.undo();
     }
-    public void redo(){
+
+    public void redo() {
         this.codeArea.redo();
     }
-    
-    public void detectBracket(){
-        
+
+    public void detectBracket() {
+
     }
-    
+
     /*
     public void nanorcParser(String path){
         
@@ -421,38 +424,38 @@ public class TextArea extends AnchorPane{
         
         }
     }
-    */
-    public void nanoRcParseV2(String path){
+     */
+    public void nanoRcParseV2(String path) {
         List<String> text = new ArrayList<>();
         File file = new File(path);
         try {
             text = Files.readAllLines(file.toPath(), Charset.defaultCharset());// lecture du fichier, tout est mis dans la list textProperty
-                    } catch (IOException ex) {
+        } catch (IOException ex) {
             Logger.getLogger(TextArea.class.getName()).log(Level.SEVERE, null, ex);
         }
-        for (String line : text){
+        for (String line : text) {
             String[] splitedLine = line.split(" ");
-            if (splitedLine.length <= 1) continue;
-            else {
-                if (splitedLine[0].equals("color")){
-                    if (splitedLine[2].matches("\"\\\\\\<\\(.*")){                                       // check if the regex start with ""\<(" = keywords in nanorc
-                        if (KEYWORDS_PATTERN_TABLE.containsKey(splitedLine[1])){
-                                String pattern = (String) KEYWORDS_PATTERN_TABLE.get(splitedLine[1]);
-                                pattern = pattern.replace(")\\b", "|"+splitedLine[2]);
-                                pattern = pattern.concat(")\\b");
-                                KEYWORDS_PATTERN_TABLE.put(splitedLine[1], pattern);
-                            }
-                        else {
+            if (splitedLine.length <= 1) {
+                continue;
+            } else {
+                if (splitedLine[0].equals("color")) {
+                    if (splitedLine[2].matches("\"\\\\\\<\\(.*")) {                                       // check if the regex start with ""\<(" = keywords in nanorc
+                        if (KEYWORDS_PATTERN_TABLE.containsKey(splitedLine[1])) {
+                            String pattern = (String) KEYWORDS_PATTERN_TABLE.get(splitedLine[1]);
+                            pattern = pattern.replace(")\\b", "|" + splitedLine[2]);
+                            pattern = pattern.concat(")\\b");
+                            KEYWORDS_PATTERN_TABLE.put(splitedLine[1], pattern);
+                        } else {
                             String pattern = splitedLine[2];
-                            pattern= pattern.replace("\"\\<(", "\\b(");
+                            pattern = pattern.replace("\"\\<(", "\\b(");
                             pattern = pattern.replace(")\\>\"", ")\\b");
                             KEYWORDS_PATTERN_TABLE.put(splitedLine[1], pattern); //                                  adding the list in the hash table
                         }
                     }
-                    
+
                 }
             }
         }
     }
-    
+
 }
