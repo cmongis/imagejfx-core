@@ -138,9 +138,9 @@ public class BinaryMaskDrawer implements OverlayDrawer<BinaryMaskOverlay> {
     public boolean isOverlayOnViewPort(Overlay o, ViewPort p) {
         return true;
     }
-
+    */
     @Override
-    public boolean isOnOverlay(BinaryMaskOverlay overlay, ViewPort viewport, double xOnImage, double yOnImage) {
+    public boolean isOnOverlay(BinaryMaskOverlay overlay,double xOnImage, double yOnImage) {
         
         long x = Math.round(xOnImage);
         long y = Math.round(yOnImage);
@@ -154,7 +154,7 @@ public class BinaryMaskDrawer implements OverlayDrawer<BinaryMaskOverlay> {
         randomAccess.setPosition(y,1);
         return randomAccess.get().get();
         
-    }*/
+    }
     
     
     

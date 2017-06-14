@@ -76,6 +76,8 @@ public class PointOverlayDrawer implements OverlayDrawer<PointOverlay>{
     }
     
     
+    
+    
 
     public boolean canHandle(Class<?> t) {
         return t ==  PointOverlay.class;
@@ -97,6 +99,11 @@ public class PointOverlayDrawer implements OverlayDrawer<PointOverlay>{
         }
         else return false;
     }*/
+
+    @Override
+    public boolean isOnOverlay(PointOverlay overlay, double xOnImage, double yOnImage) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
    
    

@@ -111,5 +111,11 @@ public class ThresholdDrawer implements OverlayDrawer<ThresholdOverlay> {
    
         return overlay.classify(new long[] {x,y}) == 0;
     }*/
+
+    @Override
+    public boolean isOnOverlay(ThresholdOverlay overlay, double xOnImage, double yOnImage) {
+
+        return overlay.classify(new long[] { Math.round(xOnImage), Math.round(yOnImage) }) == 0;
+    }
     
 }

@@ -19,6 +19,7 @@
  */
 package ijfx.ui.display.tool;
 
+import io.reactivex.internal.schedulers.IoScheduler;
 import javafx.scene.canvas.Canvas;
 import net.imagej.display.ImageCanvas;
 import net.imagej.display.ImageDisplay;
@@ -38,6 +39,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.tool.Tool;
 import org.scijava.util.IntCoords;
 import org.scijava.util.RealCoords;
+import rx.Scheduler;
 import rx.subjects.PublishSubject;
 
 /**

@@ -82,10 +82,7 @@ public class MoveablePoint extends Rectangle {
 
     }
     
-    private void updateFromData() {
-        
-
-        
+    private void updateFromData() {        
         positionOnCanvasHelper.setIntCoords(viewport.dataToPanelCoords(positionOnDataHelper.getRealCoords()));
     }
     
