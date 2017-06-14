@@ -101,4 +101,9 @@ public class PolygonDrawer implements OverlayDrawer<PolygonOverlay> {
         return t == PolygonOverlay.class;
     }
 
+    @Override
+    public boolean isOnOverlay(PolygonOverlay overlay, double xOnImage, double yOnImage) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

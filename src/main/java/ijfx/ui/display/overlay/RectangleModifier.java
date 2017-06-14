@@ -96,9 +96,15 @@ public class RectangleModifier extends AbstractOverlayModifier<RectangleOverlay>
 
     public void onMinEdgeChanged(Observable obs, RealCoords oldValue, RealCoords newValue) {
 
+        double dx, dy;
+        
+        dx = overlay.getOrigin(0) - newValue.x;
+        dy = overlay.getOrigin(1) - newValue.y;
+        
         overlay.setOrigin(newValue.x, 0);
         overlay.setOrigin(newValue.y, 1);
-
+        overlay.setExtent(overlay.getExtent(0) + dx, 0);
+        overlay.setExtent(overlay.getExtent(1) + dy,1);
         display.update();
     }
 
@@ -113,7 +119,7 @@ public class RectangleModifier extends AbstractOverlayModifier<RectangleOverlay>
 
     @Override
     public void refresh() {
-        updateFromData();
+        //updateFromData();
         points.forEach(MoveablePoint::redraw);
     }
 
