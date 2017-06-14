@@ -36,8 +36,8 @@ public class RectangleTool extends AbstractPathTool<RectangleOverlay> {
 
     @Override
     protected void onPath(List<RealCoords> coords) {
-
-        if (coords.size() >= 10) {
+        System.out.println(coords.size());
+        if (coords.size() >= 3) {
 
             RealCoords first = coords.get(0);
 
@@ -56,6 +56,7 @@ public class RectangleTool extends AbstractPathTool<RectangleOverlay> {
 
     }
 
+    @Override
     protected RectangleOverlay createOverlay() {
         return new RectangleOverlay(getContext());
     }

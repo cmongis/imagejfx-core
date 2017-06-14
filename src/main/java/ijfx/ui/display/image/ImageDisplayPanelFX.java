@@ -585,8 +585,9 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
         if (overlayView.isSelected()) {
             if (modifiersAnchorPane.getChildren().containsAll(modifiers) == false) {
                 modifiersAnchorPane.getChildren().addAll(modifiers);
-                 modifier.refresh();
+                 
             }
+            modifier.refresh();
         }
         else {
             modifiersAnchorPane.getChildren().removeAll(modifiers);
