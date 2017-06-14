@@ -48,6 +48,7 @@ import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.scijava.plugin.Parameter;
+import org.scijava.script.ScriptLanguage;
 import org.scijava.script.ScriptService;
 //import org.fxmisc.richtext.model.StyleSpans;
 //import org.fxmisc.richtext.model.StyleSpansBuilder;
@@ -59,7 +60,7 @@ import org.scijava.script.ScriptService;
 public class TextArea extends AnchorPane{
     
     private CodeArea codeArea = null;
-    
+    private LanguageKeywords languageKeywords;
     
     //private StringProperty selectedText;
     
@@ -69,22 +70,10 @@ public class TextArea extends AnchorPane{
     
     
     private static Hashtable KEYWORDS_TABLE = new Hashtable();
-    private static Hashtable KEYWORDS_PATTERN_TABLE = new Hashtable();
+    private Hashtable KEYWORDS_PATTERN_TABLE = new Hashtable();
     private static String[] KEYWORDS = new String[]{""};
+    
     /*
-    private static String[] KEYWORDS = new String[] {
-            "abstract", "assert", "boolean", "break", "byte",
-            "case", "catch", "char", "class", "const",
-            "continue", "default", "do", "double", "else",
-            "enum", "extends", "final", "finally", "float",
-            "for", "goto", "if", "implements", "import",
-            "instanceof", "int", "interface", "long", "native",
-            "new", "package", "private", "protected", "public",
-            "return", "short", "static", "strictfp", "super",
-            "switch", "synchronized", "this", "throw", "throws",
-            "transient", "try", "void", "volatile", "while"
-    };
-    */
     private static String[] WHITE = {};
     private static String[] BLACK = {};
     private static String[] RED = {};
@@ -93,7 +82,7 @@ public class TextArea extends AnchorPane{
     private static String[] YELLOW = {};
     private static String[] MAGENTA = {};
     private static String[] CYAN = {};
-
+    */
     //private static String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
     private static String PAREN_PATTERN = "\\(|\\)";
     private static String BRACE_PATTERN = "\\{|\\}";
@@ -132,36 +121,21 @@ public class TextArea extends AnchorPane{
     
     
     public TextArea() {
+        this.languageKeywords = new NanorcParser();
         
         this.codeArea = new CodeArea();
-        //nanorcParser(getClass().getResource("/ijfx/ui/display/code/javascript.nanorc").getFile());
-        //nanoRcParseV2(getClass().getResource("/ijfx/ui/display/code/javascript.nanorc").getFile());
         this.codeArea.setParagraphGraphicFactory(LineNumberFactory.get(this.codeArea));
 
         this.codeArea.richChanges()
                 .filter(ch -> !ch.getInserted().equals(ch.getRemoved())) // XXX
                 .subscribe(change -> {
                     codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText()));
-                    //codeArea.setStyleSpans(0, computeBracket(codeArea.getText()));
                 });
-        /*
-         this.codeArea.richChanges()
-                .filter(ch -> ch.getInserted().equals("(") || ch.getInserted().equals(")")) // XXX
-                 
-                .subscribe(change -> {
-                    
-                    Platform.runLater( () ->{
-                        codeArea.setStyleSpans(0, computeBracket(codeArea.getText()));
-                    });
-                    
-                    
-                });
-        */
+        
         selectedTextProperty = new SimpleStringProperty();
         selectedTextProperty.bind(this.codeArea.selectedTextProperty());
         
         
-        //scriptDisplay.textProperty().bind(textProperty);
         selectionProperty = new SimpleObjectProperty<>();
         selectionProperty.bind(this.codeArea.selectionProperty());
         
@@ -173,7 +147,7 @@ public class TextArea extends AnchorPane{
         
     }
 
-    private static StyleSpans<Collection<String>> computeHighlighting(String text) {
+    private StyleSpans<Collection<String>> computeHighlighting(String text) {
         Matcher matcher = PATTERN.matcher(text);
         int lastKwEnd = 0;
         
@@ -186,10 +160,6 @@ public class TextArea extends AnchorPane{
             String styleClass =
                     result != null ? result : 
                     orphelinBracket != null ? orphelinBracket:
-                    //matcher.group("KEYWORD") != null ? "keyword" :
-                    //matcher.group("PAREN") != null ? "paren" :
-                    //matcher.group("BRACE") != null ? "brace" :
-                    //matcher.group("BRACKET") != null ? "bracket" :
                     matcher.group("SEMICOLON") != null ? "semicolon" :
                     matcher.group("STRING") != null ? "string" :
                     matcher.group("COMMENT") != null ? "comment" :
@@ -207,7 +177,6 @@ public class TextArea extends AnchorPane{
     }
     
     public void init(){
-        //this.KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
         this.PAREN_PATTERN = "\\(|\\)";
         this.BRACE_PATTERN = "\\{|\\}";
         this.BRACKET_PATTERN = "\\[|\\]";
@@ -228,15 +197,15 @@ public class TextArea extends AnchorPane{
         );
     }
     
-    public static String generatePattern(){
+    public String generatePattern(){
         String pat = "";
-        for (Object key : KEYWORDS_PATTERN_TABLE.keySet()){
-            pat = pat.concat("|(?<" + key.toString() + ">" + KEYWORDS_PATTERN_TABLE.get(key) + ")");
+        for (Object key : this.KEYWORDS_PATTERN_TABLE.keySet()){
+            pat = pat.concat("|(?<" + key.toString() + ">" + this.KEYWORDS_PATTERN_TABLE.get(key) + ")");
         }
         return pat;
     }
     
-    public static String testMatcher(Matcher matcher){
+    public String testMatcher(Matcher matcher){
         for (Object key : KEYWORDS_PATTERN_TABLE.keySet()){
             if (matcher.group(key.toString()) != null) return key.toString();
         }
@@ -301,8 +270,9 @@ public class TextArea extends AnchorPane{
     }
     
    
-    public void initLanguage(String path){
-        nanoRcParseV2(getClass().getResource(path).getFile());
+    public void initLanguage(ScriptLanguage language){
+        this.languageKeywords.setLanguage(language);
+        this.KEYWORDS_PATTERN_TABLE = this.languageKeywords.getKeywords();
         init();
     }
     public CodeArea getCodeArea() {
@@ -422,6 +392,7 @@ public class TextArea extends AnchorPane{
         }
     }
     */
+    /*
     public void nanoRcParseV2(String path){
         List<String> text = new ArrayList<>();
         File file = new File(path);
@@ -454,5 +425,5 @@ public class TextArea extends AnchorPane{
             }
         }
     }
-    
+    */
 }

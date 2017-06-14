@@ -154,13 +154,14 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
         //root.setText(display.get(0).getCode());
     }
     public void changeLanguage(ScriptLanguage language){
-        String path = findFileLanguage(language);
-        this.textArea.initLanguage(path);
+        //String path = findFileLanguage(language);
+        this.textArea.initLanguage(language);
     }
-    
+    /*
     public static String findFileLanguage(ScriptLanguage language) {
        return String.format("/ijfx/ui/display/code/%s.nanorc",language.getLanguageName().toLowerCase().replace(" ", ""));
     }
+*/
     @EventHandler
     public void onUndoEvent(UndoEvent event){
         this.textArea.undo();
