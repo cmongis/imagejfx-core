@@ -165,9 +165,9 @@ public class OverlaySelectionService extends AbstractService implements ImageJSe
 
         if (overlayView != null) {
             overlayView.setSelected(selected);
-            eventService.publishLater(new DataViewUpdatedEvent(overlayView));
-            eventService.publishLater(new OverlaySelectedEvent(imageDisplay, selectedOverlay));
-            imageDisplay.update();
+            //eventService.publishLater(new DataViewUpdatedEvent(overlayView));
+            //eventService.publishLater(new OverlaySelectedEvent(imageDisplay, selectedOverlay));
+           // imageDisplay.update();
 
         } else {
             logger.warning(("Couldn't find Overlay in this ImageDisplay"));
