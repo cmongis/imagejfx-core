@@ -22,29 +22,66 @@ package ijfx.commands.script;
 import ijfx.ui.display.code.ScriptDisplay;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.script.ScriptException;
+import mongis.utils.TextFileUtils;
 import org.scijava.command.ContextCommand;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.script.ScriptService;
+import org.scijava.ui.UIService;
+import org.scijava.widget.FileWidget;
 
 /**
  *
  * @author florian
  */
 @Plugin(type = ScriptCommand.class, menuPath = "File > Run")
-public class RunScript extends ContextCommand implements ScriptCommand{    
+public class RunScript extends ContextCommand implements ScriptCommand {
+
     @Parameter
     private ScriptService scriptService;
     @Parameter
     private ScriptDisplay scriptDisplay;
 
+    @Parameter
+    UIService uiService;
+
     @Override
     public void run() {
         String path = scriptDisplay.get(0).getSourceFile();
-        File scriptFile = new File(path);
+
+        File scriptFile;
+
+        if (path == null) {
+            File chooseFile = uiService.chooseFile("Save your file first", null, FileWidget.SAVE_STYLE);
+
+            if (chooseFile == null) {
+                uiService.showDialog("Aborting.");
+                return;
+            }
+
+            scriptDisplay.get(0).setSourceFile(chooseFile.getAbsolutePath());
+
+            scriptFile = chooseFile;
+
+        } else {
+            scriptFile = new File(path);
+        }
+
+        if (scriptFile != null) {
+            try {
+                TextFileUtils.writeTextFile(scriptFile, scriptDisplay.get(0).getCode());
+            } catch (IOException ex) {
+
+                Logger.getLogger(RunScript.class.getName()).log(Level.SEVERE, null, ex);
+
+                return;
+            }
+        }
+
         try {
             scriptService.run(scriptFile, true);
         } catch (FileNotFoundException ex) {
@@ -53,6 +90,5 @@ public class RunScript extends ContextCommand implements ScriptCommand{
             Logger.getLogger(RunScript.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    
+
 }
