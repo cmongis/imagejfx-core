@@ -33,7 +33,10 @@ public interface OverlayModifier<T extends Overlay> extends ClassHandler<Overlay
     
  
     
+    
     public List<MoveablePoint> getModifiers(ImageDisplay viewport, T overlay);
+    
+    Overlay getOverlay();
     
     public default void refresh() {}
     

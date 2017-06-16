@@ -39,16 +39,14 @@ import org.scijava.util.RealCoords;
 public class RectangleModifier extends AbstractOverlayModifier<RectangleOverlay> {
 
     ImageCanvas viewport;
-
-    ImageDisplay display;
-
+ 
     List<MoveablePoint> points;
 
     CoordsHelper minEdgeOnCanvas = new CoordsHelper();
 
     CoordsHelper maxEdgeOnCanvas = new CoordsHelper();
 
-    RectangleOverlay overlay;
+  
 
     MoveablePoint a;
     MoveablePoint b;
@@ -62,8 +60,8 @@ public class RectangleModifier extends AbstractOverlayModifier<RectangleOverlay>
         if (viewport == null) {
             points = new ArrayList<>();
 
-            this.overlay = overlay;
-            this.display = display;
+            init(overlay, display);
+            
             viewport = display.getCanvas();
             a = new MoveablePoint(viewport);
             b = new MoveablePoint(viewport);
@@ -71,18 +69,24 @@ public class RectangleModifier extends AbstractOverlayModifier<RectangleOverlay>
             points.add(a);
             points.add(b);
 
-            refresh();
+            
+           
             
             a.positionOnDataProperty().addListener(this::onMinEdgeChanged);
             b.positionOnDataProperty().addListener(this::onMaxEdgeChanged);
-
             
+            updateFromData();
+            refresh();
+           
         }
 
         return points;
     }
 
     public void updateFromData() {
+        
+        RectangleOverlay overlay = getOverlay();
+        
         RealCoords minEdge = new RealCoords(overlay.getOrigin(0), overlay.getOrigin(1));
         RealCoords maxEdge = new RealCoords(minEdge.x + overlay.getExtent(0), minEdge.y + overlay.getExtent(1));
 
@@ -98,6 +102,8 @@ public class RectangleModifier extends AbstractOverlayModifier<RectangleOverlay>
 
         double dx, dy;
         
+        RectangleOverlay overlay = getOverlay();
+        
         dx = overlay.getOrigin(0) - newValue.x;
         dy = overlay.getOrigin(1) - newValue.y;
         
@@ -105,15 +111,17 @@ public class RectangleModifier extends AbstractOverlayModifier<RectangleOverlay>
         overlay.setOrigin(newValue.y, 1);
         overlay.setExtent(overlay.getExtent(0) + dx, 0);
         overlay.setExtent(overlay.getExtent(1) + dy,1);
-        display.update();
+        getDisplay().update();
     }
 
     public void onMaxEdgeChanged(Observable obs, RealCoords oldValue, RealCoords newValue) {
 
+        RectangleOverlay overlay = getOverlay();
+        
         overlay.setExtent(newValue.x - overlay.getOrigin(0), 0);
         overlay.setExtent(newValue.y - overlay.getOrigin(1), 1);
 
-        display.update();
+        getDisplay().update();
 
     }
 

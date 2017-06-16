@@ -19,7 +19,7 @@
  */
 package ijfx.ui.display.overlay;
 
-import net.imagej.ops.Ops.Math.Abs;
+import net.imagej.display.ImageDisplay;
 import net.imagej.overlay.Overlay;
 
 /**
@@ -30,6 +30,30 @@ public abstract class AbstractOverlayModifier<T extends Overlay> implements Over
     
     final Class<? extends Overlay> handledType;
 
+    private T overlay;
+    
+    private ImageDisplay display;
+    
+    public void setOverlay(T t) {
+        this.overlay = t;
+    }
+    
+    public T getOverlay() {
+        return overlay;
+    }
+
+    public void init(T overlay, ImageDisplay display) {
+        setOverlay(overlay);
+        setDisplay(display);
+    }
+    public void setDisplay(ImageDisplay display) {
+        this.display = display;
+    }
+
+    public ImageDisplay getDisplay() {
+        return display;
+    }
+    
     
     
     

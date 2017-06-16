@@ -35,8 +35,7 @@ public abstract class EasyOverlayModifier<T extends Overlay> extends AbstractOve
 
     List<MoveablePoint> points;
 
-    ImageDisplay display;
-    T overlay;
+    
     ImageCanvas viewport;
 
     public EasyOverlayModifier(Class<? extends Overlay> handledType) {
@@ -51,8 +50,8 @@ public abstract class EasyOverlayModifier<T extends Overlay> extends AbstractOve
     public List<MoveablePoint> getModifiers(ImageDisplay display, T overlay) {
         if (viewport == null) {
 
-            this.overlay = overlay;
-            this.display = display;
+            init(overlay, display);
+           
             viewport = display.getCanvas();
             
             points = initPoints();
@@ -60,7 +59,10 @@ public abstract class EasyOverlayModifier<T extends Overlay> extends AbstractOve
             // subscribe events for each point
             points.forEach(point -> point.positionOnDataProperty().addListener(this::onPointMoved));
 
+            updateFromData();
             refresh();
+            
+            
 
         }
 
@@ -78,7 +80,7 @@ public abstract class EasyOverlayModifier<T extends Overlay> extends AbstractOve
     private void onPointMoved(Observable obs, RealCoords oldValue, RealCoords newValue) {
         Platform.runLater(()->{
             updateData();
-            display.update();
+            getDisplay().update();
            
         });
     }
@@ -89,9 +91,7 @@ public abstract class EasyOverlayModifier<T extends Overlay> extends AbstractOve
 
     public abstract void updateFromData();
 
-    public T getOverlay() {
-        return overlay;
-    }
+  
     
     public void refresh() {
         updateFromData();
