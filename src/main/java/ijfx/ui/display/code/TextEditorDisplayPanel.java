@@ -82,7 +82,7 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
         
         this.root.setPadding(Insets.EMPTY);
         this.languageButton = createLanguageButton(display.getLanguage().toString());
-        this.runButton = new Button("Run script");
+        this.runButton = createRunButton();
         
         this.root.setBottom(new HBox(this.runButton,this.languageButton));
         this.languageButton.setFont(new Font(12));

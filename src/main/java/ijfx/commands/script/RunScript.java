@@ -19,15 +19,20 @@
  */
 package ijfx.commands.script;
 
+import ijfx.ui.display.code.DefaultScriptDisplay;
 import ijfx.ui.display.code.ScriptDisplay;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.script.ScriptException;
 import org.scijava.command.ContextCommand;
+import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.script.ScriptModule;
 import org.scijava.script.ScriptService;
 
 /**
@@ -40,17 +45,27 @@ public class RunScript extends ContextCommand implements ScriptCommand{
     private ScriptService scriptService;
     @Parameter
     private ScriptDisplay scriptDisplay;
-
+    @Parameter
+    LogService logService;
     @Override
     public void run() {
         String path = scriptDisplay.get(0).getSourceFile();
         File scriptFile = new File(path);
+        Future<ScriptModule> result = null;
         try {
-            scriptService.run(scriptFile, true);
+            result = scriptService.run(scriptFile, true);
         } catch (FileNotFoundException ex) {
             Logger.getLogger(RunScript.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ScriptException ex) {
             Logger.getLogger(RunScript.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        System.out.println(logService.getInfo().toString());
+        try {
+            System.out.println(result.get().getOutputs().toString());
+        } catch (InterruptedException ex) {
+            Logger.getLogger(DefaultScriptDisplay.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ExecutionException ex) {
+            Logger.getLogger(DefaultScriptDisplay.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     

@@ -59,7 +59,10 @@ public class DefaultTextArea extends AnchorPane{
         this.codeArea.richChanges()
                 .filter(ch -> !ch.getInserted().equals(ch.getRemoved())) // XXX
                 .subscribe(change -> {
-                    codeArea.setStyleSpans(0, this.scriptHighlight.computeHighlighting(codeArea.getText()));
+                     if ("".equals(codeArea.getText().trim()) == false) {
+                        codeArea.setStyleSpans(0, this.scriptHighlight.computeHighlighting(codeArea.getText()));
+                    }
+                    
                 });
         
         selectedTextProperty = new SimpleStringProperty();
