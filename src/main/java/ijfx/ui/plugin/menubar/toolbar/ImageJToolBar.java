@@ -20,7 +20,6 @@
  */
 package ijfx.ui.plugin.menubar.toolbar;
 
-import com.google.common.collect.Lists;
 import ijfx.core.icon.FXIconService;
 import ijfx.core.module.ModuleWrapper;
 import ijfx.core.uicontext.UiContextService;
@@ -39,17 +38,19 @@ import ijfx.ui.inputharvesting.ContextMenuInputPanel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
+import jfxtras.scene.control.ToggleGroupValue;
+import org.scijava.event.EventHandler;
 import org.scijava.module.ModuleItem;
 import org.scijava.module.ModuleService;
 import org.scijava.tool.Tool;
 import org.scijava.tool.ToolService;
+import org.scijava.tool.event.ToolActivatedEvent;
 import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
 import org.scijava.widget.WidgetService;
@@ -79,11 +80,15 @@ public class ImageJToolBar extends VBox implements UiPlugin {
 
     @Parameter
     ModuleService moduleService;
-    
+
     @Parameter
     FXIconService fxIconService;
 
-    ToggleGroup toggleGroup = new ToggleGroup();
+    //ToggleGroup toggleGroup = new ToggleGroup();
+
+    ToggleGroupValue<Tool> currentTool = new ToggleGroupValue<>();
+
+    
     
     @Override
     public Node getUiElement() {
@@ -96,20 +101,25 @@ public class ImageJToolBar extends VBox implements UiPlugin {
 
         getStyleClass().addAll("toggle-group", "vertical");
 
+        
+       
+        
         List<ToggleButton> buttonList = toolService
                 .getTools()
                 .stream()
-                .filter(tool->tool.getClass().getSimpleName().contains("Swing") == false)
-                .filter(tool->!tool.isAlwaysActive())
+                .filter(tool -> tool.getClass().getSimpleName().contains("Swing") == false)
+                .filter(tool -> !tool.isAlwaysActive())
                 .map(this::createButton)
                 .collect(Collectors.toList());
 
         getChildren().addAll(buttonList);
 
-        
         getChildren().get(0).getStyleClass().add("first");
-        getChildren().get(getChildren().size()-1).getStyleClass().add("last");
+        getChildren().get(getChildren().size() - 1).getStyleClass().add("last");
         
+        
+         currentTool.setValue(toolService.getActiveTool());
+         
         return this;
     }
 
@@ -121,59 +131,70 @@ public class ImageJToolBar extends VBox implements UiPlugin {
                 + tool.getDescription()
                 + " )"
         ));
-         
-       button.setContextMenu(createContextMenu(tool));
-        
-        
-        toggleGroup.getToggles().add(button);
-        
+
+        button.setContextMenu(createContextMenu(tool));
+
+        currentTool.add(button, tool);
+        button.setOnMouseClicked(event -> {
+            if (event.isPrimaryButtonDown()) {
+                toolService.setActiveTool(tool);
+                event.consume();
+            }
+        });
+        //toggleGroup.getToggles().add(button);
+
         button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-        button.selectedProperty().addListener(new ToolListener(tool));
+        //button.selectedProperty().addListener(new ToolListener(tool));
         return button;
+    }
+
+    @EventHandler
+    public void onToolActivated(ToolActivatedEvent event) {
+
     }
 
     @Parameter
     WidgetService widgetService;
-    
+
     private ContextMenu createContextMenu(Tool tool) {
-        
+
         ModuleWrapper<Tool> wrapper = new ModuleWrapper<>(tool);
         ContextMenuInputPanel inputPanel = new ContextMenuInputPanel();
-        
-        for(ModuleItem<?> input : wrapper.getInfo().inputs()) {
+
+        for (ModuleItem<?> input : wrapper.getInfo().inputs()) {
             WidgetModel model = widgetService.createModel(inputPanel, wrapper, input, new ArrayList<>());
             InputWidget<?, ?> widget = widgetService.find(model);
-            if(widget == null) continue;
+            if (widget == null) {
+                continue;
+            }
             widget.set(model);
-            inputPanel.addWidget((InputWidget<?, Node>)widget);
-            
+            inputPanel.addWidget((InputWidget<?, Node>) widget);
+
         }
-        
-       return inputPanel.getComponent();
-        
-        
+
+        return inputPanel.getComponent();
+
     }
-    
-    private class ToolListener implements ChangeListener<Boolean>{
-        private final  Tool tool;
+
+    private class ToolListener implements ChangeListener<Boolean> {
+
+        private final Tool tool;
 
         public ToolListener(Tool tool) {
             this.tool = tool;
         }
-        
-        
+
         @Override
         public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-            
+
             toolService.setActiveTool(tool);
-            
-            if(newValue) {
+
+            if (newValue) {
                 tool.activate();
-            }
-            else {
+            } else {
                 tool.deactivate();
             }
         }
     }
-    
+
 }

@@ -127,7 +127,6 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     public void initCode(){
         
         this.textArea.setText(display.get(0).getCode());
-        String test = this.textArea.getCodeArea().getText();
         
     }
     
@@ -164,7 +163,6 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     @Override
     public void redraw() {
         initCode();
-        //root.setText(display.get(0).getCode());
     }
     public void changeLanguage(ScriptLanguage language){
         //String path = findFileLanguage(language);
@@ -183,6 +181,12 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     @EventHandler
     public void onRedoEvent(RedoEvent event){
         this.textArea.redo();
+
+    }
+    @EventHandler
+    public void onChangeThemeEvent(ChangeThemeEvent event){
+        this.textArea.switchTheme();
+        this.initCode();
 
     }
 }

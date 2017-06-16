@@ -108,7 +108,7 @@ public class DefaultTimer implements Timer {
                     builder.append(getRow(key, value));
                 });
 
-        logger.info(builder.toString());
+        logger.fine(builder.toString());
 
     }
 

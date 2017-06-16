@@ -102,7 +102,8 @@ public class TextWidgetFX extends AbstractFXInputWidget<String> implements TextW
     }
 
     private boolean isStyle(String style) {
-        return getWidgetStyle().equals(style);
+        
+        return style.equals(getWidgetStyle());//getWidgetStyle().equals(style);
     }
 
     @Override

@@ -17,27 +17,17 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.formats;
+package ijfx.ui.display.code;
 
-import org.scijava.script.ScriptLanguage;
+import org.scijava.event.SciJavaEvent;
 
 /**
  *
- * @author cyril
+ * @author florian
  */
-public interface Script {
-    
-    String getCode();
-    
-    void setCode(String code);
-    
-    ScriptLanguage getLanguage();
-    
-    void setLanguage(ScriptLanguage language);
-    
-    String getSourceFile();
-    
-    public void setSourceFile(String path);
-    
+public class ChangeThemeEvent extends SciJavaEvent{
+
+    public ChangeThemeEvent() {
+    }
     
 }

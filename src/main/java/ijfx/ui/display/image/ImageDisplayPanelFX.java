@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
@@ -45,6 +46,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
 import javafx.scene.image.PixelFormat;
@@ -419,10 +421,7 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
     }
 
     private void onPanelSizeChanged(Observable obs, Number oldValue, Number newValue) {
-        Platform.runLater(() -> {
-
-            redraw();
-        });
+        Platform.runLater(this::redraw);
     }
 
     private <T extends RealType<T>> void useIjfxRender() {
@@ -568,7 +567,21 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
     }
 
     private void refreshModifiers() {
-
+        
+        
+        
+        // checking modifiers of overlay that has been deleted
+        List<Node> points = overlayDrawingManager
+                .checkDeletedOverlay(overlayService.getOverlays(display))
+                .stream()
+                .peek(overlayDrawingManager::delete)
+                .map(modifier->modifier.getModifiers(display, null))
+                
+                .flatMap(List<MoveablePoint>::stream)
+                .collect(Collectors.toList());
+        
+        modifiersAnchorPane.getChildren().removeAll(points);
+        
         display
                 .stream()
                 .filter((view) -> view instanceof OverlayView)

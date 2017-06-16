@@ -123,6 +123,9 @@
 .styled-text-area{
     -fx-background-color:#383f50;
 }
+.lineno{
+    -fx-background-color:#282E3A;
+}
 /*
 .text{
     -fx-fill:white;

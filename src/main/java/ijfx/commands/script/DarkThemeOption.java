@@ -17,27 +17,26 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.formats;
+package ijfx.commands.script;
 
-import org.scijava.script.ScriptLanguage;
+import ijfx.ui.display.code.ScriptDisplay;
+import org.scijava.command.ContextCommand;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  *
- * @author cyril
+ * @author florian
  */
-public interface Script {
+@Plugin(type = ScriptCommand.class,menuPath = "Parameters > switch light/dark theme")
+
+public class DarkThemeOption extends ContextCommand implements ScriptCommand{
+    @Parameter
+    ScriptDisplay scriptDisplay;
     
-    String getCode();
-    
-    void setCode(String code);
-    
-    ScriptLanguage getLanguage();
-    
-    void setLanguage(ScriptLanguage language);
-    
-    String getSourceFile();
-    
-    public void setSourceFile(String path);
-    
+    @Override
+    public void run() {
+        scriptDisplay.switchTheme();
+    }
     
 }

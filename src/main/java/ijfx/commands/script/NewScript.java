@@ -17,27 +17,44 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.formats;
+package ijfx.commands.script;
 
+import ijfx.core.formats.DefaultScript;
+import ijfx.core.formats.Script;
+import ijfx.ui.display.code.DefaultScriptDisplay;
+import ijfx.ui.display.code.ScriptDisplay;
+import org.scijava.ItemIO;
+import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 import org.scijava.script.ScriptLanguage;
 
 /**
  *
  * @author cyril
  */
-public interface Script {
+@Plugin(type = Command.class, menuPath = "File > New script...")
+public class NewScript extends ContextCommand{
     
-    String getCode();
+    @Parameter(label = "Language")
+    ScriptLanguage language;
     
-    void setCode(String code);
+    @Parameter(type = ItemIO.OUTPUT)
+    Script script;
     
-    ScriptLanguage getLanguage();
     
-    void setLanguage(ScriptLanguage language);
-    
-    String getSourceFile();
-    
-    public void setSourceFile(String path);
-    
+
+    @Override
+    public void run() {
+        
+        
+        script = new DefaultScript("");
+        script.setLanguage(language);
+        
+      
+        
+        
+    }
     
 }

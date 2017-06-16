@@ -17,27 +17,44 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.formats;
+package ijfx.ui.inputharvesting;
 
-import org.scijava.script.ScriptLanguage;
+import javafx.beans.property.Property;
+import javafx.scene.Node;
+import org.scijava.widget.WidgetModel;
 
 /**
  *
  * @author cyril
  */
-public interface Script {
+public abstract class EasyInputWidget<T> extends AbstractFXInputWidget<T>{
+
+    Node node;
     
-    String getCode();
     
-    void setCode(String code);
+    public void set(WidgetModel model) {
+        super.set(model);
+        
+        node = createComponent();
+        
+        bindProperty(getProperty());
+        
+    }
     
-    ScriptLanguage getLanguage();
+    @Override
+    public boolean supports(WidgetModel model) {
+        return super.supports(model) && handles(model);
+    }
     
-    void setLanguage(ScriptLanguage language);
+    public abstract Property<T> getProperty();
     
-    String getSourceFile();
+    public abstract  Node createComponent();
     
-    public void setSourceFile(String path);
+    public abstract boolean handles(WidgetModel model);
     
+    
+    public Node getComponent() {
+        return node;
+    }
     
 }

@@ -32,14 +32,19 @@ import net.imagej.overlay.PointOverlay;
  * @author Cyril MONGIS, 2016
  */
 @Ignore
-public class PointModifier implements OverlayModifier<PointOverlay>{
+public class PointModifier extends AbstractOverlayModifier<PointOverlay>{
 
     List<MoveablePoint> points;
     
-    PointOverlay overlay;
+
+    public PointModifier() {
+        super(PointOverlay.class);
+    }
     
     @Override
-    public List<MoveablePoint> getModifiers(ImageDisplay viewport, PointOverlay overlay) {
+    public List<MoveablePoint> getModifiers(ImageDisplay imageDisplay, PointOverlay overlay) {
+       
+        init(overlay, imageDisplay);
         /*
         if(points == null) {
             points = new ArrayList<>();
@@ -62,13 +67,9 @@ public class PointModifier implements OverlayModifier<PointOverlay>{
 
     public void onPositionOnImageChanged(Observable obs, Point2D before, Point2D after) {
         
-        PointOverlayHelper.setOverlayPosition(overlay, after);
+        PointOverlayHelper.setOverlayPosition(getOverlay(), after);
         
     }
     
-    @Override
-    public boolean canHandle(Overlay t) {
-        return t instanceof PointOverlay;
-    }
-    
+   
 }

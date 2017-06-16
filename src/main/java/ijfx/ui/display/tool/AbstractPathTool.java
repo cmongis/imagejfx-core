@@ -19,16 +19,19 @@
  */
 package ijfx.ui.display.tool;
 
+import ijfx.core.overlay.OverlaySelectionService;
 import ijfx.core.overlay.OverlayUtilsService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import net.imagej.display.OverlayService;
 import net.imagej.overlay.Overlay;
 import org.scijava.display.event.input.MsDraggedEvent;
 import org.scijava.display.event.input.MsPressedEvent;
 import org.scijava.display.event.input.MsReleasedEvent;
 import org.scijava.plugin.Parameter;
 import org.scijava.util.RealCoords;
-import rx.schedulers.Schedulers;
 
 /**
  *
@@ -39,13 +42,22 @@ public abstract class AbstractPathTool<T extends Overlay> extends ReactiveTool {
     @Parameter
     protected OverlayUtilsService overlayUtilsService;
 
+    @Parameter
+    protected OverlayService overlayService;
+    
+    @Parameter
+    protected OverlaySelectionService overlaySelectionService;
+    
     private T overlay;
 
+    
+    private final Executor executor = Executors.newFixedThreadPool(1);
+    
     @Override
     void onStart() {
 
         stream(MsDraggedEvent.class)
-                .observeOn(Schedulers.computation())
+                //.observeOn(Schedulers.from(executor))
                 .map(this::positionOnImage)
                 .collect(ArrayList::new, this::collect)
                 .subscribe(this::onPath);
@@ -53,7 +65,12 @@ public abstract class AbstractPathTool<T extends Overlay> extends ReactiveTool {
     }
 
     private void collect(ArrayList<RealCoords> list, RealCoords coords) {
+        
+        
         list.add(coords);
+        
+        log("Path : "+list.size());
+        
         onPath(list);
     }
 
@@ -64,20 +81,25 @@ public abstract class AbstractPathTool<T extends Overlay> extends ReactiveTool {
     @Override
     public void onMouseUp(MsReleasedEvent event) {
         stopStream();
+        
+        getImageDisplay().update();
         overlay = null;
     }
 
     @Override
     public void onMouseDown(MsPressedEvent event) {
-
+        
         startStream();
+        
+        
     }
 
     protected T getOverlay() {
         if (overlay == null) {
+            log("Creating overlay");
             overlay = createOverlay();
-
-            overlayUtilsService.addOverlay(getImageDisplay(), overlay);
+            getImageDisplay().display(overlay);
+            //overlayUtilsService.addOverlay(getImageDisplay(), overlay);
         }
         return overlay;
     }

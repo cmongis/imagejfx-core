@@ -86,6 +86,7 @@ import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.controlsfx.control.PopOver;
 import org.scijava.Context;
 import org.scijava.display.event.DisplayActivatedEvent;
+import org.scijava.display.event.DisplayDeletedEvent;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
 
@@ -106,8 +107,6 @@ public class OverlayPanel extends BorderPane implements UiPlugin {
     @Parameter
     OverlayStatService statsService;
 
-
-
     @Parameter
     DatasetService datasetService;
 
@@ -122,12 +121,10 @@ public class OverlayPanel extends BorderPane implements UiPlugin {
 
     @Parameter
     MeasurementService measurementSrv;
-    
+
     @Parameter
     Context context;
 
-    
-    
     @FXML
     TableView<MyEntry> tableView;
 
@@ -158,7 +155,7 @@ public class OverlayPanel extends BorderPane implements UiPlugin {
     TitledPane chartTitledPane;
 
     SciJavaEventBus eventBus = new SciJavaEventBus();
-    
+
     PopOver optionsPane;
 
     OverlayOptions overlayOptions;
@@ -215,41 +212,39 @@ public class OverlayPanel extends BorderPane implements UiPlugin {
         chartTitledPane.setGraphic(gearIcon);
         chartTitledPane.setContentDisplay(ContentDisplay.RIGHT);
         chartTitledPane.graphicTextGapProperty().setValue(TEXT_GAP);
-        
+
         // channeling all the DataViewUpdatedEvent so it updates the
         // current selected overlay
         eventBus.getStream(OverlayUpdatedEvent.class)
-                .filter(event->event.getObject().equals(overlayProperty.getValue()))
-                .subscribe(event->Platform.runLater(this::updateStats));
-                
-        
-        
+                .filter(event -> event.getObject().equals(overlayProperty.getValue()))
+                .subscribe(event -> Platform.runLater(this::updateStats));
+
         eventBus.getStream(DataViewUpdatedEvent.class)
-                .map(event->event.getView())
-                .filter(view->view instanceof OverlayView)
+                .map(event -> event.getView())
+                .filter(view -> view instanceof OverlayView)
                 .cast(OverlayView.class)
-                .filter(view->view.isSelected())
+                .filter(view -> view.isSelected())
                 .throttleWithTimeout(1000, TimeUnit.MILLISECONDS)
-                .subscribe(overlay->{
+                .subscribe(overlay -> {
                     overlayProperty.setValue(overlay.getData());
                 });
-                
+
         eventBus.getStream(DataViewUpdatedEvent.class)
-                .filter(event->event.getView() instanceof DatasetView)
-                .map(event->event.getView())
+                .filter(event -> event.getView() instanceof DatasetView)
+                .map(event -> event.getView())
                 .cast(DatasetView.class)
-                .map(view->{
+                .map(view -> {
                     System.out.println(view);
-                   return view;
+                    return view;
                 })
-                .filter(view->currentDisplay().contains(view))
+                .filter(view -> currentDisplay().contains(view))
                 .throttleWithTimeout(100, TimeUnit.MILLISECONDS)
-                .subscribe(event->Platform.runLater(this::updateStats));
-                
+                .subscribe(event -> Platform.runLater(this::updateStats));
+
     }
 
     ImageDisplay imageDisplay;
-    
+
     public void onOverlaySelectionChanged() {
 
         if (imageDisplay == null) {
@@ -276,19 +271,21 @@ public class OverlayPanel extends BorderPane implements UiPlugin {
             return;
         }
 
-        
-        
         overlayProperty.setValue(event.getOverlay());
         Platform.runLater(() -> updateChart(event.getOverlay()));
         updateTable();
 
     }
+
     public void updateStats() {
         System.out.println("Updating stats");
-        if(overlayProperty.getValue() == null) return;
+        if (overlayProperty.getValue() == null) {
+            return;
+        }
         updateChart(overlayProperty.getValue());
         updateTable();
     }
+
     protected void updateTable() {
 
         new CallbackTask<Overlay, Map<String, Double>>()
@@ -300,9 +297,9 @@ public class OverlayPanel extends BorderPane implements UiPlugin {
                     tableView.getItems().clear();
                     tableView.getItems().addAll(
                             map.entrySet()
-                            .stream()
-                            .map(entry -> new MyEntry(entry.getKey(), entry.getValue()))
-                            .collect(Collectors.toList())
+                                    .stream()
+                                    .map(entry -> new MyEntry(entry.getKey(), entry.getValue()))
+                                    .collect(Collectors.toList())
                     );
 
                 })
@@ -315,29 +312,43 @@ public class OverlayPanel extends BorderPane implements UiPlugin {
         if (event.getDisplay() instanceof ImageDisplay) {
             imageDisplay = (ImageDisplay) event.getDisplay();
         }
-       
-        if(imageDisplay !=null) {
+
+    }
+
+    private void updateCurrentOverlay() {
+        if (imageDisplay != null) {
             List<Overlay> selectedOverlays = overlaySelectionService.getSelectedOverlays(imageDisplay);
-           if(selectedOverlays.size() > 0) {
-               overlayProperty.setValue(selectedOverlays.get(0));
-           }
+            if (selectedOverlays.size() > 0) {
+                overlayProperty.setValue(selectedOverlays.get(0));
+            }
+        } else {
+            overlayProperty.setValue(null);
         }
     }
 
     @EventHandler
-    public void onDataViewUpdated(DataViewUpdatedEvent event) {
-        
-        eventBus.channel(event);
-        
-    }
-    
-    @EventHandler
-    public void onOverlayUpdated(OverlayUpdatedEvent event) {
-       eventBus.channel(event);
+    public void onImageDisplayClosed(DisplayDeletedEvent event) {
+
+        if (event instanceof ImageDisplay) {
+            imageDisplay = null;
+        }
+
+        updateCurrentOverlay();
+
     }
 
- 
-    
+    @EventHandler
+    public void onDataViewUpdated(DataViewUpdatedEvent event) {
+
+        eventBus.channel(event);
+
+    }
+
+    @EventHandler
+    public void onOverlayUpdated(OverlayUpdatedEvent event) {
+        eventBus.channel(event);
+    }
+
     private void updateChart(Overlay overlay) {
 
         boolean isLineOverlay = overlay instanceof LineOverlay;
@@ -465,18 +476,14 @@ public class OverlayPanel extends BorderPane implements UiPlugin {
         });
 
     }
-    
+
     @FXML
     public void measure() {
-        
-        
-       measurementSrv.measureSelectedOverlay();
-        
-        
+
+        measurementSrv.measureSelectedOverlay();
+
     }
 
-
-    
     @Override
     public Node getUiElement() {
         return this;
@@ -516,7 +523,7 @@ public class OverlayPanel extends BorderPane implements UiPlugin {
     }
 
     public void onOverlaySelectionChanged(Observable obs, Overlay oldValue, Overlay newValue) {
-        Platform.runLater(()->{
+        Platform.runLater(() -> {
             overlayNameField.setText(newValue.getName());
             updateChart(newValue);
             updateTable();
