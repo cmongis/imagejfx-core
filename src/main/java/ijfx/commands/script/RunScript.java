@@ -19,6 +19,7 @@
  */
 package ijfx.commands.script;
 
+import ijfx.ui.display.code.DefaultScriptDisplay;
 import ijfx.ui.display.code.ScriptDisplay;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,8 +29,10 @@ import java.util.logging.Logger;
 import javax.script.ScriptException;
 import mongis.utils.TextFileUtils;
 import org.scijava.command.ContextCommand;
+import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.script.ScriptModule;
 import org.scijava.script.ScriptService;
 import org.scijava.ui.UIService;
 import org.scijava.widget.FileWidget;
@@ -82,13 +85,7 @@ public class RunScript extends ContextCommand implements ScriptCommand {
             }
         }
 
-        try {
-            scriptService.run(scriptFile, true);
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(RunScript.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ScriptException ex) {
-            Logger.getLogger(RunScript.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
     }
 
 }
