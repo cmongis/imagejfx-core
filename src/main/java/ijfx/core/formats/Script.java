@@ -37,5 +37,7 @@ public interface Script {
     
     String getSourceFile();
     
+    public void setSourceFile(String path);
+    
     
 }
