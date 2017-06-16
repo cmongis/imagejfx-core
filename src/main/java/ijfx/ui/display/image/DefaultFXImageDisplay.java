@@ -348,11 +348,11 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
 
     @Override
     public void update() {
-        synchronized (updateLock) {
-            super.update();
-            publishSubject.onNext(1);
-            checkProperties();
-        }
+
+        super.update();
+
+        publishSubject.onNext(1);
+        checkProperties();
     }
 
     private void checkProperties() {

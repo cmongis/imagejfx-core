@@ -24,10 +24,11 @@ import ijfx.ui.display.overlay.OverlayDisplayService;
 import ijfx.ui.display.overlay.OverlayModifier;
 import ijfx.ui.main.ImageJFX;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.scene.canvas.Canvas;
-import net.imagej.display.ImageCanvas;
 import net.imagej.display.ImageDisplay;
 import net.imagej.display.OverlayView;
 import net.imagej.overlay.Overlay;
@@ -64,8 +65,32 @@ public class OverlayDrawingManager {
        
     }
     
-    
+   /**
+    * Returns all the modifiers that don't belong to the supplied list.
+    * It is useful to check which overlay has been deleted.
+    * @param listOverlay
+    * @return 
+    */
+    public List<OverlayModifier> checkDeletedOverlay(List<Overlay> listOverlay) {
+        
+        return modifierMap
+                .keySet()
+                .stream()
+                .filter(overlay->listOverlay.contains(overlay) == false)
+                .map(modifierMap::get)
+                .collect(Collectors.toList());
+        
+        
+    }
    
+    public void delete(OverlayModifier modifier) {
+        modifierMap.remove(modifier.getOverlay());
+    }
+    
+    public void delete(Overlay overlay) {
+        modifierMap.remove(overlay);
+    }
+    
 
     protected OverlayModifier getModifier(Overlay overlay) {
         if(modifierMap.containsKey(overlay) == false) {
