@@ -64,8 +64,15 @@ public class NanorcParser implements LanguageKeywords{
 
     @Override
     public void run() {
-        this.nanorcFile = getClass().getResource(findFileLanguage(language)).getFile();
-        nanoRcParseV2(this.nanorcFile);
+        try {
+            this.nanorcFile = getClass().getResource(findFileLanguage(language)).getFile();
+            nanoRcParseV2(this.nanorcFile);
+        } catch (NullPointerException e) {
+            System.out.println("No nanorc file for this language");
+            this.keywordsTable = new Hashtable();
+        }
+        
+        
     }
     
     public static String findFileLanguage(ScriptLanguage language) {
