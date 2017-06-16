@@ -33,7 +33,7 @@ public interface UiPlugin extends SciJavaPlugin{
 
     public Node getUiElement();
 
-    public UiPlugin init();
+    public UiPlugin init() throws Exception;
     
      default String getId() {
        return getClass().getAnnotation(UiConfiguration.class).id();
