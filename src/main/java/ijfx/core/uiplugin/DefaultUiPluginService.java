@@ -279,9 +279,22 @@ public final class DefaultUiPluginService extends AbstractService implements UiP
     public void sort(List<Node> pluginList) {
         Collections.sort(pluginList, (n1, n2) -> getOrder(n1.getId()).compareTo(getOrder(n2.getId())));
     }
-    
-    
-    
-    
+
+    @Override
+    public <T extends UiPlugin> T getUiPlugin(Class<T> type) {
+
+        if (uiPluginMap != null) {
+
+            return (T) uiPluginMap
+                    .values()
+                    .stream()
+                    .filter(plugin -> plugin.getClass() == type)
+                    .findFirst()
+                    .orElse(null);
+
+        }
+        return null;
+
+    }
 
 }
