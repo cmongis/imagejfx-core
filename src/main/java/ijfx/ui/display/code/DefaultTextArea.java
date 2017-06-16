@@ -76,7 +76,7 @@ public class DefaultTextArea extends AnchorPane{
         textProperty.bind(this.codeArea.textProperty());
         
         this.getChildren().add(this.codeArea);
-        getStylesheets().add(getClass().getResource("/ijfx/ui/display/code/JavaRichtext.css").toExternalForm());
+        getStylesheets().add(getClass().getResource("/ijfx/ui/display/code/TextEditorDarkTheme.css").toExternalForm());
         
     }
 
@@ -113,8 +113,8 @@ public class DefaultTextArea extends AnchorPane{
         this.codeArea.redo();
     }
     
-    public void detectBracket(){
-        
-    }
+   public void changeCss (String path){
+       this.getStylesheets().add(getClass().getResource(path).toExternalForm());
+   }
     
 }

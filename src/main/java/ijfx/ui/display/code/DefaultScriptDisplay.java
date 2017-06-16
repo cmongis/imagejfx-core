@@ -27,6 +27,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -170,20 +171,17 @@ public class DefaultScriptDisplay extends AbstractDisplay<Script> implements Scr
         String path = get(0).getSourceFile();
         File scriptFile = new File(path);
         Future<ScriptModule> result = null;
-        try {
-            result = scriptService.run(scriptFile, true);
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(RunScript.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ScriptException ex) {
-            Logger.getLogger(RunScript.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try {
-            System.out.println(result.get().getInfo().toString());
-        } catch (InterruptedException ex) {
-            Logger.getLogger(DefaultScriptDisplay.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ExecutionException ex) {
-            Logger.getLogger(DefaultScriptDisplay.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        Platform.runLater( () ->{
+            try {   
+                scriptService.run(scriptFile, true);
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(DefaultScriptDisplay.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ScriptException ex) {
+                Logger.getLogger(DefaultScriptDisplay.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+            
+        
         
     }
     

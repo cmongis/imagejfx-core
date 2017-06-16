@@ -78,15 +78,15 @@ public class DefaultScriptHighlighting implements ScriptHighlight{
                     matcher.group("SEMICOLON") != null ? "semicolon" :
                     matcher.group("STRING") != null ? "string" :
                     matcher.group("COMMENT") != null ? "comment" :
-                    null;  assert styleClass != null;
+                    "null";  assert styleClass != null;
             
             
-            spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);               // ajoute un style null entre les deux styles 
+            spansBuilder.add(Collections.singleton("null"), matcher.start() - lastKwEnd);               // ajoute un style null entre les deux styles 
              spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start()); // ajout du style en question sur le nombre de characteres apropriés
             lastKwEnd = matcher.end();
         }
         
-        spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
+        spansBuilder.add(Collections.singleton("null"), text.length() - lastKwEnd);
         return spansBuilder.create();
     }
     
