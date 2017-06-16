@@ -25,6 +25,7 @@ import ijfx.explorer.datamodel.DefaultMapper;
 import ijfx.explorer.datamodel.Mapper;
 import ijfx.explorer.datamodel.Taggable;
 import ijfx.explorer.datamodel.Tag;
+import ijfx.ui.service.Events.AddMapperEvent;
 import ijfx.ui.service.Events.AddMetaDataEvent;
 import ijfx.ui.service.Events.AddMetaDataListEvent;
 import ijfx.ui.service.Events.AddTagEvent;
@@ -105,10 +106,11 @@ public class DefaultAnnotationService extends AbstractService implements Annotat
         }
         
     }
+    
     @Override
     public void addMapper(MetaData m){
         Mapper mapper  = new DefaultMapper();
-        mapper.map(m);
+        eventService.publish(new AddMapperEvent(m, mapper.map(m)));
     }
     
 }

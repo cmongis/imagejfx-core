@@ -6,16 +6,16 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="380.0" prefWidth="277.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Pane layoutX="-3.0" layoutY="55.0" prefHeight="53.0" prefWidth="283.0">
+      <Pane fx:id="pane" layoutX="-3.0" layoutY="55.0" prefHeight="53.0" prefWidth="283.0">
          <children>
-            <TextField layoutX="17.0" layoutY="14.0" prefHeight="26.0" prefWidth="116.0" promptText="value" />
-            <TextField layoutX="149.0" layoutY="14.0" prefHeight="26.0" prefWidth="116.0" promptText="new value" />
+            <TextField fx:id="value" layoutX="17.0" layoutY="14.0" prefHeight="26.0" prefWidth="116.0" promptText="value" />
+            <TextField fx:id="new_value" layoutX="149.0" layoutY="14.0" prefHeight="26.0" prefWidth="116.0" promptText="new value" />
          </children>
       </Pane>
-      <TextField layoutX="14.0" layoutY="14.0" prefHeight="26.0" prefWidth="116.0" promptText="key" />
-      <TextField layoutX="146.0" layoutY="14.0" prefHeight="26.0" prefWidth="116.0" promptText="new key" />
-      <Button layoutX="14.0" layoutY="340.0" mnemonicParsing="false" text="Cancel" />
-      <Button layoutX="96.0" layoutY="340.0" mnemonicParsing="false" text="get key" />
-      <Button layoutX="176.0" layoutY="340.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="86.0" text="mapper !" />
+      <TextField fx:id="key" layoutX="14.0" layoutY="14.0" prefHeight="26.0" prefWidth="116.0" promptText="key" />
+      <TextField fx:id="new_key" layoutX="146.0" layoutY="14.0" prefHeight="26.0" prefWidth="116.0" promptText="new key" />
+      <Button fx:id="cancel" layoutX="14.0" layoutY="340.0" mnemonicParsing="false" text="Cancel" />
+      <Button fx:id="add_more" layoutX="96.0" layoutY="340.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="62.0" text="+" />
+      <Button fx:id="mapping" layoutX="176.0" layoutY="340.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="86.0" text="mapper !" />
    </children>
 </Pane>

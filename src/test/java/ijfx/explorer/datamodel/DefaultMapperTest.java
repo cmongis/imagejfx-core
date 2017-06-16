@@ -37,41 +37,59 @@ import static org.junit.Assert.*;
 public class DefaultMapperTest {
     
 
-    private String key;
+    private String oldKey;
+    private String newKey;
+    private Object gfp = "gfp";
     private Object value;
     private MetaData m; 
-    private HashMap <Object, Object> mapMapper = new HashMap();
-    private Mapper mapper = new DefaultMapper();
+    private MetaData n;
+    DefaultMapper instance = new DefaultMapper();
+    public HashMap <Object, Object> mapValue = new HashMap();
     
     public DefaultMapperTest() {
     }
     
     @BeforeClass
     public static void setUpClass() {
+        
+        
     }
     
     @AfterClass
     public static void tearDownClass() {
+        
     }
     
     @Before
     public void setUp() {
-        key = "key";
-        value = "value";
-        m = MetaData.create(key, value);
         
-        mapMapper.put(5.0, "truc");
-        mapMapper.put(0.0, "machin");
-        mapMapper.put(1.0, "bidule");
+        mapValue.put(5.0, gfp);
+        mapValue.put(0.0, "ncherry");
+        mapValue.put(1.0, "bright");
+        
+        oldKey = "key";
+        value = 5.0;
+        newKey = "newKey";
+        m = MetaData.create(oldKey, value);
+        n = MetaData.create(newKey, gfp);
+        
+        instance.associatedValues(5.0, gfp);
+        instance.associatedValues(0.0, "ncherry");
+        instance.associatedValues(1.0, "bright");
+        instance.setNewKey(newKey);
+        instance.setFilterKey(oldKey);
+        
+        
+        
+        
         
     }
     
     @After
     public void tearDown() {
-        key = null;
+        oldKey = null;
         value = null;
         m = null;
-        mapMapper = null;
     }
 
     /**
@@ -81,8 +99,9 @@ public class DefaultMapperTest {
     public void testMap() {
         System.out.println("map");
         
-        assertNotNull("n is null", mapper.map(m));
-        assertNotSame("Metadata are the same", m, mapper.map(m));
+        assertNotNull("n is null", instance.map(m));
+        assertNotSame("Metadata are the same", m, instance.map(m));
+        assertEquals("n et map(m) different",n , instance.map(m));
     }
 
     /**
@@ -91,9 +110,9 @@ public class DefaultMapperTest {
     @Test
     public void testGetMapObject() {
         System.out.println("getMapObject");
-        DefaultMapper instance = new DefaultMapper();
+        
         HashMap<Object, Object> result = instance.getMapObject();
-        assertEquals("map is not null",mapMapper, result);
+        assertEquals("map is not null",mapValue, result);
         
     }
 
@@ -106,8 +125,7 @@ public class DefaultMapperTest {
     @Test
     public void testGetNewKey() {
         System.out.println("getNewKey");
-        DefaultMapper instance = new DefaultMapper();
-        String expResult = "newkey";
+        String expResult = newKey;
         String result = instance.getNewKey();
         assertEquals("keys not equals",expResult, result);
         
@@ -119,12 +137,12 @@ public class DefaultMapperTest {
     @Test
     public void testAssociatedValues() {
         System.out.println("associatedValues");
-        DefaultMapper instance = new DefaultMapper();
-        instance.associatedValues(key, value);
-        mapMapper.clear();
-        mapMapper.put(key, value);
-        assertEquals("map are not the same", mapMapper, instance.getMapObject());
-        assertEquals("values are not the same",mapMapper.get(key), instance.getMapObject().get(key));
+        Object basisValue = 6.0;
+        Object newValue = "light";
+        instance.associatedValues(basisValue, newValue);
+        mapValue.put(basisValue, newValue);
+        assertEquals("map are not the same", mapValue, instance.getMapObject());
+        assertEquals("values are not the same",mapValue.get(oldKey), instance.getMapObject().get(oldKey));
         
     }
 
@@ -135,9 +153,9 @@ public class DefaultMapperTest {
     public void testSetNewKey() {
         System.out.println("setNewKey");
         String s = "newkeyyyy";
-        DefaultMapper instance = new DefaultMapper();
         instance.setNewKey(s);
         assertEquals("keys are different", s, instance.getNewKey());
+        instance.setNewKey(newKey);
         
     }
 
@@ -147,10 +165,9 @@ public class DefaultMapperTest {
     @Test
     public void testLookInsideMap() {
         System.out.println("lookInsideMap");
-        DefaultMapper instance = new DefaultMapper();
-        Object result = instance.lookInsideMap(5.0);
-        Object truc = "truc";
-        assertEquals("bad research", truc, result);
+        Object result = instance.lookInsideMap(oldKey, 5.0);
+        Object expectResult = gfp;
+        assertEquals("bad research", expectResult, result);
         
     }
     

@@ -1,5 +1,3 @@
-package ijfx.ui.display.annotation;
-
 /*
     This file is part of ImageJ FX.
 
@@ -19,24 +17,36 @@ package ijfx.ui.display.annotation;
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
+package ijfx.ui.service.Events;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-import javafx.fxml.Initializable;
+import ijfx.core.metadata.MetaData;
+import org.scijava.event.SciJavaEvent;
 
 /**
- * FXML Controller class
  *
  * @author sapho
  */
-public class AnnotationDisplayController implements Initializable {
+public class AddMapperEvent extends SciJavaEvent {
+    
+    private MetaData m;
+    private MetaData n;
 
-    /**
-     * Initializes the controller class.
-     */
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        // TODO
-    }    
+    public AddMapperEvent(MetaData m, MetaData n) {
+        this.m = m;
+        this.n = n;
+    }
+
+    public MetaData getM() {
+        return m;
+    }
+
+    public MetaData getN() {
+        return n;
+    }
+    
+    
+    
+    
+    
     
 }
