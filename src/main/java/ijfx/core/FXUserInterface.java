@@ -30,6 +30,7 @@ import ijfx.ui.dialog.FxPromptDialog;
 import ijfx.ui.display.image.DisplayWindowFX;
 import ijfx.ui.main.ImageJFX;
 import static ijfx.ui.main.ImageJFX.getStylesheet;
+import ijfx.ui.plugin.console.ConsoleUIPlugin;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
@@ -185,7 +186,7 @@ public class FXUserInterface extends Application implements UserInterface {
     }
 
     public void onAllUiPluginLoaded(Collection<UiPlugin> plugins) {
-        uiContextService.enter("imagej", "visualize");
+        uiContextService.enter("imagej", "visualize","always");
         uiContextService.update();
         activityService.open(DisplayContainer.class);
 
@@ -213,7 +214,11 @@ public class FXUserInterface extends Application implements UserInterface {
 
     @Override
     public ConsolePane<?> getConsolePane() {
-        return null;
+        
+        
+        return uiPluginService.getUiPlugin(ConsoleUIPlugin.class);
+        
+       
     }
 
     @Override
