@@ -79,17 +79,18 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
     private JavaBeanProperty<int[]> compositeChannelsProperty;
 
     private IntegerProperty refreshPerSecond = new SimpleIntegerProperty();
-    
+
     private PublishSubject<Integer> publishSubject = PublishSubject.create();
-    
+
+    private final Boolean updateLock = Boolean.TRUE;
+
     public DefaultFXImageDisplay() {
         super();
 
-        
         publishSubject
                 .buffer(1, TimeUnit.SECONDS)
-                .subscribe(list->Platform.runLater(()->refreshPerSecond.setValue(list.size())));
-        
+                .subscribe(list -> Platform.runLater(() -> refreshPerSecond.setValue(list.size())));
+
     }
 
     private DatasetView getDatasetView() {
@@ -347,9 +348,11 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
 
     @Override
     public void update() {
-        super.update();
-        publishSubject.onNext(1);
-        checkProperties();
+        synchronized (updateLock) {
+            super.update();
+            publishSubject.onNext(1);
+            checkProperties();
+        }
     }
 
     private void checkProperties() {
@@ -359,7 +362,6 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
 
     }
 
-    
     public IntegerProperty refreshPerSecond() {
         return refreshPerSecond;
     }
