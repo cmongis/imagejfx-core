@@ -22,19 +22,14 @@ package ijfx.ui.display.code;
 import ijfx.commands.script.RunScript;
 import ijfx.core.formats.Script;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.IndexRange;
-import javax.script.ScriptException;
 import org.scijava.Prioritized;
 import org.scijava.Priority;
+import org.scijava.command.CommandService;
 import org.scijava.display.AbstractDisplay;
 import org.scijava.display.Display;
 import org.scijava.event.EventService;
@@ -42,7 +37,6 @@ import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.script.ScriptLanguage;
-import org.scijava.script.ScriptModule;
 import org.scijava.script.ScriptService;
 
 /**
@@ -57,6 +51,9 @@ public class DefaultScriptDisplay extends AbstractDisplay<Script> implements Scr
     ScriptService scriptService;
     @Parameter
     LogService logService;
+    
+    @Parameter
+    CommandService commandService;
     
     private String copiedText;
     
@@ -89,6 +86,9 @@ public class DefaultScriptDisplay extends AbstractDisplay<Script> implements Scr
     @Override
     public void setLanguage(ScriptLanguage language) {
         get(0).setLanguage(language);
+        
+        
+        
     }
 
     @Override
@@ -167,25 +167,27 @@ public class DefaultScriptDisplay extends AbstractDisplay<Script> implements Scr
 
     @Override
     public void runScript() {
-        String path = get(0).getSourceFile();
-        File scriptFile = new File(path);
-        Future<ScriptModule> result = null;
-        try {
-            result = scriptService.run(scriptFile, true);
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(RunScript.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ScriptException ex) {
-            Logger.getLogger(RunScript.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try {
-            System.out.println(result.get().getInfo().toString());
-        } catch (InterruptedException ex) {
-            Logger.getLogger(DefaultScriptDisplay.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ExecutionException ex) {
-            Logger.getLogger(DefaultScriptDisplay.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
+        commandService.run(RunScript.class, true, "scriptDisplay",this);
         
     }
     
+    
+    
+    @Override
+    public void update() {
+        
+        if(getScript().getSourceFile() == null) {
+            setName("no_name."+getScript().getLanguage().getExtensions().get(0));
+        }
+        else {
+            setName(new File(getScript().getSourceFile()).getName());
+        }
+        
+        super.update();
+        
+     
+        
+    }
     
 }
