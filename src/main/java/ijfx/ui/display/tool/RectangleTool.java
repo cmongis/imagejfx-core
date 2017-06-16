@@ -19,7 +19,9 @@
  */
 package ijfx.ui.display.tool;
 
+import ijfx.ui.main.ImageJFX;
 import java.util.List;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import net.imagej.overlay.RectangleOverlay;
 import org.scijava.input.MouseCursor;
@@ -34,11 +36,16 @@ import org.scijava.util.RealCoords;
 @Plugin(type = Tool.class, iconPath = "fa:square_alt", description = "Draw a damn rectangle")
 public class RectangleTool extends AbstractPathTool<RectangleOverlay> {
 
+    
+    
+   
     @Override
     protected void onPath(List<RealCoords> coords) {
-        System.out.println(coords.size());
+        
         if (coords.size() >= 3) {
-
+            
+            
+            
             RealCoords first = coords.get(0);
 
             RealCoords last = coords.get(coords.size() - 1);
@@ -51,7 +58,7 @@ public class RectangleTool extends AbstractPathTool<RectangleOverlay> {
             overlay.setExtent(last.getIntY() - first.getIntY(), 1);
 
             Platform.runLater(getImageDisplay()::update);
-
+            
         }
 
     }

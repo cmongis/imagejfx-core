@@ -19,7 +19,9 @@
  */
 package ijfx.ui.display.tool;
 
+import ijfx.ui.main.ImageJFX;
 import io.reactivex.internal.schedulers.IoScheduler;
+import java.util.logging.Logger;
 import javafx.scene.canvas.Canvas;
 import net.imagej.display.ImageCanvas;
 import net.imagej.display.ImageDisplay;
@@ -56,8 +58,18 @@ public abstract class ReactiveTool extends AbstractRichPlugin implements Tool{
     protected ImageDisplayService imageDisplayService;
     
     
+     Logger logger = ImageJFX.getLogger();
+    
+     protected void log(Object object) {
+        logger.info(object.toString());
+    }
+    
+    
     protected void startStream() {
         if(eventStream == null) {
+            
+            log("Starting stream");
+            
             eventStream = PublishSubject.create();
             onStart();
         }
@@ -69,6 +81,7 @@ public abstract class ReactiveTool extends AbstractRichPlugin implements Tool{
     }
     
     protected void stopStream() {
+        log("Stoping stream");
         eventStream.onCompleted();
         eventStream = null;
     }
