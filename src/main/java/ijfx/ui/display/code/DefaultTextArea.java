@@ -19,7 +19,11 @@
  */
 package ijfx.ui.display.code;
 
+import java.util.Collection;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -29,6 +33,12 @@ import javafx.scene.control.IndexRange;
 import javafx.scene.layout.AnchorPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
+import org.fxmisc.richtext.model.Paragraph;
+import org.fxmisc.richtext.model.StyledText;
+import org.scijava.Context;
+import org.scijava.command.CommandInfo;
+import org.scijava.command.CommandService;
+import org.scijava.plugin.Parameter;
 import org.scijava.script.ScriptLanguage;
 
 /**
@@ -36,7 +46,8 @@ import org.scijava.script.ScriptLanguage;
  * @author florian
  */
 public class DefaultTextArea extends AnchorPane{
-    
+    @Parameter
+    CommandService commandService;
     private CodeArea codeArea = null;
     private LanguageKeywords languageKeywords;
     private ScriptHighlight scriptHighlight;
@@ -48,9 +59,10 @@ public class DefaultTextArea extends AnchorPane{
     private String THEME = "dark";
     
     private Hashtable KEYWORDS_PATTERN_TABLE = new Hashtable();
-   
+   private DefaultAutocompletion autocompletion;
     
     public DefaultTextArea() {
+        
         this.languageKeywords = new NanorcParser();
         this.scriptHighlight = new DefaultScriptHighlighting(this.KEYWORDS_PATTERN_TABLE);
         
@@ -62,6 +74,7 @@ public class DefaultTextArea extends AnchorPane{
                 .subscribe(change -> {
                      if ("".equals(codeArea.getText().trim()) == false) {
                         codeArea.setStyleSpans(0, this.scriptHighlight.computeHighlighting(codeArea.getText()));
+                        lauchAutocompletion();
                     }
                     
                 });
@@ -79,6 +92,8 @@ public class DefaultTextArea extends AnchorPane{
         this.getChildren().add(this.codeArea);
         getStylesheets().add(getClass().getResource("/ijfx/ui/display/code/TextEditorDarkTheme.css").toExternalForm());
         
+        
+        
     }
 
     public void initLanguage(ScriptLanguage language){
@@ -86,9 +101,25 @@ public class DefaultTextArea extends AnchorPane{
         this.KEYWORDS_PATTERN_TABLE = this.languageKeywords.getKeywords();
         this.scriptHighlight.setKeywords(this.KEYWORDS_PATTERN_TABLE);
         this.codeArea.redo();
+        SortedSet<String> entries = new TreeSet<>();
+        for (CommandInfo command : commandService.getCommands()){
+            entries.add(command.getClassName());
+        }
+        autocompletion = new DefaultAutocompletion(this, entries);
+    }
+    public void lauchAutocompletion(){
+        codeArea.selectWord();
+        String word = codeArea.getSelectedText();
+        codeArea.deselect();
+        autocompletion.computeAutocompletion(word);
+        
+        
     }
     public CodeArea getCodeArea() {
         return this.codeArea;
+    }
+    public void injectContext(Context context){
+        context.inject(this);
     }
     public void setText(String text){
         Platform.runLater( () ->{

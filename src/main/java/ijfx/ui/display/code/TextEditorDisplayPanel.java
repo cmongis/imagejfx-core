@@ -37,6 +37,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 import org.controlsfx.control.action.Action;
 import org.joda.time.chrono.AssembledChronology.Fields;
+import org.scijava.Context;
 import org.scijava.event.EventHandler;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -54,6 +55,8 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     Scene scene;
     @Parameter
     ScriptService scriptService;
+    @Parameter
+    Context context;
     BorderPane root;
     //BorderPane borderPane;
     ScriptDisplay display;
@@ -74,7 +77,7 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
         this.root = new BorderPane();
         this.textArea = new DefaultTextArea();
         this.root.setCenter(this.textArea);
-        
+        context.inject(this.textArea);
         textArea.setBottomAnchor(this.textArea.getCodeArea(), 15d);
         textArea.setTopAnchor(this.textArea.getCodeArea(), 0d);
         textArea.setLeftAnchor(this.textArea.getCodeArea(), 0d);
@@ -125,7 +128,6 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     }
     
     public void initCode(){
-        
         this.textArea.setText(display.get(0).getCode());
         
     }
