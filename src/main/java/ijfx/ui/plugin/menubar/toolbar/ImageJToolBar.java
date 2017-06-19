@@ -42,10 +42,11 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.MouseEvent;
 import jfxtras.scene.control.ToggleGroupValue;
 import org.scijava.event.EventHandler;
+import org.scijava.event.EventService;
 import org.scijava.module.ModuleItem;
 import org.scijava.module.ModuleService;
 import org.scijava.tool.Tool;
@@ -84,12 +85,12 @@ public class ImageJToolBar extends VBox implements UiPlugin {
     @Parameter
     FXIconService fxIconService;
 
-    //ToggleGroup toggleGroup = new ToggleGroup();
+    @Parameter
+    EventService eventService;
 
+    //ToggleGroup toggleGroup = new ToggleGroup();
     ToggleGroupValue<Tool> currentTool = new ToggleGroupValue<>();
 
-    
-    
     @Override
     public Node getUiElement() {
 
@@ -101,9 +102,6 @@ public class ImageJToolBar extends VBox implements UiPlugin {
 
         getStyleClass().addAll("toggle-group", "vertical");
 
-        
-       
-        
         List<ToggleButton> buttonList = toolService
                 .getTools()
                 .stream()
@@ -116,10 +114,9 @@ public class ImageJToolBar extends VBox implements UiPlugin {
 
         getChildren().get(0).getStyleClass().add("first");
         getChildren().get(getChildren().size() - 1).getStyleClass().add("last");
-        
-        
-         currentTool.setValue(toolService.getActiveTool());
-         
+
+        currentTool.setValue(toolService.getActiveTool());
+
         return this;
     }
 
@@ -135,12 +132,12 @@ public class ImageJToolBar extends VBox implements UiPlugin {
         button.setContextMenu(createContextMenu(tool));
 
         currentTool.add(button, tool);
-        button.setOnMouseClicked(event -> {
-            if (event.isPrimaryButtonDown()) {
-                toolService.setActiveTool(tool);
-                event.consume();
-            }
-        });
+        
+        ToolListener listener = new ToolListener(tool);
+        
+        button.addEventFilter(MouseEvent.MOUSE_PRESSED,listener );
+        button.addEventFilter(MouseEvent.MOUSE_PRESSED,listener);
+        
         //toggleGroup.getToggles().add(button);
 
         button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -150,7 +147,7 @@ public class ImageJToolBar extends VBox implements UiPlugin {
 
     @EventHandler
     public void onToolActivated(ToolActivatedEvent event) {
-
+        currentTool.setValue(event.getTool());
     }
 
     @Parameter
@@ -176,7 +173,7 @@ public class ImageJToolBar extends VBox implements UiPlugin {
 
     }
 
-    private class ToolListener implements ChangeListener<Boolean> {
+    private class ToolListener implements javafx.event.EventHandler<MouseEvent> {
 
         private final Tool tool;
 
@@ -185,16 +182,13 @@ public class ImageJToolBar extends VBox implements UiPlugin {
         }
 
         @Override
-        public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-
-            toolService.setActiveTool(tool);
-
-            if (newValue) {
-                tool.activate();
-            } else {
-                tool.deactivate();
+        public void handle(MouseEvent event) {
+            if (event.isPrimaryButtonDown()) {
+                toolService.setActiveTool(tool);
+                event.consume();
             }
         }
+
     }
 
 }
