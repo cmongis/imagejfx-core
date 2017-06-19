@@ -56,10 +56,12 @@ public abstract class EasyOverlayModifier<T extends Overlay> extends AbstractOve
             
             points = initPoints();
 
+            updateFromData();
+            
             // subscribe events for each point
             points.forEach(point -> point.positionOnDataProperty().addListener(this::onPointMoved));
 
-            updateFromData();
+           
             refresh();
             
             
@@ -95,16 +97,14 @@ public abstract class EasyOverlayModifier<T extends Overlay> extends AbstractOve
     
     public void refresh() {
         updateFromData();
-
         points.forEach(MoveablePoint::redraw);
-
     }
     
     protected void updateFromData(MoveablePoint point, RealCoords positionOnData) {
         
-        
+        point.positionOnDataProperty().setValue(positionOnData);
         point.positionOnCanvasProperty().setValue(getViewport().dataToPanelCoords(positionOnData));
-        //point.positionOnDataProperty().setValue(positionOnData);
+        
         
     }
     

@@ -63,7 +63,7 @@ public class LineModifier extends EasyOverlayModifier<LineOverlay>{
         LineOverlay lineOverlay = getOverlay();
         double xStart = lineOverlay.getLineStart(0);
         double yStart = lineOverlay.getLineStart(1);
-        double xEnd = lineOverlay.getLineEnd(1);
+        double xEnd = lineOverlay.getLineEnd(0);
         double yEnd = lineOverlay.getLineEnd(1);
         
         
