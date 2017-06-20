@@ -30,7 +30,7 @@ public interface UiActionService extends IjfxService{
     
     
     <T> List<UiAction<T>> getAssociatedAction(T o);
-    
+    <T> List<UiAction<T>>  getAssociatedAction(Class<? extends T> type);
    
     
     
