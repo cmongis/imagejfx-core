@@ -59,6 +59,7 @@ public class DefaultUiActionService extends AbstractService implements UiActionS
     public <T> List<UiAction<T>> getAssociatedAction(Class<? extends T> type) {
 
         List<UiAction> list =  getUiActionList();
+
         return list
                 .stream()
                 .filter(action -> action.canHandle(type))
