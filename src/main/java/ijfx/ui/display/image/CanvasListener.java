@@ -95,6 +95,7 @@ public class CanvasListener {
     }
 
     private Tool getActiveTool() {
+        System.out.println(toolService.getActiveTool());
         return toolService.getActiveTool();
     }
 
@@ -146,7 +147,10 @@ public class CanvasListener {
     }
 
     private void onDragEvent(MouseEvent event) {
-
+        
+        
+        System.out.println(event);
+        
         onDragEvent(event, getActiveTool());
 
         getAlwaysActiveTools()
@@ -204,6 +208,7 @@ public class CanvasListener {
     
     private void onMouseClicked(MouseEvent event) {
         
+        System.out.println("Click !");
         
         List<Overlay> overlays = overlayService
                 .getOverlays(display);
@@ -220,6 +225,8 @@ public class CanvasListener {
                 return;
             }
         }
+        overlaySelectionService.unselectedAll(display);
+        display.update();
         
     }
       
@@ -254,7 +261,9 @@ public class CanvasListener {
        
         if(drawer == null) return false;
         
-        boolean result =  drawer.isClickOnOverlay(overlay, viewport, x, y);
+        RealCoords onData = display.getCanvas().panelToDataCoords(new IntCoords(toInt(x),toInt(y)));
+        
+        boolean result =  drawer.isOnOverlay(overlay, onData.x, onData.y);
         return result;
     }
 }

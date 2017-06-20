@@ -25,8 +25,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import net.imagej.display.DefaultOverlayView;
 import net.imagej.display.OverlayService;
+import net.imagej.display.OverlayView;
 import net.imagej.overlay.Overlay;
+import org.scijava.Context;
 import org.scijava.display.event.input.MsDraggedEvent;
 import org.scijava.display.event.input.MsPressedEvent;
 import org.scijava.display.event.input.MsReleasedEvent;
@@ -49,7 +52,9 @@ public abstract class AbstractPathTool<T extends Overlay> extends ReactiveTool {
     protected OverlaySelectionService overlaySelectionService;
     
     private T overlay;
-
+    
+    @Parameter
+    Context context;
     
     private final Executor executor = Executors.newFixedThreadPool(1);
     
@@ -98,7 +103,9 @@ public abstract class AbstractPathTool<T extends Overlay> extends ReactiveTool {
         if (overlay == null) {
             log("Creating overlay");
             overlay = createOverlay();
+            
             getImageDisplay().display(overlay);
+            
             //overlayUtilsService.addOverlay(getImageDisplay(), overlay);
         }
         return overlay;

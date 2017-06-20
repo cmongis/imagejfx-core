@@ -604,6 +604,8 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
         }
         else {
             modifiersAnchorPane.getChildren().removeAll(modifiers);
+           
         }
+        modifier.refresh();
     }
 }

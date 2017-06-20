@@ -70,13 +70,15 @@ public class RectangleModifier extends AbstractOverlayModifier<RectangleOverlay>
             points.add(b);
 
             
+             updateFromData();
            
             
+             refresh();
             a.positionOnDataProperty().addListener(this::onMinEdgeChanged);
             b.positionOnDataProperty().addListener(this::onMaxEdgeChanged);
             
-            updateFromData();
-            refresh();
+           
+            
            
         }
 
@@ -127,7 +129,7 @@ public class RectangleModifier extends AbstractOverlayModifier<RectangleOverlay>
 
     @Override
     public void refresh() {
-        //updateFromData();
+        updateFromData();
         points.forEach(MoveablePoint::redraw);
     }
 

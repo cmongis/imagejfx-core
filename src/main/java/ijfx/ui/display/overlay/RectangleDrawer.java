@@ -82,12 +82,12 @@ public class RectangleDrawer implements OverlayDrawer<RectangleOverlay> {
 
     @Override
     public boolean isOnOverlay(RectangleOverlay overlay, double x, double y) {
-          double ox = overlay.getOrigin(0);
+        double ox = overlay.getOrigin(0);
         double oy = overlay.getOrigin(1);
-        double extentX = overlay.getExtent(0);
-        double extentY = overlay.getExtent(1);
-        
-        return x > ox && y > oy && ox < ox + extentX && oy < oy + extentY;
+        double maxX = ox + overlay.getExtent(0);
+        double maxY = oy + overlay.getExtent(1);
+       
+        return x > ox && y > oy && x < maxX && y < maxY;
     }
 
 }
