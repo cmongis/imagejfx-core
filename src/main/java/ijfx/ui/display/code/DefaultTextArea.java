@@ -29,6 +29,8 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.geometry.Side;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.IndexRange;
 import javafx.scene.layout.AnchorPane;
 import org.fxmisc.richtext.CodeArea;
@@ -97,7 +99,7 @@ public class DefaultTextArea extends AnchorPane{
     }
     
     public void setAutocompletion(List<CommandInfo> entriesList){
-        DefaultAutocompletionListProvider listProvider = new DefaultAutocompletionListProvider(entriesList);
+        AutocompletionList listProvider = new DefaultAutocompletionListProvider(entriesList);
         SortedSet<String> entries = listProvider.getEntries();
         this.autocompletion.setEntries(entries);
     }
@@ -113,7 +115,13 @@ public class DefaultTextArea extends AnchorPane{
         codeArea.selectWord();
         String word = codeArea.getSelectedText();
         codeArea.deselect();
-        this.autocompletion.computeAutocompletion(word);
+        ContextMenu contextMenu = this.autocompletion.computeAutocompletion(word);
+        if (contextMenu != null) {
+            contextMenu.setMaxHeight(5);
+            contextMenu.setPrefHeight(5);
+            contextMenu.setHeight(10);
+            contextMenu.show(this, Side.BOTTOM, 0, 0);
+        }
         
     }
     public CodeArea getCodeArea() {

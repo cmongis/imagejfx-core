@@ -21,6 +21,7 @@ package ijfx.ui.display.code;
 
 import java.util.SortedSet;
 import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
 import org.fxmisc.richtext.CodeArea;
 
 /**
@@ -28,7 +29,7 @@ import org.fxmisc.richtext.CodeArea;
  * @author florian
  */
 public interface Autocompletion {
-    void computeAutocompletion(String word);
+    ContextMenu computeAutocompletion(String word);
     void setEntries(SortedSet<String> entries);
     void setCodeArea(Node codeArea);
     Node getCodeArea();

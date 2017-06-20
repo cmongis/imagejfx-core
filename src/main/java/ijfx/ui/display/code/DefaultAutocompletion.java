@@ -65,15 +65,16 @@ public class DefaultAutocompletion implements Autocompletion{
   
   
    /**
-    * Compute the autocompletion on the given word, the context menu entriesPopup is showned from  here
+    * Compute the autocompletion on the given word, the context menu entriesPopup is shown from  here
     * @param word a string representing the word on wich the autocompletion will be computed
     */
   @Override
-   public void computeAutocompletion(String word){
+   public ContextMenu computeAutocompletion(String word){
       
     if (word.length() == 0)
     {
-      this.entriesPopup.hide();
+      //this.entriesPopup.hide();
+        return null;
     } else
     {
       LinkedList<String> searchResult = new LinkedList<>();
@@ -86,14 +87,15 @@ public class DefaultAutocompletion implements Autocompletion{
         populatePopup(searchResult);
         if (!this.entriesPopup.isShowing())
         {
-          this.entriesPopup.show(this.codeArea, Side.BOTTOM, 0, 0);
+          //this.entriesPopup.show(this.codeArea, Side.BOTTOM, 0, 0);
+            return this.entriesPopup;
         }
       } else
       {
-        this.entriesPopup.hide();
+        return null;
       }
     }
-      
+     return null;
   }
   /**
    * Get the existing set of autocomplete entries.
@@ -108,6 +110,7 @@ public class DefaultAutocompletion implements Autocompletion{
     private void populatePopup(List<String> searchResult) {
         List<CustomMenuItem> menuItems = new LinkedList<>();
         // If you'd like more entries, modify this line.
+        // I would like to put it at max value, but i dont't know how to resize the contextMenu and make it scrollable
         int maxEntries = 10;
         int count = Math.min(searchResult.size(), maxEntries);
         for (int i = 0; i < count; i++)

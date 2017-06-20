@@ -103,9 +103,7 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
         
     }
     public MenuButton createLanguageButton(String name){
-        /*
-        I don't find an enumerator of the suported languages so it don't work
-        */
+        
         MenuButton mb = new MenuButton(name);
         Field[] languages = ScriptLanguage.class.getDeclaredFields();
         
