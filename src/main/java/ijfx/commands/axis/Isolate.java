@@ -17,41 +17,39 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.ui.display.image.actions;
+package ijfx.commands.axis;
 
-import ijfx.commands.axis.Isolate;
-import ijfx.core.uiplugin.AbstractUiAction;
-import ijfx.core.uiplugin.UiAction;
-import ijfx.ui.display.image.AxisSlider;
-import org.scijava.command.CommandService;
+import net.imagej.axis.AxisType;
+import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.ui.UIService;
 
 /**
  *
  * @author cyril
  */
+@Plugin(type = Command.class)
+public class Isolate extends AbstractExtractPlugin{
 
-@Plugin(type = UiAction.class,label = "Isolate this plane",iconPath="fa:")
-public class IsolateChannelAction extends AbstractUiAction<AxisSlider> {
-
-    @Parameter
-    UIService uiService;
-
-    @Parameter
-    CommandService commandService;
+    @Parameter(label = "Axe")
+    AxisType axisType;
     
-    public IsolateChannelAction() {
-        super(AxisSlider.class);
-    }
+    @Parameter(label = "Position")
+    long position;
     
     @Override
-    public void run(AxisSlider t) {
-         commandService.run(Isolate.class, true, "axisType", t.getAxisType(), "position", t.getPosition());
+    AxisType getAxis() {
+        return axisType;
     }
 
+    @Override
+    public long getPosition() {
+       return position;
+    }
+
+    @Override
+    public void setPosition(long position) {
+        this.position = position;
+    }
     
-    
-   
 }
