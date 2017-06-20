@@ -50,6 +50,8 @@ public class DefaultAnnotationService extends AbstractService implements Annotat
     @Parameter
     EventService eventService;
     
+    Mapper mapper  = new DefaultMapper();
+    
 
     @Override
     public void addTag(Taggable taggable, Tag tag) {
@@ -109,7 +111,7 @@ public class DefaultAnnotationService extends AbstractService implements Annotat
     
     @Override
     public void addMapper(MetaData m){
-        Mapper mapper  = new DefaultMapper();
+        
         eventService.publish(new AddMapperEvent(m, mapper.map(m)));
     }
     

@@ -29,6 +29,10 @@ import java.util.HashMap;
 public interface Mapper {
     
     MetaData map (MetaData m);
+    
+    void setOldKey(String key);
+    
+    void setNewKey (String newKey);
         
     
 }

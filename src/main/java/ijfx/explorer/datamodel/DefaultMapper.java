@@ -32,17 +32,17 @@ public final class DefaultMapper implements Mapper {
     //final MetaData m;
     public HashMap <Object, Object> mapValue = new HashMap();
     public String newKey;
-    public String filterKey;
+    public String oldKey;
     
     public DefaultMapper (String key1, String key2){
         setNewKey(key1);
-        setFilterKey(key2);
+        setOldKey(key2);
         
     }
     
     public DefaultMapper (){
         setNewKey(null);
-        setFilterKey(null);
+        setOldKey(null);
         
     }
 
@@ -61,6 +61,16 @@ public final class DefaultMapper implements Mapper {
         
     }
     
+    @Override
+    public void setOldKey(String key){
+        this.oldKey = key;
+    }
+    
+    @Override
+    public void setNewKey (String s){
+        this.newKey = s;
+    }
+    
     
 
     public HashMap<Object, Object> getMapObject() {
@@ -72,17 +82,11 @@ public final class DefaultMapper implements Mapper {
         return newKey;
     }
     
-    public String getFilterKey(){
-        return filterKey;
+    public String getOldKey(){
+        return oldKey;
     }
     
-    public void setFilterKey(String key){
-        this.filterKey = key;
-    }
     
-    public void setNewKey (String s){
-        this.newKey = s;
-    }
     
     /**
      * Create the mapper associated Value:value for
@@ -104,7 +108,7 @@ public final class DefaultMapper implements Mapper {
      * @return 
      */
     public Object lookInsideMap (String key, Object base){
-        if (key == filterKey) {
+        if (key == oldKey) {
             
              if (mapValue.containsKey(base)){
             return mapValue.get(base);
