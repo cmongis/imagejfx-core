@@ -46,11 +46,11 @@ import org.scijava.script.ScriptLanguage;
  * @author florian
  */
 public class DefaultTextArea extends AnchorPane{
-    @Parameter
-    CommandService commandService;
+    
     private CodeArea codeArea = null;
     private LanguageKeywords languageKeywords;
     private ScriptHighlight scriptHighlight;
+    
     
     private final StringProperty selectedTextProperty;
     private final StringProperty textProperty;
@@ -91,28 +91,29 @@ public class DefaultTextArea extends AnchorPane{
         
         this.getChildren().add(this.codeArea);
         getStylesheets().add(getClass().getResource("/ijfx/ui/display/code/TextEditorDarkTheme.css").toExternalForm());
-        
+        this.autocompletion = new DefaultAutocompletion(this);
         
         
     }
-
+    
+    public void setAutocompletion(List<CommandInfo> entriesList){
+        DefaultAutocompletionListProvider listProvider = new DefaultAutocompletionListProvider(entriesList);
+        SortedSet<String> entries = listProvider.getEntries();
+        this.autocompletion.setEntries(entries);
+    }
+    
     public void initLanguage(ScriptLanguage language){
         this.languageKeywords.setLanguage(language);
         this.KEYWORDS_PATTERN_TABLE = this.languageKeywords.getKeywords();
         this.scriptHighlight.setKeywords(this.KEYWORDS_PATTERN_TABLE);
         this.codeArea.redo();
-        SortedSet<String> entries = new TreeSet<>();
-        for (CommandInfo command : commandService.getCommands()){
-            entries.add(command.getClassName());
-        }
-        autocompletion = new DefaultAutocompletion(this, entries);
+        
     }
     public void lauchAutocompletion(){
         codeArea.selectWord();
         String word = codeArea.getSelectedText();
         codeArea.deselect();
-        autocompletion.computeAutocompletion(word);
-        
+        this.autocompletion.computeAutocompletion(word);
         
     }
     public CodeArea getCodeArea() {

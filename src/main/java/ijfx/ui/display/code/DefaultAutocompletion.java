@@ -24,9 +24,11 @@ import javafx.geometry.Side;
 import javafx.scene.control.ContextMenu;
 import org.fxmisc.richtext.CodeArea;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
 
@@ -34,13 +36,13 @@ import javafx.scene.control.Label;
  *
  * @author florian
  */
-public class DefaultAutocompletion {
+public class DefaultAutocompletion implements Autocompletion{
     /** The existing autocomplete entries. */
-  private final SortedSet<String> entries;
+  private SortedSet<String> entries;
   /** The popup used to select an entry. */
   private ContextMenu entriesPopup;
   //private StringProperty textProperty;
-  private CodeArea codeArea;
+  private Node codeArea;
   private DefaultTextArea textArea;
 
   /** Construct a new AutoCompleteTextField. */
@@ -52,8 +54,23 @@ public class DefaultAutocompletion {
     this.codeArea = textArea.getCodeArea();
     this.entriesPopup = new ContextMenu();
   }
+
+    public DefaultAutocompletion(DefaultTextArea textArea) {
+        this.textArea = textArea;
+        this.codeArea = textArea.getCodeArea();
+        this.entriesPopup = new ContextMenu();
+        this.entries = new TreeSet<>();
+    }
+    
   
-  public void computeAutocompletion(String word){
+  
+   /**
+    * Compute the autocompletion on the given word, the context menu entriesPopup is showned from  here
+    * @param word a string representing the word on wich the autocompletion will be computed
+    */
+  @Override
+   public void computeAutocompletion(String word){
+      
     if (word.length() == 0)
     {
       this.entriesPopup.hide();
@@ -64,7 +81,6 @@ public class DefaultAutocompletion {
               .stream()
               .filter(e -> e.toLowerCase().contains(word.toLowerCase())).collect(Collectors.toList()); 
       searchResult.addAll(filteredEntries);
-      //searchResult.addAll(entries.subSet(textProperty.get(), textProperty.get() + Character.MAX_VALUE));
       if (entries.size() > 0)
       {
         populatePopup(searchResult);
@@ -89,28 +105,52 @@ public class DefaultAutocompletion {
    * Populate the entry set with the given search results.  Display is limited to 10 entries, for performance.
    * @param searchResult The set of matching strings.
    */
-  private void populatePopup(List<String> searchResult) {
-    List<CustomMenuItem> menuItems = new LinkedList<>();
-    // If you'd like more entries, modify this line.
-    int maxEntries = 10;
-    int count = Math.min(searchResult.size(), maxEntries);
-    for (int i = 0; i < count; i++)
-    {
-      final String result = searchResult.get(i);
-      Label entryLabel = new Label(result);
-      CustomMenuItem item = new CustomMenuItem(entryLabel, true);
-      item.setOnAction(new EventHandler<ActionEvent>()
-      {
-        @Override
-        public void handle(ActionEvent actionEvent) {
-          textArea.setText(result);
-          entriesPopup.hide();
+    private void populatePopup(List<String> searchResult) {
+        List<CustomMenuItem> menuItems = new LinkedList<>();
+        // If you'd like more entries, modify this line.
+        int maxEntries = 10;
+        int count = Math.min(searchResult.size(), maxEntries);
+        for (int i = 0; i < count; i++)
+        {
+          final String result = searchResult.get(i);
+          Label entryLabel = new Label(result);
+          CustomMenuItem item = new CustomMenuItem(entryLabel, true);
+          item.setOnAction(new EventHandler<ActionEvent>()
+          {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+              textArea.setText(result);
+              entriesPopup.hide();
+            }
+          });
+          menuItems.add(item);
         }
-      });
-      menuItems.add(item);
-    }
-    entriesPopup.getItems().clear();
-    entriesPopup.getItems().addAll(menuItems);
+        entriesPopup.getItems().clear();
+        entriesPopup.getItems().addAll(menuItems);
 
-}
+    }
+
+  @Override
+    public void setEntries(SortedSet<String> entries) {
+        this.entries = entries;
+    }
+
+  @Override
+    public void setCodeArea(Node codeArea) {
+        this.codeArea = codeArea;
+    }
+
+    public void setTextArea(DefaultTextArea textArea) {
+        this.textArea = textArea;
+    }
+
+  @Override
+    public Node getCodeArea() {
+        return codeArea;
+    }
+
+    public DefaultTextArea getTextArea() {
+        return textArea;
+    }
+    
 }
