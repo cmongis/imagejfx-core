@@ -51,6 +51,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.InputEvent;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -214,16 +216,24 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
         }
 
         installCanvas();
-
+        
+        anchorPane.setFocusTraversable(true);
+        topBorderPane.setFocusTraversable(true);
+        
         toolService.setActiveTool(toolService.getTool(HandTool.class));
-
+        anchorPane.addEventHandler(KeyEvent.ANY, System.out::println);
+        
+        /*
+       
+        */
+        
         showBottomPanel
                 .bind(
                         anyAxisSliderInUse
                                 .or(bottomPane.hoverProperty()));
 
         pixelValueLabel.setText("For now nothing to show but it's coming");
-
+        
         new TransitionBinding<Number>()
                 .bindOnFalse(sliderVBox.heightProperty())
                 .setOnTrue(0.0)
@@ -321,6 +331,12 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
             modifiersAnchorPane.maxHeightProperty().bind(canvas.heightProperty());
             stackPane.getChildren().addAll(canvas,modifiersAnchorPane);
             
+            /*
+             * Makes sure the key events are transmitted to the cavnas
+             */
+            stackPane.setFocusTraversable(true);
+            modifiersAnchorPane.setFocusTraversable(true);
+            
         }
     }
 
@@ -330,8 +346,7 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
         }
 
         // creating a new one
-        adjuster = new ImageDisplayAdjuster(context)
-                .addButton("Auto contrast", FontAwesomeIcon.MAGIC, "Calculate the min and max of each channel and adjust their display range accordingly", AutoContrast.class);
+        adjuster = new ImageDisplayAdjuster(context);
 
         // adding it to the AnchorPane
         anchorPane.getChildren().add(1, adjuster);
