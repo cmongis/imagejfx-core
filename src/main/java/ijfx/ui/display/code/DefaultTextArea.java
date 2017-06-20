@@ -111,17 +111,28 @@ public class DefaultTextArea extends AnchorPane{
         this.codeArea.redo();
         
     }
+    /**
+     * The autocompletion is performed on the closest word from the carret
+     * The autocompletion is computed only if the word in question is not affected by a style this avoid try to compute the autocompletion in comments and strins
+     */
     public void lauchAutocompletion(){
         codeArea.selectWord();
         String word = codeArea.getSelectedText();
+        IndexRange selection = codeArea.getSelection();
         codeArea.deselect();
-        ContextMenu contextMenu = this.autocompletion.computeAutocompletion(word);
-        if (contextMenu != null) {
-            contextMenu.setMaxHeight(5);
-            contextMenu.setPrefHeight(5);
-            contextMenu.setHeight(10);
-            contextMenu.show(this, Side.BOTTOM, 0, 0);
+        
+        Paragraph paragraph = codeArea.getParagraph(codeArea.getCurrentParagraph());
+        Collection style = (Collection) paragraph.getStyleAtPosition(selection.getStart());
+        if (style.toArray()[0].equals("null")){
+            ContextMenu contextMenu = this.autocompletion.computeAutocompletion(word);
+            if (contextMenu != null) {
+                contextMenu.setMaxHeight(5);
+                contextMenu.setPrefHeight(5);
+                contextMenu.setHeight(10);
+                contextMenu.show(this, Side.BOTTOM, 0, 0);
+            }
         }
+        
         
     }
     public CodeArea getCodeArea() {

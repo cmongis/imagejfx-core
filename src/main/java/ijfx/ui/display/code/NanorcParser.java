@@ -66,7 +66,9 @@ public class NanorcParser implements LanguageKeywords{
     public void run() {
         try {
             this.nanorcFile = getClass().getResource(findFileLanguage(language)).getFile();
+            System.out.println(this.language.getLanguageName());
             nanoRcParseV2(this.nanorcFile);
+            computeComment();
         } catch (NullPointerException e) {
             System.out.println("No nanorc file for this language");
             this.keywordsTable = new Hashtable();
@@ -77,6 +79,15 @@ public class NanorcParser implements LanguageKeywords{
     
     public static String findFileLanguage(ScriptLanguage language) {
        return String.format("/ijfx/ui/display/code/%s.nanorc",language.getLanguageName().toLowerCase().replace(" ", ""));
+    }
+    
+    public void computeComment(){
+        if (this.language.getLanguageName().equals("Python")){
+            this.keywordsTable.put("COMMENT", "#[^\n]*" + "|" + "\"\"\"(.|\\R)*?\"\"\""+ "|" + "\'\'\'(.|\\R)*?\'\'\'");
+        }
+        else{
+            this.keywordsTable.put("COMMENT", "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/");
+        }
     }
     
     public void nanoRcParseV2(String path){
