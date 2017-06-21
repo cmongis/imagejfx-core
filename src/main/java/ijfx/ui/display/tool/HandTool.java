@@ -22,7 +22,6 @@ package ijfx.ui.display.tool;
 import ijfx.ui.display.image.ImageCanvasUtils;
 import java.util.List;
 import javafx.application.Platform;
-import net.imagej.display.ImageCanvas;
 import net.imglib2.Point;
 import net.imglib2.RealLocalizable;
 import org.scijava.display.event.input.MsDraggedEvent;
@@ -32,13 +31,12 @@ import org.scijava.input.MouseCursor;
 import org.scijava.plugin.Plugin;
 import org.scijava.tool.Tool;
 import org.scijava.util.RealCoords;
-import rx.functions.Action1;
 
 /**
  *
  * @author cyril
  */
-@Plugin(type = Tool.class, description = "Move the image around", iconPath = "fa:hand_paper_o")
+@Plugin(type = Tool.class, description = "Move the image around", iconPath = "fa:hand_paper_alt")
 public class HandTool extends ReactiveTool {
 
     @Override
