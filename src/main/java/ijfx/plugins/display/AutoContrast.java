@@ -47,8 +47,7 @@ public class AutoContrast extends ContextCommand {
     @Parameter(required = false)
     ImageDisplay imageDisplay;
 
-    @Parameter
-    ImageStatisticsService statsService;
+   
 
     @Parameter(label = "Channel dependant", description = "If yes, the algorithm use contrast settings different for each channel.")
     boolean channelDependant;
@@ -61,87 +60,48 @@ public class AutoContrast extends ContextCommand {
 
     @Parameter
     DisplayRangeService displayRangeService;
-  
-    
+
     @Override
     public void run() {
 
-        
-        
-        if(imageDisplay == null && imageDisplayService.getActiveDataset() == dataset) {
+        if (imageDisplay == null && imageDisplayService.getActiveDataset() == dataset) {
             imageDisplay = imageDisplayService.getActiveImageDisplay();
         }
-        
-        if(dataset != null && dataset.isRGBMerged()) {
+
+        if (dataset != null && dataset.isRGBMerged()) {
             return;
         }
-        boolean multiChannel = dataset.dimensionIndex(Axes.CHANNEL) > -1;
 
-        if (multiChannel && channelDependant == true) {
-            for (int i = 0; i <= dataset.max(dataset.dimensionIndex(Axes.CHANNEL)); i++) {
-                
-                autoChannelMinMax(imageDisplay, dataset, i);
-                //SummaryStatistics stats = statsService.getChannelStatistics(dataset, i);
-                //setMinMax(imageDisplay, dataset, stats, i);
-            }
-        } else {
-           // SummaryStatistics stats = statsService.getSummaryStatistics(dataset);
-            //setMinMax(imageDisplay, dataset, stats, 0);
-            autoChannelMinMax(imageDisplay, dataset, 0);
-        }
-       
-        
-        if(dataset != null) {
-            dataset.update();
-        }
-        
-        if(imageDisplay != null) {
-             DatasetView view = (DatasetView) imageDisplay.getActiveView();
-              view.getProjector().map();
-              view.update();
-        }
-    }
-
-    
-    private void autoChannelMinMax(ImageDisplay imageDisplay, Dataset dataset, int channel) {
-        
-        double[] minMax = statsService.getChannelMinMax(dataset, channel);
-        
-        if(dataset!= null) {
-            dataset.setChannelMinimum(channel, minMax[0]);
-            dataset.setChannelMaximum(channel, minMax[1]);
-        }
-        
-        if(imageDisplay != null) {
-            DatasetView view = imageDisplayService.getActiveDatasetView(imageDisplay);
-            view.setChannelRange(channel,minMax[0],minMax[1]);
-        }
-        
-        displayRangeService.saveDatasetMinimum(dataset, channel, minMax[0]);
-        displayRangeService.saveDatasetMaximum(dataset, channel, minMax[1]);
-        
-    }
-    
-    
-    private static void setMinMax(ImageDisplay imageDisplay, Dataset dataset, SummaryStatistics stats, int channel) {
-       
-        double[] minMax;
-        
+        displayRangeService.autoContrast(imageDisplay, dataset, true);
         
         if (dataset != null) {
-            dataset.setChannelMinimum(channel, stats.getMin());
-             dataset.setChannelMaximum(channel, stats.getMax());
-             dataset.update();
+            dataset.update();
         }
-       
-           
- if (imageDisplay != null) {
+
+        if (imageDisplay != null) {
+            DatasetView view = (DatasetView) imageDisplay.getActiveView();
+            view.getProjector().map();
+            view.update();
+        }
+    }
+
+    private static void setMinMax(ImageDisplay imageDisplay, Dataset dataset, SummaryStatistics stats, int channel) {
+
+        double[] minMax;
+
+        if (dataset != null) {
+            dataset.setChannelMinimum(channel, stats.getMin());
+            dataset.setChannelMaximum(channel, stats.getMax());
+            dataset.update();
+        }
+
+        if (imageDisplay != null) {
             DatasetView view = (DatasetView) imageDisplay.getActiveView();
             view.setChannelRange(channel, stats.getMin(), stats.getMax());
-            
+
             view.update();
             view.getProjector().map();
-        }  
+        }
     }
 
 }
