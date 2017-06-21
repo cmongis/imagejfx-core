@@ -4,7 +4,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
 
-<fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="380.0" prefWidth="360.0" type="Pane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="380.0" prefWidth="360.0" type="Pane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ijfx.ui.display.annotation.DefaultAnnotationDisplay">
    <children>
       <TextField fx:id="key" layoutX="14.0" layoutY="14.0" prefHeight="26.0" prefWidth="116.0" promptText="key" />
       <TextField fx:id="new_key" layoutX="146.0" layoutY="14.0" prefHeight="26.0" prefWidth="116.0" promptText="new key" />
