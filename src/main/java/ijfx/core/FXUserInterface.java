@@ -21,9 +21,11 @@ package ijfx.core;
 
 import ijfx.core.activity.ActivityChangedEvent;
 import ijfx.core.activity.ActivityService;
+import ijfx.core.batch.CommandRunner;
 import ijfx.core.mainwindow.MainWindow;
 import ijfx.core.uicontext.UiContextService;
 import ijfx.core.uiplugin.UiPluginService;
+import ijfx.plugins.display.AutoContrast;
 import ijfx.ui.UiPlugin;
 import ijfx.ui.activity.DisplayContainer;
 import ijfx.ui.dialog.FxPromptDialog;
@@ -136,7 +138,6 @@ public class FXUserInterface extends Application implements UserInterface {
     public void start(Stage primaryStage) throws Exception {
 
         SCENE = new Scene(new BorderPane());
-        //scene.setRoot(getMainWindow().getUiComponent());
         SCENE.getStylesheets().add(getStylesheet());
 
         SCENE.setRoot(getMainWindow().getUiComponent());
@@ -186,7 +187,7 @@ public class FXUserInterface extends Application implements UserInterface {
     }
 
     public void onAllUiPluginLoaded(Collection<UiPlugin> plugins) {
-        uiContextService.enter("imagej", "visualize","always");
+        uiContextService.enter("imagej", "visualize", "always");
         uiContextService.update();
         activityService.open(DisplayContainer.class);
 
@@ -214,11 +215,9 @@ public class FXUserInterface extends Application implements UserInterface {
 
     @Override
     public ConsolePane<?> getConsolePane() {
-        
-        
+
         return uiPluginService.getUiPlugin(ConsoleUIPlugin.class);
-        
-       
+
     }
 
     @Override
