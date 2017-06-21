@@ -33,7 +33,7 @@ import org.scijava.ui.UIService;
  * @author cyril
  */
 
-@Plugin(type = UiAction.class,label = "Isolate this plane",iconPath="fa:")
+@Plugin(type = UiAction.class,label = "Isolate this image",iconPath="fa:picture_alt")
 public class IsolateChannelAction extends AbstractUiAction<AxisSlider> {
 
     @Parameter
