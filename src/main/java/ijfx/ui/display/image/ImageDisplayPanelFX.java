@@ -19,13 +19,12 @@
  */
 package ijfx.ui.display.image;
 
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import ijfx.core.image.DisplayRangeService;
 import ijfx.core.overlay.OverlayDrawingService;
 import ijfx.core.overlay.OverlayUtilsService;
 import ijfx.core.timer.Timer;
 import ijfx.core.timer.TimerService;
 import ijfx.core.uicontext.UiContextService;
-import ijfx.plugins.display.AutoContrast;
 import ijfx.ui.display.overlay.MoveablePoint;
 import ijfx.ui.display.overlay.OverlayModifier;
 import ijfx.ui.display.tool.HandTool;
@@ -51,8 +50,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
-import javafx.scene.input.InputEvent;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -150,6 +149,8 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
     @Parameter
     UiContextService uiContextService;
 
+    @Parameter
+    DisplayRangeService displayRangeService;
     
     
     /*
@@ -217,12 +218,12 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
 
         installCanvas();
         
-        anchorPane.setFocusTraversable(true);
-        topBorderPane.setFocusTraversable(true);
+        //anchorPane.setFocusTraversable(true);
+        //topBorderPane.setFocusTraversable(true);
         
         toolService.setActiveTool(toolService.getTool(HandTool.class));
         anchorPane.addEventHandler(KeyEvent.ANY, System.out::println);
-        
+        setFocusTraversable(false);
         /*
        
         */
@@ -254,7 +255,7 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
         AnchorPane.setRightAnchor(fpsLabel,10d);
         
         modifiersAnchorPane.getChildren().add(fpsLabel);
-        
+        modifiersAnchorPane.addEventHandler(MouseEvent.ANY, event->canvas.requestFocus());
         /*
             Creating fixed UI elements and properties
          */
@@ -334,8 +335,8 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
             /*
              * Makes sure the key events are transmitted to the cavnas
              */
-            stackPane.setFocusTraversable(true);
-            modifiersAnchorPane.setFocusTraversable(true);
+            //stackPane.setFocusTraversable(true);
+            //modifiersAnchorPane.setFocusTraversable(true);
             
         }
     }
@@ -365,6 +366,7 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
 
         // tying the new adjuster to the display
         adjuster.imageDisplayProperty().setValue(display);
+        adjuster.refresh();
     }
 
     private void resetAxisSliders() {
@@ -432,7 +434,15 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
        fpsProperty.bind(t.refreshPerSecond());
         
         redoLayout();
+        
+        displayRangeService.autoContrast(display);
+        for(int i =2 ; i!= display.numDimensions();i++) {
+            display.setPosition(0,i);
+        }
+        display.checkProperties();
+        imageDisplayService.getActiveDatasetView(display).getProjector().map();
         redraw();
+        
     }
 
     private void onPanelSizeChanged(Observable obs, Number oldValue, Number newValue) {
@@ -566,7 +576,8 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
                 button.imageDisplayProperty().setValue(display);
                 button.channelProperty().set(channel);
                 buttonHBox.getChildren().add(button);
-
+                
+               
             }
 
         }

@@ -24,8 +24,13 @@ import ijfx.core.overlay.OverlayUtilsService;
 import ijfx.ui.display.overlay.OverlayDisplayService;
 import ijfx.ui.display.overlay.OverlayDrawer;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
+import javafx.application.Platform;
+import javafx.event.EventType;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.input.InputEvent;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import net.imagej.display.ImageCanvas;
@@ -34,16 +39,20 @@ import net.imagej.display.OverlayService;
 import net.imagej.display.OverlayView;
 import net.imagej.display.ZoomService;
 import net.imagej.overlay.Overlay;
+import org.scijava.display.event.input.KyPressedEvent;
+import org.scijava.display.event.input.KyReleasedEvent;
 import org.scijava.display.event.input.MsButtonEvent;
 import org.scijava.display.event.input.MsDraggedEvent;
 import org.scijava.display.event.input.MsMovedEvent;
 import org.scijava.display.event.input.MsPressedEvent;
 import org.scijava.display.event.input.MsReleasedEvent;
 import org.scijava.input.InputModifiers;
+import org.scijava.input.KeyCode;
 import org.scijava.plugin.Parameter;
 import org.scijava.tool.Tool;
 import org.scijava.tool.ToolService;
 import org.scijava.util.IntCoords;
+import org.scijava.util.PlatformUtils;
 import org.scijava.util.RealCoords;
 
 /**
@@ -67,35 +76,38 @@ public class CanvasListener {
 
     @Parameter
     OverlayDisplayService overlayDisplayService;
-    
+
     @Parameter
     OverlayService overlayService;
-    
+
     @Parameter
     OverlayUtilsService overlayUtilsService;
-    
+
     @Parameter
     OverlaySelectionService overlaySelectionService;
-    
+
     final ImageCanvas viewport;
-    
+
     public CanvasListener(ImageDisplay display, Canvas canvas) {
         this.canvas = canvas;
         this.display = display;
-        
+
         viewport = display.getCanvas();
         
         display.getContext().inject(this);
-        canvas.addEventHandler(MouseEvent.MOUSE_CLICKED,this::onMouseClicked);
+        canvas.setFocusTraversable(true);
+        canvas.addEventFilter(MouseEvent.ANY, (e) -> canvas.requestFocus());
+        canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, this::onMouseClicked);
         canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, this::onDragEvent);
         canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, this::onMousePressed);
         canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, this::onMouseReleased);
         canvas.addEventHandler(MouseEvent.MOUSE_MOVED, this::onMouseMoved);
+        canvas.addEventHandler(KeyEvent.KEY_PRESSED, this::onKeyPressed);
+        canvas.addEventHandler(KeyEvent.KEY_RELEASED,this::onKeyReleased);
         canvas.setOnScroll(this::onScrollEvent);
+    
     }
-
     private Tool getActiveTool() {
-        System.out.println(toolService.getActiveTool());
         return toolService.getActiveTool();
     }
 
@@ -128,17 +140,47 @@ public class CanvasListener {
 
         zoomService.zoomSet(display, percent, centerReal.x, centerReal.y);
 
-       
         display.update();
     }
 
+    private void onKeyPressed(KeyEvent event) {
+        fireEvent(this::onKeyPressed, event);
+    }
+
+    private void onKeyPressed(KeyEvent event, Tool tool) {
+        KeyCode keyCode = fromEvent(event);
+        tool.onKeyDown(new KyPressedEvent(display, extractInputModifiers(event), 0, 0, event.getCharacter().charAt(0), keyCode));
+    }
+    
+    
+    private void onKeyReleased(KeyEvent event) {
+        fireEvent(this::onKeyReleased,event);
+    }
+    
+    private void onKeyReleased(KeyEvent event, Tool tool) {
+        KeyCode keyCode = fromEvent(event);
+        tool.onKeyUp(new KyReleasedEvent(display, extractInputModifiers(event), 0, 0, event.getCharacter().charAt(0), keyCode));
+    }
+    
+    private KeyCode fromEvent(KeyEvent event) {
+        return KeyCode.get(event.getCode().name());
+    }
+
+    private <T extends InputEvent> void fireEvent(BiConsumer<T, Tool> consumer, T event) {
+
+        consumer.accept(event, getActiveTool());
+        getAlwaysActiveTools()
+                .stream()
+                .peek(tool->System.out.println(tool.getClass()))
+                .forEach(tool -> consumer.accept(event, tool));
+
+    }
+
     private void onMousePressed(MouseEvent event) {
+        canvas.requestFocus();
+        System.out.println("Click !");
+        fireEvent(this::onMousePressed, event);
 
-        onMousePressed(event, getActiveTool());
-
-          getAlwaysActiveTools()
-                .forEach(tool->onMousePressed(event,tool));
-        
     }
 
     private void onMousePressed(MouseEvent event, Tool tool) {
@@ -147,15 +189,14 @@ public class CanvasListener {
     }
 
     private void onDragEvent(MouseEvent event) {
-        
-        
+
         System.out.println(event);
-        
+
         onDragEvent(event, getActiveTool());
 
         getAlwaysActiveTools()
-                .forEach(tool->onDragEvent(event,tool));
-        
+                .forEach(tool -> onDragEvent(event, tool));
+
         event.consume();
     }
 
@@ -175,68 +216,92 @@ public class CanvasListener {
 
     private void onMouseReleased(MouseEvent event) {
         onMouseReleased(event, getActiveTool());
-        
-          getAlwaysActiveTools()
-                .forEach(tool->onMouseReleased(event,tool));
-        
+
+        getAlwaysActiveTools()
+                .forEach(tool -> onMouseReleased(event, tool));
+
     }
 
     private void onMouseReleased(MouseEvent event, Tool tool) {
         tool.onMouseUp(new MsReleasedEvent(
                 display,
-                 extractInputModifiers(event),
-                 toInt(event.getX()),
-                 toInt(event.getY()),
-                 MsButtonEvent.LEFT_BUTTON,
-                 0,
-                 true));
+                extractInputModifiers(event),
+                toInt(event.getX()),
+                toInt(event.getY()),
+                MsButtonEvent.LEFT_BUTTON,
+                0,
+                true));
     }
 
-   
     private void onMouseMoved(MouseEvent event) {
-        onMouseMoved(event,getActiveTool());
-        
-          getAlwaysActiveTools()
-                .forEach(tool->onMouseMoved(event,tool));
-        
-               
+        onMouseMoved(event, getActiveTool());
+
+        getAlwaysActiveTools()
+                .forEach(tool -> onMouseMoved(event, tool));
+
     }
+
     private void onMouseMoved(MouseEvent event, Tool tool) {
         tool.onMouseMove(new MsMovedEvent(display, extractInputModifiers(event), 0, 0));
     }
 
-    
     private void onMouseClicked(MouseEvent event) {
         
-        System.out.println("Click !");
         
+        System.out.println("onMouseClicked !");
+        
+       canvas.requestFocus();
+
         List<Overlay> overlays = overlayService
                 .getOverlays(display);
-        
+
         display
                 .stream()
-                .filter(view->view instanceof OverlayView)
-                .map(view->(OverlayView)view)
+                .filter(view -> view instanceof OverlayView)
+                .map(view -> (OverlayView) view)
                 .collect(Collectors.toList());
-        
-        for(Overlay overlay : overlays) {
-            if(isOnOverlay(event.getX(), event.getY(), overlay)) {
+
+        for (Overlay overlay : overlays) {
+            if (isOnOverlay(event.getX(), event.getY(), overlay)) {
                 overlaySelectionService.selectOnlyOneOverlay(display, overlay);
                 return;
             }
         }
         overlaySelectionService.unselectedAll(display);
         display.update();
-        
+
     }
-      
-      /*
+
+    /*
         Helpers
-      */
-    
-    
+     */
     private int toInt(double d) {
         return new Double(d).intValue();
+    }
+
+
+
+    private InputModifiers extractInputModifiers(KeyEvent event) {
+
+        
+        boolean isMetaDown = event.isMetaDown();
+        boolean isCtrlDown = event.isControlDown();
+        
+        if(PlatformUtils.isMac()) {
+            isMetaDown = !isMetaDown;
+        }
+        
+        return new InputModifiers(
+                event.isAltDown(),
+                false,
+                isMetaDown,
+                isCtrlDown,
+                event.isShiftDown(),
+                false,
+                false,
+                false
+        );
+
     }
 
     private InputModifiers extractInputModifiers(MouseEvent event) {
@@ -253,17 +318,18 @@ public class CanvasListener {
         );
 
     }
-    
-    
+
     private boolean isOnOverlay(double x, double y, Overlay overlay) {
 
         OverlayDrawer drawer = overlayDisplayService.getDrawer(overlay);
-       
-        if(drawer == null) return false;
-        
-        RealCoords onData = display.getCanvas().panelToDataCoords(new IntCoords(toInt(x),toInt(y)));
-        
-        boolean result =  drawer.isOnOverlay(overlay, onData.x, onData.y);
+
+        if (drawer == null) {
+            return false;
+        }
+
+        RealCoords onData = display.getCanvas().panelToDataCoords(new IntCoords(toInt(x), toInt(y)));
+
+        boolean result = drawer.isOnOverlay(overlay, onData.x, onData.y);
         return result;
     }
 }

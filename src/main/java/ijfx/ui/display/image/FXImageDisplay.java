@@ -102,4 +102,6 @@ public interface FXImageDisplay extends ImageDisplay {
     
     public void updateAsync();
     
+    public void checkProperties();
+    
 }
