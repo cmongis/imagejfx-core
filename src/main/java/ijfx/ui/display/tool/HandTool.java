@@ -61,7 +61,7 @@ public class HandTool extends ReactiveTool {
 
         getCanvas().pan(new RealCoords(-dx, -dy));
         ImageCanvasUtils.checkPosition(getCanvas());
-        System.out.println("updating");
+        //System.out.println("updating");
         Platform.runLater(getImageDisplay()::update);
     }
 
