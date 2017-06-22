@@ -21,27 +21,26 @@ package ijfx.ui.display.code;
 
 import ijfx.ui.display.image.AbstractFXDisplayPanel;
 import ijfx.ui.display.image.FXDisplayPanel;
+import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.property.adapter.JavaBeanStringProperty;
-import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import org.controlsfx.control.action.Action;
-import org.joda.time.chrono.AssembledChronology.Fields;
-import org.scijava.Context;
 import org.scijava.command.CommandService;
 import org.scijava.event.EventHandler;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.prefs.PrefService;
 import org.scijava.script.ScriptLanguage;
 import org.scijava.script.ScriptService;
 import org.scijava.ui.viewer.DisplayWindow;
@@ -58,6 +57,8 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     ScriptService scriptService;
     @Parameter
     CommandService commandService;
+    @Parameter
+    PrefService prefService;
     BorderPane root;
     //BorderPane borderPane;
     ScriptDisplay display;
@@ -67,6 +68,8 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     Button runButton;
     //static CodeArea codeArea;
     JavaBeanStringProperty codeProperty; 
+    
+    VBox sidePanel;
     
     public TextEditorDisplayPanel() {
         super(ScriptDisplay.class);
@@ -99,8 +102,12 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
         display.selectedTextProperty().bind(this.textArea.selectedTextProperty());
         display.selectionProperty().bind(this.textArea.selectionProperty());
         
-       
-        
+        try {
+            sidePanel = new DefaultSidePanel(commandService.getCommands());
+        } catch (IOException ex) {
+            Logger.getLogger(TextEditorDisplayPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        this.root.setLeft(sidePanel);
     }
     public MenuButton createLanguageButton(String name){
         
@@ -142,6 +149,13 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
         return display.get(0).getCode();
     } 
     
+    public VBox createSideBar(){
+        VBox vBox = new VBox();
+        
+        
+        return vBox;
+    }
+    
     @Override
     public void view(DisplayWindow window, ScriptDisplay display){
         this.display = display;
@@ -166,15 +180,12 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     public void redraw() {
         initCode();
     }
+    
     public void changeLanguage(ScriptLanguage language){
         //String path = findFileLanguage(language);
         this.textArea.initLanguage(language);
     }
-    /*
-    public static String findFileLanguage(ScriptLanguage language) {
-       return String.format("/ijfx/ui/display/code/%s.nanorc",language.getLanguageName().toLowerCase().replace(" ", ""));
-    }
-*/
+
     @EventHandler
     public void onUndoEvent(UndoEvent event){
         this.textArea.undo();
