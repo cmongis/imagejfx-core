@@ -77,7 +77,7 @@ public class DefaultMapperTest {
         instance.associatedValues(0.0, "ncherry");
         instance.associatedValues(1.0, "bright");
         instance.setNewKey(newKey);
-        instance.setFilterKey(oldKey);
+        instance.setOldKey(oldKey);
         
         
         

@@ -19,18 +19,10 @@
  */
 package ijfx.ui.display.annotation;
 
-import javafx.scene.control.TextField;
-import javafx.scene.layout.Pane;
-import org.scijava.plugin.SciJavaPlugin;
-
 /**
  *
  * @author sapho
  */
-public interface AnnotationDisplay extends SciJavaPlugin{
-    
-    
-    
-    
+public interface AnnotationDisplay {
     
 }

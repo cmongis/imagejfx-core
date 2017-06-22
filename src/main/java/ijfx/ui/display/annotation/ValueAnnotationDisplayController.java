@@ -17,7 +17,7 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.ui.widgets;
+package ijfx.ui.display.annotation;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -30,18 +30,20 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Pane;
 
 /**
  * FXML Controller class
  *
  * @author sapho
  */
-public class ValueAnnotationDisplayController implements Initializable {
+public class ValueAnnotationDisplayController extends Pane {
+
+    
 
     @FXML
-    private TextField value;
-    @FXML
-    private TextField newValue;
+    TextField value, newValue; 
+    
     
     private final double MAX_HEIGHT = 150.0;
     private final double MIN_HEIGHT = 50.0;
@@ -51,15 +53,17 @@ public class ValueAnnotationDisplayController implements Initializable {
     private final ObservableValue<Boolean> fillState = Bindings.createObjectBinding(this:: getTextfieldState);
     private final BooleanProperty isValues = new SimpleBooleanProperty();
 
-    
+    public ValueAnnotationDisplayController() {
+        init();
+    }
     
    
 
     /**
      * Initializes the controller class.
+     * why you don't find me ?
      */
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
+    public void init() {
         isValues.bind(fillState);
         
     }
@@ -75,7 +79,7 @@ public class ValueAnnotationDisplayController implements Initializable {
     
     //défini les conditions de l'observableValue.
     public Boolean getTextfieldState(){
-        if (value.getText() != null && newValue.getText() != null){
+        if (this.value.getText() != null && this.newValue.getText() != null){
             return true;
         }
         return false;
