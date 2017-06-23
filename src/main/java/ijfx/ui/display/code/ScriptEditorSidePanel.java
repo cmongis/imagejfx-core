@@ -46,7 +46,7 @@ import org.scijava.plugin.Plugin;
  * @author florian
  */
 @Plugin(type = UiPlugin.class)
-@UiConfiguration(id = "research function panel", localization = Localization.LEFT, context="script-display")
+@UiConfiguration(id = "research function panel", localization = Localization.LEFT, context="script-open")
 public class ScriptEditorSidePanel extends VBox implements UiPlugin{
     @Parameter
     UiContextService uiContextService;
