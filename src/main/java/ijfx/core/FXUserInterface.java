@@ -21,11 +21,9 @@ package ijfx.core;
 
 import ijfx.core.activity.ActivityChangedEvent;
 import ijfx.core.activity.ActivityService;
-import ijfx.core.batch.CommandRunner;
 import ijfx.core.mainwindow.MainWindow;
 import ijfx.core.uicontext.UiContextService;
 import ijfx.core.uiplugin.UiPluginService;
-import ijfx.plugins.display.AutoContrast;
 import ijfx.ui.UiPlugin;
 import ijfx.ui.activity.DisplayContainer;
 import ijfx.ui.dialog.FxPromptDialog;
@@ -33,6 +31,8 @@ import ijfx.ui.display.image.DisplayWindowFX;
 import ijfx.ui.main.ImageJFX;
 import static ijfx.ui.main.ImageJFX.getStylesheet;
 import ijfx.ui.plugin.console.ConsoleUIPlugin;
+import ijfx.ui.plugin.statusbar.DefaultFXStatusBar;
+import ijfx.ui.plugin.statusbar.FXStatusBar;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
@@ -62,7 +62,6 @@ import org.scijava.thread.ThreadService;
 import org.scijava.ui.ApplicationFrame;
 import org.scijava.ui.Desktop;
 import org.scijava.ui.DialogPrompt;
-import org.scijava.ui.StatusBar;
 import org.scijava.ui.SystemClipboard;
 import org.scijava.ui.ToolBar;
 import org.scijava.ui.UIService;
@@ -139,7 +138,7 @@ public class FXUserInterface extends Application implements UserInterface {
 
         SCENE = new Scene(new BorderPane());
         SCENE.getStylesheets().add(getStylesheet());
-
+        
         SCENE.setRoot(getMainWindow().getUiComponent());
 
         // scene.getStylesheets().add("http://fonts.googleapis.com/css?family=Open+Sans");
@@ -209,8 +208,8 @@ public class FXUserInterface extends Application implements UserInterface {
     }
 
     @Override
-    public StatusBar getStatusBar() {
-        return null;
+    public FXStatusBar getStatusBar() {
+        return uiPluginService.getUiPlugin(DefaultFXStatusBar.class);
     }
 
     @Override
@@ -232,9 +231,7 @@ public class FXUserInterface extends Application implements UserInterface {
 
     @Override
     public DisplayWindowFX createDisplayWindow(Display<?> display) {
-
         return new DisplayWindowFX(display);
-
     }
 
     @Override
@@ -451,5 +448,10 @@ public class FXUserInterface extends Application implements UserInterface {
     @EventHandler
     public void onActivityChanged(ActivityChangedEvent event) {
         getMainWindow().displayActivity(event.getActivity());
+    }
+
+    public void reloadCss() {
+        SCENE.getStylesheets().remove(getStylesheet());
+        SCENE.getStylesheets().add(getStylesheet());
     }
 }
