@@ -21,19 +21,16 @@ package ijfx.ui.display.code;
 
 import ijfx.core.uicontext.UiContextService;
 import ijfx.core.uiplugin.Localization;
+import ijfx.ui.UiConfiguration;
+import ijfx.ui.UiPlugin;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
@@ -48,9 +45,9 @@ import org.scijava.plugin.Plugin;
  *
  * @author florian
  */
-@Plugin(type = FxWidgetPlugin.class)
-@Widget(id = "research function panel", localization = Localization.LEFT, context="always")
-public class ScriptEditorSidePanel extends VBox{
+@Plugin(type = UiPlugin.class)
+@UiConfiguration(id = "research function panel", localization = Localization.LEFT, context="script-display")
+public class ScriptEditorSidePanel extends VBox implements UiPlugin{
     @Parameter
     UiContextService uiContextService;
     @Parameter
@@ -74,7 +71,7 @@ public class ScriptEditorSidePanel extends VBox{
         
     }
     
-    public FxWidgetPlugin init() {
+    public UiPlugin init() {
         
         this.entriesList = commandService.getCommands();
 	this.observableEntries = FXCollections.observableArrayList();
@@ -89,9 +86,7 @@ public class ScriptEditorSidePanel extends VBox{
     }
     
     
-    public Node getUiComponent() {
-	return this;
-    }
+  
     
     public void fillObservableList(){
         for (CommandInfo command : this.entriesList){
@@ -122,6 +117,11 @@ public class ScriptEditorSidePanel extends VBox{
         this.observableEntries.addAll(filteredEntries);
         
         this.listView.refresh();
+    }
+
+    @Override
+    public Node getUiElement() {
+        return this;
     }
     
 }
