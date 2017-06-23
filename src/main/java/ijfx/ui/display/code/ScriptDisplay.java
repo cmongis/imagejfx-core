@@ -36,9 +36,6 @@ import org.scijava.script.ScriptLanguage;
 
 public interface ScriptDisplay extends Display<Script> {
     
-    final StringProperty selectedTextProperty = new SimpleStringProperty();
-    final StringProperty textProperty= new SimpleStringProperty();
-    ObjectProperty<IndexRange> selectionProperty = new SimpleObjectProperty<>();
     
     ScriptLanguage getLanguage();
     

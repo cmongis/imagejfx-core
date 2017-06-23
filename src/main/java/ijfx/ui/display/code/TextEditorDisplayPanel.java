@@ -90,6 +90,7 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
         changeLanguage(display.getLanguage());
         initCode();
         
+        textArea.textProperty().setValue(display.textProperty().getValue());
         display.textProperty().bind(this.textArea.textProperty());
         display.selectedTextProperty().bind(this.textArea.selectedTextProperty());
         display.selectionProperty().bind(this.textArea.selectionProperty());

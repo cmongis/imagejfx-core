@@ -20,9 +20,12 @@
 package ijfx.ui.display.code;
 
 import ijfx.commands.script.RunScript;
+import ijfx.core.formats.DefaultScript;
 import ijfx.core.formats.Script;
 import java.io.File;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -41,32 +44,66 @@ import org.scijava.script.ScriptService;
 
 /**
  * TODO : change to DefaultScriptDisplay
+ *
  * @author florian
  */
 @Plugin(type = Display.class, priority = Priority.HIGH_PRIORITY)
 public class DefaultScriptDisplay extends AbstractDisplay<Script> implements ScriptDisplay {
+
     @Parameter
     EventService eventService;
     @Parameter
     ScriptService scriptService;
     @Parameter
     LogService logService;
-    
+
     @Parameter
     CommandService commandService;
-    
+
+    private final StringProperty selectedTextProperty = new SimpleStringProperty();
+    private final StringProperty textProperty = new SimpleStringProperty();
+    private ObjectProperty<IndexRange> selectionProperty = new SimpleObjectProperty<>();
+
     private String copiedText;
-    
+
+    private boolean listeners = false;
+
     public DefaultScriptDisplay() {
         super(Script.class);
-        
-        textProperty.addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                get(0).setCode(newValue);
-            }
-        });
-        
+    }
+
+    @Override
+    public boolean add(Script t) {
+
+        if (size() == 0) {
+            return super.add(t);
+        } else {
+            super.set(0, t);
+            return true;
+        }
+    }
+
+    @Override
+    public void display(Object o) {
+        super.display(o);
+        if (!listeners) {
+            textProperty.addListener(new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                    getScript().setCode(newValue);
+                }
+            });
+            listeners = true;
+        }
+    }
+
+    @Override
+    public Script get(int i) {
+        if (i == 0 && size() == 0) {
+            super.add(new DefaultScript(""));
+        }
+        return super.get(0);
+
     }
 
     private Script getScript() {
@@ -86,9 +123,7 @@ public class DefaultScriptDisplay extends AbstractDisplay<Script> implements Scr
     @Override
     public void setLanguage(ScriptLanguage language) {
         get(0).setLanguage(language);
-        
-        
-        
+
     }
 
     @Override
@@ -103,14 +138,14 @@ public class DefaultScriptDisplay extends AbstractDisplay<Script> implements Scr
 
     @Override
     public void copyText() {
-        
-        this.copiedText=selectedTextProperty.getValue();
+
+        this.copiedText = selectedTextProperty.getValue();
     }
 
     @Override
     public void pasteText() {
         StringBuilder sb = new StringBuilder(get(0).getCode());
-        sb.replace(selectionProperty.getValue().getStart(),selectionProperty.getValue().getEnd(), copiedText);
+        sb.replace(selectionProperty.getValue().getStart(), selectionProperty.getValue().getEnd(), copiedText);
         get(0).setCode(sb.toString());
     }
 
@@ -124,9 +159,8 @@ public class DefaultScriptDisplay extends AbstractDisplay<Script> implements Scr
         return selectedTextProperty;
     }
 
-
     @Override
-    public final StringProperty textProperty() {
+    public StringProperty textProperty() {
         return textProperty;
     }
 
@@ -167,27 +201,20 @@ public class DefaultScriptDisplay extends AbstractDisplay<Script> implements Scr
 
     @Override
     public void runScript() {
-        
-        commandService.run(RunScript.class, true, "scriptDisplay",this);
-        
+        commandService.run(RunScript.class, true, "scriptDisplay", this);
     }
-    
-    
-    
+
     @Override
     public void update() {
-        
-        if(getScript().getSourceFile() == null) {
-            setName("no_name."+getScript().getLanguage().getExtensions().get(0));
-        }
-        else {
+
+        if (getScript().getSourceFile() == null) {
+            setName("no_name." + getScript().getLanguage().getExtensions().get(0));
+        } else {
             setName(new File(getScript().getSourceFile()).getName());
         }
-        
+
         super.update();
-        
-     
-        
+
     }
-    
+
 }
