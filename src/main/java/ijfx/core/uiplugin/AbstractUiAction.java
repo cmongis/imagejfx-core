@@ -38,7 +38,7 @@ public abstract class AbstractUiAction<T> implements UiAction<T>{
     @Override
     public boolean canHandle(Class object) {
         if(object == null) return false;
-        return object.getClass().isAssignableFrom(type);
+        return type.isAssignableFrom(object);
     }
 
     

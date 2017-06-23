@@ -21,6 +21,7 @@ package ijfx.ui.display.image;
 
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import ijfx.core.icon.FXIconService;
 import ijfx.core.property.SuppliedProperty;
 import ijfx.core.uiplugin.UiAction;
 import ijfx.core.uiplugin.UiActionService;
@@ -47,6 +48,7 @@ import net.imagej.display.ImageDisplay;
 import net.imagej.display.ImageDisplayService;
 import net.mongis.usage.UsageLocation;
 import org.scijava.command.CommandService;
+import org.scijava.display.Display;
 import org.scijava.event.EventService;
 import org.scijava.module.ModuleService;
 import org.scijava.plugin.Parameter;
@@ -83,7 +85,10 @@ public class AxisSlider extends BorderPane {
 
     @Parameter
     UiActionService uiActionService;
-    
+
+    @Parameter
+    FXIconService fxIconService;
+
     PublishSubject<Runnable> updateRequest = PublishSubject.create();
 
     private final CalibratedAxis axis;
@@ -129,11 +134,9 @@ public class AxisSlider extends BorderPane {
 
         Usage.listenProperty(slider.valueProperty(), "Current " + axis.type().getLabel(), UsageLocation.get("Axis Slider"), 2);
 
-        
-        
     }
 
-    private Number getPosition() {
+    public Number getPosition() {
         try {
             return imageDisplayService.getActiveDatasetView(display).getLongPosition(axisId);
         } catch (NullPointerException e) {
@@ -217,7 +220,7 @@ public class AxisSlider extends BorderPane {
 
         public void run() {
             synchronized (lock) {
-               // imageDisplayService.getActiveDatasetView(display).getProjector().map();
+                // imageDisplayService.getActiveDatasetView(display).getProjector().map();
                 display.update();
             }
         }
@@ -241,14 +244,13 @@ public class AxisSlider extends BorderPane {
     }
 
     private void addActions() {
-        
+
         List<MenuItem> actions = uiActionService
-                .getAssociatedAction(this)
+                .getAssociatedAction(AxisSlider.class)
                 .stream()
                 .map(this::createAction)
                 .collect(Collectors.toList());
-        
-        
+
         menuButton.getItems().addAll(actions);
         /*
         addAction(new LabelAction("Duplicate this {0}"), FontAwesomeIcon.FILES_ALT, this::isolateAxis);
@@ -258,27 +260,36 @@ public class AxisSlider extends BorderPane {
         addAction(t -> "Duplicate image", FontAwesomeIcon.PICTURE_ALT, this::isolateCurrentPosition);
          */
     }
-    
+
     public MenuItem createAction(UiAction<AxisSlider> uiAction) {
-         MenuItem menuItem = new MenuItem();
-         AxisType t = getAxisType();
-         menuItem
-                 .setText(
-                         MessageFormat.format(SciJavaUtils.getLabel(uiAction), t.getLabel().contains("Z") ? "slice" : t.getLabel().toLowerCase()));
-         
-         menuItem.setOnAction(event->uiAction.run(this));
-         
-         return menuItem;
+        MenuItem menuItem = new MenuItem();
+        AxisType t = getAxisType();
+        menuItem
+                .setText(
+                        MessageFormat.format(SciJavaUtils.getLabel(uiAction), t.getLabel().contains("Z") ? "slice" : t.getLabel().toLowerCase()));
+
+        menuItem.setGraphic(fxIconService.getIconAsNode(uiAction));
+        menuItem.setOnAction(event -> uiAction.run(this));
+
+        return menuItem;
     }
 
     public AxisType getAxisType() {
         return axis.type();
     }
-    
+
     public CalibratedAxis getAxis() {
         return axis;
     }
     
+    public ImageDisplay getDisplay() {
+        return display;
+    }
+    
+    public int getAxisId() {
+        return axisId;
+    }
+
     /*
     private void isolateAxis() {
         commandService.run(Isolate.class, true, "axisType", this.axis.type(), "position", position.getValue().intValue());

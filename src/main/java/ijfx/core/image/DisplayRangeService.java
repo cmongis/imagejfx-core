@@ -20,6 +20,7 @@
 package ijfx.core.image;
 
 import ijfx.core.IjfxService;
+import ijfx.core.stats.ImageStatisticsService;
 import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +28,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import mongis.utils.DefaultUUIDMap;
 import net.imagej.Dataset;
+import net.imagej.axis.Axes;
+import net.imagej.display.DatasetView;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
 import net.imagej.lut.LUTService;
 import net.imglib2.display.ColorTable;
 import org.scijava.plugin.Parameter;
@@ -50,6 +55,12 @@ public class DisplayRangeService extends AbstractService implements IjfxService 
     @Parameter
     LUTService lutService;
 
+    @Parameter
+    ImageDisplayService imageDisplayService;
+    
+    @Parameter
+    ImageStatisticsService imageStatisticsService;
+    
     public ObservableList<ColorTable> availableColorTableProperty() {
         if (colorTableList == null) {
             List<ColorTable> tables = lutService
@@ -139,6 +150,50 @@ public class DisplayRangeService extends AbstractService implements IjfxService 
         }
         return true;
 
+    }
+     
+     
+    public void autoContrast(ImageDisplay display) {
+        Dataset dataset = imageDisplayService.getActiveDataset(display);
+        autoContrast(display,dataset,true);
+    }
+     
+    public void autoContrast(ImageDisplay imageDisplay, Dataset dataset,boolean channelDependant) {
+        
+         boolean multiChannel = dataset.dimensionIndex(Axes.CHANNEL) > -1;
+
+        if (multiChannel && channelDependant == true) {
+            for (int i = 0; i <= dataset.max(dataset.dimensionIndex(Axes.CHANNEL)); i++) {
+                
+                autoContrast(imageDisplay, dataset, i);
+               
+            }
+        } else {
+           
+            autoContrast(imageDisplay, dataset, 0);
+        }
+        
+    }
+    
+    public void autoContrast(ImageDisplay imageDisplay, Dataset dataset, int channel) {
+        
+     
+        
+        double[] minMax = imageStatisticsService.getChannelMinMax(dataset, channel);
+        
+        if(dataset!= null) {
+            dataset.setChannelMinimum(channel, minMax[0]);
+            dataset.setChannelMaximum(channel, minMax[1]);
+        }
+        
+        if(imageDisplay != null) {
+            DatasetView view = imageDisplayService.getActiveDatasetView(imageDisplay);
+            view.setChannelRange(channel,minMax[0],minMax[1]);
+        }
+        
+        saveDatasetMinimum(dataset, channel, minMax[0]);
+        saveDatasetMaximum(dataset, channel, minMax[1]);
+        
     }
 
 }

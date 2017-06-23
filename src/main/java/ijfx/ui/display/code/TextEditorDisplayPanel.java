@@ -95,7 +95,9 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
         
         changeLanguage(display.getLanguage());
         initCode();
+      
         
+        textArea.setText(display.textProperty().getValue());
         display.textProperty().bind(this.textArea.textProperty());
         display.selectedTextProperty().bind(this.textArea.selectedTextProperty());
         display.selectionProperty().bind(this.textArea.selectionProperty());
@@ -152,6 +154,10 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     @Override
     public void view(DisplayWindow window, ScriptDisplay display){
         this.display = display;
+        
+          
+    
+        
         //System.out.println("affichage : " + display.get(0));
         //this.root.initText(display);
     }

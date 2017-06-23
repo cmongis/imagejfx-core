@@ -135,7 +135,8 @@ public class LUTSwitchButton extends Button {
         addAction("Isolate this channel", FontAwesomeIcon.COPY, this::isolateChannel);
 
         setTooltip(new Tooltip("The first click select the channel, the second click activate or deactivate it."));
-
+        
+        
     }
     
     

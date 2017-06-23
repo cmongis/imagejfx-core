@@ -19,39 +19,33 @@
  */
 package ijfx.ui.display.image.actions;
 
-import ijfx.commands.axis.Isolate;
-import ijfx.core.uiplugin.AbstractUiAction;
+import com.google.common.collect.ImmutableMap;
+import ijfx.commands.axis.DeleteDataFX;
 import ijfx.core.uiplugin.UiAction;
 import ijfx.ui.display.image.AxisSlider;
-import org.scijava.command.CommandService;
-import org.scijava.plugin.Parameter;
+import java.util.Map;
 import org.scijava.plugin.Plugin;
-import org.scijava.ui.UIService;
 
 /**
  *
  * @author cyril
  */
-
-@Plugin(type = UiAction.class,label = "Isolate this image",iconPath="fa:picture_alt")
-public class IsolateChannelAction extends AbstractUiAction<AxisSlider> {
-
-    @Parameter
-    UIService uiService;
-
-    @Parameter
-    CommandService commandService;
-    
-    public IsolateChannelAction() {
-        super(AxisSlider.class);
-    }
-    
+@Plugin(type=UiAction.class,label = "Delete this {0}",iconPath="fa:remove")
+public class DeleteThisPositionUiAction extends AbstractAxisSliderUiAction {
     @Override
     public void run(AxisSlider t) {
-         commandService.run(Isolate.class, true, "axisType", t.getAxisType(), "position", t.getPosition());
+
+        int axisId = t.getAxisId();
+
+        Long position = t.getDisplay().getLongPosition(axisId) + 1;
+
+        Map<String, Object> params = ImmutableMap.<String, Object>builder()
+                .put("position", position)
+                .put("quantity", 1)
+                .put("axisType", t.getAxisType())
+                .build();
+
+        commandService.run(DeleteDataFX.class, true, params);
     }
 
-    
-    
-   
 }

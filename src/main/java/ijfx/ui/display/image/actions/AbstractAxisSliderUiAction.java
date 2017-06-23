@@ -19,39 +19,22 @@
  */
 package ijfx.ui.display.image.actions;
 
-import ijfx.commands.axis.Isolate;
 import ijfx.core.uiplugin.AbstractUiAction;
-import ijfx.core.uiplugin.UiAction;
 import ijfx.ui.display.image.AxisSlider;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
-import org.scijava.ui.UIService;
 
 /**
  *
  * @author cyril
  */
-
-@Plugin(type = UiAction.class,label = "Isolate this image",iconPath="fa:picture_alt")
-public class IsolateChannelAction extends AbstractUiAction<AxisSlider> {
-
-    @Parameter
-    UIService uiService;
-
-    @Parameter
-    CommandService commandService;
+public abstract class AbstractAxisSliderUiAction extends AbstractUiAction<AxisSlider> {
     
-    public IsolateChannelAction() {
+    @Parameter
+    protected CommandService commandService;
+    
+    public AbstractAxisSliderUiAction() {
         super(AxisSlider.class);
     }
     
-    @Override
-    public void run(AxisSlider t) {
-         commandService.run(Isolate.class, true, "axisType", t.getAxisType(), "position", t.getPosition());
-    }
-
-    
-    
-   
 }

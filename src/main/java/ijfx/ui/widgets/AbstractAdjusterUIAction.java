@@ -17,41 +17,32 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.ui.display.image.actions;
+package ijfx.ui.widgets;
 
-import ijfx.commands.axis.Isolate;
 import ijfx.core.uiplugin.AbstractUiAction;
-import ijfx.core.uiplugin.UiAction;
-import ijfx.ui.display.image.AxisSlider;
+import org.scijava.command.Command;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
-import org.scijava.ui.UIService;
 
 /**
  *
  * @author cyril
  */
+public abstract class AbstractAdjusterUIAction extends AbstractUiAction<ImageDisplayAdjuster> {
 
-@Plugin(type = UiAction.class,label = "Isolate this image",iconPath="fa:picture_alt")
-public class IsolateChannelAction extends AbstractUiAction<AxisSlider> {
-
-    @Parameter
-    UIService uiService;
+    Class<? extends Command> command;
 
     @Parameter
     CommandService commandService;
-    
-    public IsolateChannelAction() {
-        super(AxisSlider.class);
-    }
-    
-    @Override
-    public void run(AxisSlider t) {
-         commandService.run(Isolate.class, true, "axisType", t.getAxisType(), "position", t.getPosition());
+
+    public AbstractAdjusterUIAction(Class<? extends Command> com) {
+        super(ImageDisplayAdjuster.class);
+        this.command = com;
     }
 
-    
-    
-   
+    @Override
+    public void run(ImageDisplayAdjuster t) {
+        commandService.run(command, true);
+    }
+
 }

@@ -17,41 +17,22 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.ui.display.image.actions;
+package ijfx.ui.widgets.actions;
 
-import ijfx.commands.axis.Isolate;
-import ijfx.core.uiplugin.AbstractUiAction;
+import ijfx.commands.axis.IsolateChannel;
 import ijfx.core.uiplugin.UiAction;
-import ijfx.ui.display.image.AxisSlider;
-import org.scijava.command.CommandService;
-import org.scijava.plugin.Parameter;
+import ijfx.ui.widgets.AbstractAdjusterUIAction;
 import org.scijava.plugin.Plugin;
-import org.scijava.ui.UIService;
 
 /**
  *
  * @author cyril
  */
+@Plugin(type= UiAction.class,label = "Isolate this channel",iconPath="fa:remove",description="Create a new image with only the current channel")
+public class IsolateChannelUiAction extends AbstractAdjusterUIAction{
 
-@Plugin(type = UiAction.class,label = "Isolate this image",iconPath="fa:picture_alt")
-public class IsolateChannelAction extends AbstractUiAction<AxisSlider> {
-
-    @Parameter
-    UIService uiService;
-
-    @Parameter
-    CommandService commandService;
-    
-    public IsolateChannelAction() {
-        super(AxisSlider.class);
+    public IsolateChannelUiAction() {
+        super(IsolateChannel.class);
     }
     
-    @Override
-    public void run(AxisSlider t) {
-         commandService.run(Isolate.class, true, "axisType", t.getAxisType(), "position", t.getPosition());
-    }
-
-    
-    
-   
 }

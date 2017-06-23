@@ -23,35 +23,33 @@ import ijfx.commands.axis.Isolate;
 import ijfx.core.uiplugin.AbstractUiAction;
 import ijfx.core.uiplugin.UiAction;
 import ijfx.ui.display.image.AxisSlider;
+import net.imagej.display.ImageDisplay;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.ui.UIService;
 
 /**
  *
  * @author cyril
  */
+@Plugin(type = UiAction.class,label = "Isolate the current {0}",iconPath="fa:clone")
+public class IsolateCurrentPositionUIAction extends AbstractUiAction<AxisSlider> {
 
-@Plugin(type = UiAction.class,label = "Isolate this image",iconPath="fa:picture_alt")
-public class IsolateChannelAction extends AbstractUiAction<AxisSlider> {
-
-    @Parameter
-    UIService uiService;
+    public IsolateCurrentPositionUIAction() {
+        super(AxisSlider.class);
+    }
 
     @Parameter
     CommandService commandService;
     
-    public IsolateChannelAction() {
-        super(AxisSlider.class);
-    }
-    
     @Override
     public void run(AxisSlider t) {
-         commandService.run(Isolate.class, true, "axisType", t.getAxisType(), "position", t.getPosition());
+
+        ImageDisplay display = t.getDisplay();
+        Long position = display.getLongPosition(t.getAxisId()) + 1;
+
+       commandService.run(Isolate.class, true, "axisType", t.getAxisType(), "position", t.getPosition());
+
     }
 
-    
-    
-   
 }

@@ -17,41 +17,23 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.ui.display.image.actions;
+package ijfx.commands.axis;
 
-import ijfx.commands.axis.Isolate;
-import ijfx.core.uiplugin.AbstractUiAction;
-import ijfx.core.uiplugin.UiAction;
-import ijfx.ui.display.image.AxisSlider;
-import org.scijava.command.CommandService;
-import org.scijava.plugin.Parameter;
+import net.imagej.axis.Axes;
+import net.imagej.axis.AxisType;
+import org.scijava.command.Command;
 import org.scijava.plugin.Plugin;
-import org.scijava.ui.UIService;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS, 2016
  */
+@Plugin(type = Command.class, menuPath = "Image > Color > Separate channels")
+public class SeparateChannels extends SeparateCommandBase{
 
-@Plugin(type = UiAction.class,label = "Isolate this image",iconPath="fa:picture_alt")
-public class IsolateChannelAction extends AbstractUiAction<AxisSlider> {
-
-    @Parameter
-    UIService uiService;
-
-    @Parameter
-    CommandService commandService;
-    
-    public IsolateChannelAction() {
-        super(AxisSlider.class);
-    }
-    
     @Override
-    public void run(AxisSlider t) {
-         commandService.run(Isolate.class, true, "axisType", t.getAxisType(), "position", t.getPosition());
+    protected AxisType getAxis() {
+        return Axes.CHANNEL;
     }
-
     
-    
-   
 }

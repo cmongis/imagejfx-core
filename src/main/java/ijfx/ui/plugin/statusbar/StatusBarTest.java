@@ -17,13 +17,13 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.ui.display.image.actions;
+package ijfx.ui.plugin.statusbar;
 
-import ijfx.commands.axis.Isolate;
-import ijfx.core.uiplugin.AbstractUiAction;
-import ijfx.core.uiplugin.UiAction;
-import ijfx.ui.display.image.AxisSlider;
-import org.scijava.command.CommandService;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.scijava.app.StatusService;
+import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.UIService;
@@ -32,26 +32,26 @@ import org.scijava.ui.UIService;
  *
  * @author cyril
  */
-
-@Plugin(type = UiAction.class,label = "Isolate this image",iconPath="fa:picture_alt")
-public class IsolateChannelAction extends AbstractUiAction<AxisSlider> {
-
-    @Parameter
-    UIService uiService;
+@Plugin(type = Command.class, menuPath = "Plugins > Test > FXStatusBar")
+public class StatusBarTest extends ContextCommand {
 
     @Parameter
-    CommandService commandService;
-    
-    public IsolateChannelAction() {
-        super(AxisSlider.class);
-    }
-    
+    StatusService statusService;
+
     @Override
-    public void run(AxisSlider t) {
-         commandService.run(Isolate.class, true, "axisType", t.getAxisType(), "position", t.getPosition());
+    public void run() {
+        try {
+            for (int i = 0; i != 100; i++) {
+
+                statusService.showStatus(i + "/ " + 100);
+                statusService.showProgress(i, 100);
+                Thread.sleep(1000);
+
+            }
+        } catch (InterruptedException ex) {
+            Logger.getLogger(StatusBarTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
-    
-    
-   
 }

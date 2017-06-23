@@ -17,41 +17,22 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.ui.display.image.actions;
+package ijfx.ui.widgets.actions;
 
-import ijfx.commands.axis.Isolate;
-import ijfx.core.uiplugin.AbstractUiAction;
 import ijfx.core.uiplugin.UiAction;
-import ijfx.ui.display.image.AxisSlider;
-import org.scijava.command.CommandService;
-import org.scijava.plugin.Parameter;
+import ijfx.plugins.display.AutoContrast;
+import ijfx.ui.widgets.AbstractAdjusterUIAction;
 import org.scijava.plugin.Plugin;
-import org.scijava.ui.UIService;
 
 /**
  *
  * @author cyril
  */
+@Plugin(type = UiAction.class, label = "Auto-contrast", iconPath="fa:magic",priority=100,description="Adjust the contrast depending on min/max values of each channel.")
+public class AutoContrastUiAction extends AbstractAdjusterUIAction{
 
-@Plugin(type = UiAction.class,label = "Isolate this image",iconPath="fa:picture_alt")
-public class IsolateChannelAction extends AbstractUiAction<AxisSlider> {
-
-    @Parameter
-    UIService uiService;
-
-    @Parameter
-    CommandService commandService;
-    
-    public IsolateChannelAction() {
-        super(AxisSlider.class);
+    public AutoContrastUiAction() {
+        super(AutoContrast.class);
     }
     
-    @Override
-    public void run(AxisSlider t) {
-         commandService.run(Isolate.class, true, "axisType", t.getAxisType(), "position", t.getPosition());
-    }
-
-    
-    
-   
 }

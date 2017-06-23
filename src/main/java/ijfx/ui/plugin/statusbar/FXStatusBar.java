@@ -17,21 +17,19 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.uiplugin;
-
-import ijfx.core.IjfxService;
-import java.util.List;
-
 /**
  *
  * @author cyril
  */
-public interface UiActionService extends IjfxService{
+
+package ijfx.ui.plugin.statusbar;
+
+import javafx.concurrent.Task;
+
+public interface FXStatusBar extends org.scijava.ui.StatusBar{
     
     
-    <T> List<UiAction<T>> getAssociatedAction(T o);
-    <T> List<UiAction<T>>  getAssociatedAction(Class<? extends T> type);
-   
+    public void addTask(Task task);
     
     
 }

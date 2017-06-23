@@ -25,8 +25,6 @@ import javafx.scene.canvas.GraphicsContext;
 import net.imagej.display.ImageCanvas;
 import net.imagej.display.ImageDisplay;
 import net.imagej.overlay.LineOverlay;
-import org.apache.commons.math3.geometry.euclidean.twod.PolygonsSet;
-import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.IntCoords;
 import org.scijava.util.RealCoords;
@@ -72,7 +70,7 @@ public class LineDrawer implements OverlayDrawer<LineOverlay> {
     /**
      * Minimum distance for click validation as on overlay
      */
-    private static final double MIN_DISTANCE = 100;
+    private static final double MIN_DISTANCE = 30;
     
     @Override
     public boolean isOnOverlay(LineOverlay overlay, double x0, double y0) {

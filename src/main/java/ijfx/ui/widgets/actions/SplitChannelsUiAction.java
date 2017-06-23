@@ -17,21 +17,19 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.uiplugin;
+package ijfx.ui.widgets.actions;
 
-import ijfx.core.IjfxService;
-import java.util.List;
+import ijfx.commands.axis.SeparateChannels;
+import ijfx.ui.widgets.AbstractAdjusterUIAction;
 
 /**
  *
  * @author cyril
  */
-public interface UiActionService extends IjfxService{
-    
-    
-    <T> List<UiAction<T>> getAssociatedAction(T o);
-    <T> List<UiAction<T>>  getAssociatedAction(Class<? extends T> type);
-   
-    
+public class SplitChannelsUiAction  extends AbstractAdjusterUIAction{
+
+    public SplitChannelsUiAction() {
+        super(SeparateChannels.class);
+    }
     
 }
