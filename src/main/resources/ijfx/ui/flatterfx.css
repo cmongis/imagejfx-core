@@ -2376,9 +2376,17 @@ Label.chart-legend-item{
 .choice-cell:selected .description {
     -fx-text-fill:derive(-flatter-primary,30%);
 }
-/*
 
-    Display Pane
-    
+
+/*
+    Status bar
 */
 
+.status-bar{
+    -fx-spacing:1em;
+}
+.status-bar .progress-bar{
+    -fx-margin:1em;
+    -fx-pref-height:20px;
+    -fx-min-height:10px;
+}
