@@ -23,6 +23,8 @@ import ijfx.commands.script.RunScript;
 import ijfx.core.formats.DefaultScript;
 import ijfx.core.formats.Script;
 import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -30,6 +32,7 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.IndexRange;
+import org.scijava.InstantiableException;
 import org.scijava.Prioritized;
 import org.scijava.Priority;
 import org.scijava.command.CommandService;
@@ -54,9 +57,7 @@ public class DefaultScriptDisplay extends AbstractDisplay<Script> implements Scr
     EventService eventService;
     @Parameter
     ScriptService scriptService;
-    @Parameter
-    LogService logService;
-
+    
     @Parameter
     CommandService commandService;
 
@@ -217,4 +218,9 @@ public class DefaultScriptDisplay extends AbstractDisplay<Script> implements Scr
 
     }
 
+    @Override
+    public void switchTheme() {
+        eventService.publish(new ChangeThemeEvent());
+    }
+    
 }

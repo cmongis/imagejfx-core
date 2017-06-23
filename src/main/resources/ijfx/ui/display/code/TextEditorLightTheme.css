@@ -53,7 +53,7 @@
     -fx-font-weight: bold;
 }
 .cyan {
-    -fx-fill: cyan;
+    -fx-fill: blue;
     -fx-font-weight: bold;
 }
 .brightwhite {
@@ -85,7 +85,7 @@
     -fx-font-weight: bold;
 }
 .brightcyan {
-    -fx-fill: cyan;
+    -fx-fill: blue;
     -fx-font-weight: bold;
 }
 .semicolon {
@@ -116,6 +116,11 @@
     -fx-underline : true;
     
 }
+/*
+.styled-text-area{
+    -fx-background-color:black;
+}
+*/
 /*
 .paragraph-box:has-caret {
     -fx-background-color: #f2f9fc;

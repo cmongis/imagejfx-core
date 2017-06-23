@@ -38,7 +38,7 @@ public class DefaultScriptHighlighting implements ScriptHighlight{
      private Hashtable KEYWORDS_PATTERN_TABLE;
      private  Pattern PATTERN;
      
-     private String OPEN_PAREN = "\\(";
+    private String OPEN_PAREN = "\\(";
     private String CLOSE_PAREN = "\\)";
     private String OPEN_BRACE = "\\[";
     private String CLOSE_BRACE = "\\]";
@@ -78,15 +78,15 @@ public class DefaultScriptHighlighting implements ScriptHighlight{
                     matcher.group("SEMICOLON") != null ? "semicolon" :
                     matcher.group("STRING") != null ? "string" :
                     matcher.group("COMMENT") != null ? "comment" :
-                    null;  assert styleClass != null;
+                    "null";  assert styleClass != null;
             
             
-            spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);               // ajoute un style null entre les deux styles 
+            spansBuilder.add(Collections.singleton("null"), matcher.start() - lastKwEnd);               // ajoute un style null entre les deux styles 
              spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start()); // ajout du style en question sur le nombre de characteres apropriés
             lastKwEnd = matcher.end();
         }
         
-        spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
+        spansBuilder.add(Collections.singleton("null"), text.length() - lastKwEnd);
         return spansBuilder.create();
     }
     
@@ -159,7 +159,7 @@ public class DefaultScriptHighlighting implements ScriptHighlight{
         String BRACKET_PATTERN = "\\[|\\]";
         String SEMICOLON_PATTERN = "\\;";
         String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
-        String COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
+        //String COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
         
         this.PATTERN = Pattern.compile(             
             "(?<PAREN>" + PAREN_PATTERN + ")"
@@ -167,7 +167,7 @@ public class DefaultScriptHighlighting implements ScriptHighlight{
             + "|(?<BRACKET>" + BRACKET_PATTERN + ")"
             + "|(?<SEMICOLON>" + SEMICOLON_PATTERN + ")"
             + "|(?<STRING>" + STRING_PATTERN + ")"
-            + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
+           // + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
             + generatePattern()
         );
     }

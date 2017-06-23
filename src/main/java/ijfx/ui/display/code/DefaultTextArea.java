@@ -19,16 +19,28 @@
  */
 package ijfx.ui.display.code;
 
+import java.util.Collection;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.geometry.Side;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.IndexRange;
 import javafx.scene.layout.AnchorPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
+import org.fxmisc.richtext.model.Paragraph;
+import org.fxmisc.richtext.model.StyledText;
+import org.scijava.Context;
+import org.scijava.command.CommandInfo;
+import org.scijava.command.CommandService;
+import org.scijava.plugin.Parameter;
 import org.scijava.script.ScriptLanguage;
 
 /**
@@ -41,15 +53,18 @@ public class DefaultTextArea extends AnchorPane{
     private LanguageKeywords languageKeywords;
     private ScriptHighlight scriptHighlight;
     
+    
     private final StringProperty selectedTextProperty;
     private final StringProperty textProperty;
     private final ObjectProperty<IndexRange> selectionProperty;
     
+    private String THEME = "dark";
     
     private Hashtable KEYWORDS_PATTERN_TABLE = new Hashtable();
-   
+   private DefaultAutocompletion autocompletion;
     
     public DefaultTextArea() {
+        
         this.languageKeywords = new NanorcParser();
         this.scriptHighlight = new DefaultScriptHighlighting(this.KEYWORDS_PATTERN_TABLE);
         
@@ -61,6 +76,7 @@ public class DefaultTextArea extends AnchorPane{
                 .subscribe(change -> {
                      if ("".equals(codeArea.getText().trim()) == false) {
                         codeArea.setStyleSpans(0, this.scriptHighlight.computeHighlighting(codeArea.getText()));
+                        lauchAutocompletion();
                     }
                     
                 });
@@ -76,17 +92,54 @@ public class DefaultTextArea extends AnchorPane{
         textProperty.bind(this.codeArea.textProperty());
         
         this.getChildren().add(this.codeArea);
-        getStylesheets().add(getClass().getResource("/ijfx/ui/display/code/JavaRichtext.css").toExternalForm());
+        getStylesheets().add(getClass().getResource("/ijfx/ui/display/code/TextEditorDarkTheme.css").toExternalForm());
+        this.autocompletion = new DefaultAutocompletion(this);
+        
         
     }
-
+    
+    public void setAutocompletion(List<CommandInfo> entriesList){
+        AutocompletionList listProvider = new DefaultAutocompletionListProvider(entriesList);
+        SortedSet<String> entries = listProvider.getEntries();
+        this.autocompletion.setEntries(entries);
+    }
+    
     public void initLanguage(ScriptLanguage language){
         this.languageKeywords.setLanguage(language);
         this.KEYWORDS_PATTERN_TABLE = this.languageKeywords.getKeywords();
         this.scriptHighlight.setKeywords(this.KEYWORDS_PATTERN_TABLE);
+        this.codeArea.redo();
+        
+    }
+    /**
+     * The autocompletion is performed on the closest word from the carret
+     * The autocompletion is computed only if the word in question is not affected by a style this avoid try to compute the autocompletion in comments and strins
+     */
+    public void lauchAutocompletion(){
+        codeArea.selectWord();
+        String word = codeArea.getSelectedText();
+        IndexRange selection = codeArea.getSelection();
+        codeArea.deselect();
+        
+        Paragraph paragraph = codeArea.getParagraph(codeArea.getCurrentParagraph());
+        Collection style = (Collection) paragraph.getStyleAtPosition(selection.getStart());
+        if (style.toArray()[0].equals("null")){
+            ContextMenu contextMenu = this.autocompletion.computeAutocompletion(word);
+            if (contextMenu != null) {
+                contextMenu.setMaxHeight(5);
+                contextMenu.setPrefHeight(5);
+                contextMenu.setHeight(10);
+                contextMenu.show(this, Side.BOTTOM, 0, 0);
+            }
+        }
+        
+        
     }
     public CodeArea getCodeArea() {
         return this.codeArea;
+    }
+    public void injectContext(Context context){
+        context.inject(this);
     }
     public void setText(String text){
         Platform.runLater( () ->{
@@ -112,9 +165,21 @@ public class DefaultTextArea extends AnchorPane{
     public void redo(){
         this.codeArea.redo();
     }
-    
-    public void detectBracket(){
-        
+    public void switchTheme(){
+        if (THEME.equals("light")){
+            changeCss("/ijfx/ui/display/code/TextEditorDarkTheme.css");
+            THEME = "dark";
+        }
+        else if (THEME.equals("dark")){
+             changeCss("/ijfx/ui/display/code/TextEditorLightTheme.css");
+             THEME = "light";
+             
+        }
     }
+   public void changeCss (String path){
+       this.getStylesheets().clear();
+       this.getStylesheets().add(getClass().getResource(path).toExternalForm());
+       
+   }
     
 }
