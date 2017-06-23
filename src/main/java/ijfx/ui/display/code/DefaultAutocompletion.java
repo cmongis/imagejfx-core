@@ -102,7 +102,7 @@ public class DefaultAutocompletion implements Autocompletion{
    * @return The existing autocomplete entries.
    */
   public SortedSet<String> getEntries() { return entries; }
-
+  
   /**
    * Populate the entry set with the given search results.  Display is limited to 10 entries, for performance.
    * @param searchResult The set of matching strings.
@@ -122,7 +122,7 @@ public class DefaultAutocompletion implements Autocompletion{
           {
             @Override
             public void handle(ActionEvent actionEvent) {
-              textArea.setText(result);
+              textArea.replaceWord(result);
               entriesPopup.hide();
             }
           });

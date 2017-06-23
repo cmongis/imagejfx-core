@@ -19,6 +19,8 @@
  */
 package ijfx.ui.display.code;
 
+import ijfx.core.uicontext.UiContextService;
+import ijfx.core.uiplugin.Localization;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +32,7 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -37,12 +40,22 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import org.scijava.command.CommandInfo;
+import org.scijava.command.CommandService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  *
  * @author florian
  */
-public class DefaultSidePanel extends VBox{
+@Plugin(type = FxWidgetPlugin.class)
+@Widget(id = "research function panel", localization = Localization.LEFT, context="always")
+public class ScriptEditorSidePanel extends VBox{
+    @Parameter
+    UiContextService uiContextService;
+    @Parameter
+    CommandService commandService;
+    
     @FXML
     TextField searchField;
     @FXML 
@@ -50,8 +63,7 @@ public class DefaultSidePanel extends VBox{
     List<CommandInfo> entriesList;
     ObservableList<String> observableEntries;
     
-    public DefaultSidePanel(List<CommandInfo> entriesList) throws IOException {
-        this.entriesList = entriesList;
+    public ScriptEditorSidePanel() throws IOException {
         
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/ijfx/ui/display/code/DefaultSidePanel.fxml")); // c'est toujour galere de trouver le bon chemin, penser a mettre le fxml dans le bon dossier comme ici
@@ -59,13 +71,26 @@ public class DefaultSidePanel extends VBox{
         loader.setController(this); //definition du controlleur
         loader.load(); // generation de la fenetre.
         
-        this.observableEntries = FXCollections.observableArrayList();
+        
+    }
+    
+    public FxWidgetPlugin init() {
+        
+        this.entriesList = commandService.getCommands();
+	this.observableEntries = FXCollections.observableArrayList();
         fillObservableList();
         //listViewFiller();
         this.listView.setItems(observableEntries);
         this.searchField.setOnKeyPressed(this::onSearch);
         //searchField.setOnKeyTyped(this::onSearch);
         this.listView.refresh();
+        
+	return this;
+    }
+    
+    
+    public Node getUiComponent() {
+	return this;
     }
     
     public void fillObservableList(){
@@ -74,18 +99,6 @@ public class DefaultSidePanel extends VBox{
             
         }
     }
-    /*
-    public void listViewFiller(){
-        for (CommandInfo command : this.entriesList){
-            if (listView.getItems().size() > 100) break;
-            ListCell listCell = new ListCell();
-            listCell.setItem(command.getClassName());
-            this.listView.getItems().add(listCell);
-        }
-            //this.listView.setOnMouseClicked(this:: onAction);
-        
-    }
-    */
     
     public void onAction( MouseEvent event){
         
@@ -94,20 +107,19 @@ public class DefaultSidePanel extends VBox{
     }
     
     public void onSearch(KeyEvent event){
-        String word = this.searchField.getText() + event.getText();
-        final List<String> filteredEntries = this.entriesList
+        /*
+        This function look only for the word typed before, the last letter typed is not compted
+        I don't know how to do it 
+        */
+        String word = this.searchField.getText();
+        List<String> filteredEntries = this.entriesList
               .stream()
               .filter(e -> e.getClassName().toLowerCase().contains(word.toLowerCase()))
               .map(e -> e.getClassName())
               .collect(Collectors.toList()); 
         this.observableEntries.clear();
-        if (!word.equals("/b")){
-            
-            this.observableEntries.addAll(filteredEntries);
-        }
-        else {
-            this.observableEntries.addAll(this.observableEntries);
-        }
+       
+        this.observableEntries.addAll(filteredEntries);
         
         this.listView.refresh();
     }

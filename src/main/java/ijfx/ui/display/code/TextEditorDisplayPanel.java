@@ -68,9 +68,7 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     Button runButton;
     //static CodeArea codeArea;
     JavaBeanStringProperty codeProperty; 
-    
-    VBox sidePanel;
-    
+        
     public TextEditorDisplayPanel() {
         super(ScriptDisplay.class);
     }
@@ -104,12 +102,7 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
         display.selectedTextProperty().bind(this.textArea.selectedTextProperty());
         display.selectionProperty().bind(this.textArea.selectionProperty());
         
-        try {
-            sidePanel = new DefaultSidePanel(commandService.getCommands());
-        } catch (IOException ex) {
-            Logger.getLogger(TextEditorDisplayPanel.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        this.root.setLeft(sidePanel);
+        
     }
     public MenuButton createLanguageButton(String name){
         
