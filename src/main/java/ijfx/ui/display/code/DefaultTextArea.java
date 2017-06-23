@@ -36,6 +36,7 @@ import javafx.scene.layout.AnchorPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.Paragraph;
+import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.StyledText;
 import org.scijava.Context;
 import org.scijava.command.CommandInfo;
@@ -77,6 +78,7 @@ public class DefaultTextArea extends AnchorPane{
                      if ("".equals(codeArea.getText().trim()) == false) {
                         codeArea.setStyleSpans(0, this.scriptHighlight.computeHighlighting(codeArea.getText()));
                         lauchAutocompletion();
+                        addVariableAutocompletion();
                     }
                     
                 });
@@ -135,6 +137,27 @@ public class DefaultTextArea extends AnchorPane{
         
         
     }
+    
+    public void addVariableAutocompletion(){
+        codeArea.selectWord();
+        String currentWord = codeArea.getSelectedText();
+        codeArea.deselect();
+        for (Paragraph<Collection<String>, StyledText<Collection<String>>, Collection<String>> paragraph : this.codeArea.getParagraphs()){
+            for (StyledText<Collection<String>> word : paragraph.getSegments()){
+                if (word.getStyle().toArray()[0].equals("null")){
+                    String[] newEntries = word.getText().split(" ");
+                    for (String newEntry : newEntries){
+                        if (!this.autocompletion.getEntries().contains(newEntry) && !newEntry.equals(currentWord)){
+                            this.autocompletion.getEntries().add(newEntry);
+                        }
+                    }
+                    
+                }
+            }
+            
+        }
+    }
+    
     public CodeArea getCodeArea() {
         return this.codeArea;
     }
@@ -146,6 +169,16 @@ public class DefaultTextArea extends AnchorPane{
             this.codeArea.replaceText(text);
         });
     }
+    
+    public void replaceWord(String word){
+        Platform.runLater( () ->{
+            this.codeArea.selectWord();
+            this.codeArea.replaceSelection(word);
+            this.codeArea.deselect();
+        });
+        
+    }
+    
     public StringProperty textProperty(){
         return this.textProperty;
     }
