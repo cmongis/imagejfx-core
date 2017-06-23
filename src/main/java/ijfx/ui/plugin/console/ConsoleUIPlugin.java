@@ -19,19 +19,33 @@
  */
 package ijfx.ui.plugin.console;
 
+import ijfx.core.FXUserInterface;
+import ijfx.core.uicontext.UiContextService;
+import ijfx.core.uicontext.UiContextUpdatedEvent;
 import ijfx.core.uiplugin.Localization;
 import ijfx.ui.UiConfiguration;
 import ijfx.ui.UiPlugin;
+import ijfx.ui.main.ImageJFX;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.MenuButton;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import org.controlsfx.control.PopOver;
 import org.scijava.console.OutputEvent;
+import org.scijava.event.EventHandler;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.UIService;
 import org.scijava.ui.console.ConsolePane;
 
 /**
@@ -43,16 +57,30 @@ import org.scijava.ui.console.ConsolePane;
 public class ConsoleUIPlugin implements UiPlugin, ConsolePane<Node>{
 
     @FXML
-    TextArea textArea;
+    TextArea consoleTextArea;
+    
+   
     
     @FXML
     Pane root;
+    
+    @FXML
+    MenuButton debugButton;
+    
+    @FXML
+    FlowPane uiContextFlowPane;
     
     ToggleButton toggleButton;
     
     PopOver popOver;
     
+    @Parameter
+    UIService uiService;
     
+    @Parameter
+    UiContextService uiContextService;
+    
+    Set<String> lastContextList;
     
     @Override
     public Node getUiElement() {
@@ -70,6 +98,7 @@ public class ConsoleUIPlugin implements UiPlugin, ConsolePane<Node>{
         loader.load();
         
         
+         
         popOver = new PopOver(root);
         toggleButton = new ToggleButton("Console");
         toggleButton.selectedProperty().bind(popOver.showingProperty());
@@ -97,8 +126,8 @@ public class ConsoleUIPlugin implements UiPlugin, ConsolePane<Node>{
 
     @Override
     public void append(OutputEvent event) {
-        textArea.appendText("\n");
-        textArea.appendText(event.getOutput());
+        consoleTextArea.appendText("\n");
+        consoleTextArea.appendText(event.getOutput());
     }
 
     @Override
@@ -109,7 +138,7 @@ public class ConsoleUIPlugin implements UiPlugin, ConsolePane<Node>{
 
     @Override
     public Node getComponent() {
-        return textArea;
+        return consoleTextArea;
     }
 
     @Override
@@ -122,4 +151,60 @@ public class ConsoleUIPlugin implements UiPlugin, ConsolePane<Node>{
        append(event);
     }
     
+    @FXML
+    public void reloadCss() {
+       ((FXUserInterface)uiService.getUI(ImageJFX.UI_NAME)).reloadCss();
+    }
+    
+    
+     
+    
+    /*
+        SciJava Event
+    */
+    
+@EventHandler
+    public void on(UiContextUpdatedEvent event) {
+        
+        Platform.runLater(this::refreshContext);
+       
+    }
+    
+    
+    private List<Button> getButtonList() {
+        return uiContextFlowPane
+                .getChildren()
+                .stream()
+                .map(node->(Button)node)
+                .collect(Collectors.toList());
+    }
+    
+    private void refreshContext() {
+        
+        Set<String> context = uiContextService.getContextList();
+        
+        Set<String> current = getButtonList()
+                .stream()
+                .map(Button::getText)
+                .collect(Collectors.toSet());
+        
+        List<Button> toRemove = getButtonList()
+                .stream()
+                .filter(button->context.contains(button.getText()) == false)
+                .collect(Collectors.toList());
+        
+        List<Button> toAdd = context
+                .stream()
+                .filter(c->current.contains(c) == false)
+                .map(Button::new)
+                .collect(Collectors.toList());
+        
+        uiContextFlowPane.getChildren().removeAll(toRemove);
+        uiContextFlowPane.getChildren().addAll(toAdd);
+        
+       
+    }
+                
+                
+                
 }

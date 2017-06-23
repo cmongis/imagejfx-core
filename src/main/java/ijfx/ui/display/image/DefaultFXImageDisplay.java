@@ -356,7 +356,7 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
     }
 
     public void checkProperties() {
-        currentLUTProperty.fireValueChangedEvent();
+        currentLUTProperty().fireValueChangedEvent();
     }
     
     private void checkLUProperties() {
