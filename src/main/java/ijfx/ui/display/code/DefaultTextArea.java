@@ -53,7 +53,7 @@ public class DefaultTextArea extends AnchorPane{
     private CodeArea codeArea = null;
     private LanguageKeywords languageKeywords;
     private ScriptHighlight scriptHighlight;
-    
+    private AutocompletionList listProvider;
     
     private final StringProperty selectedTextProperty;
     private final StringProperty textProperty;
@@ -62,7 +62,7 @@ public class DefaultTextArea extends AnchorPane{
     private String THEME = "dark";
     
     private Hashtable KEYWORDS_PATTERN_TABLE = new Hashtable();
-   private DefaultAutocompletion autocompletion;
+    private Autocompletion autocompletion;
     
     public DefaultTextArea() {
         
@@ -101,9 +101,8 @@ public class DefaultTextArea extends AnchorPane{
     }
     
     public void setAutocompletion(List<CommandInfo> entriesList){
-        AutocompletionList listProvider = new DefaultAutocompletionListProvider(entriesList);
-        SortedSet<String> entries = listProvider.getEntries();
-        this.autocompletion.setEntries(entries);
+        this.listProvider = new DefaultAutocompletionListProvider(entriesList);
+        this.autocompletion.setEntries(listProvider.getEntries());
     }
     
     public void initLanguage(ScriptLanguage language){
@@ -147,8 +146,8 @@ public class DefaultTextArea extends AnchorPane{
                 if (word.getStyle().toArray()[0].equals("null")){
                     String[] newEntries = word.getText().split(" ");
                     for (String newEntry : newEntries){
-                        if (!this.autocompletion.getEntries().contains(newEntry) && !newEntry.equals(currentWord)){
-                            this.autocompletion.getEntries().add(newEntry);
+                        if (!this.listProvider.getEntries().contains(newEntry) && !newEntry.equals(currentWord)){
+                            this.listProvider.getEntries().add(newEntry);
                         }
                     }
                     

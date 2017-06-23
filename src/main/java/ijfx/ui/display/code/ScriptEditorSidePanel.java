@@ -90,7 +90,10 @@ public class ScriptEditorSidePanel extends VBox implements UiPlugin{
     
     public void fillObservableList(){
         for (CommandInfo command : this.entriesList){
-            this.observableEntries.add(command.getClassName());
+            String className = command.getClassName();
+            String[] list = command.getClassName().split("\\.");
+            String name = list[list.length-1];
+            this.observableEntries.add(name);
             
         }
     }
@@ -111,6 +114,8 @@ public class ScriptEditorSidePanel extends VBox implements UiPlugin{
               .stream()
               .filter(e -> e.getClassName().toLowerCase().contains(word.toLowerCase()))
               .map(e -> e.getClassName())
+              .map(e -> e.split("\\."))
+              .map(e -> e[e.length-1])
               .collect(Collectors.toList()); 
         this.observableEntries.clear();
        
