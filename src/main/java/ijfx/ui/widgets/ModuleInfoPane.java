@@ -46,7 +46,7 @@ import org.scijava.module.ModuleItem;
  *
  * @author cyril
  */
-public class ModuleInfoDisplay extends BorderPane{
+public class ModuleInfoPane extends BorderPane{
 
     private WebView webView;
 
@@ -57,7 +57,7 @@ public class ModuleInfoDisplay extends BorderPane{
     
     
     
-    public ModuleInfoDisplay() {
+    public ModuleInfoPane() {
        
         // Webview is always created in the FX Thread
         new CallbackTask<Void, WebView>()
@@ -170,7 +170,7 @@ public class ModuleInfoDisplay extends BorderPane{
             return writer.toString();
 
         } catch (PebbleException ex) {
-            Logger.getLogger(ModuleInfoDisplay.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ModuleInfoPane.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return "Something happened :-(";
