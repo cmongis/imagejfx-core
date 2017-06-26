@@ -37,6 +37,7 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.Paragraph;
 import org.fxmisc.richtext.model.StyleSpan;
+import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyledText;
 import org.scijava.Context;
 import org.scijava.command.CommandInfo;
@@ -79,6 +80,7 @@ public class DefaultTextArea extends AnchorPane{
                         codeArea.setStyleSpans(0, this.scriptHighlight.computeHighlighting(codeArea.getText()));
                         lauchAutocompletion();
                         addVariableAutocompletion();
+                        
                     }
                     
                 });
@@ -109,7 +111,7 @@ public class DefaultTextArea extends AnchorPane{
         this.languageKeywords.setLanguage(language);
         this.KEYWORDS_PATTERN_TABLE = this.languageKeywords.getKeywords();
         this.scriptHighlight.setKeywords(this.KEYWORDS_PATTERN_TABLE);
-        this.codeArea.redo();
+        //this.codeArea.redo();
         
     }
     /**
@@ -164,6 +166,7 @@ public class DefaultTextArea extends AnchorPane{
         context.inject(this);
     }
     public void setText(String text){
+
         Platform.runLater( () ->{
             this.codeArea.replaceText(text);
         });

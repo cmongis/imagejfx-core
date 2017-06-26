@@ -85,7 +85,7 @@
     -fx-font-weight: bold;
 }
 .brightcyan {
-    -fx-fill: blue;
+    -fx-fill: gold;
     -fx-font-weight: bold;
 }
 .semicolon {
@@ -109,7 +109,10 @@
 }
 
 .comment {
-	-fx-fill: cadetblue;
+	-fx-fill: lightskyblue;
+}
+.COMMENT {
+	-fx-fill: lightskyblue;
 }
 .uncompleteBracket{
     -fx-fill: red;

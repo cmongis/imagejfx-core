@@ -95,12 +95,9 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
         
         changeLanguage(display.getLanguage());
         initCode();
-      
+        bindProperties();
         
-        textArea.setText(display.textProperty().getValue());
-        display.textProperty().bind(this.textArea.textProperty());
-        display.selectedTextProperty().bind(this.textArea.selectedTextProperty());
-        display.selectionProperty().bind(this.textArea.selectionProperty());
+        
         
         
     }
@@ -129,7 +126,22 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
         return rb;
     }
     
+    public void bindProperties(){
+        while (!textArea.getCodeArea().getText().equals(display.get(0).getCode())) {            
+            try {
+                Thread.sleep(100);              // quickfix
+                System.out.println("patientez");
+            } catch (InterruptedException ex) {
+                Logger.getLogger(TextEditorDisplayPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        System.out.println("ok GO !");
+        display.textProperty().bind(this.textArea.textProperty());
+        display.selectedTextProperty().bind(this.textArea.selectedTextProperty());
+        display.selectionProperty().bind(this.textArea.selectionProperty());
+    }
     public void initCode(){
+        
         this.textArea.setText(display.get(0).getCode());
         
     }

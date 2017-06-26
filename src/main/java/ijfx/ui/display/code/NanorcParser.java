@@ -65,15 +65,14 @@ public class NanorcParser implements LanguageKeywords{
     @Override
     public void run() {
         try {
+            this.keywordsTable.clear();
             this.nanorcFile = getClass().getResource(findFileLanguage(language)).getFile();
-            System.out.println(this.language.getLanguageName());
             nanoRcParseV2(this.nanorcFile);
             computeComment();
         } catch (NullPointerException e) {
             System.out.println("No nanorc file for this language");
             this.keywordsTable = new Hashtable();
         }
-        
         
     }
     
@@ -107,7 +106,9 @@ public class NanorcParser implements LanguageKeywords{
                     if (splitedLine[2].matches("\"\\\\\\<\\(.*")){                                       // check if the regex start with ""\<(" = keywords in nanorc
                         if (this.keywordsTable.containsKey(splitedLine[1])){
                                 String pattern = (String) this.keywordsTable.get(splitedLine[1]);
-                                pattern = pattern.replace(")\\b", "|"+splitedLine[2]);
+                                String newWords = splitedLine[2];
+                                newWords = newWords.replace("\"\\<(", "").replace(")\\>\"", "");
+                                pattern = pattern.replace(")\\b", "|"+newWords);
                                 pattern = pattern.concat(")\\b");
                                 this.keywordsTable.put(splitedLine[1], pattern);
                             }
