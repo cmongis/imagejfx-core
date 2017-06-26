@@ -23,54 +23,30 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mitchellbosecke.pebble.PebbleEngine;
-import com.mitchellbosecke.pebble.error.LoaderException;
 import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.loader.ClasspathLoader;
-import com.mitchellbosecke.pebble.loader.Loader;
-import com.mitchellbosecke.pebble.utils.PathUtils;
-import ijfx.core.uiplugin.Localization;
 import ijfx.ui.RichMessageDisplayer;
-import ijfx.ui.UiConfiguration;
-import ijfx.ui.UiPlugin;
-import ijfx.ui.main.ImageJFX;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
 import mongis.utils.CallbackTask;
-import org.scijava.command.CommandService;
 import org.scijava.module.ModuleInfo;
 import org.scijava.module.ModuleItem;
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
-import org.scijava.plugins.commands.io.OpenFile;
 
 /**
  *
  * @author cyril
  */
-@Plugin(type = UiPlugin.class)
-@UiConfiguration(id = "test", localization = Localization.RIGHT, context = "test-open")
-public class ModuleInfoDisplay extends BorderPane implements UiPlugin {
+public class ModuleInfoDisplay extends BorderPane{
 
     private WebView webView;
 
@@ -83,6 +59,19 @@ public class ModuleInfoDisplay extends BorderPane implements UiPlugin {
     
     public ModuleInfoDisplay() {
        
+        // Webview is always created in the FX Thread
+        new CallbackTask<Void, WebView>()
+                .call(WebView::new)
+                .then(this::installWebView)
+                .startInFXThread();
+
+        // Setting the minimum width and max width by default
+        setPrefWidth(300);
+        setPrefHeight(400);
+        
+        //add the right listeners
+        moduleProperty.addListener(this::onModuleChanged);
+        
     }
 
     private void installWebView(WebView view) {
@@ -93,8 +82,6 @@ public class ModuleInfoDisplay extends BorderPane implements UiPlugin {
         setCenter(view);
         webView.addEventHandler(MouseEvent.MOUSE_CLICKED, this::onMouseClicked);
         messageDispayer = new RichMessageDisplayer(webView);
-
-        //setTop(new Label("Hello !"));
         updateWebView();
     }
 
@@ -218,32 +205,4 @@ public class ModuleInfoDisplay extends BorderPane implements UiPlugin {
 
     }
 
-   
-
-    @Override
-    public Node getUiElement() {
-        return this;
-    }
-
-    @Parameter
-    CommandService commandService;
-
-    @Override
-    public UiPlugin init() throws Exception {
-
-        new CallbackTask<Void, WebView>()
-                .call(WebView::new)
-                .then(this::installWebView)
-                .startInFXThread();
-
-        setPrefWidth(300);
-        setPrefHeight(400);
-        moduleProperty.addListener(this::onModuleChanged);
-
-        Platform.runLater(() -> {
-            moduleProperty.setValue(commandService.getCommand(OpenFile.class));
-        });
-        return this;
-    }
-
-}
+  }
