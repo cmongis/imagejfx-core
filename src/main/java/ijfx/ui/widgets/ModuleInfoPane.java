@@ -117,16 +117,16 @@ public class ModuleInfoPane extends BorderPane{
         Accessors
     */
     
-    public Property<ModuleInfo> moduleProperty() {
+    public Property<ModuleInfo> moduleInfoProperty() {
         return moduleProperty;
     }
     
-    public void setModule(ModuleInfo infos) {
-        moduleProperty().setValue(infos);
+    public void setModuleInfo(ModuleInfo infos) {
+        moduleInfoProperty().setValue(infos);
     }
     
-    public ModuleInfo getModule() {
-        return moduleProperty().getValue();
+    public ModuleInfo getModuleInfo() {
+        return moduleInfoProperty().getValue();
     }
     
     
