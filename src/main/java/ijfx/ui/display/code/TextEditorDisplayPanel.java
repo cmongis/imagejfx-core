@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.property.adapter.JavaBeanStringProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -94,9 +95,7 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
         this.textArea.setAutocompletion(commandService.getCommands());
         
         changeLanguage(display.getLanguage());
-        initCode();
-        bindProperties();
-        
+        initCode();        
         
         
         
@@ -126,23 +125,15 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
         return rb;
     }
     
-    public void bindProperties(){
-        while (!textArea.getCodeArea().getText().equals(display.get(0).getCode())) {            
-            try {
-                Thread.sleep(100);              // quickfix
-                System.out.println("patientez");
-            } catch (InterruptedException ex) {
-                Logger.getLogger(TextEditorDisplayPanel.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        System.out.println("ok GO !");
-        display.textProperty().bind(this.textArea.textProperty());
-        display.selectedTextProperty().bind(this.textArea.selectedTextProperty());
-        display.selectionProperty().bind(this.textArea.selectionProperty());
-    }
+   
     public void initCode(){
+        Platform.runLater( () ->{
+            this.textArea.setText(display.get(0).getCode());
+            display.textProperty().bind(this.textArea.textProperty());
+            display.selectedTextProperty().bind(this.textArea.selectedTextProperty());
+            display.selectionProperty().bind(this.textArea.selectionProperty());
+        });
         
-        this.textArea.setText(display.get(0).getCode());
         
     }
     

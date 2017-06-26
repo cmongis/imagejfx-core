@@ -167,9 +167,7 @@ public class DefaultTextArea extends AnchorPane{
     }
     public void setText(String text){
 
-        Platform.runLater( () ->{
-            this.codeArea.replaceText(text);
-        });
+        this.codeArea.replaceText(text);
     }
     
     public void replaceWord(String word){
