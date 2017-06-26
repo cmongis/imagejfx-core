@@ -42,7 +42,7 @@ public class RichMessageDisplayer {
 
  
 
-    private static final String CSS_URL = ImageJFX.class.getResource("/web/css/bijou.min.css").toExternalForm();
+    private static final String CSS_URL = ImageJFX.class.getResource("/ijfx/ui/bijou.min.css").toExternalForm();
     private static final String CSS_HEADER = "<html><head><link rel='stylesheet' href='%s'/></head><body><style>%s</style>%s</body></html>";
     private final  List<String> CSS_ADDITIONAL = new ArrayList<>();
     List<Callback<String, String>> stringProcessor = new ArrayList<>();
@@ -122,7 +122,7 @@ public class RichMessageDisplayer {
         String content = String
                 .format(
                         CSS_HEADER
-                        ,ImageJFX.class.getResource("/web/scss/bijou.min.css").toExternalForm()
+                        ,ImageJFX.class.getResource("/ijfx/ui/bijou.min.css").toExternalForm()
                         ,CSS_ADDITIONAL.stream().collect(Collectors.joining("\n"))
                         , text);
         

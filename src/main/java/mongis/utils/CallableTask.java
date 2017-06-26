@@ -22,6 +22,7 @@ package mongis.utils;
 import ijfx.ui.main.ImageJFX;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 
@@ -35,7 +36,10 @@ public class CallableTask<T> extends Task<T>{
     Callable<T> callable;
     LongCallable<T> longCallable;
     Consumer<T> onSuccess;
-    Consumer<Throwable> onError;
+    Consumer<Throwable> onError = trowable -> {
+    
+        ImageJFX.getLogger().log(Level.SEVERE, "Error executing CallbackTask", trowable);
+    };
     public CallableTask<T> setCallable(Callable<T> callable) {
         this.callable = callable;
         return this;
@@ -83,6 +87,7 @@ public class CallableTask<T> extends Task<T>{
     @Override
     protected void failed() {
         super.failed();
+        
         onError.accept(getException());
     }
     

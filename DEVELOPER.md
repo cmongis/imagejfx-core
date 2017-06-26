@@ -93,8 +93,8 @@ Here is a boiler plate widget
 
 ~~~java
 
-@Plugin(type = FxWidgetPlugin.class)
-@Widget(id = "context-switch-button", localization = Localization.BOTTOM_RIGHT, context="always")
+@Plugin(type = UiPlugin.class)
+@UiConfiguration(id = "context-switch-button", localization = Localization.BOTTOM_RIGHT, context="always")
 public class ContextSwitchButton {
 	
 	// the services will be injected *AFTER* instanciation
@@ -113,7 +113,7 @@ public class ContextSwitchButton {
 	
 	
 	// method ran after injection of the service
-	public FxWidgetPlugin init() {
+	public UiPlugin init() {
 		// you can now uses the services
 		
 		return this;

@@ -229,9 +229,16 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
         executorService.execute(this);
         return this;
     }
+    
+    
 
     public CallbackTask<INPUT, OUTPUT> start() {
         executor.execute(this);
+        return this;
+    }
+    
+    public CallbackTask<INPUT,OUTPUT> startInFXThread() {
+        Platform.runLater(this);
         return this;
     }
 

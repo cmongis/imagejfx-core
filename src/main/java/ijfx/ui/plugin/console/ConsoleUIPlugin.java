@@ -19,6 +19,8 @@
  */
 package ijfx.ui.plugin.console;
 
+import de.jensd.fx.glyphs.GlyphsDude;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import ijfx.core.FXUserInterface;
 import ijfx.core.uicontext.UiContextService;
 import ijfx.core.uicontext.UiContextUpdatedEvent;
@@ -36,7 +38,10 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
@@ -70,6 +75,9 @@ public class ConsoleUIPlugin implements UiPlugin, ConsolePane<Node>{
     @FXML
     FlowPane uiContextFlowPane;
     
+    @FXML
+            TextField uiContextTextField;
+    
     ToggleButton toggleButton;
     
     PopOver popOver;
@@ -98,7 +106,7 @@ public class ConsoleUIPlugin implements UiPlugin, ConsolePane<Node>{
         loader.load();
         
         
-         
+         uiContextTextField.addEventHandler(KeyEvent.KEY_RELEASED, this::onKeyPressed);
         popOver = new PopOver(root);
         toggleButton = new ToggleButton("Console");
         toggleButton.selectedProperty().bind(popOver.showingProperty());
@@ -124,6 +132,14 @@ public class ConsoleUIPlugin implements UiPlugin, ConsolePane<Node>{
             event.consume();
     }
 
+    public void onKeyPressed(KeyEvent event) {
+        if(event.getCode() == KeyCode.ENTER) {
+            uiContextService.enter(uiContextTextField.getText().split(" "));
+            uiContextService.update();
+            uiContextTextField.clear();
+        }
+    }
+    
     @Override
     public void append(OutputEvent event) {
         consoleTextArea.appendText("\n");
@@ -196,13 +212,23 @@ public class ConsoleUIPlugin implements UiPlugin, ConsolePane<Node>{
         List<Button> toAdd = context
                 .stream()
                 .filter(c->current.contains(c) == false)
-                .map(Button::new)
+                .map(this::createButton)
                 .collect(Collectors.toList());
         
         uiContextFlowPane.getChildren().removeAll(toRemove);
         uiContextFlowPane.getChildren().addAll(toAdd);
         
        
+    }
+    
+    private Button createButton(String uiContext) {
+        Button button = GlyphsDude.createIconButton(FontAwesomeIcon.REMOVE, uiContext);
+        button.setOnAction(event->{
+        
+            uiContextService.leave(uiContext);
+            uiContextService.update();
+        });
+        return button;
     }
                 
                 
