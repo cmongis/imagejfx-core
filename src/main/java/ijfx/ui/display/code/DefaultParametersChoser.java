@@ -31,8 +31,8 @@ public class DefaultParametersChoser {
     @Parameter
     JsonPreferenceService jsonPreferenceService;
     
-    private Hashtable parameters;
-    private String fileName;
+    private Hashtable parameters = new Hashtable();
+    private String fileName = "ScriptEdtirorPreferences";
     
     
 
@@ -41,7 +41,11 @@ public class DefaultParametersChoser {
     }
     
     public void loadPreferencies(){
-        this.parameters = (Hashtable) jsonPreferenceService.loadMapFromJson(fileName, String.class, String.class);
+        try {
+            this.parameters = (Hashtable) jsonPreferenceService.loadMapFromJson(fileName, String.class, String.class);
+        } catch (Exception e) {
+        }
+        
     }
     
     public void savePreferencies(){

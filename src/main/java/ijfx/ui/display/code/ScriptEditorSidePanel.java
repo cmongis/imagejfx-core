@@ -23,15 +23,21 @@ import ijfx.core.uicontext.UiContextService;
 import ijfx.core.uiplugin.Localization;
 import ijfx.ui.UiConfiguration;
 import ijfx.ui.UiPlugin;
+import ijfx.ui.widgets.ModuleInfoPane;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -46,8 +52,8 @@ import org.scijava.plugin.Plugin;
  * @author florian
  */
 @Plugin(type = UiPlugin.class)
-@UiConfiguration(id = "research function panel", localization = Localization.LEFT, context="script-open")
-public class ScriptEditorSidePanel extends VBox implements UiPlugin{
+@UiConfiguration(id = "research function panel", localization = Localization.RIGHT, context="script-open")
+public class ScriptEditorSidePanel extends TabPane implements UiPlugin{
     @Parameter
     UiContextService uiContextService;
     @Parameter
@@ -56,9 +62,11 @@ public class ScriptEditorSidePanel extends VBox implements UiPlugin{
     @FXML
     TextField searchField;
     @FXML 
-    ListView<String> listView;
-    List<CommandInfo> entriesList;
-    ObservableList<String> observableEntries;
+    ListView<CommandInfo> listView;
+    @FXML
+    TabPane tabPane;
+    
+    private List<CommandInfo> entriesList;
     
     public ScriptEditorSidePanel() throws IOException {
         
@@ -68,40 +76,37 @@ public class ScriptEditorSidePanel extends VBox implements UiPlugin{
         loader.setController(this); //definition du controlleur
         loader.load(); // generation de la fenetre.
         
+        listView.setCellFactory(this::createCell);
         
+    }
+    
+    private ListCell<CommandInfo> createCell (ListView<CommandInfo> commandInfo){
+        return new CommandInfoListCell();
     }
     
     public UiPlugin init() {
         
         this.entriesList = commandService.getCommands();
-	this.observableEntries = FXCollections.observableArrayList();
-        fillObservableList();
-        //listViewFiller();
-        this.listView.setItems(observableEntries);
+        
+        this.listView.getItems().addAll(entriesList);
+        this.listView.setOnMouseClicked(this::onAction);
         this.searchField.setOnKeyPressed(this::onSearch);
-        //searchField.setOnKeyTyped(this::onSearch);
         this.listView.refresh();
         
 	return this;
     }
     
     
-  
-    
-    public void fillObservableList(){
-        for (CommandInfo command : this.entriesList){
-            String className = command.getClassName();
-            String[] list = command.getClassName().split("\\.");
-            String name = list[list.length-1];
-            this.observableEntries.add(name);
-            
-        }
-    }
-    
     public void onAction( MouseEvent event){
+        ModuleInfoPane moduleInfoPane = new ModuleInfoPane();
+        CommandInfo item = this.listView.getSelectionModel().getSelectedItem();
+        moduleInfoPane.setModuleInfo(item);
+        String[] className = item.getClassName().split("\\.");
+        Tab newTab = new Tab(className[className.length-1]);
         
-        String item = this.listView.getSelectionModel().getSelectedItem();                    
-                    
+        newTab.setContent(moduleInfoPane);
+        this.getTabs().add(newTab);
+               
     }
     
     public void onSearch(KeyEvent event){
@@ -110,17 +115,13 @@ public class ScriptEditorSidePanel extends VBox implements UiPlugin{
         I don't know how to do it 
         */
         String word = this.searchField.getText();
-        List<String> filteredEntries = this.entriesList
+        List<CommandInfo> filteredEntries = this.entriesList
               .stream()
               .filter(e -> e.getClassName().toLowerCase().contains(word.toLowerCase()))
-              .map(e -> e.getClassName())
-              .map(e -> e.split("\\."))
-              .map(e -> e[e.length-1])
               .collect(Collectors.toList()); 
-        this.observableEntries.clear();
-       
-        this.observableEntries.addAll(filteredEntries);
         
+        this.listView.getItems().clear();
+        this.listView.getItems().addAll(filteredEntries);
         this.listView.refresh();
     }
 
@@ -129,4 +130,34 @@ public class ScriptEditorSidePanel extends VBox implements UiPlugin{
         return this;
     }
     
+     private class CommandInfoListCell extends ListCell<CommandInfo> {
+        /*
+        Ici on definis comment la vue doit afficher les tache, 
+        */
+        
+        VBox box = new VBox();
+
+        public CommandInfoListCell() {
+            super();
+            itemProperty().addListener(this::onItemChanged);
+            
+        }
+
+        private void onItemChanged(ObservableValue obs, CommandInfo oldValue, CommandInfo newValue) {
+            
+            
+            
+            if(newValue == null){
+                setGraphic(null);
+            }
+            else {
+                setGraphic(box);
+                String[] text = newValue.getClassName()
+                        .split("\\.");
+                box.getChildren().clear();
+                box.getChildren().add(new Label(text[text.length-1]));
+            }
+        }
+        
+    }
 }

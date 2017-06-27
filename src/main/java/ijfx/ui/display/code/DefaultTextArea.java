@@ -55,6 +55,8 @@ public class DefaultTextArea extends AnchorPane{
     private LanguageKeywords languageKeywords;
     private ScriptHighlight scriptHighlight;
     private AutocompletionList listProvider;
+    private boolean autocomplete = true;
+    private ContextMenu autocompleteMenu = new ContextMenu();
     
     private final StringProperty selectedTextProperty;
     private final StringProperty textProperty;
@@ -127,12 +129,13 @@ public class DefaultTextArea extends AnchorPane{
         Paragraph paragraph = codeArea.getParagraph(codeArea.getCurrentParagraph());
         Collection style = (Collection) paragraph.getStyleAtPosition(selection.getStart());
         if (style.toArray()[0].equals("null")){
-            ContextMenu contextMenu = this.autocompletion.computeAutocompletion(word);
-            if (contextMenu != null) {
-                contextMenu.setMaxHeight(5);
-                contextMenu.setPrefHeight(5);
-                contextMenu.setHeight(10);
-                contextMenu.show(this, Side.BOTTOM, 0, 0);
+            this.autocompleteMenu = this.autocompletion.computeAutocompletion(word);
+            if (autocompleteMenu != null) {
+                autocompleteMenu.setMaxHeight(5);
+                autocompleteMenu.setPrefHeight(5);
+                autocompleteMenu.setHeight(10);
+                if (this.autocomplete == true) autocompleteMenu.show(this, Side.BOTTOM, 0, 0);
+                
             }
         }
         
@@ -218,6 +221,14 @@ public class DefaultTextArea extends AnchorPane{
    public void setPreferencies(Hashtable<String,String> preferencies){
        if (preferencies.containsKey("styleSheet") && !getClass().getResource((String) preferencies.get("styleSheet")).equals(null)){
            changeCss(preferencies.get("styleSheet"));
+       }
+       if (preferencies.containsKey("showAutocompletion") ){
+           if (preferencies.get("showAutocompletion").equals("true")){
+               this.autocomplete = true;
+           }
+           else if (preferencies.get("showAutocompletion").equals("false")){
+               this.autocomplete = false;
+           }
        }
    }
 }
