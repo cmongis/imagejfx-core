@@ -21,6 +21,14 @@ package ijfx.ui.display.code;
 
 import ijfx.core.prefs.JsonPreferenceService;
 import java.util.Hashtable;
+import java.util.List;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.shape.Box;
 import org.scijava.plugin.Parameter;
 
 /**
@@ -31,13 +39,46 @@ public class DefaultParametersChoser {
     @Parameter
     JsonPreferenceService jsonPreferenceService;
     
-    private Hashtable parameters = new Hashtable();
+    private VBox mainBox;
+    
+    private Hashtable<String,String> parameters = new Hashtable();
     private String fileName = "ScriptEdtirorPreferences";
     
     
 
     public DefaultParametersChoser() {
+        mainBox = new VBox();
+        for (String parameter : this.parameters.keySet()){
+            mainBox.getChildren().add(new Label(parameter));
+        }
         loadPreferencies();
+    }
+    
+    public VBox createBoolean(String name){
+        VBox box = new VBox();
+        box.getChildren().add(0, new Label(name));
+        
+        
+        box.getChildren().add(1, new CheckBox("Enable"));
+        
+        return  box;
+    }
+    
+    public VBox createMultiChoiceBox (String name, List<String> choices, String selected){
+        VBox box = new VBox();
+        box.getChildren().add(0, new Label(name));
+        
+        HBox buttonBox = new HBox();
+        ToggleGroup group = new ToggleGroup();
+        for (String item : choices){
+            RadioButton rb1 = new RadioButton(item);
+            rb1.setToggleGroup(group);
+            buttonBox.getChildren().add(rb1);
+            if (item.equals(selected)) rb1.setSelected(true);
+        }
+        box.getChildren().add(1, buttonBox);
+        
+        return box;
     }
     
     public void loadPreferencies(){
@@ -45,6 +86,7 @@ public class DefaultParametersChoser {
             this.parameters = (Hashtable) jsonPreferenceService.loadMapFromJson(fileName, String.class, String.class);
         } catch (Exception e) {
         }
+        
         
     }
     
