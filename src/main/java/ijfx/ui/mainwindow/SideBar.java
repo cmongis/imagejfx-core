@@ -19,6 +19,7 @@
  */
 package ijfx.ui.mainwindow;
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -98,6 +99,9 @@ public class SideBar {
 
             menuActivated.setValue(false);
 
+            
+            addButton(new SideMenuButton("Hello",FontAwesomeIcon.ADN));
+            
         } catch (IOException ex) {
             Logger.getLogger(SideBar.class.getName()).log(Level.SEVERE, "Error when loading the SideBar", ex);
         }
@@ -123,6 +127,14 @@ public class SideBar {
         memoryProgressBar.setProgress(progress);
         memoryLabel.setText(String.format("%d / %d MB", used, max));
 
+    }
+    
+    public void addButton(SideMenuButton button) {
+        
+        
+        button.extendedProperty().bind(menuActivated);
+        sideMenuTopVBox.getChildren().add(button);
+        
     }
 
     private void onMemoryProgressBarClicked(MouseEvent event) {

@@ -41,9 +41,9 @@ public class FXUiActionService extends AbstractService implements IjfxService{
     FXIconService fxIconService;
     
     @Parameter
-    UiActionService uiActionService;
+    UiCommandService uiActionService;
     
-    public <T> MenuItem createMenuItem(UiAction<T> action, T object) {
+    public <T> MenuItem createMenuItem(UiCommand<T> action, T object) {
         MenuItem item = new MenuItem(SciJavaUtils.getLabel(action),fxIconService.getIconAsNode(action));
         
         item.setOnAction(event->{
@@ -54,7 +54,7 @@ public class FXUiActionService extends AbstractService implements IjfxService{
         
     }
     
-    public <T> Button createButton(UiAction<T> action, T object) {
+    public <T> Button createButton(UiCommand<T> action, T object) {
         Button button = new Button(SciJavaUtils.getLabel(action),fxIconService.getIconAsNode(action));
         
         button.setTooltip(new Tooltip(SciJavaUtils.getDescription(action)));

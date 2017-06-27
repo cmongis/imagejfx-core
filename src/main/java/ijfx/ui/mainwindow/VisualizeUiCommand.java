@@ -17,21 +17,19 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.uiplugin;
+package ijfx.ui.mainwindow;
 
-import ijfx.core.IjfxService;
-import java.util.List;
+import ijfx.ui.activity.DisplayContainer;
+import org.scijava.plugin.Plugin;
+import ijfx.core.uiplugin.UiCommand;
 
 /**
  *
  * @author cyril
  */
-public interface UiActionService extends IjfxService{
-    
-    
-    <T> List<UiAction<T>> getAssociatedAction(T o);
-    <T> List<UiAction<T>>  getAssociatedAction(Class<? extends T> type);
-   
-    
-    
+@Plugin(type = UiCommand.class,label = "Visiualize", priority= 100,iconPath = "fa:picture_alt")
+public class VisualizeUiCommand extends AbstractActivityLauncher{
+    public VisualizeUiCommand() {
+        super(DisplayContainer.class);
+    }
 }

@@ -23,8 +23,6 @@ import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import ijfx.core.icon.FXIconService;
 import ijfx.core.property.SuppliedProperty;
-import ijfx.core.uiplugin.UiAction;
-import ijfx.core.uiplugin.UiActionService;
 import ijfx.core.usage.Usage;
 import ijfx.core.utils.SciJavaUtils;
 import ijfx.ui.main.ImageJFX;
@@ -53,6 +51,8 @@ import org.scijava.event.EventService;
 import org.scijava.module.ModuleService;
 import org.scijava.plugin.Parameter;
 import rx.subjects.PublishSubject;
+import ijfx.core.uiplugin.UiCommand;
+import ijfx.core.uiplugin.UiCommandService;
 
 /*
 Helper Classes
@@ -84,7 +84,7 @@ public class AxisSlider extends BorderPane {
     EventService eventService;
 
     @Parameter
-    UiActionService uiActionService;
+    UiCommandService uiActionService;
 
     @Parameter
     FXIconService fxIconService;
@@ -261,7 +261,7 @@ public class AxisSlider extends BorderPane {
          */
     }
 
-    public MenuItem createAction(UiAction<AxisSlider> uiAction) {
+    public MenuItem createAction(UiCommand<AxisSlider> uiAction) {
         MenuItem menuItem = new MenuItem();
         AxisType t = getAxisType();
         menuItem

@@ -20,20 +20,20 @@
 package ijfx.ui.display.image.actions;
 
 import ijfx.commands.axis.Isolate;
-import ijfx.core.uiplugin.AbstractUiAction;
-import ijfx.core.uiplugin.UiAction;
+import ijfx.core.uiplugin.AbstractUiCommand;
 import ijfx.ui.display.image.AxisSlider;
 import net.imagej.display.ImageDisplay;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import ijfx.core.uiplugin.UiCommand;
 
 /**
  *
  * @author cyril
  */
-@Plugin(type = UiAction.class,label = "Isolate the current {0}",iconPath="fa:clone")
-public class IsolateCurrentPositionUIAction extends AbstractUiAction<AxisSlider> {
+@Plugin(type = UiCommand.class,label = "Isolate the current {0}",iconPath="fa:clone")
+public class IsolateCurrentPositionUIAction extends AbstractUiCommand<AxisSlider> {
 
     public IsolateCurrentPositionUIAction() {
         super(AxisSlider.class);

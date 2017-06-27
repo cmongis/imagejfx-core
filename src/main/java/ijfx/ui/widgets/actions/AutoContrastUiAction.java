@@ -19,16 +19,16 @@
  */
 package ijfx.ui.widgets.actions;
 
-import ijfx.core.uiplugin.UiAction;
 import ijfx.plugins.display.AutoContrast;
 import ijfx.ui.widgets.AbstractAdjusterUIAction;
 import org.scijava.plugin.Plugin;
+import ijfx.core.uiplugin.UiCommand;
 
 /**
  *
  * @author cyril
  */
-@Plugin(type = UiAction.class, label = "Auto-contrast", iconPath="fa:magic",priority=100,description="Adjust the contrast depending on min/max values of each channel.")
+@Plugin(type = UiCommand.class, label = "Auto-contrast", iconPath="fa:magic",priority=100,description="Adjust the contrast depending on min/max values of each channel.")
 public class AutoContrastUiAction extends AbstractAdjusterUIAction{
 
     public AutoContrastUiAction() {

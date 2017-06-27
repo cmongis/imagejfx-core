@@ -24,15 +24,17 @@ import ijfx.core.FXUserInterface;
 import ijfx.core.activity.Activity;
 import ijfx.core.hint.Hint;
 import ijfx.core.hint.HintService;
+import ijfx.core.icon.FXIconService;
 import ijfx.core.mainwindow.MainWindow;
-import ijfx.core.mainwindow.SideMenuAction;
 import ijfx.core.uicontext.ContextualContainer;
 import ijfx.core.uicontext.ContextualWidget;
 import ijfx.core.uicontext.UiContextService;
 import ijfx.core.uiplugin.UiPluginService;
+import ijfx.core.utils.SciJavaUtils;
 import ijfx.ui.UiPlugin;
 import ijfx.ui.UiPluginSorter;
 import ijfx.ui.loading.LoadingPopup;
+import ijfx.ui.plugin.statusbar.DefaultFXStatusBar;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,9 +61,10 @@ import mongis.utils.BindingsUtils;
 import mongis.utils.CallableTask;
 import mongis.utils.TaskList2;
 import mongis.utils.animation.Animations;
-import org.scijava.display.Display;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import ijfx.core.uiplugin.UiCommand;
+import ijfx.core.uiplugin.UiCommandService;
 
 /**
  * Controller class for the main window
@@ -133,6 +136,12 @@ public class DefaultMainWindow implements MainWindow {
     @Parameter
     FXUserInterface fxUserInterface;
 
+    @Parameter
+    FXIconService fxIconService;
+    
+    @Parameter
+    UiCommandService uiActionService;
+    
     @Override
     public void init() {
         try {
@@ -293,8 +302,13 @@ public class DefaultMainWindow implements MainWindow {
     }
 
     @Override
-    public void displaySideMenuAction(SideMenuAction action) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void displaySideMenuAction(UiCommand<MainWindow> action) {
+
+        final FontAwesomeIcon icon = fxIconService.getIcon(SciJavaUtils.getIconPath(action));
+        
+        final String label = SciJavaUtils.getLabel(action);
+        
+        sideBar.addButton(new SideMenuButton(label,icon));
     }
 
     @Override
@@ -309,12 +323,14 @@ public class DefaultMainWindow implements MainWindow {
 
     @Override
     public void addBackgroundTask(Task task) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        uiPluginService
+                .getUiPlugin(DefaultFXStatusBar.class)
+                .addTask(task);
     }
 
     @Override
     public void setReady(boolean ready) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     @Override

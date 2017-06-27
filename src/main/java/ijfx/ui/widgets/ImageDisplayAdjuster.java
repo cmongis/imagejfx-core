@@ -23,8 +23,6 @@ import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import ijfx.core.image.DisplayRangeService;
 import ijfx.core.uiplugin.FXUiActionService;
-import ijfx.core.uiplugin.UiAction;
-import ijfx.core.uiplugin.UiActionService;
 import ijfx.core.usage.Usage;
 import ijfx.ui.display.image.FXImageDisplay;
 import ijfx.ui.main.ImageJFX;
@@ -70,6 +68,8 @@ import org.scijava.Context;
 import org.scijava.command.Command;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
+import ijfx.core.uiplugin.UiCommand;
+import ijfx.core.uiplugin.UiCommandService;
 
 /**
  *
@@ -116,7 +116,7 @@ public class ImageDisplayAdjuster extends BorderPane {
     DisplayRangeService displayRangeService;
 
     @Parameter
-    UiActionService uiActionService;
+    UiCommandService uiActionService;
     
     @Parameter
     FXUiActionService fxUiActionService;
@@ -232,7 +232,7 @@ public class ImageDisplayAdjuster extends BorderPane {
     
     private void initActions() {
         
-        List<UiAction<ImageDisplayAdjuster>> actions = uiActionService.getAssociatedAction(ImageDisplayAdjuster.class);
+        List<UiCommand<ImageDisplayAdjuster>> actions = uiActionService.getAssociatedAction(ImageDisplayAdjuster.class);
         
         int len = actions.size();
         int limit = len > 3 ? 3 : len;

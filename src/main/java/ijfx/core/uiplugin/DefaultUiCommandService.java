@@ -32,38 +32,38 @@ import org.scijava.service.Service;
  * @author cyril
  */
 @Plugin(type = Service.class)
-public class DefaultUiActionService extends AbstractService implements UiActionService {
+public class DefaultUiCommandService extends AbstractService implements UiCommandService {
 
     @Parameter
     PluginService pluginService;
 
-    private List<UiAction> getUiActionList() {
+    private List<UiCommand> getUiActionList() {
 
         return pluginService
-                .createInstancesOfType(UiAction.class);
+                .createInstancesOfType(UiCommand.class);
 
     }
 
     @Override
-    public <T> List<UiAction<T>> getAssociatedAction(T o) {
+    public <T> List<UiCommand<T>> getAssociatedAction(T o) {
 
         return getUiActionList()
                 .stream()
                 .filter(action -> action.canHandle(o.getClass()))
-                .map(action -> (UiAction<T>)action)
+                .map(action -> (UiCommand<T>)action)
                 .collect(Collectors.toList());
 
     }
     
     @Override
-    public <T> List<UiAction<T>> getAssociatedAction(Class<? extends T> type) {
+    public <T> List<UiCommand<T>> getAssociatedAction(Class<? extends T> type) {
 
-        List<UiAction> list =  getUiActionList();
+        List<UiCommand> list =  getUiActionList();
 
         return list
                 .stream()
                 .filter(action -> action.canHandle(type))
-                .map(action -> (UiAction<T>)action)
+                .map(action -> (UiCommand<T>)action)
                 .collect(Collectors.toList());
 
     }

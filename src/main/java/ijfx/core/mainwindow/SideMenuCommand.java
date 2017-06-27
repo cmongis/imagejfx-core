@@ -17,46 +17,18 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
+
 package ijfx.core.mainwindow;
 
-import ijfx.core.activity.Activity;
-import ijfx.core.hint.Hint;
-import ijfx.ui.UiPlugin;
-import java.util.List;
-import javafx.concurrent.Task;
-import javafx.scene.Parent;
-import javax.management.Notification;
 import org.scijava.plugin.SciJavaPlugin;
-import ijfx.core.uicontext.ContextualContainer;
 import ijfx.core.uiplugin.UiCommand;
-import javafx.scene.Node;
 
 /**
  *
  * @author cyril
  */
-public interface MainWindow extends SciJavaPlugin {
-
-    void init();
-
-    void displayHint(Hint hint);
-
-    void displayActivity(Activity activity);
-
-    void displayNotification(Notification notification);
-
-    void displaySideMenuAction(UiCommand<MainWindow> action);
-
-    void registerUiPlugin(UiPlugin uiPlugin);
-
-    void addForegroundTask(Task task);
-
-    void addBackgroundTask(Task task);
-
-    void setReady(boolean ready);
-
-    List<ContextualContainer<Node>> getContextualContainerList();
-
-    Parent getUiComponent();
-
+public interface SideMenuCommand extends UiCommand<MainWindow>, SciJavaPlugin {
+    
+    void onClick();
+    
 }

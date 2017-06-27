@@ -21,16 +21,16 @@ package ijfx.ui.display.image.actions;
 
 import com.google.common.collect.ImmutableMap;
 import ijfx.commands.axis.DeleteDataFX;
-import ijfx.core.uiplugin.UiAction;
 import ijfx.ui.display.image.AxisSlider;
 import java.util.Map;
 import org.scijava.plugin.Plugin;
+import ijfx.core.uiplugin.UiCommand;
 
 /**
  *
  * @author cyril
  */
-@Plugin(type=UiAction.class,label = "Delete this {0}",iconPath="fa:remove")
+@Plugin(type=UiCommand.class,label = "Delete this {0}",iconPath="fa:remove")
 public class DeleteThisPositionUiAction extends AbstractAxisSliderUiAction {
     @Override
     public void run(AxisSlider t) {

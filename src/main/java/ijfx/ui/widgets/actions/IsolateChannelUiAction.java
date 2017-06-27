@@ -20,15 +20,15 @@
 package ijfx.ui.widgets.actions;
 
 import ijfx.commands.axis.IsolateChannel;
-import ijfx.core.uiplugin.UiAction;
 import ijfx.ui.widgets.AbstractAdjusterUIAction;
 import org.scijava.plugin.Plugin;
+import ijfx.core.uiplugin.UiCommand;
 
 /**
  *
  * @author cyril
  */
-@Plugin(type= UiAction.class,label = "Isolate this channel",iconPath="fa:remove",description="Create a new image with only the current channel")
+@Plugin(type= UiCommand.class,label = "Isolate this channel",iconPath="fa:remove",description="Create a new image with only the current channel")
 public class IsolateChannelUiAction extends AbstractAdjusterUIAction{
 
     public IsolateChannelUiAction() {

@@ -17,29 +17,42 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.uiplugin;
+package ijfx.ui.mainwindow;
+
+import ijfx.core.activity.Activity;
+import ijfx.core.activity.ActivityService;
+import ijfx.core.uiplugin.AbstractUiCommand;
+import org.scijava.plugin.Parameter;
 
 /**
  *
  * @author cyril
  */
-public abstract class AbstractUiAction<T> implements UiAction<T>{
+public abstract class AbstractActivityLauncher<T extends Activity> extends AbstractUiCommand<SideBar>{
 
     
-    private final Class<?> type;
-
-    public AbstractUiAction(Class<?> type) {
-        this.type = type;
+    @Parameter
+    private ActivityService activityService;
+    
+    private final Class<T> activityType;
+    
+    public AbstractActivityLauncher(Class<T> type) {
+        super(SideBar.class);
+        activityType = type;
     }
-    
-    
-   
 
+    
+    
+    
+    
     @Override
-    public boolean canHandle(Class object) {
-        if(object == null) return false;
-        return type.isAssignableFrom(object);
+    public void run(SideBar t) {
+        
+        activityService.open(activityType);
+        
     }
 
+    
+    
     
 }
