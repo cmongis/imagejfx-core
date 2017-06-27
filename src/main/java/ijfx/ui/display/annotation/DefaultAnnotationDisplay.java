@@ -27,13 +27,17 @@ import ijfx.ui.display.image.FXDisplayPanel;
 import ijfx.ui.service.AnnotationService;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -45,37 +49,32 @@ import javafx.scene.layout.Pane;
 import org.scijava.Context;
 import org.scijava.command.CommandService;
 import org.scijava.display.Display;
+import org.scijava.module.process.PreprocessorPlugin;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.viewer.DisplayWindow;
+import org.scijava.widget.InputHarvester;
 
 /**
  *
  * @author sapho
  */
 
-//@Plugin(type = FXDisplayPanel.class)
-public class DefaultAnnotationDisplay extends Dialog<Mapper> implements AnnotationDisplay{
+public class DefaultAnnotationDisplay extends Dialog<Mapper> implements AnnotationDisplay{ //extend Pane or Dialog<Mapper>
     
     @Parameter
     AnnotationService annotationService;
     
-    @Parameter
-    Scene scene;
-    
-      
     @FXML
     Pane root;
     
     @FXML    
     TextField oldKey, newKey;
 
-    @FXML
-    Button cancel, mapping;
+    //@FXML
+    //Button cancel, mapping;
     
-    Context context;
-    
-    Display display;
+    Dialog<Mapper> dialog;
     
     private final String CANCEL = "Cancel";
     private final String MAPPING = "Mapping";
@@ -90,35 +89,53 @@ public class DefaultAnnotationDisplay extends Dialog<Mapper> implements Annotati
     
     public DefaultAnnotationDisplay() throws IOException {
         
-        FXMLLoader loader = new FXMLLoader();
-         loader.setLocation(getClass().getResource("/fxml/AnnotationDisplay.fxml"));
-
-         loader.setController(this);
-
-         loader.load();
-
-         Pane root = loader.getRoot();
-
-         getDialogPane().setContent(root);
-
-        getDialogPane().getButtonTypes().addAll(ButtonType.OK,ButtonType.CANCEL);
-
-         setResultConverter(this::convert);
-         
-         //si la liste contenant les fxml secondaire est vide, créer un second fxml et l'introduire dans la liste
-        if (listLittleV == null){
-            addMapping();
-        }
-
-     
-
-        }
+        //Pane root = new Pane();
+        //dialog = new Dialog<>();
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                FXMLLoader loader = new FXMLLoader();
+                loader.setLocation(getClass().getResource("/ijfx/ui/widgets/AnnotationDisplay.fxml"));
+                loader.setController(DefaultAnnotationDisplay.this);
+                
+                //getRoot2(loader);
+                Pane root = loader.getRoot();
+                //loader.setRoot(root);
+                //root = loader.getRoot();
+                getDialogPane().setContent(root);
+                getDialogPane().getButtonTypes().addAll(ButtonType.OK,ButtonType.CANCEL);
+                setResultConverter(DefaultAnnotationDisplay.this::convert);
+                try {
+                    loader.setRoot(root);
+                    loader.load();
+                    
+                } catch (IOException ex) {
+                    Logger.getLogger(DefaultAnnotationDisplay.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+                
+                /*
+                //si la liste contenant les fxml secondaire est vide, créer un second fxml et l'introduire dans la liste
+                if (listLittleV == null){
+                try {
+                addMapping();
+                } catch (IOException ex) {
+                Logger.getLogger(DefaultAnnotationDisplay.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                }
+                */
+            }
+        });
+    }
     
+    public Node getRoot2 (){
+        return root;
+    }
 
-     public Mapper convert(ButtonType button) {
+    public Mapper convert(ButtonType button) {
 
          if(button == ButtonType.OK) {
-             //
+             //mapperAction();
              return mapper;
          }
          else {
@@ -133,17 +150,21 @@ public class DefaultAnnotationDisplay extends Dialog<Mapper> implements Annotati
     private void addListener (ValueAnnotationDisplayController name){
         name.getIsValues().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newBoolean) -> {
             if (newBoolean){
-                addMapping();
+                try {
+                    addMapping();
+                } catch (IOException ex) {
+                    Logger.getLogger(DefaultAnnotationDisplay.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
     
         
-    private void addMapping(){ //rajouter un fxm de cases values dès que le précédent est rempli // ET met à jour le listener
-            //ValueAnnotationDisplayController newV = new ValueAnnotationDisplayController(); //je suis pas sure de mon coup la
-            //addListener(newV); //mise à jour du listener
-            //listLittleV.add(newV); //ajoute le fxml fraichement crée dans la liste des fxml secondaires.
-            //this.add(newV); //ajoute le fxml à la scene ?? ca marche pas
+    private void addMapping() throws IOException{ //rajouter un fxm de cases values dès que le précédent est rempli // ET met à jour le listener
+            ValueAnnotationDisplayController newV = new ValueAnnotationDisplayController(); //je suis pas sure de mon coup la
+            addListener(newV); //mise à jour du listener
+            listLittleV.add(newV); //ajoute le fxml fraichement crée dans la liste des fxml secondaires.
+            
         
     }
 
@@ -156,9 +177,10 @@ public class DefaultAnnotationDisplay extends Dialog<Mapper> implements Annotati
 
     }
     
-    private void mapperAction(){ //lier au FXML AnnotationDisplay.fxml  avec SceneBuilder ;
-        bindData();
-        listLittleV.stream().map(c -> mapper.map(MetaData.create(c.getValue(), c.getNewValue())));
+    public Mapper mapperAction(){ //lier au FXML AnnotationDisplay.fxml  avec SceneBuilder ;
+        //bindData();
+        //listLittleV.stream().map(c -> mapper.map(MetaData.create(c.getValue(), c.getNewValue())));
+        return mapper;
         
         
     }
