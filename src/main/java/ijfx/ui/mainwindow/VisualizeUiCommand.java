@@ -24,7 +24,7 @@ import org.scijava.plugin.Plugin;
 import ijfx.core.uiplugin.UiCommand;
 
 /**
- *
+ * Launch the activity that contains all the ImageJ displays
  * @author cyril
  */
 @Plugin(type = UiCommand.class,label = "Visiualize", priority= 100,iconPath = "fa:picture_alt")
