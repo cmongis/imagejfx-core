@@ -172,11 +172,10 @@ public class DefaultMainWindow implements MainWindow {
                     .closeOnFinished();
 
             registerWidgetControllers();
-
-            new CallableTask<SideBar>(SideBar::new)
-                    .then(this::configureSideBar)
-                    .start();
-
+            
+            
+            configureSideBar(new SideBar());
+            
         } catch (IOException ex) {
             Logger.getLogger(DefaultMainWindow.class.getName()).log(Level.SEVERE, "Error when loading the DefaultMainWindow FXML", ex);
 

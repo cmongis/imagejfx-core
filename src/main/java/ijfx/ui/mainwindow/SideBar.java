@@ -70,7 +70,6 @@ public class SideBar {
 
     BooleanProperty menuActivated = new SimpleBooleanProperty(false);
 
-    
     public SideBar() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML));
@@ -99,9 +98,6 @@ public class SideBar {
 
             menuActivated.setValue(false);
 
-            
-            addButton(new SideMenuButton("Hello",FontAwesomeIcon.ADN));
-            
         } catch (IOException ex) {
             Logger.getLogger(SideBar.class.getName()).log(Level.SEVERE, "Error when loading the SideBar", ex);
         }
@@ -128,13 +124,12 @@ public class SideBar {
         memoryLabel.setText(String.format("%d / %d MB", used, max));
 
     }
-    
+
     public void addButton(SideMenuButton button) {
-        
-        
+
         button.extendedProperty().bind(menuActivated);
         sideMenuTopVBox.getChildren().add(button);
-        
+
     }
 
     private void onMemoryProgressBarClicked(MouseEvent event) {
