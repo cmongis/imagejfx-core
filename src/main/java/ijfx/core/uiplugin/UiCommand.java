@@ -17,17 +17,22 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
+package ijfx.core.uiplugin;
 
-package ijfx.core.mainwindow;
-
+import org.scijava.plugin.Plugin;
 import org.scijava.plugin.SciJavaPlugin;
+import org.scijava.plugin.TypedPlugin;
 
 /**
  *
  * @author cyril
  */
-public interface SideMenuAction extends SciJavaPlugin {
+
+
+public interface UiCommand<T> extends SciJavaPlugin{
     
-    void onClick();
+    void run(T t);
+    
+    boolean canHandle(Class<?> object);
     
 }

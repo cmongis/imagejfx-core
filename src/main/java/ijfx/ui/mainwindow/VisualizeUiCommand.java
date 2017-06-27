@@ -17,30 +17,19 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.icon;
+package ijfx.ui.mainwindow;
 
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
-import ijfx.core.IjfxService;
-import ijfx.core.utils.SciJavaUtils;
-import javafx.scene.Node;
-import org.scijava.plugin.SciJavaPlugin;
+import ijfx.ui.activity.DisplayContainer;
+import org.scijava.plugin.Plugin;
+import ijfx.core.uiplugin.UiCommand;
 
 /**
- *
+ * Launch the activity that contains all the ImageJ displays
  * @author cyril
  */
-public interface FXIconService extends IjfxService {
-    
-    
-    Node getIconAsNode(String iconPath);
-    default Node getIconAsNode(SciJavaPlugin plugin) {
-        return getIconAsNode(SciJavaUtils.getIconPath(plugin));
+@Plugin(type = UiCommand.class,label = "Visiualize", priority= 100,iconPath = "fa:picture_alt")
+public class VisualizeUiCommand extends AbstractActivityLauncher{
+    public VisualizeUiCommand() {
+        super(DisplayContainer.class);
     }
-    
-    FontAwesomeIcon getIcon(String iconPath);
-    
-    void registerEquivalent(Class<?> clazz, String fontawesomeId);
-  
-    
-    
 }

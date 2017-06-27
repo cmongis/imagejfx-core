@@ -19,20 +19,27 @@
  */
 package ijfx.core.uiplugin;
 
-import org.scijava.plugin.Plugin;
-import org.scijava.plugin.SciJavaPlugin;
-import org.scijava.plugin.TypedPlugin;
-
 /**
  *
  * @author cyril
  */
+public abstract class AbstractUiCommand<T> implements UiCommand<T>{
 
+    
+    private final Class<?> type;
 
-public interface UiAction<T> extends SciJavaPlugin{
+    public AbstractUiCommand(Class<?> type) {
+        this.type = type;
+    }
     
-    void run(T t);
     
-    boolean canHandle(Class<?> object);
+   
+
+    @Override
+    public boolean canHandle(Class object) {
+        if(object == null) return false;
+        return type.isAssignableFrom(object);
+    }
+
     
 }

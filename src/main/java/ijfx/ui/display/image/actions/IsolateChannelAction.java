@@ -20,21 +20,21 @@
 package ijfx.ui.display.image.actions;
 
 import ijfx.commands.axis.Isolate;
-import ijfx.core.uiplugin.AbstractUiAction;
-import ijfx.core.uiplugin.UiAction;
+import ijfx.core.uiplugin.AbstractUiCommand;
 import ijfx.ui.display.image.AxisSlider;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.UIService;
+import ijfx.core.uiplugin.UiCommand;
 
 /**
  *
  * @author cyril
  */
 
-@Plugin(type = UiAction.class,label = "Isolate this image",iconPath="fa:picture_alt")
-public class IsolateChannelAction extends AbstractUiAction<AxisSlider> {
+@Plugin(type = UiCommand.class,label = "Isolate this image",iconPath="fa:picture_alt")
+public class IsolateChannelAction extends AbstractUiCommand<AxisSlider> {
 
     @Parameter
     UIService uiService;

@@ -17,21 +17,43 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.uiplugin;
+package ijfx.ui.mainwindow;
 
-import ijfx.core.IjfxService;
-import java.util.List;
+import ijfx.core.activity.Activity;
+import ijfx.core.activity.ActivityService;
+import ijfx.core.mainwindow.MainWindow;
+import ijfx.core.uiplugin.AbstractUiCommand;
+import org.scijava.plugin.Parameter;
 
 /**
  *
  * @author cyril
  */
-public interface UiActionService extends IjfxService{
+public abstract class AbstractActivityLauncher<T extends Activity> extends AbstractUiCommand<MainWindow>{
+
+    
+    @Parameter
+    private ActivityService activityService;
+    
+    private final Class<T> activityType;
+    
+    public AbstractActivityLauncher(Class<T> type) {
+        super(MainWindow.class);
+        activityType = type;
+    }
+
     
     
-    <T> List<UiAction<T>> getAssociatedAction(T o);
-    <T> List<UiAction<T>>  getAssociatedAction(Class<? extends T> type);
-   
+    
+    
+    @Override
+    public void run(MainWindow t) {
+        
+        activityService.open(activityType);
+        
+    }
+
+    
     
     
 }

@@ -101,7 +101,7 @@ public class DefaultFXIconService extends AbstractService implements FXIconServi
         
          else if (iconPath.startsWith("fa:")) {
             try {
-                return new FontAwesomeIconView(FontAwesomeIcon.valueOf(iconPath.substring(3).toUpperCase()));
+                return new FontAwesomeIconView(getIcon(iconPath));
             } catch (Exception e) {
                 logger.log(Level.WARNING, String.format("Couldn't load FA icon : %s", iconPath.substring(3).toUpperCase()));
                 return new FontAwesomeIconView(FontAwesomeIcon.REMOVE);
@@ -124,6 +124,11 @@ public class DefaultFXIconService extends AbstractService implements FXIconServi
 
         registerEquivalent(clazz.getName(), fontawesomeId);
 
+    }
+
+    @Override
+    public FontAwesomeIcon getIcon(String iconPath) {
+        return FontAwesomeIcon.valueOf(iconPath.substring(3).toUpperCase());
     }
 
 }

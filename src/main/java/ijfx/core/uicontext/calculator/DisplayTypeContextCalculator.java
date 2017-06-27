@@ -19,7 +19,7 @@
  */
 package ijfx.core.uicontext.calculator;
 
-import ijfx.core.uiplugin.AbstractUiAction;
+import ijfx.core.uiplugin.AbstractUiCommand;
 import ijfx.ui.display.code.ScriptDisplay;
 import javax.swing.JTree;
 import net.imagej.display.ImageDisplay;

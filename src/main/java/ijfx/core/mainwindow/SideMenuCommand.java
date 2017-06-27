@@ -17,29 +17,18 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.uiplugin;
+
+package ijfx.core.mainwindow;
+
+import org.scijava.plugin.SciJavaPlugin;
+import ijfx.core.uiplugin.UiCommand;
 
 /**
  *
  * @author cyril
  */
-public abstract class AbstractUiAction<T> implements UiAction<T>{
-
+public interface SideMenuCommand extends UiCommand<MainWindow>, SciJavaPlugin {
     
-    private final Class<?> type;
-
-    public AbstractUiAction(Class<?> type) {
-        this.type = type;
-    }
-    
-    
-   
-
-    @Override
-    public boolean canHandle(Class object) {
-        if(object == null) return false;
-        return type.isAssignableFrom(object);
-    }
-
+    void onClick();
     
 }

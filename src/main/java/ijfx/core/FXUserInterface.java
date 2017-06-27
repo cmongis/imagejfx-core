@@ -68,6 +68,7 @@ import org.scijava.ui.UIService;
 import org.scijava.ui.UserInterface;
 import org.scijava.ui.console.ConsolePane;
 import org.scijava.ui.viewer.DisplayViewer;
+import ijfx.core.uiplugin.UiCommandService;
 
 /**
  *
@@ -111,6 +112,9 @@ public class FXUserInterface extends Application implements UserInterface {
     @Parameter
     private static UIService uiService;
 
+    @Parameter
+    private static UiCommandService uiCommandService;
+    
     public static Stage STAGE;
 
     JavaFXClipboard clipboard;
@@ -303,6 +307,10 @@ public class FXUserInterface extends Application implements UserInterface {
                 // get the first MainWindow plugin
                 mainWindow = (MainWindow) pluginService.createInstancesOfType(MainWindow.class).get(0);
                 mainWindow.init();
+                
+                uiCommandService
+                        .getAssociatedAction(MainWindow.class)
+                        .forEach(mainWindow::displaySideMenuAction);
             } catch (Exception e) {
                 ImageJFX.getLogger().log(Level.SEVERE, "No main window plugin where found.", e);
             }

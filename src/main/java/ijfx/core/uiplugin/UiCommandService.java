@@ -17,30 +17,21 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.icon;
+package ijfx.core.uiplugin;
 
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import ijfx.core.IjfxService;
-import ijfx.core.utils.SciJavaUtils;
-import javafx.scene.Node;
-import org.scijava.plugin.SciJavaPlugin;
+import java.util.List;
 
 /**
  *
  * @author cyril
  */
-public interface FXIconService extends IjfxService {
+public interface UiCommandService extends IjfxService{
     
     
-    Node getIconAsNode(String iconPath);
-    default Node getIconAsNode(SciJavaPlugin plugin) {
-        return getIconAsNode(SciJavaUtils.getIconPath(plugin));
-    }
-    
-    FontAwesomeIcon getIcon(String iconPath);
-    
-    void registerEquivalent(Class<?> clazz, String fontawesomeId);
-  
+    <T> List<UiCommand<T>> getAssociatedAction(T o);
+    <T> List<UiCommand<T>>  getAssociatedAction(Class<? extends T> type);
+   
     
     
 }

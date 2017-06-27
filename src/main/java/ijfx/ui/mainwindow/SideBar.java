@@ -19,6 +19,7 @@
  */
 package ijfx.ui.mainwindow;
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -69,7 +70,6 @@ public class SideBar {
 
     BooleanProperty menuActivated = new SimpleBooleanProperty(false);
 
-    
     public SideBar() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML));
@@ -122,6 +122,13 @@ public class SideBar {
         // System.out.println(progress);
         memoryProgressBar.setProgress(progress);
         memoryLabel.setText(String.format("%d / %d MB", used, max));
+
+    }
+
+    public void addButton(SideMenuButton button) {
+
+        button.extendedProperty().bind(menuActivated);
+        sideMenuTopVBox.getChildren().add(button);
 
     }
 

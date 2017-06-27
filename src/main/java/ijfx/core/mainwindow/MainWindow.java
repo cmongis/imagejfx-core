@@ -28,8 +28,8 @@ import javafx.scene.Parent;
 import javax.management.Notification;
 import org.scijava.plugin.SciJavaPlugin;
 import ijfx.core.uicontext.ContextualContainer;
+import ijfx.core.uiplugin.UiCommand;
 import javafx.scene.Node;
-import org.scijava.display.Display;
 
 /**
  *
@@ -45,7 +45,7 @@ public interface MainWindow extends SciJavaPlugin {
 
     void displayNotification(Notification notification);
 
-    void displaySideMenuAction(SideMenuAction action);
+    void displaySideMenuAction(UiCommand<MainWindow> action);
 
     void registerUiPlugin(UiPlugin uiPlugin);
 

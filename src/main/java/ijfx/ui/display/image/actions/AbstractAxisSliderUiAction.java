@@ -19,7 +19,7 @@
  */
 package ijfx.ui.display.image.actions;
 
-import ijfx.core.uiplugin.AbstractUiAction;
+import ijfx.core.uiplugin.AbstractUiCommand;
 import ijfx.ui.display.image.AxisSlider;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
@@ -28,7 +28,7 @@ import org.scijava.plugin.Parameter;
  *
  * @author cyril
  */
-public abstract class AbstractAxisSliderUiAction extends AbstractUiAction<AxisSlider> {
+public abstract class AbstractAxisSliderUiAction extends AbstractUiCommand<AxisSlider> {
     
     @Parameter
     protected CommandService commandService;

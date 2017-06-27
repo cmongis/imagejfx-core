@@ -19,7 +19,7 @@
  */
 package ijfx.ui.widgets;
 
-import ijfx.core.uiplugin.AbstractUiAction;
+import ijfx.core.uiplugin.AbstractUiCommand;
 import org.scijava.command.Command;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
@@ -28,7 +28,7 @@ import org.scijava.plugin.Parameter;
  *
  * @author cyril
  */
-public abstract class AbstractAdjusterUIAction extends AbstractUiAction<ImageDisplayAdjuster> {
+public abstract class AbstractAdjusterUIAction extends AbstractUiCommand<ImageDisplayAdjuster> {
 
     Class<? extends Command> command;
 
