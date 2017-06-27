@@ -214,5 +214,10 @@ public class DefaultTextArea extends AnchorPane{
        this.getStylesheets().add(getClass().getResource(path).toExternalForm());
        
    }
-    
+   
+   public void setPreferencies(Hashtable<String,String> preferencies){
+       if (preferencies.containsKey("styleSheet") && !getClass().getResource((String) preferencies.get("styleSheet")).equals(null)){
+           changeCss(preferencies.get("styleSheet"));
+       }
+   }
 }
