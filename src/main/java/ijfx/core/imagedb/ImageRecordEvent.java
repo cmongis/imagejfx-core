@@ -17,15 +17,30 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.explorer.events;
+package ijfx.core.imagedb;
 
-import ijfx.explorer.core.Folder;
-import ijfx.ui.IjfxEvent;
+import java.util.ArrayList;
+import java.util.List;
+import org.scijava.event.SciJavaEvent;
 
 /**
  *
  * @author Cyril MONGIS, 2016
  */
-public class ProcessingFolderEvent extends IjfxEvent<Folder>{
+public abstract class ImageRecordEvent extends SciJavaEvent {
     
+    List<ImageRecord> recordList = new ArrayList<>(3);
+
+    public List<ImageRecord> getRecordList() {
+        return recordList;
+    }
+    ImageRecordEvent addRecord(ImageRecord imageRecord) {
+        getRecordList().add(imageRecord);
+        return this;
+    }
+    
+    ImageRecordEvent addRecord(List<ImageRecord> list) {
+        getRecordList().addAll(list);
+        return this;
+    }
 }

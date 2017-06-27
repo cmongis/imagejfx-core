@@ -17,15 +17,19 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.explorer.events;
+package ijfx.core.overlay.io;
 
-import ijfx.explorer.core.Folder;
-import ijfx.ui.IjfxEvent;
+import java.util.function.IntFunction;
+import java.util.stream.IntStream;
 
 /**
  *
  * @author Cyril MONGIS, 2016
  */
-public class ProcessingFolderEvent extends IjfxEvent<Folder>{
+public class Utils {
+
+    public static Double[] extractArray(IntFunction<Double> intFunction, int size) {
+        return IntStream.range(0, size).mapToObj(intFunction).toArray((int n) -> new Double[n]);
+    }
     
 }

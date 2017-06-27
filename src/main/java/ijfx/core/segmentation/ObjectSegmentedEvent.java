@@ -17,15 +17,36 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.explorer.events;
+package ijfx.core.segmentation;
 
-import ijfx.explorer.core.Folder;
 import ijfx.ui.IjfxEvent;
+import java.io.File;
+import java.util.List;
 
 /**
  *
  * @author Cyril MONGIS, 2016
  */
-public class ProcessingFolderEvent extends IjfxEvent<Folder>{
+public class ObjectSegmentedEvent extends IjfxEvent<List<SegmentedObject>>{
+    
+    private File file;
+
+    public void setFile(File file) {
+        this.file = file;
+    }
+
+    public File getFile() {
+        return file;
+    }
+    
+    
+    
+    
+    public ObjectSegmentedEvent(File file, List<SegmentedObject> objects) {
+        
+        setObject(objects);
+        setFile(file);
+        
+    }
     
 }

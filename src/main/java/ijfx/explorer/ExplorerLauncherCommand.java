@@ -17,15 +17,20 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.explorer.events;
+package ijfx.explorer;
 
-import ijfx.explorer.core.Folder;
-import ijfx.ui.IjfxEvent;
+import ijfx.core.uiplugin.UiCommand;
+import ijfx.ui.mainwindow.AbstractActivityLauncher;
+import org.scijava.plugin.Plugin;
 
 /**
  *
- * @author Cyril MONGIS, 2016
+ * @author cyril
  */
-public class ProcessingFolderEvent extends IjfxEvent<Folder>{
+@Plugin(type = UiCommand.class, label ="Database",iconPath= "fa:database")
+public class ExplorerLauncherCommand extends AbstractActivityLauncher<ExplorerActivity>{
+    public ExplorerLauncherCommand() {
+        super(ExplorerActivity.class);
+    }
     
 }

@@ -17,15 +17,29 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.explorer.events;
-
-import ijfx.explorer.core.Folder;
-import ijfx.ui.IjfxEvent;
+package ijfx.core.overlay.io;
 
 /**
  *
  * @author Cyril MONGIS, 2016
  */
-public class ProcessingFolderEvent extends IjfxEvent<Folder>{
+public final class JsonOverlayToken {
+
     
+    
+    public static String RECTANGLE_OVERLAY = "rectangle";
+    public static String LINE_OVERLAY = "line";
+    public static String POLYGON_OVERLAY = "polygon";
+    public static String EXTENT = "extent";
+    public static String ORIGIN = "origin";
+    public static String BEGIN = "begin";
+    public static String END = "end";
+    public static String FILL_COLOR = "fill_color";
+    public static String LINE_COLOR = "line_color";    
+    public static String LINE_WIDTH = "line_width";
+    
+     public static final String OVERLAY_TYPE  = "ovl_type";
+     
+     
+
 }

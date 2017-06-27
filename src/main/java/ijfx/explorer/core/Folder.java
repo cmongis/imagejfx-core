@@ -17,15 +17,38 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.explorer.events;
+package ijfx.explorer.core;
 
-import ijfx.explorer.core.Folder;
-import ijfx.ui.IjfxEvent;
+import ijfx.core.segmentation.SegmentedObject;
+import ijfx.explorer.datamodel.Explorable;
+import java.io.File;
+import java.util.List;
+import javafx.beans.property.Property;
+import javafx.concurrent.Task;
 
 /**
  *
  * @author Cyril MONGIS, 2016
  */
-public class ProcessingFolderEvent extends IjfxEvent<Folder>{
+public interface Folder {
+    
+    
+    public String getName();
+    
+    public void setName(String name);
+    
+    public File getDirectory();
+    
+    public List<Explorable> getFileList();
+    
+    public List<Explorable> getPlaneList();
+    
+    public List<Explorable> getObjectList();
+    
+    public Property<Task> currentTaskProperty();
+    
+    public void addObjects(List<SegmentedObject> objects);
+    
+    public boolean isFilePartOf(File f);
     
 }

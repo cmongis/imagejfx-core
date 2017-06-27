@@ -57,7 +57,7 @@ import org.scijava.event.EventHandler;
  * @author Cyril MONGIS, 2015
  */
 @Plugin(type = UiPlugin.class)
-@UiConfiguration(id = "historyPanel", localization = Localization.RIGHT, context = "imagej+visualize -overlay-selected -script-open", order = 2)
+@UiConfiguration(id = "historyPanel", localization = Localization.RIGHT, context = "imagej+display -overlay-selected -script-open", order = 2)
 public class HistoryPanel extends TitledPane implements UiPlugin {
 
     @FXML

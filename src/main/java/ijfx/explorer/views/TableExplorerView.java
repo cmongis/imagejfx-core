@@ -53,28 +53,28 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = ExplorerView.class, priority = 0.9, label = "Data Table", iconPath = "fa:table")
 public class TableExplorerView implements ExplorerView {
 
-    TableView<Explorable> tableView = new TableView<>();
+    private final TableView<Explorable> tableView = new TableView<>();
 
-    MetaDataOwnerHelper<Explorable> helper = new MetaDataOwnerHelper(tableView);
+    private final MetaDataOwnerHelper<Explorable> helper = new MetaDataOwnerHelper(tableView);
 
     @Parameter
-    EventService eventService;
+    private EventService eventService;
 
     @Parameter
     private ExplorerService explorerService;
 
     @Parameter
-    HintService hintService;
+    private HintService hintService;
 
-    SelectableManager<Explorable> selectableManager = new SelectableManager<>(this::onItemSelectionChanged);
+    private final SelectableManager<Explorable> selectableManager = new SelectableManager<>(this::onItemSelectionChanged);
 
     private static final String TABLE_VIEW_ID = "tableViewView";
 
-    List<? extends Explorable> currentItems;
+    private List<? extends Explorable> currentItems;
 
-    Logger logger = ImageJFX.getLogger();
+    private final static Logger logger = ImageJFX.getLogger();
 
-    TableColumn<Explorable,String> tagColumn = new TableColumn();
+   private final TableColumn<Explorable,String> tagColumn = new TableColumn();
     
     public TableExplorerView() {
 

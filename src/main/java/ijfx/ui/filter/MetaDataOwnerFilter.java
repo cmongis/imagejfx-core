@@ -17,15 +17,23 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.explorer.events;
+package ijfx.ui.filter;
 
-import ijfx.explorer.core.Folder;
-import ijfx.ui.IjfxEvent;
+import ijfx.core.metadata.MetaDataOwner;
+import java.util.function.Predicate;
+import javafx.beans.property.Property;
+import javafx.scene.Node;
 
 /**
  *
  * @author Cyril MONGIS, 2016
  */
-public class ProcessingFolderEvent extends IjfxEvent<Folder>{
+public interface MetaDataOwnerFilter {
+    
+    
+    public Node getContent();
+    
+    Property<Predicate<MetaDataOwner>> predicateProperty();
+    
     
 }

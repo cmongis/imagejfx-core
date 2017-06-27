@@ -17,15 +17,20 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.explorer.events;
+package ijfx.ui.filter;
 
-import ijfx.explorer.core.Folder;
-import ijfx.ui.IjfxEvent;
+import ijfx.core.metadata.MetaDataOwner;
+import java.io.IOException;
+import java.util.Collection;
 
 /**
  *
  * @author Cyril MONGIS, 2016
  */
-public class ProcessingFolderEvent extends IjfxEvent<Folder>{
+public interface MetaDataFilterFactory  {
+    
+    
+    public MetaDataOwnerFilter generateFilter(Collection<? extends MetaDataOwner> ownerList, String keyName);
+    
     
 }

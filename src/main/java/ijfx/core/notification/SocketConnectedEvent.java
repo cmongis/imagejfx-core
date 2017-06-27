@@ -17,15 +17,16 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.explorer.events;
+package ijfx.core.notification;
 
-import ijfx.explorer.core.Folder;
 import ijfx.ui.IjfxEvent;
+import io.socket.client.Socket;
+import org.scijava.event.SciJavaEvent;
 
 /**
  *
- * @author Cyril MONGIS, 2016
+ * @author cyril
  */
-public class ProcessingFolderEvent extends IjfxEvent<Folder>{
+public class SocketConnectedEvent extends IjfxEvent<Socket>{
     
 }

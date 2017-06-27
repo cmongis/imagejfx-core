@@ -17,15 +17,15 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.explorer.events;
+package ijfx.explorer.datamodel.wrappers;
 
-import ijfx.explorer.core.Folder;
-import ijfx.ui.IjfxEvent;
 
 /**
  *
- * @author Cyril MONGIS, 2016
+ * @author Tuan anh TRINH
  */
-public class ProcessingFolderEvent extends IjfxEvent<Folder>{
-    
+public interface ObjectWrapper{
+
+    public Object getObject();
+
 }
