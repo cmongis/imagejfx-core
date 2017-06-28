@@ -22,8 +22,6 @@ package ijfx.ui.display.code;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -36,13 +34,9 @@ import javafx.scene.layout.AnchorPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.Paragraph;
-import org.fxmisc.richtext.model.StyleSpan;
-import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyledText;
 import org.scijava.Context;
 import org.scijava.command.CommandInfo;
-import org.scijava.command.CommandService;
-import org.scijava.plugin.Parameter;
 import org.scijava.script.ScriptLanguage;
 
 /**
@@ -113,7 +107,6 @@ public class DefaultTextArea extends AnchorPane{
         this.languageKeywords.setLanguage(language);
         this.KEYWORDS_PATTERN_TABLE = this.languageKeywords.getKeywords();
         this.scriptHighlight.setKeywords(this.KEYWORDS_PATTERN_TABLE);
-        //this.codeArea.redo();
         
     }
     /**

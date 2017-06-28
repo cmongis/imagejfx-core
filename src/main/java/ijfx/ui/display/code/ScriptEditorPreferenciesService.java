@@ -75,8 +75,10 @@ public class ScriptEditorPreferenciesService {
         List css = new ArrayList();
         autocompletion.add(0, "filePath");
         List path = new ArrayList();
+        path.add("darkTheme");
+        path.add("lightTheme");
         autocompletion.add(1, path);
-        autocompletion.add(2, "null");
+        autocompletion.add(2, "darkTheme");
         this.preferencies.put("styleSheet", css);
         
     }
@@ -85,6 +87,16 @@ public class ScriptEditorPreferenciesService {
         if (!this.preferencies.containsKey(type)) return;
         List oldValue = this.preferencies.get(type);
         oldValue.add(2, value);
+        this.preferencies.put(type, oldValue);
+    }
+    
+    public void setPreference(String type, String value, String newPossibleValue){
+        if (!this.preferencies.containsKey(type)) return;
+        List oldValue = this.preferencies.get(type);
+        oldValue.add(2, value);
+        List possibleValues = (List<String>) oldValue.get(1);
+        possibleValues.add(newPossibleValue);
+        oldValue.add(1, possibleValues);
         this.preferencies.put(type, oldValue);
     }
 }

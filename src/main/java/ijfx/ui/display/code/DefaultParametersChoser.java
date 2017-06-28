@@ -23,15 +23,23 @@ import ijfx.core.prefs.JsonPreferenceService;
 import ijfx.core.uiplugin.UiCommand;
 import ijfx.ui.activity.DisplayContainer;
 import ijfx.ui.mainwindow.AbstractActivityLauncher;
+import java.io.File;
 import java.util.Hashtable;
 import java.util.List;
+import javafx.event.ActionEvent;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Box;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
@@ -39,27 +47,97 @@ import org.scijava.plugin.Plugin;
  *
  * @author florian
  */
-public class DefaultParametersChoser {
+@Plugin(type = UiCommand.class,label = "Preferences", priority= 100,iconPath = "fa:picture_alt")
+
+public class DefaultParametersChoser extends AbstractActivityLauncher{
     @Parameter
     JsonPreferenceService jsonPreferenceService;
+    @Parameter
+    Stage stage;
     
     private VBox mainBox;
     
-    private Hashtable<String,String> parameters = new Hashtable();
+    private Hashtable<String,List> parameters = new Hashtable();
     private String fileName = "ScriptEdtirorPreferences";
     
     
 
     public DefaultParametersChoser() {
+        super(DisplayContainer.class);
+        
+        
         mainBox = new VBox();
         for (String parameter : this.parameters.keySet()){
-            mainBox.getChildren().add(new Label(parameter));
+            createParameter(parameter);
         }
         loadPreferencies();
         
     }
     
-    public VBox createBoolean(String name){
+    public Node createParameter(String key){
+        Node node = null;
+        
+        if (this.parameters.get(key).get(0).equals("boolean")){
+            boolean value = true;
+            if (this.parameters.get(key).get(2).equals("true")){
+                value = true;
+            }
+            else {
+                value = false;
+            }
+            
+            node = createBoolean(key, value);
+        }
+        
+        if (key.equals("styleSheet")){
+            
+        }
+        
+        return node;
+    }
+    
+    public VBox createStyleChoice(String value){
+        VBox box = new VBox();
+        HBox subBox = new HBox();
+        
+        // making a menu to chose in the existent stylesheets
+        MenuButton menuButton = new MenuButton("Select theme");
+        for (String style : (List<String>) this.parameters.get("styleSheet").get(1)){
+            MenuItem menuItem = new MenuItem(style);
+            menuItem.setOnAction((event)->{
+                setParameter("styleSheet", style);
+            });
+        }
+        subBox.getChildren().add(menuButton);
+        Label label = new Label(" Or select a new css file");
+        subBox.getChildren().add(label);
+        
+        // adding a button to select a new css file
+        FileChooser fileChooser = new FileChooser();
+        
+        Button button = new Button("Select a new css");
+        button.setOnAction((event)->{
+                File file = fileChooser.showOpenDialog(stage);
+                if (file != null && file.getName().matches(".*\\.css")){ 
+                    setParameter("styleSheet", file.getAbsolutePath());
+                }
+            });
+        subBox.getChildren().add(button);
+        
+        box.getChildren().add(subBox);
+        
+        return box;
+    }
+    
+    public void setParameter(String key, String value){
+        
+    }
+    
+    public void setParameter(String key, String value, String newPossibleValue){
+        
+    }
+    
+    public VBox createBoolean(String name, boolean value){
         VBox box = new VBox();
         box.getChildren().add(0, new Label(name));
         
