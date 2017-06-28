@@ -33,7 +33,7 @@ import org.scijava.plugin.Plugin;
  *
  * @author cyril
  */
-@Plugin(type = Activity.class, name = "display container")
+@Plugin(type = Activity.class, name = "imagej")
 public class DisplayContainer extends StackPane implements Activity {
 
     public AnchorPane anchorPane = new AnchorPane();
