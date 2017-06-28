@@ -307,7 +307,12 @@ public class DefaultMainWindow implements MainWindow {
         
         final String label = SciJavaUtils.getLabel(action);
         
-        sideBar.addButton(new SideMenuButton(label,icon));
+        
+        SideMenuButton sideMenuButton = new SideMenuButton(label,icon);
+        sideMenuButton.setOnMouseClicked(event->{ 
+            action.run(this);
+        });
+        sideBar.addButton(sideMenuButton);
     }
 
     @Override

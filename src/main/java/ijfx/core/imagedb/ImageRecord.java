@@ -17,15 +17,23 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.explorer.events;
+package ijfx.core.imagedb;
 
-import ijfx.explorer.core.Folder;
-import ijfx.ui.IjfxEvent;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import ijfx.core.metadata.MetaDataOwner;
+import java.io.File;
+import java.util.Date;
 
 /**
  *
  * @author Cyril MONGIS, 2016
  */
-public class ProcessingFolderEvent extends IjfxEvent<Folder>{
+@JsonSerialize(as = DefaultImageRecord.class)
+public interface ImageRecord extends MetaDataOwner{
+    File getFile();
+  
+    public RecordStatus getLastStatus();
+    public Date getLastStatusChange();
+    
     
 }

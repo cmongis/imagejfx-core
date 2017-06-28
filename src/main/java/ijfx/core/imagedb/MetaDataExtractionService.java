@@ -17,15 +17,27 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.explorer.events;
+package ijfx.core.imagedb;
 
-import ijfx.explorer.core.Folder;
-import ijfx.ui.IjfxEvent;
+import ijfx.core.IjfxService;
+import ijfx.core.metadata.MetaDataSet;
+import java.io.File;
+import java.util.List;
+import net.imagej.Dataset;
+import net.imagej.axis.CalibratedAxis;
+import net.imagej.display.ImageDisplay;
 
 /**
  *
  * @author Cyril MONGIS, 2016
  */
-public class ProcessingFolderEvent extends IjfxEvent<Folder>{
+public interface MetaDataExtractionService extends IjfxService {
     
+    
+    public MetaDataSet extractMetaData(File file);
+    public List<MetaDataSet> extractPlaneMetaData(MetaDataSet metadataset);
+    public List<MetaDataSet> extractPlaneMetaData(File file); 
+    public MetaDataSet extractMetaData(Dataset dataset);
+    public MetaDataSet extractMetaData(ImageDisplay imageDisplay);
+    public void fillPositionMetaData(MetaDataSet set, CalibratedAxis[] axes, long[] absolutePosition);
 }

@@ -17,15 +17,12 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.explorer.events;
-
-import ijfx.explorer.core.Folder;
-import ijfx.ui.IjfxEvent;
+package ijfx.core.overlay.io;
 
 /**
- *
+ * Exception thrown when a dataset has no source file specified
  * @author Cyril MONGIS, 2016
  */
-public class ProcessingFolderEvent extends IjfxEvent<Folder>{
+public class NoSourceFileException extends Exception{
     
 }
