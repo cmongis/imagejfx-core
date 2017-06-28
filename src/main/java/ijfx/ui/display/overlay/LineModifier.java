@@ -56,6 +56,9 @@ public class LineModifier extends EasyOverlayModifier<LineOverlay>{
         
         lineOverlay.setLineStart(toArray(a.positionOnDataProperty().getValue()));
         lineOverlay.setLineEnd(toArray(b.positionOnDataProperty().getValue()));
+        
+        
+        fireOverlayChange();
     }
 
     @Override

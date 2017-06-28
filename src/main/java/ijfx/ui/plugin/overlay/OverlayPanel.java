@@ -87,6 +87,7 @@ import org.controlsfx.control.PopOver;
 import org.scijava.Context;
 import org.scijava.display.event.DisplayActivatedEvent;
 import org.scijava.display.event.DisplayDeletedEvent;
+import org.scijava.display.event.DisplayUpdatedEvent;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
 
@@ -240,7 +241,9 @@ public class OverlayPanel extends BorderPane implements UiPlugin {
                 .filter(view -> currentDisplay().contains(view))
                 .throttleWithTimeout(100, TimeUnit.MILLISECONDS)
                 .subscribe(event -> Platform.runLater(this::updateStats));
-
+        eventBus.getStream(DisplayUpdatedEvent.class)
+                .filter(event->event.getDisplay() instanceof ImageDisplay)
+                .subscribe(this::checkCurrentOverlay);
     }
 
     ImageDisplay imageDisplay;
@@ -327,6 +330,11 @@ public class OverlayPanel extends BorderPane implements UiPlugin {
     }
 
     @EventHandler
+    public void onDisplayUpdatedEvent(DisplayUpdatedEvent event) {
+        eventBus.channel(event);
+    }
+    
+    @EventHandler
     public void onImageDisplayClosed(DisplayDeletedEvent event) {
 
         if (event instanceof ImageDisplay) {
@@ -349,6 +357,15 @@ public class OverlayPanel extends BorderPane implements UiPlugin {
         eventBus.channel(event);
     }
 
+    private void checkCurrentOverlay(Object o) {
+        
+        Overlay selectedOverlay = overlaySelectionService.getSelectedOverlay(imageDisplayService.getActiveImageDisplay());
+        
+        if(selectedOverlay != overlayProperty.getValue()) {
+            overlayProperty.setValue(selectedOverlay);
+        }
+    }
+    
     private void updateChart(Overlay overlay) {
 
         boolean isLineOverlay = overlay instanceof LineOverlay;

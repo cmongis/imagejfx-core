@@ -114,6 +114,9 @@ public class RectangleModifier extends AbstractOverlayModifier<RectangleOverlay>
         overlay.setExtent(overlay.getExtent(0) + dx, 0);
         overlay.setExtent(overlay.getExtent(1) + dy,1);
         getDisplay().update();
+        
+        fireOverlayChange();
+        
     }
 
     public void onMaxEdgeChanged(Observable obs, RealCoords oldValue, RealCoords newValue) {
@@ -124,6 +127,7 @@ public class RectangleModifier extends AbstractOverlayModifier<RectangleOverlay>
         overlay.setExtent(newValue.y - overlay.getOrigin(1), 1);
 
         getDisplay().update();
+        fireOverlayChange();
 
     }
 

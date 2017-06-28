@@ -20,7 +20,10 @@
 package ijfx.ui.display.overlay;
 
 import net.imagej.display.ImageDisplay;
+import net.imagej.event.OverlayUpdatedEvent;
 import net.imagej.overlay.Overlay;
+import org.scijava.event.EventService;
+import org.scijava.plugin.Parameter;
 
 /**
  *
@@ -35,7 +38,8 @@ public abstract class AbstractOverlayModifier<T extends Overlay> implements Over
     private ImageDisplay display;
     
    
-    
+    @Parameter
+    EventService eventService;
     
     public void setOverlay(T t) {
         this.overlay = t;
@@ -68,6 +72,10 @@ public abstract class AbstractOverlayModifier<T extends Overlay> implements Over
     @Override
     public boolean canHandle(Overlay overlay) {
         return overlay.getClass().isAssignableFrom(handledType);
+    }
+    
+    protected void fireOverlayChange() {
+        eventService.publish(new OverlayUpdatedEvent(overlay));
     }
     
 }
