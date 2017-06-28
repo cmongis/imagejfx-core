@@ -351,7 +351,7 @@ public class UiContextService extends AbstractService implements UiContextManage
     public void importContextConfiguration() {
 
         try {
-            String json = IOUtils.toString(getClass().getResourceAsStream("/ijfx/service/uicontext/ContextService.json"));
+            String json = IOUtils.toString(getClass().getResourceAsStream("/ijfx/core/uicontext/ContextService.json"));
             importContextConfiguration(json);
         } catch (IOException ex) {
             logger.log(Level.SEVERE,"Failed to load the ContextService.json file",ex);
