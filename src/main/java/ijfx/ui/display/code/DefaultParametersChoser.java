@@ -20,6 +20,9 @@
 package ijfx.ui.display.code;
 
 import ijfx.core.prefs.JsonPreferenceService;
+import ijfx.core.uiplugin.UiCommand;
+import ijfx.ui.activity.DisplayContainer;
+import ijfx.ui.mainwindow.AbstractActivityLauncher;
 import java.util.Hashtable;
 import java.util.List;
 import javafx.scene.control.CheckBox;
@@ -30,6 +33,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Box;
 import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  *
@@ -52,6 +56,7 @@ public class DefaultParametersChoser {
             mainBox.getChildren().add(new Label(parameter));
         }
         loadPreferencies();
+        
     }
     
     public VBox createBoolean(String name){
