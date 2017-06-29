@@ -98,7 +98,10 @@ public class DefaultHintService extends AbstractService implements HintService {
             List<DefaultHint> hintList = jsonToHintList(TextFileUtils.readFileFromJar(url));
             displayHints(hintList, force);
         } catch (IOException ex) {
-            Logger.getLogger(DefaultHintService.class.getName()).log(Level.SEVERE, null, ex);
+            ImageJFX.getLogger().log(Level.SEVERE, "Hint file not found", ex);
+        }
+        catch(NullPointerException e) {
+           ImageJFX.getLogger().log(Level.SEVERE, "Error when loading hint file.", e);
         }
     }
 
