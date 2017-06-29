@@ -242,7 +242,7 @@ public class OverlayPanel extends BorderPane implements UiPlugin {
                 .throttleWithTimeout(100, TimeUnit.MILLISECONDS)
                 .subscribe(event -> Platform.runLater(this::updateStats));
         eventBus.getStream(DisplayUpdatedEvent.class)
-                .filter(event->event.getDisplay() instanceof ImageDisplay)
+                .filter(event -> event.getDisplay() instanceof ImageDisplay)
                 .subscribe(this::checkCurrentOverlay);
     }
 
@@ -333,7 +333,7 @@ public class OverlayPanel extends BorderPane implements UiPlugin {
     public void onDisplayUpdatedEvent(DisplayUpdatedEvent event) {
         eventBus.channel(event);
     }
-    
+
     @EventHandler
     public void onImageDisplayClosed(DisplayDeletedEvent event) {
 
@@ -358,14 +358,14 @@ public class OverlayPanel extends BorderPane implements UiPlugin {
     }
 
     private void checkCurrentOverlay(Object o) {
-        
+
         Overlay selectedOverlay = overlaySelectionService.getSelectedOverlay(imageDisplayService.getActiveImageDisplay());
-        
-        if(selectedOverlay != overlayProperty.getValue()) {
+
+        if (selectedOverlay != overlayProperty.getValue()) {
             overlayProperty.setValue(selectedOverlay);
         }
     }
-    
+
     private void updateChart(Overlay overlay) {
 
         boolean isLineOverlay = overlay instanceof LineOverlay;
@@ -541,9 +541,11 @@ public class OverlayPanel extends BorderPane implements UiPlugin {
 
     public void onOverlaySelectionChanged(Observable obs, Overlay oldValue, Overlay newValue) {
         Platform.runLater(() -> {
-            overlayNameField.setText(newValue.getName());
-            updateChart(newValue);
-            updateTable();
+            if (newValue != null) {
+                overlayNameField.setText(newValue.getName());
+                updateChart(newValue);
+                updateTable();
+            }
         });
     }
 
