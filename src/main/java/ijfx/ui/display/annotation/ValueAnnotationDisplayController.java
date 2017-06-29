@@ -22,6 +22,9 @@ package ijfx.ui.display.annotation;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
@@ -41,7 +44,8 @@ import javafx.scene.layout.Pane;
  */
 public class ValueAnnotationDisplayController extends Pane {
 
-    
+    @FXML
+    Pane pane;
 
     @FXML
     TextField value, newValue; 
@@ -52,18 +56,28 @@ public class ValueAnnotationDisplayController extends Pane {
     private final double PADDING = 4.0;
     
     
-    private final ObservableValue<Boolean> fillState = Bindings.createObjectBinding(this:: getTextfieldState);
+    //private final ObservableValue<Boolean> fillState = Bindings.createObjectBinding(this:: getTextfieldState);
+    
     private final BooleanProperty isValues = new SimpleBooleanProperty();
 
     public ValueAnnotationDisplayController() throws IOException {
+        Platform.runLater( ()-> {
+            pane = new Pane();
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/ijfx/ui/widgets/ValueAnnotationDisplay.fxml"));
-        loader.setRoot(this);
         loader.setController(this);
-        loader.load(); 
+            try { 
+                loader.load();
+            } catch (IOException ex) {
+                Logger.getLogger(ValueAnnotationDisplayController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            
+            
 
 
         init();
+        });
     }
     
    
@@ -72,7 +86,7 @@ public class ValueAnnotationDisplayController extends Pane {
      * Initializes the controller class.
      */
     public void init() {
-        isValues.bind(fillState);
+        //isValues.bind(fillState);
         
     }
     

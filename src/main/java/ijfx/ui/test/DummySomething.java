@@ -70,10 +70,10 @@ public class DummySomething extends ContextCommand{
         final Mapper finalMapper = annot.mapperAction();
         
         
-        Node racine = annot.getRoot2();
+        //Node racine = annot.getRoot2();
         
         
-        dialog.getDialogPane().setContent(racine); //void
+        //dialog.getDialogPane().setContent(racine); //void
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK,ButtonType.CANCEL);
         
         

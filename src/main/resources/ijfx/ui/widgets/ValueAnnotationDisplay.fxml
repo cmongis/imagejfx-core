@@ -3,9 +3,9 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="45.0" prefWidth="307.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ijfx.ui.display.annotation.ValueAnnotationDisplayController">
+<fx:root fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="45.0" prefWidth="307.0" type="Pane" xmlns="http://javafx.com/javafx/8.0.131" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <TextField fx:id="value" layoutX="18.0" layoutY="10.0" prefHeight="26.0" prefWidth="102.0" />
       <TextField fx:id="newValue" layoutX="192.0" layoutY="9.0" prefHeight="26.0" prefWidth="96.0" />
    </children>
-</Pane>
+</fx:root>
