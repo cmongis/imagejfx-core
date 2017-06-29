@@ -130,7 +130,7 @@ public class ScriptEditorSidePanel extends TabPane implements UiPlugin{
         return this;
     }
     
-     private class CommandInfoListCell extends ListCell<CommandInfo> {
+    private class CommandInfoListCell extends ListCell<CommandInfo> {
         /*
         Ici on definis comment la vue doit afficher les tache, 
         */

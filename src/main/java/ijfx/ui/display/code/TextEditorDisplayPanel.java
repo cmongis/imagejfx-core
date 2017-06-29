@@ -23,6 +23,7 @@ import ijfx.ui.display.image.AbstractFXDisplayPanel;
 import ijfx.ui.display.image.FXDisplayPanel;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -61,6 +62,8 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     CommandService commandService;
     @Parameter
     PrefService prefService;
+    @Parameter
+    ScriptEditorPreferenciesService scriptEditorPreferenciesService;
     
     
     BorderPane root;
@@ -69,7 +72,7 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     MenuButton languageButton;
     Button runButton;
     JavaBeanStringProperty codeProperty; 
-    Hashtable preferencies;
+    HashMap preferencies;
         
     public TextEditorDisplayPanel() {
         super(ScriptDisplay.class);
@@ -92,11 +95,10 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
         
         this.root.setBottom(new HBox(this.runButton,this.languageButton));
         this.languageButton.setFont(new Font(12));
-        
+                
         this.textArea.setAutocompletion(commandService.getCommands());
         DefaultParametersChoser parametersChoser = new DefaultParametersChoser();
-        this.preferencies = parametersChoser.getParameters();
-        this.textArea.setPreferencies(preferencies);
+        this.textArea.setPreferencies(scriptEditorPreferenciesService.getParameters());
         changeLanguage(display.getLanguage());
         initCode();        
         

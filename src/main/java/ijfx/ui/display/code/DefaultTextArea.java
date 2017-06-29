@@ -20,6 +20,7 @@
 package ijfx.ui.display.code;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import javafx.application.Platform;
@@ -211,10 +212,20 @@ public class DefaultTextArea extends AnchorPane{
        
    }
    
-   public void setPreferencies(Hashtable<String,String> preferencies){
-       if (preferencies.containsKey("styleSheet") && !getClass().getResource((String) preferencies.get("styleSheet")).equals(null)){
-           changeCss(preferencies.get("styleSheet"));
+   public void setPreferencies(HashMap<String,List> preferencies){
+       if (preferencies.containsKey("styleSheet")){
+           if (preferencies.get("styleSheet").get(2).equals("darkTheme")){
+               changeCss("/ijfx/ui/display/code/TextEditorDarkTheme.css");
+           }
+           else if (preferencies.get("styleSheet").get(2).equals("lightTheme")){
+               changeCss("/ijfx/ui/display/code/TextEditorLightTheme.css");
+           }
+           else{
+               changeCss((String) preferencies.get("styleSheet").get(2));
+           }
+           
        }
+       /*
        if (preferencies.containsKey("showAutocompletion") ){
            if (preferencies.get("showAutocompletion").equals("true")){
                this.autocomplete = true;
@@ -223,5 +234,6 @@ public class DefaultTextArea extends AnchorPane{
                this.autocomplete = false;
            }
        }
+*/
    }
 }

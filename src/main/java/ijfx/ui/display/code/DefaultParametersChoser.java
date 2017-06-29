@@ -19,13 +19,16 @@
  */
 package ijfx.ui.display.code;
 
+import ijfx.core.activity.Activity;
 import ijfx.core.prefs.JsonPreferenceService;
 import ijfx.core.uiplugin.UiCommand;
 import ijfx.ui.activity.DisplayContainer;
 import ijfx.ui.mainwindow.AbstractActivityLauncher;
 import java.io.File;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -36,6 +39,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Box;
 import javafx.stage.FileChooser;
@@ -47,31 +51,31 @@ import org.scijava.plugin.Plugin;
  *
  * @author florian
  */
-@Plugin(type = UiCommand.class,label = "Preferences", priority= 100,iconPath = "fa:picture_alt")
 
-public class DefaultParametersChoser extends AbstractActivityLauncher{
+@Plugin(type = Activity.class, name = "display preferencies")
+public class DefaultParametersChoser extends Pane implements Activity{
     @Parameter
     JsonPreferenceService jsonPreferenceService;
+    @Parameter
+    ScriptEditorPreferenciesService preferenceService;
     @Parameter
     Stage stage;
     
     private VBox mainBox;
     
-    private Hashtable<String,List> parameters = new Hashtable();
+    private HashMap<String,List> parameters = new HashMap<>();
     private String fileName = "ScriptEdtirorPreferences";
     
     
 
-    public DefaultParametersChoser() {
-        super(DisplayContainer.class);
-        
+    public DefaultParametersChoser() {        
         
         mainBox = new VBox();
-        for (String parameter : this.parameters.keySet()){
-            createParameter(parameter);
-        }
-        loadPreferencies();
+        mainBox.getChildren().add(new Label("Preferencies"));
         
+        
+        
+        this.getChildren().add(mainBox);
     }
     
     public Node createParameter(String key){
@@ -90,6 +94,7 @@ public class DefaultParametersChoser extends AbstractActivityLauncher{
         }
         
         if (key.equals("styleSheet")){
+            node = createStyleChoice(key);
             
         }
         
@@ -107,6 +112,7 @@ public class DefaultParametersChoser extends AbstractActivityLauncher{
             menuItem.setOnAction((event)->{
                 setParameter("styleSheet", style);
             });
+            menuButton.getItems().add(menuItem);
         }
         subBox.getChildren().add(menuButton);
         Label label = new Label(" Or select a new css file");
@@ -141,8 +147,17 @@ public class DefaultParametersChoser extends AbstractActivityLauncher{
         VBox box = new VBox();
         box.getChildren().add(0, new Label(name));
         
-        
-        box.getChildren().add(1, new CheckBox("Enable"));
+        CheckBox checkBox = new CheckBox("Enable");
+        checkBox.setSelected(value);
+        box.getChildren().add(1, checkBox);
+        checkBox.setOnAction((event)->{
+            String newValue;
+            if (checkBox.isSelected()){
+                newValue = "false";
+            }
+            else newValue = "true";
+                setParameter(name, newValue);
+            });
         
         return  box;
     }
@@ -165,10 +180,7 @@ public class DefaultParametersChoser extends AbstractActivityLauncher{
     }
     
     public void loadPreferencies(){
-        try {
-            this.parameters = (Hashtable) jsonPreferenceService.loadMapFromJson(fileName, String.class, String.class);
-        } catch (Exception e) {
-        }
+        this.parameters = preferenceService.getParameters();
         
         
     }
@@ -177,8 +189,23 @@ public class DefaultParametersChoser extends AbstractActivityLauncher{
         jsonPreferenceService.savePreference(this.parameters, this.fileName);
     }
 
-    public Hashtable getParameters() {
+    public HashMap<String,List> getParameters() {
         return parameters;
+    }
+
+    @Override
+    public Node getContent() {
+        loadPreferencies();
+        for (String parameter : this.parameters.keySet()){
+            this.mainBox.getChildren().add(createParameter(parameter));
+        }
+        //this.getChildren().add(this.mainBox);
+        return this;
+    }
+
+    @Override
+    public Task updateOnShow() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     

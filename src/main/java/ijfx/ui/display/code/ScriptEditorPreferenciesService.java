@@ -21,34 +21,38 @@ package ijfx.ui.display.code;
 
 import ijfx.core.prefs.JsonPreferenceService;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import net.imagej.ImageJService;
+import org.scijava.Priority;
 import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 /**
  *
  * @author florian
  *  Structure of preferencies : (String) key : (List) [type of variable, [possible value1, possible value2, ...], actual value]
  */
-public class ScriptEditorPreferenciesService {
+@Plugin(type = Service.class,priority = Priority.VERY_LOW_PRIORITY)
+public class ScriptEditorPreferenciesService extends AbstractService implements ImageJService{
     @Parameter
     JsonPreferenceService jsonPreferenceService;
     
-    private Hashtable<String,List> preferencies;
+    private HashMap<String,List> preferencies;
     private String fileName = "ScriptEdtirorPreferences";
 
     public ScriptEditorPreferenciesService() {
-        loadPreferencies();
-        if (this.preferencies.isEmpty()) {
-            createPreferencies();
-        }
+        
     }
     
     
     
     
     public void loadPreferencies(){
-        this.preferencies = (Hashtable) jsonPreferenceService.loadMapFromJson(this.fileName, String.class, List.class);
+        this.preferencies = (HashMap) jsonPreferenceService.loadMapFromJson(this.fileName, String.class, List.class);
         
     }
     
@@ -56,7 +60,7 @@ public class ScriptEditorPreferenciesService {
         jsonPreferenceService.savePreference(this.preferencies, this.fileName);
     }
 
-    public Hashtable getParameters() {
+    public HashMap<String,List> getParameters() {
         return preferencies;
     }
     
@@ -73,12 +77,12 @@ public class ScriptEditorPreferenciesService {
         
         // setting css
         List css = new ArrayList();
-        autocompletion.add(0, "filePath");
+        css.add(0, "filePath");
         List path = new ArrayList();
         path.add("darkTheme");
         path.add("lightTheme");
-        autocompletion.add(1, path);
-        autocompletion.add(2, "darkTheme");
+        css.add(1, path);
+        css.add(2, "darkTheme");
         this.preferencies.put("styleSheet", css);
         
     }
@@ -98,5 +102,12 @@ public class ScriptEditorPreferenciesService {
         possibleValues.add(newPossibleValue);
         oldValue.add(1, possibleValues);
         this.preferencies.put(type, oldValue);
+    }
+    @Override
+    public void initialize(){
+        loadPreferencies();
+        if (this.preferencies.isEmpty()) {
+            createPreferencies();
+        }
     }
 }
