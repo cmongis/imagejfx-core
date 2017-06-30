@@ -41,8 +41,9 @@ public class ScriptEditorPreferenciesService extends AbstractService implements 
     @Parameter
     JsonPreferenceService jsonPreferenceService;
     
-    private HashMap<String,List> preferencies;
+    //private HashMap<String,List> preferencies;
     private String fileName = "ScriptEdtirorPreferences";
+    private TextEditorPreferencies textEditorPreferencies;
 
     public ScriptEditorPreferenciesService() {
         
@@ -52,18 +53,30 @@ public class ScriptEditorPreferenciesService extends AbstractService implements 
     
     
     public void loadPreferencies(){
-        this.preferencies = (HashMap) jsonPreferenceService.loadMapFromJson(this.fileName, String.class, List.class);
+        //this.preferencies = (HashMap) jsonPreferenceService.loadMapFromJson(this.fileName, String.class, List.class);
+        try {
+            this.textEditorPreferencies = jsonPreferenceService.loadFromJson(fileName, textEditorPreferencies);
+        } catch (Exception e) {
+            this.textEditorPreferencies = new TextEditorPreferencies();
+        }
+        
         
     }
     
     public void savePreferencies(){
-        jsonPreferenceService.savePreference(this.preferencies, this.fileName);
+        jsonPreferenceService.savePreference(textEditorPreferencies, fileName);
+        //jsonPreferenceService.savePreference(this.preferencies, this.fileName);
     }
-
+/*
     public HashMap<String,List> getParameters() {
         return preferencies;
     }
+    */
+    public TextEditorPreferencies getPreferencies(){
+        return this.textEditorPreferencies;
+    }
     
+    /*
     public void createPreferencies(){
         // setting autocompletion, by default actived
         List autocompletion = new ArrayList();
@@ -103,11 +116,10 @@ public class ScriptEditorPreferenciesService extends AbstractService implements 
         oldValue.add(1, possibleValues);
         this.preferencies.put(type, oldValue);
     }
+*/
     @Override
     public void initialize(){
         loadPreferencies();
-        if (this.preferencies.isEmpty()) {
-            createPreferencies();
-        }
+        
     }
 }

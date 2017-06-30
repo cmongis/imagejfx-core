@@ -212,7 +212,10 @@ public class DefaultTextArea extends AnchorPane{
        
    }
    
-   public void setPreferencies(HashMap<String,List> preferencies){
+   public void setPreferencies(TextEditorPreferencies preferencies){
+       this.autocomplete = preferencies.isAutocompletion();
+       
+       /*
        if (preferencies.containsKey("styleSheet")){
            if (preferencies.get("styleSheet").get(2).equals("darkTheme")){
                changeCss("/ijfx/ui/display/code/TextEditorDarkTheme.css");

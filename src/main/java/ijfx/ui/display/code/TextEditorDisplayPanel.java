@@ -98,7 +98,7 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
                 
         this.textArea.setAutocompletion(commandService.getCommands());
         DefaultParametersChoser parametersChoser = new DefaultParametersChoser();
-        this.textArea.setPreferencies(scriptEditorPreferenciesService.getParameters());
+        this.textArea.setPreferencies(scriptEditorPreferenciesService.getPreferencies());
         changeLanguage(display.getLanguage());
         initCode();        
         

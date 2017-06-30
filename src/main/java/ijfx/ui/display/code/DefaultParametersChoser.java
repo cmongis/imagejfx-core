@@ -46,6 +46,9 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.widget.InputWidget;
+import org.scijava.widget.WidgetModel;
+import org.scijava.widget.WidgetService;
 
 /**
  *
@@ -60,20 +63,23 @@ public class DefaultParametersChoser extends Pane implements Activity{
     ScriptEditorPreferenciesService preferenceService;
     @Parameter
     Stage stage;
+    @Parameter
+    WidgetService widgetService;
     
     private VBox mainBox;
     
     private HashMap<String,List> parameters = new HashMap<>();
+    private TextEditorPreferencies preferencies;
     private String fileName = "ScriptEdtirorPreferences";
     
     
 
     public DefaultParametersChoser() {        
-        
+        preferencies = preferenceService.getPreferencies();
         mainBox = new VBox();
         mainBox.getChildren().add(new Label("Preferencies"));
-        
-        
+        widgetService.create
+        widgetService.createModel(this, module, preferencies.isAutocompletion(), objectPool);
         
         this.getChildren().add(mainBox);
     }
