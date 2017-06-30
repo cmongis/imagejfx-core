@@ -19,15 +19,46 @@
  */
 package ijfx.ui.utils;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  *
- * @author Cyril MONGIS, 2016
+ * @author cyril
  */
-public class CollectionUtils {
-    public static <T> void syncronizeContent(List<T> source, List<T> dest) {
+public class CollectionsUtils {
+    public static <T> List<T> toAdd(Collection<T> source, Collection<T> target) {
+        
+        return source
+                .stream()
+                .filter(t->target.contains(t) == false)
+                .collect(Collectors.toList());
+        
+        
+        
+        
+    }
+    
+    public static <T> List<T> toRemove(Collection<T> source, Collection<T> target) {
+        
+        return target
+                .stream()
+                .filter(t->source.contains(t) == false)
+                .collect(Collectors.toList());
+        
+    }
+    
+    public static <T> void synchronize(Collection<T> source, Collection<T> target) {
+        
+        List<T> toAdd = toAdd(source,target);
+        List<T> toRemove = toRemove(source, target);
+        
+        target.addAll(toAdd);
+        target.removeAll(toRemove);
+    }
+    
+     public static <T> void syncronizeContent(Collection<T> source, Collection<T> dest) {
         
         dest.addAll(source.stream().filter(e->!dest.contains(e)).collect(Collectors.toList()));
         dest.removeAll(dest.stream().filter(e->source.contains(e) == false).collect(Collectors.toList()));

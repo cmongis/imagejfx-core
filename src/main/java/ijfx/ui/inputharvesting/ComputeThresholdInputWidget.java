@@ -19,47 +19,37 @@
  */
 package ijfx.ui.inputharvesting;
 
-import javafx.beans.property.Property;
-import javafx.scene.Node;
+import java.util.List;
+import net.imagej.ops.OpService;
+import net.imagej.ops.threshold.ComputeThreshold;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginService;
+import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
 
 /**
- * Base for quickly create FXInputWidget.
- * This class focuses the most important part of the widget : 
- *  - create the node
- *  - choosing which property will be use as value
- *  - which type of object the will be handled
- * 
+ *
  * @author cyril
  */
-public abstract class EasyInputWidget<T> extends AbstractFXInputWidget<T>{
+@Plugin(type = InputWidget.class)
+public class ComputeThresholdInputWidget extends AbstractComboBoxWidget<ComputeThreshold>{
 
-    Node node;
+    @Parameter
+    PluginService pluginService;
     
+    @Parameter
+    OpService opService;
     
-    public void set(WidgetModel model) {
-        super.set(model);
-        
-        node = createComponent();
-        
-        bindProperty(getProperty());
-        
-    }
     
     @Override
-    public boolean supports(WidgetModel model) {
-        return super.supports(model) && handles(model);
+    public List<ComputeThreshold> getItems() {        
+        return pluginService.createInstancesOfType(ComputeThreshold.class);
     }
-    
-    public abstract Property<T> getProperty();
-    
-    public abstract  Node createComponent();
-    
-    public abstract boolean handles(WidgetModel model);
-    
-    
-    public Node getComponent() {
-        return node;
+
+    @Override
+    public boolean handles(WidgetModel model) {
+        return model.isType(ComputeThreshold.class);
     }
     
 }

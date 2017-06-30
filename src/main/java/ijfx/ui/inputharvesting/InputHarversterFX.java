@@ -19,6 +19,7 @@
  */
 package ijfx.ui.inputharvesting;
 
+import ijfx.core.uiextra.UIExtraService;
 import ijfx.ui.main.ImageJFX;
 import javafx.application.Platform;
 import javafx.scene.Node;
@@ -42,6 +43,8 @@ import org.scijava.widget.InputPanel;
 @Plugin(type = PreprocessorPlugin.class, priority = InputHarvester.PRIORITY)
 public class InputHarversterFX extends AbstractInputHarvesterPlugin<Node, Node> {
 
+    UIExtraService uiExtraService;
+    
     @Override
     public InputPanel<Node, Node> createInputPanel() {
 
@@ -58,6 +61,7 @@ public class InputHarversterFX extends AbstractInputHarvesterPlugin<Node, Node> 
                 Stage stage = new Stage();
                 Scene scene = new Scene((Parent) inputPanel.getComponent());
                 scene.getStylesheets().add(ImageJFX.getStylesheet());
+                scene.getRoot().getStyleClass().add("side-window");
                 stage.setScene(scene);
                 stage.setTitle(module.getInfo().getLabel());
                 stage.show();
@@ -69,7 +73,7 @@ public class InputHarversterFX extends AbstractInputHarvesterPlugin<Node, Node> 
                 Dialog<Boolean> dialog = new Dialog<Boolean>();
 
                 dialog.getDialogPane().setContent(inputPanel.getComponent());
-
+                
                 dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
                 dialog.setResultConverter(buttonType -> buttonType == ButtonType.OK);

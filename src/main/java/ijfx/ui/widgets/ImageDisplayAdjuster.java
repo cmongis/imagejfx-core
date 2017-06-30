@@ -22,7 +22,7 @@ package ijfx.ui.widgets;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import ijfx.core.image.DisplayRangeService;
-import ijfx.core.uiplugin.FXUiActionService;
+import ijfx.core.uiplugin.FXUiCommandService;
 import ijfx.core.usage.Usage;
 import ijfx.ui.display.image.FXImageDisplay;
 import ijfx.ui.main.ImageJFX;
@@ -119,7 +119,7 @@ public class ImageDisplayAdjuster extends BorderPane {
     UiCommandService uiActionService;
     
     @Parameter
-    FXUiActionService fxUiActionService;
+    FXUiCommandService fxUiActionService;
     
     private HoverDescriptionBinding descriptionBinding;
 

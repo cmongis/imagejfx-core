@@ -20,7 +20,6 @@
 package ijfx.explorer;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import ijfx.core.activity.Activity;
 import ijfx.core.hint.HintService;
 import ijfx.core.icon.FXIconService;
@@ -30,6 +29,7 @@ import ijfx.core.metadata.MetaDataOwner;
 import ijfx.core.metadata.MetaDataSet;
 import ijfx.core.metadata.MetaDataSetUtils;
 import ijfx.core.uicontext.UiContextService;
+import ijfx.core.uiplugin.FXUiCommandService;
 import ijfx.core.utils.SciJavaUtils;
 import ijfx.explorer.core.Folder;
 import ijfx.explorer.core.FolderManagerService;
@@ -50,7 +50,7 @@ import ijfx.ui.filter.MetaDataOwnerFilter;
 
 import ijfx.ui.loading.LoadingScreenService;
 import ijfx.ui.main.ImageJFX;
-import ijfx.ui.utils.CollectionUtils;
+import ijfx.ui.utils.CollectionsUtils;
 import ijfx.ui.utils.DragPanel;
 import java.io.File;
 import java.io.IOException;
@@ -92,6 +92,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import mongis.utils.CallableTask;
 import mongis.utils.CallbackTask;
 import mongis.utils.FXUtilities;
 import mongis.utils.ProgressHandler;
@@ -100,7 +101,6 @@ import org.reactfx.EventStreams;
 import org.scijava.event.EventHandler;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 import org.scijava.ui.DialogPrompt;
 import org.scijava.ui.UIService;
@@ -177,6 +177,9 @@ public class ExplorerActivity extends AnchorPane implements Activity {
     @FXML
     private TabPane tabPane;
 
+    @Parameter
+    private FXUiCommandService uiCommandService;
+    
     private ExplorerView view;
 
     private List<Runnable> folderUpdateHandler = new ArrayList<>();
@@ -252,20 +255,28 @@ public class ExplorerActivity extends AnchorPane implements Activity {
 
             tabPane.getTabs().addAll(buttons);
 
-            //buttons.get(0).getStyleClass().add("first");
-            //buttons.get(buttons.size() - 1).getStyleClass().add("last");
+            
             currentView.setValue(views.get(0));
 
             // add the items to the menu in the background
-            /*
-            new CallbackTask<PluginService,List<MenuItem>>().
-                    setInput(pluginService)
-                    .run(this::initActionMenu)
+            
+            new CallableTask<List<MenuItem>>()
+                    .setCallable(this::initMoreActionButton)
                     .then(moreMenuButton.getItems()::addAll)
-                    .start();*/
+                    .start();
         }
     }
 
+    
+    public List<MenuItem> initMoreActionButton() {
+        
+        return uiCommandService
+            .getAssociatedAction(ExplorerActivity.class)
+            .stream()
+                .map(uiCommand->uiCommandService.createMenuItem(uiCommand, this))
+                .collect(Collectors.toList());
+    }
+    
     @Override
     public Node getContent() {
         return this;
@@ -299,7 +310,7 @@ public class ExplorerActivity extends AnchorPane implements Activity {
 
     public void updateFolderList() {
 
-        CollectionUtils.syncronizeContent(folderManagerService.getFolderList(), folderListView.getItems());
+        CollectionsUtils.syncronizeContent(folderManagerService.getFolderList(), folderListView.getItems());
 
     }
 

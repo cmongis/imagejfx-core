@@ -619,7 +619,7 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
     private void checkModifier(OverlayView overlayView) {
 
         OverlayModifier modifier = overlayDrawingManager.getModifier(overlayView.getData());
-       
+        if(modifier == null) return;
         List<MoveablePoint> modifiers = modifier.getModifiers(display, overlayView.getData());
         if (overlayView.isSelected()) {
             if (modifiersAnchorPane.getChildren().containsAll(modifiers) == false) {

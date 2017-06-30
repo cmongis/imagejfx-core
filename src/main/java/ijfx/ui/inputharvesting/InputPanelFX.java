@@ -27,9 +27,11 @@ import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -56,7 +58,8 @@ public class InputPanelFX implements InputPanel<Node, Node> {
     @FXML
     Label titleLabel;
 
-    Parent root;
+ 
+    BorderPane root;
 
     Map<String, InputWidget<?, Node>> widgetList = new HashMap<>();
 
@@ -168,6 +171,10 @@ public class InputPanelFX implements InputPanel<Node, Node> {
 
     }
 
+    public void setPadding(double margin) {
+        root.setPadding(new Insets(margin));
+    }
+    
     @Override
     public Parent getComponent() {
 
@@ -180,6 +187,8 @@ public class InputPanelFX implements InputPanel<Node, Node> {
                 loader.load();
 
                 root = loader.getRoot();
+                
+                
             } catch (IOException ex) {
                 Logger.getLogger(InputPanelFX.class.getName()).log(Level.SEVERE, null, ex);
             }
