@@ -52,7 +52,18 @@ public abstract class AbstractFXInputWidget<T> extends AbstractInputWidget<T,Nod
     }
     
     protected boolean isOneOf(WidgetModel model, Class<?>... classList) {
+        
+        
+        
+        try {
         return isOneOf(model.getItem().getType(),classList);
+        }
+        catch(NullPointerException npe) {
+            for(Class<?> type : classList) {
+                if(model.isType(type)) return true;
+            }
+        }
+        return false;
     }
     
     public T getValue() {
