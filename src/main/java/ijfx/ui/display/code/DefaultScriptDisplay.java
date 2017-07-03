@@ -218,9 +218,4 @@ public class DefaultScriptDisplay extends AbstractDisplay<Script> implements Scr
 
     }
 
-    @Override
-    public void switchTheme() {
-        eventService.publish(new ChangeThemeEvent());
-    }
-    
 }

@@ -25,11 +25,17 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import net.imagej.ImageJService;
+import org.scijava.Prioritized;
 import org.scijava.Priority;
+import org.scijava.log.LogService;
+import org.scijava.module.Module;
+import org.scijava.module.ModuleItem;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
+import org.scijava.widget.InputPanel;
+import org.scijava.widget.WidgetModel;
 
 /**
  *
@@ -122,4 +128,5 @@ public class ScriptEditorPreferenciesService extends AbstractService implements 
         loadPreferencies();
         
     }
+
 }

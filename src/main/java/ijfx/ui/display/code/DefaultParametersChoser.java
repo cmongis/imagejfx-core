@@ -20,11 +20,13 @@
 package ijfx.ui.display.code;
 
 import ijfx.core.activity.Activity;
+import ijfx.core.module.ModuleWrapper;
 import ijfx.core.prefs.JsonPreferenceService;
 import ijfx.core.uiplugin.UiCommand;
 import ijfx.ui.activity.DisplayContainer;
 import ijfx.ui.mainwindow.AbstractActivityLauncher;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
@@ -44,6 +46,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Box;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.scijava.module.Module;
+import org.scijava.module.ModuleItem;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.widget.InputWidget;
@@ -78,8 +82,12 @@ public class DefaultParametersChoser extends Pane implements Activity{
         preferencies = preferenceService.getPreferencies();
         mainBox = new VBox();
         mainBox.getChildren().add(new Label("Preferencies"));
-        widgetService.create
-        widgetService.createModel(this, module, preferencies.isAutocompletion(), objectPool);
+        Module module = new ModuleWrapper(this);
+        List<Object> objectPool = new ArrayList<>();
+        objectPool.add(preferencies);
+        
+        WidgetModel model = widgetService.createModel(this, module, item, objectPool);
+        widgetService.create(model)
         
         this.getChildren().add(mainBox);
     }

@@ -21,12 +21,8 @@ package ijfx.ui.display.code;
 
 import ijfx.ui.display.image.AbstractFXDisplayPanel;
 import ijfx.ui.display.image.FXDisplayPanel;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.adapter.JavaBeanStringProperty;
 import javafx.geometry.Insets;
@@ -61,18 +57,13 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     @Parameter
     CommandService commandService;
     @Parameter
-    PrefService prefService;
-    @Parameter
     ScriptEditorPreferenciesService scriptEditorPreferenciesService;
-    
     
     BorderPane root;
     ScriptDisplay display;
     DefaultTextArea textArea;
     MenuButton languageButton;
     Button runButton;
-    JavaBeanStringProperty codeProperty; 
-    HashMap preferencies;
         
     public TextEditorDisplayPanel() {
         super(ScriptDisplay.class);
@@ -102,9 +93,8 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
         changeLanguage(display.getLanguage());
         initCode();        
         
-        
-        
     }
+    
     public MenuButton createLanguageButton(String name){
         
         MenuButton mb = new MenuButton(name);
@@ -139,13 +129,10 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
             display.selectionProperty().bind(this.textArea.selectionProperty());
         });
         
-        
     }
     
     public void setCode(String code) {
-        
         display.get(0).setCode(code);
-
     }
 
     public String getCode() {
@@ -188,7 +175,6 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     }
     
     public void changeLanguage(ScriptLanguage language){
-        //String path = findFileLanguage(language);
         this.textArea.initLanguage(language);
     }
 
@@ -202,10 +188,5 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
         this.textArea.redo();
 
     }
-    @EventHandler
-    public void onChangeThemeEvent(ChangeThemeEvent event){
-        this.textArea.switchTheme();
-        this.initCode();
-
-    }
+    
 }

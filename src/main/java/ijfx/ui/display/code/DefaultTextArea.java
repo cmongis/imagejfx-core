@@ -57,7 +57,6 @@ public class DefaultTextArea extends AnchorPane{
     private final StringProperty textProperty;
     private final ObjectProperty<IndexRange> selectionProperty;
     
-    private String THEME = "dark";
     
     private Hashtable KEYWORDS_PATTERN_TABLE = new Hashtable();
     private Autocompletion autocompletion;
@@ -93,7 +92,7 @@ public class DefaultTextArea extends AnchorPane{
         textProperty.bind(this.codeArea.textProperty());
         
         this.getChildren().add(this.codeArea);
-        getStylesheets().add(getClass().getResource("/ijfx/ui/display/code/TextEditorDarkTheme.css").toExternalForm());
+        //getStylesheets().add(getClass().getResource("/ijfx/ui/display/code/TextEditorDarkTheme.css").toExternalForm());
         this.autocompletion = new DefaultAutocompletion(this);
         
         
@@ -195,17 +194,7 @@ public class DefaultTextArea extends AnchorPane{
     public void redo(){
         this.codeArea.redo();
     }
-    public void switchTheme(){
-        if (THEME.equals("light")){
-            changeCss("/ijfx/ui/display/code/TextEditorDarkTheme.css");
-            THEME = "dark";
-        }
-        else if (THEME.equals("dark")){
-             changeCss("/ijfx/ui/display/code/TextEditorLightTheme.css");
-             THEME = "light";
-             
-        }
-    }
+    
    public void changeCss (String path){
        this.getStylesheets().clear();
        this.getStylesheets().add(getClass().getResource(path).toExternalForm());
