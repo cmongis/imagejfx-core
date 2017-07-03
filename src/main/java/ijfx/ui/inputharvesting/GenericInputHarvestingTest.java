@@ -77,7 +77,8 @@ public class GenericInputHarvestingTest extends ContextCommand{
                 new SuppliedWidgetModel<>(Number.class)
                 .setGetter(doubleProperty::getValue)
                 .setSetter(doubleProperty::setValue)
-                .setStyle(NumberWidget.SLIDER_STYLE)
+               
+                .setStyle(NumberWidget.SPINNER_STYLE)
                
             );
         
