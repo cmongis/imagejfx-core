@@ -22,16 +22,12 @@ package ijfx.ui.display.code;
 import ijfx.core.activity.Activity;
 import ijfx.core.module.ModuleWrapper;
 import ijfx.core.prefs.JsonPreferenceService;
-import ijfx.core.uiplugin.UiCommand;
-import ijfx.ui.activity.DisplayContainer;
-import ijfx.ui.mainwindow.AbstractActivityLauncher;
+import ijfx.ui.inputharvesting.SuppliedWidgetModel;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -43,14 +39,13 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Box;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.scijava.module.Module;
-import org.scijava.module.ModuleItem;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.widget.InputWidget;
+import org.scijava.widget.TextWidget;
 import org.scijava.widget.WidgetModel;
 import org.scijava.widget.WidgetService;
 
@@ -82,12 +77,18 @@ public class DefaultParametersChoser extends Pane implements Activity{
         preferencies = preferenceService.getPreferencies();
         mainBox = new VBox();
         mainBox.getChildren().add(new Label("Preferencies"));
-        Module module = new ModuleWrapper(this);
-        List<Object> objectPool = new ArrayList<>();
-        objectPool.add(preferencies);
         
-        WidgetModel model = widgetService.createModel(this, module, item, objectPool);
-        widgetService.create(model)
+        
+        // we create the widget
+        InputWidget<?, Node> textWidget = (InputWidget<?, Node>) widgetService.create(
+                new SuppliedWidgetModel<>(String.class)
+                .setGetter(preferencies::getTheme)
+                .setSetter(preferencies::setTheme)
+                .setStyle(TextWidget.FIELD_STYLE)
+        );
+        
+        textWidget.refreshWidget();
+        mainBox.getChildren().add(textWidget.getComponent());
         
         this.getChildren().add(mainBox);
     }
@@ -194,7 +195,7 @@ public class DefaultParametersChoser extends Pane implements Activity{
     }
     
     public void loadPreferencies(){
-        this.parameters = preferenceService.getParameters();
+        //this.parameters = preferenceService.getParameters();
         
         
     }
