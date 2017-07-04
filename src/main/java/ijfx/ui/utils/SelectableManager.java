@@ -144,9 +144,10 @@ public class SelectableManager<T extends Selectable> {
             if (consumer != null) {
                 consumer.accept(exp, newValue);
                 
-                changeStream.onNext(new Change<>(exp,newValue));
+               
                 
             }
+            changeStream.onNext(new Change<>(exp,newValue));
         }
     }
 }
