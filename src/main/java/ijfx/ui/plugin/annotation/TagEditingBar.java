@@ -27,7 +27,11 @@ import ijfx.explorer.datamodel.Taggable;
 import ijfx.ui.UiConfiguration;
 import ijfx.ui.UiPlugin;
 import ijfx.ui.widgets.TaggablePane;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.stream.Collectors;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Node;
 import org.scijava.Context;
 import org.scijava.display.event.DisplayActivatedEvent;
@@ -54,6 +58,8 @@ public class TagEditingBar implements UiPlugin {
 
     private ExplorableDisplay display;
 
+    private IntegerProperty limit = new SimpleIntegerProperty(5);
+    
     @Override
     public Node getUiElement() {
         return taggablePane.getContentPane();
@@ -62,7 +68,11 @@ public class TagEditingBar implements UiPlugin {
     @Override
     public UiPlugin init() throws Exception {
 
-        taggablePane = new TaggablePane(context);
+        taggablePane = new TaggablePane(context)
+                .setOnAdd(this::addTag)
+                .setOnRemove(this::removeTag);
+        
+        
         return this;
     }
     
@@ -86,7 +96,7 @@ public class TagEditingBar implements UiPlugin {
         if (event.getDisplay() instanceof ExplorableDisplay) {
 
             display = (ExplorableDisplay) event.getDisplay();
-
+            updateView();
         }
 
     }
@@ -103,21 +113,38 @@ public class TagEditingBar implements UiPlugin {
     }
 
     public void updateView() {
+        if(display == null) return;
+        if(display.size() == 0) return;
+        
+        taggablePane.setTaggle(display.getSelected().stream().findFirst().orElse(null));
+        
         taggablePane.setTags(display
                 .getSelected()
                 .stream()
                 .flatMap(explorable -> explorable.getTagList().stream())
-                .collect(Collectors.toSet()));
+                .collect(Collectors.toList()));
 
         taggablePane.setPossibleTags(
-                display.get(0)
+                limitToLast(
+                display.getItems()
                         .stream()
                         .flatMap(explorable -> explorable.getTagList().stream())
                 .collect(Collectors.toSet()
-                ));
+                ),limit.get()));
+        
+        //taggablePane.refresh();
     }
     
     
-    
+    private <T> Collection <T> limitToLast(Collection<T> collection, int limit) {
+        
+        if(collection.size() >  limit) {
+            return new ArrayList(collection).subList(collection.size()-6, collection.size()-1);
+        }
+        else {
+            return collection;
+        }
+        
+    }
 
 }
