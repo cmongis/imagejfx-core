@@ -19,11 +19,12 @@
  */
 package ijfx.ui.widgets;
 
+import de.jensd.fx.glyphs.GlyphsDude;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import ijfx.explorer.datamodel.DefaultTag;
 import ijfx.explorer.datamodel.Tag;
 import ijfx.explorer.datamodel.Taggable;
 import ijfx.ui.main.ImageJFX;
-import ijfx.ui.service.AnnotationService;
 import ijfx.ui.utils.CollectionsUtils;
 import java.io.IOException;
 import java.util.Collection;
@@ -47,7 +48,6 @@ import javafx.scene.layout.FlowPane;
 import mongis.utils.FXUtilities;
 import mongis.utils.properties.ListChangeListenerBuilder;
 import org.scijava.Context;
-import org.scijava.plugin.Parameter;
 
 /**
  *
@@ -66,7 +66,6 @@ public class TaggablePane {
     @FXML
     private TextField tagTextField;
 
- 
     private final ObservableList<Tag> tags = FXCollections.observableArrayList();
 
     private final ObservableList<Tag> possibleTags = FXCollections.observableArrayList();
@@ -78,6 +77,8 @@ public class TaggablePane {
     private BiConsumer<Taggable, Tag> removeAction = (taggable, tag) -> {
     };
 
+    private final String TAG_CSS_CLASS = "tag";
+    
     public TaggablePane(Context context) {
 
         context.inject(context);
@@ -100,7 +101,7 @@ public class TaggablePane {
                     .build()
             );
 
-            taggableProperty.addListener(this::onTaggleChanged);
+            //taggableProperty.addListener(this::onTaggableChanged);
 
             tagTextField.addEventFilter(KeyEvent.KEY_RELEASED, this::onEnterPressed);
         } catch (IOException e) {
@@ -116,25 +117,35 @@ public class TaggablePane {
 
     private void onTagAdded(List<? extends Tag> tagList) {
 
-        tagList
+          System.out.println(String.format("### %d tags added",tagList.size()));
+        
+        
+        List<Button> collect = tagList
                 .stream()
                 .map(this::createRemoveButton)
-                .collect(Collectors.toCollection(tagFlowPane::getChildren));
+                .collect(Collectors.toList());
+
+        FXUtilities.addLater(collect, tagFlowPane.getChildren());
 
     }
 
     private void onTagRemoved(List<? extends Tag> tagList) {
+        
+         System.out.println(String.format("### %d tags removed",tagList.size()));
+        
+        
         List<Node> collect = tagFlowPane
                 .getChildren()
                 .stream()
                 .filter(button -> tagList.contains(button.getUserData()))
                 .collect(Collectors.toList());
 
-        tagFlowPane.getChildren().remove(collect);
+        FXUtilities.removeLater(collect, tagFlowPane.getChildren());
     }
 
     private void onPossibleTagAdded(List<? extends Tag> tagList) {
 
+      
         tagList
                 .stream()
                 .map(this::createAddButton)
@@ -143,6 +154,7 @@ public class TaggablePane {
     }
 
     private void onPossibleTagRemoved(List<? extends Tag> tagList) {
+         
         List<Node> collect = possibleTagsFlowPane
                 .getChildren()
                 .stream()
@@ -153,10 +165,12 @@ public class TaggablePane {
     }
 
     public void setTags(Collection<Tag> tags) {
+        
+        System.out.println(String.format("!!! Synchronizing %d to %d",tags.size(),this.tags.size()));
         CollectionsUtils.synchronize(tags, this.tags);
     }
 
-    private void onTaggleChanged(Observable obs, Taggable oldValue, Taggable newValue) {
+    private void onTaggableChanged(Observable obs, Taggable oldValue, Taggable newValue) {
 
         if (newValue == null) {
             tags.clear();
@@ -167,12 +181,11 @@ public class TaggablePane {
 
     private void onEnterPressed(KeyEvent event) {
         if (event.getCode() == KeyCode.ENTER) {
-           
-             
-            addAction.accept(getTaggable(),new DefaultTag(tagTextField.getText()));
-            
+
+            addAction.accept(getTaggable(), new DefaultTag(tagTextField.getText()));
+
             tagTextField.clear();
-            
+
         }
     }
 
@@ -183,6 +196,11 @@ public class TaggablePane {
     public Taggable getTaggable() {
         return taggableProperty.getValue();
     }
+    
+    public void setTaggle(Taggable taggable) {
+        taggableProperty.setValue(taggable);
+        
+    }
 
     public void refresh() {
         CollectionsUtils.synchronize(getTaggable().getTagList(), tags);
@@ -190,18 +208,19 @@ public class TaggablePane {
 
     public Button createRemoveButton(Tag tag) {
 
-        Button button = new Button(tag.getName());
-
+        Button button =  GlyphsDude.createIconButton(FontAwesomeIcon.REMOVE, tag.getName());
+        button.setUserData(tag);
+        button.getStyleClass().add(TAG_CSS_CLASS);
         button.setOnAction(event -> removeAction.accept(getTaggable(), tag));
-
         return button;
     }
 
     public Button createAddButton(Tag tag) {
 
-        Button button = new Button(tag.getName());
-
-        button.setOnAction(event -> addAction.accept(getTaggable(),tag));
+        Button button = GlyphsDude.createIconButton(FontAwesomeIcon.PLUS, tag.getName());
+        button.setUserData(tag);
+         button.getStyleClass().add(TAG_CSS_CLASS);
+        button.setOnAction(event -> addAction.accept(getTaggable(), tag));
 
         return button;
     }
