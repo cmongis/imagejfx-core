@@ -47,7 +47,7 @@ public class ImageCanvasUtils {
 
     public static IntCoords getUpperLeftCornerOnData(ImageCanvas viewport) {
 
-        return getUpperLeftCornerOnData(viewport);
+        return toInt(topLeftOnData(viewport));
 
     }
 

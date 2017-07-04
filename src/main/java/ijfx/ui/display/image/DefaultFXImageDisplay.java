@@ -32,6 +32,7 @@ import javafx.beans.property.adapter.JavaBeanDoubleProperty;
 import javafx.beans.property.adapter.JavaBeanDoublePropertyBuilder;
 import javafx.beans.property.adapter.JavaBeanObjectPropertyBuilder;
 import javafx.beans.property.adapter.JavaBeanProperty;
+import net.imagej.Dataset;
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
 import net.imagej.display.DatasetView;
@@ -98,6 +99,10 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
         return imageDisplayService.getActiveDatasetView(this);
 
     }
+    
+    private Dataset getDataset() {
+        return getDatasetView().getData();
+    }
 
     public void updateAsync() {
         ImageJFX.getThreadPool().execute(() -> {
@@ -133,6 +138,7 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
     public void setCurrentLUTMin(double min) {
 
         getDatasetView().setChannelRange(getCurrentChannel(), min, getCurrentLUTMax());
+        getDataset().setChannelMinimum(getCurrentChannel(), min);
         currentLUTMinProperty().fireValueChangedEvent();
         updateAsync();
     }
@@ -154,6 +160,7 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
     @Override
     public void setCurrentLUTMax(double max) {
         getDatasetView().setChannelRange(getCurrentChannel(), getCurrentLUTMin(), max);
+        getDataset().setChannelMaximum(getCurrentChannel(), max);
         currentLUTMaxProperty().fireValueChangedEvent();
         updateAsync();
     }
@@ -267,6 +274,9 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
     }
 
     public int[] getCompositeChannels() {
+        if(getDatasetView().getProjector() == null) {
+            return new int[0];
+        }
         return IntStream
                 .range(0, getChannelNumber())
                 .filter(i -> getDatasetView().getProjector().isComposite(i))

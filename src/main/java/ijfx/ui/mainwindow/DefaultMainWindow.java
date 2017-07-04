@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.animation.Transition;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleListProperty;
 import javafx.concurrent.Task;
@@ -58,13 +57,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javax.management.Notification;
 import mongis.utils.BindingsUtils;
-import mongis.utils.CallableTask;
 import mongis.utils.TaskList2;
 import mongis.utils.animation.Animations;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import ijfx.core.uiplugin.UiCommand;
 import ijfx.core.uiplugin.UiCommandService;
+import javafx.application.Platform;
 
 /**
  * Controller class for the main window
@@ -138,10 +137,10 @@ public class DefaultMainWindow implements MainWindow {
 
     @Parameter
     FXIconService fxIconService;
-    
+
     @Parameter
     UiCommandService uiActionService;
-    
+
     @Override
     public void init() {
         try {
@@ -172,10 +171,9 @@ public class DefaultMainWindow implements MainWindow {
                     .closeOnFinished();
 
             registerWidgetControllers();
-            
-            
+
             configureSideBar(new SideBar());
-            
+
         } catch (IOException ex) {
             Logger.getLogger(DefaultMainWindow.class.getName()).log(Level.SEVERE, "Error when loading the DefaultMainWindow FXML", ex);
 
@@ -283,7 +281,7 @@ public class DefaultMainWindow implements MainWindow {
 
     @Override
     public void displayActivity(Activity activity) {
-
+        /*
         Transition configure = Animations.ZOOMOUT.configure(mainBorderPane.getCenter(), 400);
 
         configure.setOnFinished(event -> {
@@ -291,7 +289,12 @@ public class DefaultMainWindow implements MainWindow {
             Animations.ZOOMIN.configure(mainBorderPane.getCenter(), 400).play();
         });
 
-        configure.play();
+        configure.play();*
+
+         */
+        Platform.runLater(() -> {
+            mainBorderPane.setCenter(activity.getContent());
+        });
 
     }
 
@@ -304,12 +307,11 @@ public class DefaultMainWindow implements MainWindow {
     public void displaySideMenuAction(UiCommand<MainWindow> action) {
 
         final FontAwesomeIcon icon = fxIconService.getIcon(SciJavaUtils.getIconPath(action));
-        
+
         final String label = SciJavaUtils.getLabel(action);
-        
-        
-        SideMenuButton sideMenuButton = new SideMenuButton(label,icon);
-        sideMenuButton.setOnMouseClicked(event->{ 
+
+        SideMenuButton sideMenuButton = new SideMenuButton(label, icon);
+        sideMenuButton.setOnMouseClicked(event -> {
             action.run(this);
         });
         sideBar.addButton(sideMenuButton);
@@ -334,7 +336,7 @@ public class DefaultMainWindow implements MainWindow {
 
     @Override
     public void setReady(boolean ready) {
-        
+
     }
 
     @Override

@@ -1,0 +1,43 @@
+[
+    {
+        "name": "imagej",
+        "incompatibleWith": ["webapp", "image-browser","explore"]
+    }
+    ,{
+        "name":"explore"
+        ,"incompatibleWith":["webapp","imagej"]
+    }
+    ,{
+        "name":"project-manager"
+        ,"incompatibleWith":["webapp","imagej","project-batch-processing"]
+        
+    }
+    ,{
+        "name":"project-batch-processing"
+        ,"incompatibleWith":["webapp","imagej","project-manager"]
+    }
+    ,{
+        "name":"file-batch-processing"
+        ,"incompatibleWith":["webapp","imagej","project-manager","project-batch-processing"]
+    }
+    ,{
+        "name":"project-rule-list"
+        ,"incompatibleWith":["webapp","project-manager"]
+    }
+    ,{
+        "name":"project-rule-edition"
+        ,"incompatibleWith":["project-rule-list","project-manager"]
+    }
+    ,{
+        "name":"segment"
+        ,"incompatibleWith":["visualize"]
+    }
+    ,{
+        "name":"visualize"
+        ,"incompatibleWith":["segment"]
+    }
+    ,{
+        "name":"batch"
+        ,"incompatibleWith":["segment","visualize"]
+    }
+]

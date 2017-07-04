@@ -17,25 +17,37 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.explorer;
+package ijfx.ui.inputharvesting;
 
-import ijfx.explorer.datamodel.Explorable;
-import java.util.ArrayList;
-import java.util.Collection;
+import javafx.scene.Node;
+import org.scijava.widget.AbstractInputPanel;
+import org.scijava.widget.InputWidget;
 
 /**
  *
  * @author cyril
  */
-public class ExplorableList extends ArrayList<Explorable>{
-    
-    public ExplorableList() {
-        super();
+public class DummyFXInputPanel extends AbstractInputPanel<Object,Object>{
+
+    @Override
+    public Class getWidgetComponentType() {
+        return Node.class;
+    }
+
+    @Override
+    public Object getComponent() {
+        return null;
+    }
+
+    @Override
+    public Class getComponentType() {
+        return Node.class;
     }
     
-    public ExplorableList(Collection<Explorable> list) {
-        super(list.size());
-        addAll(list);
+    @Override
+    public boolean supports(final InputWidget<?, ?> widget) {
+        return Node.class.isAssignableFrom(widget.getComponentType());
+        //return widget.getComponentType().isAssignableFrom(Node.class);
     }
     
 }

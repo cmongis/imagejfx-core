@@ -17,20 +17,37 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.ui.utils;
+package ijfx.ui.inputharvesting;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import javafx.beans.property.Property;
+import javafx.scene.Node;
+import javafx.scene.control.ComboBox;
 
 /**
  *
- * @author Cyril MONGIS, 2016
+ * @author cyril
  */
-public class CollectionUtils {
-    public static <T> void syncronizeContent(List<T> source, List<T> dest) {
-        
-        dest.addAll(source.stream().filter(e->!dest.contains(e)).collect(Collectors.toList()));
-        dest.removeAll(dest.stream().filter(e->source.contains(e) == false).collect(Collectors.toList()));
-        
+public abstract class AbstractComboBoxWidget<T> extends EasyInputWidget<T>{
+
+    
+    ComboBox<T> comboBox;
+    
+    
+    public abstract List<T> getItems();
+    
+    @Override
+    public Property<T> getProperty() {
+        return comboBox.valueProperty();
     }
+
+    @Override
+    public Node createComponent() {
+        comboBox = new ComboBox<>();
+        comboBox.getItems().addAll(getItems());
+        return comboBox;
+    }
+
+  
+    
 }

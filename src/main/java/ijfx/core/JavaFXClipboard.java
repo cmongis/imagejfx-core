@@ -25,6 +25,7 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import mongis.utils.FXUtilities;
 import org.scijava.ui.ARGBPlane;
 import org.scijava.ui.SystemClipboard;
 
@@ -36,7 +37,7 @@ import org.scijava.ui.SystemClipboard;
         Clipboard clipboard;
 
         public JavaFXClipboard() {
-            clipboard = Clipboard.getSystemClipboard();
+            clipboard = FXUtilities.runAndWait(Clipboard::getSystemClipboard);
         }
 
         @Override

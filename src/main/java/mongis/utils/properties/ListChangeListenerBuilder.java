@@ -17,25 +17,33 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.explorer;
+package mongis.utils.properties;
 
-import ijfx.explorer.datamodel.Explorable;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
+import java.util.function.Consumer;
+import javafx.collections.ListChangeListener;
 
 /**
  *
  * @author cyril
  */
-public class ExplorableList extends ArrayList<Explorable>{
+public interface ListChangeListenerBuilder<T> {
     
-    public ExplorableList() {
-        super();
+    
+    
+    ListChangeListenerBuilder<T> onAdd(Consumer<List<? extends T>> list);
+    ListChangeListenerBuilder<T> onRemove(Consumer<List<? extends T>> list);
+    ListChangeListenerBuilder<T> onChange(Consumer<ListChangeListener.Change<? extends T>> change);
+    
+    ListChangeListener<T> build();
+    
+    
+    static <T> ListChangeListenerBuilder<T> create() {
+        return new DefaultListChangeListenerBuilder<T>();
     }
     
-    public ExplorableList(Collection<Explorable> list) {
-        super(list.size());
-        addAll(list);
-    }
+    
+    
+    
     
 }

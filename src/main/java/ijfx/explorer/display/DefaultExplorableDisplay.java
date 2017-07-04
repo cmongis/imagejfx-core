@@ -22,12 +22,16 @@ package ijfx.explorer.display;
 import ijfx.explorer.ExplorableDisplay;
 import ijfx.explorer.ExplorableList;
 import ijfx.explorer.datamodel.Explorable;
+import ijfx.ui.utils.SelectableManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.scijava.display.AbstractDisplay;
 import org.scijava.display.Display;
+import org.scijava.display.event.DisplayUpdatedEvent;
+import org.scijava.event.EventService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -39,20 +43,27 @@ public class DefaultExplorableDisplay extends AbstractDisplay<ExplorableList> im
 
     public DefaultExplorableDisplay() {
         super(ExplorableList.class);
+
+        selectableManager
+                .getChangeBuffer()
+                .subscribe(this::onItemSelectionChanged);
     }
-    
+
+    @Parameter
+    EventService eventService;
+
     List<Explorable> displayedItems = new ArrayList<>();
 
     List<Explorable> items = new ArrayList<>();
-    
+    private final SelectableManager<Explorable> selectableManager = new SelectableManager<>();
+
     @Override
     public boolean add(ExplorableList list) {
-        
+
         displayedItems.addAll(list);
-        
+        selectableManager.setItem(list);
         return items.addAll(list);
     }
-  
 
     @Override
     public List<Explorable> getDisplayedItems() {
@@ -61,11 +72,10 @@ public class DefaultExplorableDisplay extends AbstractDisplay<ExplorableList> im
 
     @Override
     public void setFilter(Predicate<Explorable> filter) {
-        if(filter == null) {
+        if (filter == null) {
             displayedItems.clear();
             displayedItems.addAll(items);
-        }
-        else {
+        } else {
             displayedItems.clear();
             displayedItems = displayedItems
                     .stream()
@@ -84,13 +94,19 @@ public class DefaultExplorableDisplay extends AbstractDisplay<ExplorableList> im
 
     @Override
     public void setSelected(List<Explorable> explorable) {
-        
+
         clearSelection();
-        
+
     }
-    
+
     private void clearSelection() {
-        
+
+    }
+
+    private void onItemSelectionChanged(List<? super SelectableManager<Explorable>.Change<Explorable>> items) {
+
+        eventService.publishLater(new DisplayUpdatedEvent(this, DisplayUpdatedEvent.DisplayUpdateLevel.UPDATE));
+
     }
 
 }

@@ -25,21 +25,14 @@ import ijfx.core.overlay.OverlaySelectionEvent;
 import ijfx.core.overlay.OverlaySelectionService;
 import ijfx.core.overlay.OverlayUtilsService;
 import ijfx.core.uicontext.calculator.UiContextCalculator;
-import ijfx.core.utils.AxisUtils;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import mongis.utils.RequestBuffer;
 import mongis.utils.TimedBuffer;
-import net.imagej.Dataset;
 import net.imagej.ImageJService;
-import net.imagej.axis.Axes;
-import net.imagej.display.ImageDisplay;
 import net.imagej.display.ImageDisplayService;
 import net.imagej.display.OverlayService;
-import net.imagej.overlay.BinaryMaskOverlay;
-import net.imagej.table.TableDisplay;
-import org.scijava.display.Display;
 import org.scijava.display.DisplayService;
 import org.scijava.display.event.DisplayActivatedEvent;
 import org.scijava.display.event.DisplayDeletedEvent;
@@ -82,6 +75,9 @@ public class UiContextCalculatorService extends AbstractService implements Image
     @Parameter
     private PluginService pluginService;
 
+    
+    public static String NO_DISPLAY_OPEN = "no-display-open";
+    
     private List<UiContextCalculator> calculatorList;
     private final RequestBuffer requestBuffer = new RequestBuffer(2);
 
@@ -95,6 +91,8 @@ public class UiContextCalculatorService extends AbstractService implements Image
         if (calculatorList == null) {
             calculatorList = pluginService.createInstancesOfType(UiContextCalculator.class);
         }
+        
+        
         
         taskStream.onNext(new ContextCalculationTask(object));
         
@@ -110,6 +108,9 @@ public class UiContextCalculatorService extends AbstractService implements Image
                 // takes the list
                 .subscribe(this::onTask);
                 
+        
+        
+        determineContext(null);
 
     }
 
@@ -206,9 +207,11 @@ public class UiContextCalculatorService extends AbstractService implements Image
     public void handleEvent(DisplayDeletedEvent event) {
 
         if (imageDisplayService.getImageDisplays().size() > 0) {
+           
             displayService.setActiveDisplay(imageDisplayService.getImageDisplays().get(0));
             determineContext(imageDisplayService.getImageDisplays().get(0));
         } else {
+          
             determineContext(null);
         }
 

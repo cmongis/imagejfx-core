@@ -45,7 +45,9 @@
 
 
 }
-
+.side-window {
+    -fx-padding:10 10 10 10;
+}
 .root.transparent {
     -fx-background-color:transparent;
 }

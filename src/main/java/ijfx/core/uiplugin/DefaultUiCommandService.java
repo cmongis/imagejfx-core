@@ -21,6 +21,7 @@ package ijfx.core.uiplugin;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.scijava.Priority;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
@@ -31,7 +32,7 @@ import org.scijava.service.Service;
  *
  * @author cyril
  */
-@Plugin(type = Service.class)
+@Plugin(type = Service.class,priority = Priority.LOW_PRIORITY)
 public class DefaultUiCommandService extends AbstractService implements UiCommandService {
 
     @Parameter

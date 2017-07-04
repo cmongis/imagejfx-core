@@ -33,6 +33,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import org.scijava.event.EventService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
@@ -56,6 +57,9 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
 
     List<ExplorerView> viewList = new ArrayList<>();
 
+    @Parameter
+    EventService eventService;
+    
     public ExplorableDisplayPanel() {
         super(ExplorableDisplay.class);
     }
@@ -82,7 +86,7 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
         Tab tab = new Tab();
         tab.setContent(view.getUIComponent());
         tab.setGraphic(root);
-        tab.setUserData(view);
+        tab.setUserData(view);       
         tab.setText(SciJavaUtils.getLabel(view));
         tab.setGraphic(fxIconService.getIconAsNode(view));
         return tab;
@@ -118,14 +122,9 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
 
         Platform.runLater(() -> {
             
-            
-            
             viewList
                     .stream()
                     .forEach(view -> {
-                        
-                        
-                        
                         view.setItem(getDisplay().getDisplayedItems());
                         System.out.println("Updating");
                     });

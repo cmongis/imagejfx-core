@@ -25,23 +25,22 @@ import ijfx.core.utils.SciJavaUtils;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tooltip;
+import org.scijava.Priority;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 
 /**
  *
  * @author cyril
  */
-@Plugin(type = Service.class)
-public class FXUiActionService extends AbstractService implements IjfxService{
+@Plugin(type = Service.class,priority=Priority.NORMAL_PRIORITY)
+public class FXUiCommandService extends DefaultUiCommandService implements IjfxService{
     
     @Parameter
     FXIconService fxIconService;
     
-    @Parameter
-    UiCommandService uiActionService;
+    
     
     public <T> MenuItem createMenuItem(UiCommand<T> action, T object) {
         MenuItem item = new MenuItem(SciJavaUtils.getLabel(action),fxIconService.getIconAsNode(action));

@@ -19,9 +19,8 @@
  */
 package ijfx.core.uicontext.calculator;
 
-import ijfx.core.uiplugin.AbstractUiCommand;
+import ijfx.explorer.ExplorableDisplay;
 import ijfx.ui.display.code.ScriptDisplay;
-import javax.swing.JTree;
 import net.imagej.display.ImageDisplay;
 import net.imagej.table.TableDisplay;
 import org.scijava.display.Display;
@@ -41,6 +40,7 @@ public class DisplayTypeContextCalculator extends AbstractUiContextCalculator<Di
         ,TextDisplay.class
         ,ScriptDisplay.class  
         ,TableDisplay.class
+        ,ExplorableDisplay.class
     };
 
     public DisplayTypeContextCalculator() {

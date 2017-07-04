@@ -97,10 +97,8 @@ public class DefaultImageLoaderService extends AbstractService implements ImageL
     private void loadFormats() {
         try {
             formats.clear();
-            String formatsFromFile = TextFileUtils.readFileFromJar(DefaultImageLoaderService.class,FORMAT_FILE_NAME);
-            // Old code deleted after bug submission. Waiting for bug correction confirmation.
-            // -- DefaultProjectManagerService.readFile(new File(getClass().getResource(FORMAT_FILE_NAME).getPath()));
-            
+            String formatsFromFile = TextFileUtils.readFileFromJar(ImageJFX.class,FORMAT_FILE_NAME);
+           
             String[] lines = formatsFromFile.split("\n");
             for (String ext : lines) {
                 formats.add("*" + ext);

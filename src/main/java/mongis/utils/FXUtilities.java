@@ -44,6 +44,7 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.image.Image;
@@ -98,6 +99,20 @@ public class FXUtilities {
         loader.setLocation(url);
         loader.setResources(getResourceBundle());
         return loader;
+    }
+    
+    public static <T extends Parent> T loadFXML(Object controller, String url) throws IOException {
+        
+        
+        FXMLLoader loader = new FXMLLoader(controller.getClass().getResource(url));
+        loader.setController(controller);
+        
+        loader.load();
+        
+        return (T) loader.getRoot();
+        
+        
+        
     }
 
     private static Node loadController(FXMLLoader loader) {
