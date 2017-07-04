@@ -58,6 +58,16 @@ public class DefaultExplorableDisplay extends AbstractDisplay<ExplorableList> im
     private final SelectableManager<Explorable> selectableManager = new SelectableManager<>();
 
     @Override
+    public int size() {
+        return items.size();
+    }
+    
+    public List<Explorable> getItems() {
+        return items;
+    }
+    
+    
+    @Override
     public boolean add(ExplorableList list) {
 
         displayedItems.addAll(list);

@@ -71,7 +71,7 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
 
         tabPane = new TabPane();
 
-        AnchorPane.setBottomAnchor(tabPane, 0d);
+        AnchorPane.setBottomAnchor(tabPane, 15d);
         AnchorPane.setLeftAnchor(tabPane, 0d);
         AnchorPane.setRightAnchor(tabPane, 0d);
         AnchorPane.setTopAnchor(tabPane, 0d);
@@ -126,8 +126,9 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
                     .stream()
                     .forEach(view -> {
                         view.setItem(getDisplay().getDisplayedItems());
-                        System.out.println("Updating");
+                        view.refresh();
                     });
+            
         });
     }
 
