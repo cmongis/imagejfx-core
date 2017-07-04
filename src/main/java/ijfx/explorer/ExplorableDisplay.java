@@ -39,6 +39,7 @@ public interface ExplorableDisplay extends Display<ExplorableList>{
     
     public void setSelected(List<Explorable> explorable);
     
+    public List<Explorable> getItems();
     
     
 }
