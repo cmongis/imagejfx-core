@@ -30,9 +30,9 @@ import javafx.collections.ListChangeListener;
 public class DefaultListChangeListenerBuilder<T> implements ListChangeListener<T>,ListChangeListenerBuilder<T>{
 
     
-    Consumer<List<? extends T>> onAdd = list->{};
-    Consumer<List<? extends T>> onRemove = list->{};
-    Consumer<ListChangeListener.Change<? extends T>> onChange = change->{};
+    private Consumer<List<? extends T>> onAdd = list->{};
+    private Consumer<List<? extends T>> onRemove = list->{};
+    private Consumer<ListChangeListener.Change<? extends T>> onChange = change->{};
     
     
     @Override

@@ -17,29 +17,44 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.explorer;
+package ijfx.ui.inputharvesting;
 
-import ijfx.explorer.datamodel.Explorable;
-import java.util.List;
-import java.util.function.Predicate;
-import org.scijava.display.Display;
+import java.util.prefs.Preferences;
 
 /**
  *
  * @author cyril
  */
-public interface ExplorableDisplay extends Display<ExplorableList>{
+public class StringPreferenceWidgetModel extends AbstractWidgetModel<String>{
+    
+    final Preferences prefs;
     
     
-    public List<Explorable> getDisplayedItems();
+    final String key;
     
-    public void setFilter(Predicate<Explorable> filter);
     
-    public List<Explorable> getSelected();
+
+    public StringPreferenceWidgetModel(Preferences prefs, String key) {
+        
+        super(String.class);
+        
+        this.prefs = prefs;
+        this.key = key;
+       
+    }
+
+    @Override
+    public String getValue() {
+        return prefs.get(key, "");
+    }
+
+    @Override
+    public void setValue(Object value) {
+        prefs.put(key, value.toString());
+    }
     
-    public void setSelected(List<Explorable> explorable);
     
-    public List<Explorable> getItems();
+    
     
     
 }
