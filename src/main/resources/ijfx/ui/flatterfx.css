@@ -1943,6 +1943,26 @@ list-cell:filled:selected:focused, .list-cell:filled:selected{
     -fx-background-color:-bg-dark;
 }
 
+
+.tag {
+    -fx-effect:none;
+    -fx-background:transparent;
+    -fx-background-radius: 3.0 24.0 24.0 3.0;
+    -fx-content-display:right;
+    
+}
+#tagFlowPane, #possibleTagsFlowPane {
+    -fx-vgap:10px;
+    -fx-hgap:10px;
+    -fx-padding:10px;
+}
+
+#possibleTagsFlowPane .tag {
+    -fx-background-color:transparent;
+    -fx-stroke-width:2px;
+    -fx-stroke:-flatter-primary;
+}
+
 .tag-suggestions .list-cell {
     -fx-padding:0 0.4em 0 0;
 }
