@@ -31,6 +31,7 @@ import ijfx.ui.display.metadataowner.MetaDataOwnerHelper;
 import ijfx.ui.main.ImageJFX;
 import ijfx.ui.utils.SelectableManager;
 import java.util.List;
+import java.util.WeakHashMap;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.beans.Observable;
@@ -74,8 +75,10 @@ public class TableExplorerView implements ExplorerView {
 
     private final static Logger logger = ImageJFX.getLogger();
 
-   private final TableColumn<Explorable,String> tagColumn = new TableColumn();
-    
+    private final TableColumn<Explorable, String> tagColumn = new TableColumn();
+
+    private final WeakHashMap<Explorable, ReadOnlyTagWrapper> wrapperList = new WeakHashMap<>();
+
     public TableExplorerView() {
 
         tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -83,11 +86,11 @@ public class TableExplorerView implements ExplorerView {
         tableView.getSelectionModel().selectedItemProperty().addListener(this::onSelectedItemChanged);
         tableView.setRowFactory(this::createRow);
         tableView.setId(TABLE_VIEW_ID);
-        
+
         tagColumn.setCellValueFactory(this::getTagListProperty);
         tagColumn.setText("Tags");
         helper.addAdditionalColumn(tagColumn);
-        
+
     }
 
     @Override
@@ -203,19 +206,53 @@ public class TableExplorerView implements ExplorerView {
         }
 
     }
-    
+
     private ObservableValue<String> getTagListProperty(TableColumn.CellDataFeatures<Explorable, String> cell) {
+        wrapperList.put(cell.getValue(), new ReadOnlyTagWrapper(cell.getValue()));
+
+        return wrapperList.get(cell.getValue());
+    }
+
+    public void refresh() {
+       
+        setItem(currentItems);
+        wrapperList.values().forEach(ReadOnlyTagWrapper::refresh);
+
+    }
+
+    private class ReadOnlyTagWrapper extends ReadOnlyObjectWrapper<String> {
+
+        final Explorable explorable;
+
+        private String lastValue;
         
+        private String value;
         
-        return new ReadOnlyObjectWrapper<>(
-                cell
-                        .getValue()
-                        .getTagList()
-                        .stream()
-                        .map(Tag::toString)
-                        .collect(Collectors.joining(", "))
-        );
+        public ReadOnlyTagWrapper(Explorable explorable) {
+            this.explorable = explorable;
+        }
+
+        public void computeValue() {
+            value = explorable.getTagList()
+                    .stream()
+                    .map(Tag::toString)
+                    .collect(Collectors.joining(", "));
+        }
         
+        @Override
+        public String getValue() {
+            if(value == null) computeValue();
+            return value;
+        }
+
+        public void refresh() {
+            value = getValue();
+            if(value.equals(lastValue) == false) {
+                lastValue = value;
+                fireValueChangedEvent();
+            }
+            
+        }
     }
 
 }

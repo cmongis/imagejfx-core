@@ -27,6 +27,7 @@ import ijfx.ui.RichMessageDisplayer;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
@@ -161,6 +162,18 @@ public class FXUtilities {
         Stage stage = (Stage) pane.getScene().getWindow();
         stage.close();
     }
+    
+    public static <T> void addLater(Collection<? extends T> source, Collection<T> target) {
+        
+        Platform.runLater(() -> target.addAll(source));
+        
+    }
+    
+     public static <T> void removeLater(Collection<? extends T> source, Collection<T> target) {
+        
+        Platform.runLater(() -> target.removeAll(source));
+        
+    } 
 
     /**
      * Simple helper class.

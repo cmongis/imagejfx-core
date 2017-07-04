@@ -120,15 +120,11 @@ public class PaneCellUpdateProcess<T> {
     }
 
     private void onUpdateRequest(CellUpdate request) {
-
-        System.out.println("update request");
         if (cancelled) {
             return;
         }
-
         request.update();
         updateCount++;
-
     }
 
     private void toAdd(List<CellUpdate> updates) {

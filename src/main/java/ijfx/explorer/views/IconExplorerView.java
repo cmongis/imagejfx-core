@@ -147,4 +147,8 @@ public class IconExplorerView extends ScrollPane implements ExplorerView {
         
     }
     
+    public void refresh() {
+        
+    }
+    
 }
