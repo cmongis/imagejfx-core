@@ -19,6 +19,7 @@
  */
 package ijfx.ui.display.code;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,8 +35,11 @@ public class TextEditorPreferencies {
     private boolean autocompletion = true;
     @org.scijava.plugin.Parameter(label = "enable side panel")
     private boolean sidePanel = true;
+    private File customCSS = null;
 
     public TextEditorPreferencies() {
+        this.listOfTheme.add("darkTheme");
+        this.listOfTheme.add("lightTheme");
     }
 
     public String getTheme() {
@@ -50,6 +54,14 @@ public class TextEditorPreferencies {
         return autocompletion;
     }
 
+    public boolean isSidePanel() {
+        return sidePanel;
+    }
+
+    public File getCustomCSS() {
+        return customCSS;
+    }
+
     public void setTheme(String theme) {
         this.theme = theme;
     }
@@ -61,6 +73,16 @@ public class TextEditorPreferencies {
     public void setAutocompletion(boolean autocompletion) {
         this.autocompletion = autocompletion;
     }
+
+    public void setSidePanel(boolean sidePanel) {
+        this.sidePanel = sidePanel;
+    }
+
+    public void setCustomCSS(File customCSS) {
+        this.customCSS = customCSS;
+    }
+    
+    
     
     
 }

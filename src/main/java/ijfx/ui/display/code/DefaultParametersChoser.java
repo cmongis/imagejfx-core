@@ -24,11 +24,14 @@ import ijfx.core.prefs.JsonPreferenceService;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -59,13 +62,16 @@ public class DefaultParametersChoser extends BorderPane implements Activity{
         
         mainBox = new VBox();
         mainBox.getChildren().add(new Label("Preferencies"));
+        mainBox.setPadding(new Insets(20, 20, 20, 20));
         this.setPadding(Insets.EMPTY);
         this.setCenter(mainBox);
         Button saveButton = new Button("Save preferencies");
+        saveButton.setAlignment(Pos.CENTER_RIGHT);
         saveButton.setText("Save preferencies");
         saveButton.setOnAction(this::savePreferencies);
         
-        
+        this.setBottom(saveButton);
+        this.setPadding(new Insets(20, 20, 20, 20));
     }
     /*
     public void createWidget (){

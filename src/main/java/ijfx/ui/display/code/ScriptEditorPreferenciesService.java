@@ -20,7 +20,9 @@
 package ijfx.ui.display.code;
 
 import ijfx.core.prefs.JsonPreferenceService;
+import ijfx.ui.inputharvesting.AbstractWidgetModel;
 import ijfx.ui.inputharvesting.SuppliedWidgetModel;
+import java.io.File;
 import java.util.List;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -32,6 +34,7 @@ import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 import org.scijava.widget.ChoiceWidget;
+import org.scijava.widget.FileWidget;
 import org.scijava.widget.InputWidget;
 import org.scijava.widget.TextWidget;
 import org.scijava.widget.WidgetService;
@@ -86,6 +89,7 @@ public class ScriptEditorPreferenciesService extends AbstractService implements 
                 new SuppliedWidgetModel<>(Boolean.class)
                 .setGetter(preferencies::isAutocompletion)
                 .setSetter(preferencies::setAutocompletion)
+                       
                 .setWidgetLabel("Enable autocompletion")
                 
         );
@@ -97,18 +101,32 @@ public class ScriptEditorPreferenciesService extends AbstractService implements 
                 
         );
         InputWidget<?,Node> setStyleWidget = (InputWidget<?, Node>) widgetService.create(
-                new SuppliedWidgetModel<>(List.class)
-                .setGetter(preferencies::getListOfTheme)
-                .setSetter(preferencies::setListOfTheme)
+                new SuppliedWidgetModel<>(String.class)
+                .setGetter(preferencies::getTheme)
+                .setSetter(preferencies::setTheme)
                 .setStyle(ChoiceWidget.LIST_BOX_STYLE)
                 .setWidgetLabel("Choose style")
                 
         );
+        InputWidget<?,Node> customCssWidget = (InputWidget<?, Node>) widgetService.create(
+                new SuppliedWidgetModel<>(File.class)
+                .setGetter(preferencies::getCustomCSS)
+                .setSetter(preferencies::setCustomCSS)
+                .setStyle(FileWidget.DIRECTORY_STYLE)
+                .setWidgetLabel("Choose style")
+                
+        );
+        AbstractWidgetModel styleWidget = (AbstractWidgetModel) setStyleWidget.get();
+        for (String theme : preferencies.getListOfTheme()){
+            styleWidget.addChoice(theme);
+        }
+        setStyleWidget = (InputWidget<?, Node>) widgetService.create(styleWidget);
         textWidget.refreshWidget();
         booleanWidget.refreshWidget();
         sidePanelActivator.refreshWidget();
-        //setStyleWidget.refreshWidget();
-        preferenciesBox.getChildren().addAll(textWidget.getComponent(), booleanWidget.getComponent(), sidePanelActivator.getComponent());
+        setStyleWidget.refreshWidget();
+        customCssWidget.refreshWidget();
+        preferenciesBox.getChildren().addAll(textWidget.getComponent(), setStyleWidget.getComponent(), booleanWidget.getComponent(), sidePanelActivator.getComponent(), customCssWidget.getComponent());
         return preferenciesBox;
     }
    
