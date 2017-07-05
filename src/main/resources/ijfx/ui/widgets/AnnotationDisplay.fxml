@@ -8,6 +8,6 @@
    <children>
       <TextField fx:id="oldKey" layoutX="14.0" layoutY="14.0" prefHeight="26.0" prefWidth="116.0" promptText="key" />
       <TextField fx:id="newKey" layoutX="159.0" layoutY="14.0" prefHeight="26.0" prefWidth="116.0" promptText="new key" />
-      <ListView fx:id="listView" layoutX="12.0" layoutY="74.0" prefHeight="209.0" prefWidth="264.0" />
+      <ListView fx:id="listView" layoutX="12.0" layoutY="48.0" prefHeight="289.0" prefWidth="264.0" />
    </children>
 </Pane>

@@ -19,48 +19,66 @@
  */
 package ijfx.ui.display.annotation;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import ijfx.core.metadata.GenericMetaData;
+import ijfx.core.metadata.MetaData;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.Property;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.text.Text;
+
 
 /**
  * FXML Controller class
  *
  * @author sapho
  */
-public class ValueAnnotationDisplayController extends Pane {
+public class ValueAnnotationDisplayController extends ListCell<ValueAnnotationDisplayController>  { //avant extends Pane
 
-    @FXML
-    Pane pane;
+    //@FXML
+    private final GridPane pane = new GridPane(); //oui mon gridpane s'appelle pane
 
-    @FXML
-    TextField value, newValue; 
+    //@FXML
+    TextField value = new TextField();
+    TextField newValue = new TextField();
     
     
-    private final double MAX_HEIGHT = 150.0;
-    private final double MIN_HEIGHT = 50.0;
+    
+    private final AnchorPane content = new AnchorPane();
+             
+    
+    private final double MIN_HEIGHT = 120.0;//hauteur
+    private final double MIN_WIDTH = 30.0; //largeur
+    private final double HEIGHT = 40.0; //hauteur
+    private final double WIDTH = 244.0; //largeur
     private final double PADDING = 4.0;
+    private final double COLUMN_WIDTH = 112.0;//largeur 
+    private final double TEXT_WIDTH = 50.0;
+    private final double TEXT_HEIGTH = 30.0;
     
-    
-    //private final ObservableValue<Boolean> fillState = Bindings.createObjectBinding(this:: getTextfieldState);
-    
+    private final ObjectProperty<String> valueTextProperty = new SimpleObjectProperty(value.getText());
+    private final ObjectProperty<String> newValueTextProperty = new SimpleObjectProperty(newValue.getText());
+    private final ObservableValue<Boolean> fillState = Bindings.createObjectBinding(this:: getTextfieldState);
     private final BooleanProperty isValues = new SimpleBooleanProperty();
+    
+    
 
-    public ValueAnnotationDisplayController() throws IOException {
+    public ValueAnnotationDisplayController() {
+        
+        Platform.runLater(()-> {
+        //super();
+        /*
         Platform.runLater( ()-> {
             pane = new Pane();
         FXMLLoader loader = new FXMLLoader();
@@ -71,23 +89,87 @@ public class ValueAnnotationDisplayController extends Pane {
             } catch (IOException ex) {
                 Logger.getLogger(ValueAnnotationDisplayController.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
-            
-            
-
 
         init();
         });
+        
+        */
+        pane.setPrefSize(WIDTH, HEIGHT);
+        value.setPromptText("value");
+        newValue.setPromptText("new value");
+        
+        
+        //pane.setPadding(Insets.PADDING);
+        
+        
+        value.setPrefSize(TEXT_WIDTH, TEXT_HEIGTH);
+        value.setPadding(new Insets (5,5,5,15));
+        value.setAlignment(Pos.CENTER);
+        GridPane.setConstraints(value, 0, 0);
+        //
+        newValue.setPrefSize(TEXT_WIDTH, TEXT_HEIGTH);
+        newValue.setPadding(new Insets (5,15,5,0)); //top droite bas gauche
+        newValue.setAlignment(Pos.CENTER);
+        GridPane.setConstraints(newValue, 1, 0);
+        
+        //pane.setPadding(new Insets(5, 5, 5, 5));
+        pane.getColumnConstraints().add(new ColumnConstraints(COLUMN_WIDTH));
+        pane.getColumnConstraints().add(new ColumnConstraints(COLUMN_WIDTH));
+        
+        pane.getChildren().setAll(value, newValue);
+        //setGraphic(pane);
+        content.getChildren().add(pane);
+        
+        System.out.println("prout");
+        init();
+        setGraphic(content);
+        });
+
     }
     
-   
+    
+    /*
+   @Override 
+   public void updateItem(MetaData item, boolean empty) {
+        super.updateItem(item, empty);
+        if (!empty && item != null){
+            value.setPromptText("value");
+            newValue.setPromptText("new value");
+            
+            setGraphic(content);
+            
+        }
+   }
+    */
 
-    /**
-     * Initializes the controller class.
-     */
-    public void init() {
-        //isValues.bind(fillState);
+    public void init(){
         
+        
+        //Platform.runLater(()-> {
+          /*  
+        value.textProperty().bind(valueTextProperty);
+        newValue.textProperty().bind(newValueTextProperty);
+        
+         /*   
+        value.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String trucValue) -> {
+        System.out.printf("value changé : %d -> %d", oldValue, trucValue).println();
+        });
+        /*
+        newValue.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String trucValue) -> {
+        System.out.printf("newValue changé : %d -> %d", oldValue, trucValue).println();
+        });
+*/
+
+        //});
+        
+    }
+    
+    public ObjectProperty getValueTextProperty(){
+        return valueTextProperty;
+    }
+    
+    public ObjectProperty getNewValueTextProperty(){
+        return newValueTextProperty;
     }
     
     //permet la récupération des données
@@ -111,7 +193,8 @@ public class ValueAnnotationDisplayController extends Pane {
     public BooleanProperty getIsValues(){
         return isValues;
     }
-    
+
+   
     
     
 }

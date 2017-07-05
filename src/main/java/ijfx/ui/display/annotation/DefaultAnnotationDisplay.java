@@ -19,11 +19,10 @@
  */
 package ijfx.ui.display.annotation;
 
+import ijfx.core.metadata.GenericMetaData;
 import ijfx.core.metadata.MetaData;
 import ijfx.explorer.datamodel.DefaultMapper;
 import ijfx.explorer.datamodel.Mapper;
-import ijfx.ui.display.image.AbstractFXDisplayPanel;
-import ijfx.ui.display.image.FXDisplayPanel;
 import ijfx.ui.service.AnnotationService;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,31 +31,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ObservableValue;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.control.MenuButton;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import org.scijava.Context;
-import org.scijava.command.CommandService;
-import org.scijava.display.Display;
-import org.scijava.module.process.PreprocessorPlugin;
+import javafx.scene.text.Text;
+import javafx.util.Callback;
 import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
-import org.scijava.ui.viewer.DisplayWindow;
-import org.scijava.widget.InputHarvester;
 
 /**
  *
@@ -68,7 +54,6 @@ public class DefaultAnnotationDisplay extends Dialog<Mapper> implements Annotati
     @Parameter
     AnnotationService annotationService;
     
-    
     @FXML
     Pane root, pane;
     
@@ -76,30 +61,26 @@ public class DefaultAnnotationDisplay extends Dialog<Mapper> implements Annotati
     TextField oldKey, newKey;
     
     @FXML
-    ListView listView;
-    
+    ListView<ValueAnnotationDisplayController> listView;
 
-    
     Dialog<Mapper> dialog;
-    
-    private final String CANCEL = "Cancel";
-    private final String MAPPING = "Mapping";
-    private final double MAX_HEIGHT = 300.0;
-    private final double MIN_HEIGHT = 100.0;
-    private final double PADDING = 4.0;
-    
+
     private List <ValueAnnotationDisplayController> listLittleV = new ArrayList<>(); //liste des fxml secondaires
-    private List <MetaData> collect; //je crois que ça sert à rien
+    private List <ValueAnnotationDisplayController> collect = new ArrayList<>(); //je crois que ça sert à rien
+    
+    private final ObjectProperty<Text> valueTextProperty = new SimpleObjectProperty();
+    private final ObjectProperty<Text> newValueTextProperty = new SimpleObjectProperty();
+    
     
     Mapper mapper = new DefaultMapper();
     
     public DefaultAnnotationDisplay() throws IOException {
         
-        //Pane root = new Pane();
-        //dialog = new Dialog<>();
+        
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
+                
                 FXMLLoader loader = new FXMLLoader();
                 loader.setLocation(getClass().getResource("/ijfx/ui/widgets/AnnotationDisplay.fxml"));
                 loader.setController(DefaultAnnotationDisplay.this);
@@ -110,39 +91,38 @@ public class DefaultAnnotationDisplay extends Dialog<Mapper> implements Annotati
                 } catch (IOException ex) {
                     Logger.getLogger(DefaultAnnotationDisplay.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
-                
-                
+
                 Pane root = loader.getRoot();
+                ///////////////////////////////////CSS PART
                 //root.getStylesheets().add(getClass().getResource("/ijfx/ui/flatterfx.css").toExternalForm());
                 //root.applyCss();
+                ///////////////////////////////////
                 getDialogPane().setContent(root);
                 getDialogPane().getButtonTypes().addAll(ButtonType.OK,ButtonType.CANCEL);
                 setResultConverter(DefaultAnnotationDisplay.this::convert);
                 
                 
-                //si la liste contenant les fxml secondaire est vide, créer un second fxml et l'introduire dans la liste
+                
+                //si la liste contenant les Metadata est vide, créer un premier metadata sans spécificités
                 if (listLittleV.isEmpty() ){
                     addMapping();
                 }
                 
-                listView.refresh();
-                
+                refresh();
+                                
                 showAndWait();
   
             }
         });
     }
-    /*
     
-    public Node getRoot2 (){
-        return root;
-    }
-*/
+    
+    //necessaire au bon fonctionnement du dialog, c'est la fontion qui se déclenche quand on clique sur ok
     public Mapper convert(ButtonType button) {
 
          if(button == ButtonType.OK) {
-             //mapperAction();
+             mapperAction();
+             System.out.println(mapper.getMapObject());
              return mapper;
          }
          else {
@@ -152,7 +132,7 @@ public class DefaultAnnotationDisplay extends Dialog<Mapper> implements Annotati
      }
 
     
-    
+    /*
     //ajoute le listener au fxml demandé
     private void addListener2 (ValueAnnotationDisplayController name){
         name.getIsValues().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newBoolean) -> {
@@ -162,85 +142,87 @@ public class DefaultAnnotationDisplay extends Dialog<Mapper> implements Annotati
             }
         });
     }
+    */
     
         
     private void addMapping() { //rajouter un fxm de cases values dès que le précédent est rempli // ET met à jour le listener
+        
         Platform.runLater(()-> {
+            //GenericMetaData m = new GenericMetaData();
+            ValueAnnotationDisplayController v = new ValueAnnotationDisplayController();
+            listLittleV.add(v); //ajoute le futur métadata dans la liste des métadata à ajouter au mapper.
             
-            ValueAnnotationDisplayController newV = null;
-            
-            try {
-                
-                newV = new ValueAnnotationDisplayController(); //je suis pas sure de mon coup la
-            } catch (IOException ex) {
-                Logger.getLogger(DefaultAnnotationDisplay.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
-            root.getChildren().add((Pane) newV);
-            
-            show();
-            //addListener2(newV); //mise à jour du listener
-            listLittleV.add(newV); //ajoute le fxml fraichement crée dans la liste des fxml secondaires.
             refresh();
         });
+        
         
             
             
         
     }
 
-    //je pense qu'on se passe de commentaire
-    private void bindData (){
-        mapper.setOldKey(oldKey.getText());
-        mapper.setNewKey(newKey.getText());
+    //Récupère les clefs necessaires au fonctionnement du mapper.
+    private void bindData (){ //CA CA MARCHE
+        Platform.runLater(()-> {
+            mapper.setOldKey(oldKey.getText());
+            mapper.setNewKey(newKey.getText());
+        });
+        
         
         
 
     }
     
-    public Mapper mapperAction(){ //lier au FXML AnnotationDisplay.fxml  avec SceneBuilder ;
-        //bindData();
-        //listLittleV.stream().map(c -> mapper.map(MetaData.create(c.getValue(), c.getNewValue())));
+    public Mapper mapperAction(){ //permet de d'ajouter les nouveaux metadata dans le map et renvoi le hashmap
+        Platform.runLater(()-> {
+        bindData();
+        
+        collect = (List) listView.getItems().stream().collect(Collectors.toList());
+            for (ValueAnnotationDisplayController item : collect){
+                System.out.println("liste des controleurs secondaires" +item.getValue());
+                /*
+                for (MetaData m : listLittleV){
+                    m.setName(item.getValueTextProperty().toString());
+                    m.setValue(item.getNewValueTextProperty());
+                    //annotationService.addMapper(item, mapper);
+        
+        }
+            */
+        
+                
+            }
+                
+                });
+            
+        
+        
+        
         return mapper;
         
         
     }
-    /*
-    public static void main(String... args) throws IOException {
-
-         //Mapper map = new DefaultAnnotationDisplay().showAndWait().get();
-
-
-     }
-    */
     
-    public void refresh(){
+    
+    public void refresh(){ //permet la corrélation entre les metadata présents dans la liste et l'affichage de la listview.
         
-        Platform.runLater(()-> {
-        //listView.setCellFactory(lv -> new SimpleFXMLListCell());
+            /*
+            for (MetaData item : listLittleV){
+                //listView.setCellFactory(lv  -> new ValueAnnotationDisplayController());
+                listView.getItems().add(new ValueAnnotationDisplayController());
+            }
+            
+            */
+            //ValueAnnotationDisplayController v = new ValueAnnotationDisplayController(); NE MARCHE PAS
+
+            listView.setCellFactory(lv  -> new ValueAnnotationDisplayController());
+            
+            listView.getItems().clear();
+            listView.getItems().setAll(listLittleV);
+            
+            
+            
         
-        listView.getItems().clear();
-        listView.getItems().setAll(listLittleV);
-        });
     }
   
-
-
-private class SimpleFXMLListCell extends ListCell<ValueAnnotationDisplayController>{
-    
-    private Pane pane = new Pane();
-
-        public SimpleFXMLListCell()  {
-            
-        try {
-            pane.getChildren().add((Pane)new ValueAnnotationDisplayController());
-        } catch (IOException ex) {
-            Logger.getLogger(DefaultAnnotationDisplay.class.getName()).log(Level.SEVERE, null, ex);
-        }
-            
-        }
-    
-}
-
 
 }

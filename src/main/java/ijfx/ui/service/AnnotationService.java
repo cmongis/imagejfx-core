@@ -22,6 +22,7 @@ package ijfx.ui.service;
 import ijfx.core.IjfxService;
 import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataOwner;
+import ijfx.explorer.datamodel.Mapper;
 import ijfx.explorer.datamodel.Tag;
 import ijfx.explorer.datamodel.Taggable;
 import java.util.List;
@@ -75,7 +76,7 @@ public interface AnnotationService extends IjfxService{
      * Add a Mapper to a MetaData
      * @param m 
      */
-    public void addMapper(MetaData m);
+    public void addMapper(MetaData m, Mapper mapper);
     
     
     

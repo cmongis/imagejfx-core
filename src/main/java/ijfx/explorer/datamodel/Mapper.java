@@ -33,6 +33,8 @@ public interface Mapper {
     void setOldKey(String key);
     
     void setNewKey (String newKey);
+    
+    HashMap<Object, Object> getMapObject();
         
     
 }

@@ -73,7 +73,7 @@ public final class DefaultMapper implements Mapper {
     }
     
     
-
+    @Override
     public HashMap<Object, Object> getMapObject() {
         return mapValue;
     }
