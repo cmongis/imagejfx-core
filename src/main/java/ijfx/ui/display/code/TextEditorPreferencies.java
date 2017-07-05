@@ -30,8 +30,10 @@ public class TextEditorPreferencies {
     
     private String theme = "darkTheme";
     private List<String> listOfTheme = new ArrayList<>();
-    @org.scijava.plugin.Parameter(label = "Use units")
+    @org.scijava.plugin.Parameter(label = "enable autocompletion")
     private boolean autocompletion = true;
+    @org.scijava.plugin.Parameter(label = "enable side panel")
+    private boolean sidePanel = true;
 
     public TextEditorPreferencies() {
     }

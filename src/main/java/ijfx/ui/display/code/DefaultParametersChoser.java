@@ -21,9 +21,9 @@ package ijfx.ui.display.code;
 
 import ijfx.core.activity.Activity;
 import ijfx.core.prefs.JsonPreferenceService;
-import ijfx.ui.inputharvesting.SuppliedWidgetModel;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -32,8 +32,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.widget.InputWidget;
-import org.scijava.widget.TextWidget;
 import org.scijava.widget.WidgetService;
 
 /**
@@ -58,15 +56,18 @@ public class DefaultParametersChoser extends BorderPane implements Activity{
     private String fileName = "ScriptEdtirorPreferences";
 
     public DefaultParametersChoser() {        
-        preferencies = preferenceService.getPreferencies();
+        
         mainBox = new VBox();
         mainBox.getChildren().add(new Label("Preferencies"));
-        
+        this.setPadding(Insets.EMPTY);
         this.setCenter(mainBox);
         Button saveButton = new Button("Save preferencies");
+        saveButton.setText("Save preferencies");
         saveButton.setOnAction(this::savePreferencies);
+        
+        
     }
-    
+    /*
     public void createWidget (){
         InputWidget<?, Node> textWidget = (InputWidget<?, Node>) widgetService.create(
                 new SuppliedWidgetModel<>(String.class)
@@ -84,6 +85,7 @@ public class DefaultParametersChoser extends BorderPane implements Activity{
         booleanWidget.refreshWidget();
         mainBox.getChildren().addAll(textWidget.getComponent(), booleanWidget.getComponent());
     }
+    */
     /*
     public Node createParameter(String key){
         Node node = null;
@@ -202,7 +204,8 @@ public class DefaultParametersChoser extends BorderPane implements Activity{
 
     @Override
     public Node getContent() {
-        createWidget();
+        this.preferencies = preferenceService.getPreferencies();
+        mainBox.getChildren().add(preferenceService.generatepreferenciesWidget());
         return this;
     }
 
