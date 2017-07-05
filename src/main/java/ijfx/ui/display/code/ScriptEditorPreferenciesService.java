@@ -40,7 +40,7 @@ import org.scijava.widget.WidgetModel;
 /**
  *
  * @author florian
- *  Structure of preferencies : (String) key : (List) [type of variable, [possible value1, possible value2, ...], actual value]
+ *  
  */
 @Plugin(type = Service.class,priority = Priority.VERY_LOW_PRIORITY)
 public class ScriptEditorPreferenciesService extends AbstractService implements ImageJService{

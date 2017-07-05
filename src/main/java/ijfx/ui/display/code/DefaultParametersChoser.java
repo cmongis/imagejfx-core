@@ -20,33 +20,20 @@
 package ijfx.ui.display.code;
 
 import ijfx.core.activity.Activity;
-import ijfx.core.module.ModuleWrapper;
 import ijfx.core.prefs.JsonPreferenceService;
 import ijfx.ui.inputharvesting.SuppliedWidgetModel;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.scijava.module.Module;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.widget.InputWidget;
 import org.scijava.widget.TextWidget;
-import org.scijava.widget.WidgetModel;
 import org.scijava.widget.WidgetService;
 
 /**
@@ -55,7 +42,7 @@ import org.scijava.widget.WidgetService;
  */
 
 @Plugin(type = Activity.class, name = "display preferencies")
-public class DefaultParametersChoser extends Pane implements Activity{
+public class DefaultParametersChoser extends BorderPane implements Activity{
     @Parameter
     JsonPreferenceService jsonPreferenceService;
     @Parameter
@@ -67,32 +54,37 @@ public class DefaultParametersChoser extends Pane implements Activity{
     
     private VBox mainBox;
     
-    private HashMap<String,List> parameters = new HashMap<>();
     private TextEditorPreferencies preferencies;
     private String fileName = "ScriptEdtirorPreferences";
-    
-    
 
     public DefaultParametersChoser() {        
         preferencies = preferenceService.getPreferencies();
         mainBox = new VBox();
         mainBox.getChildren().add(new Label("Preferencies"));
         
-        
-        // we create the widget
+        this.setCenter(mainBox);
+        Button saveButton = new Button("Save preferencies");
+        saveButton.setOnAction(this::savePreferencies);
+    }
+    
+    public void createWidget (){
         InputWidget<?, Node> textWidget = (InputWidget<?, Node>) widgetService.create(
                 new SuppliedWidgetModel<>(String.class)
                 .setGetter(preferencies::getTheme)
                 .setSetter(preferencies::setTheme)
                 .setStyle(TextWidget.FIELD_STYLE)
         );
+        InputWidget<?,Node> booleanWidget = (InputWidget<?, Node>) widgetService.create(
+                new SuppliedWidgetModel<>(Boolean.class)
+                .setGetter(preferencies::isAutocompletion)
+                .setSetter(preferencies::setAutocompletion)
+        );
         
         textWidget.refreshWidget();
-        mainBox.getChildren().add(textWidget.getComponent());
-        
-        this.getChildren().add(mainBox);
+        booleanWidget.refreshWidget();
+        mainBox.getChildren().addAll(textWidget.getComponent(), booleanWidget.getComponent());
     }
-    
+    /*
     public Node createParameter(String key){
         Node node = null;
         
@@ -199,22 +191,18 @@ public class DefaultParametersChoser extends Pane implements Activity{
         
         
     }
-    
-    public void savePreferencies(){
-        jsonPreferenceService.savePreference(this.parameters, this.fileName);
+    */
+    public void savePreferencies(ActionEvent event){
+        jsonPreferenceService.savePreference(this.preferencies, this.fileName);
     }
 
-    public HashMap<String,List> getParameters() {
-        return parameters;
+    public TextEditorPreferencies getParameters() {
+        return this.preferencies;
     }
 
     @Override
     public Node getContent() {
-        loadPreferencies();
-        for (String parameter : this.parameters.keySet()){
-            this.mainBox.getChildren().add(createParameter(parameter));
-        }
-        //this.getChildren().add(this.mainBox);
+        createWidget();
         return this;
     }
 
