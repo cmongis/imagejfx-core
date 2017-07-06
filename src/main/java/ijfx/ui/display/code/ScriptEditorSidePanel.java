@@ -28,8 +28,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -58,6 +56,8 @@ public class ScriptEditorSidePanel extends TabPane implements UiPlugin{
     UiContextService uiContextService;
     @Parameter
     CommandService commandService;
+    @Parameter
+    ScriptEditorPreferencies scriptEditorPreferencies;
     
     @FXML
     TextField searchField;
@@ -127,7 +127,11 @@ public class ScriptEditorSidePanel extends TabPane implements UiPlugin{
 
     @Override
     public Node getUiElement() {
-        return this;
+        TextEditorPreferencies preferencies = (TextEditorPreferencies) scriptEditorPreferencies.getPreferencies();
+        if (preferencies.isSidePanel()){
+            return this;
+        }
+        else return null;
     }
     
     private class CommandInfoListCell extends ListCell<CommandInfo> {

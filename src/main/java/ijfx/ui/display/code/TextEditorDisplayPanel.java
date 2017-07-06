@@ -22,9 +22,7 @@ package ijfx.ui.display.code;
 import ijfx.ui.display.image.AbstractFXDisplayPanel;
 import ijfx.ui.display.image.FXDisplayPanel;
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import javafx.application.Platform;
-import javafx.beans.property.adapter.JavaBeanStringProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -39,7 +37,6 @@ import org.scijava.command.CommandService;
 import org.scijava.event.EventHandler;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.prefs.PrefService;
 import org.scijava.script.ScriptLanguage;
 import org.scijava.script.ScriptService;
 import org.scijava.ui.viewer.DisplayWindow;
@@ -57,7 +54,7 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     @Parameter
     CommandService commandService;
     @Parameter
-    ScriptEditorPreferenciesService scriptEditorPreferenciesService;
+    ScriptEditorPreferencies scriptEditorPreferenciesService;
     
     BorderPane root;
     ScriptDisplay display;
@@ -88,8 +85,7 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
         this.languageButton.setFont(new Font(12));
                 
         this.textArea.setAutocompletion(commandService.getCommands());
-        DefaultParametersChoser parametersChoser = new DefaultParametersChoser();
-        this.textArea.setPreferencies(scriptEditorPreferenciesService.getPreferencies());
+        this.textArea.setPreferencies((TextEditorPreferencies) scriptEditorPreferenciesService.getPreferencies());
         changeLanguage(display.getLanguage());
         initCode();        
         
@@ -172,6 +168,7 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     @Override
     public void redraw() {
         initCode();
+        this.textArea.setPreferencies((TextEditorPreferencies) scriptEditorPreferenciesService.getPreferencies());
     }
     
     public void changeLanguage(ScriptLanguage language){

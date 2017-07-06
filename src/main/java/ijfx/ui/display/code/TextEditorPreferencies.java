@@ -22,28 +22,45 @@ package ijfx.ui.display.code;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 
 /**
  *
  * @author florian
  */
-public class TextEditorPreferencies {
+public class TextEditorPreferencies implements Preferencies {
     
-    private String theme = "darkTheme";
+    private StringProperty themeProperty = new SimpleStringProperty("darkTheme");
     private List<String> listOfTheme = new ArrayList<>();
     @org.scijava.plugin.Parameter(label = "enable autocompletion")
     private boolean autocompletion = true;
     @org.scijava.plugin.Parameter(label = "enable side panel")
     private boolean sidePanel = true;
-    private File customCSS = null;
+    
+    private ObjectProperty<File> customCssProperty = new SimpleObjectProperty<>();
 
     public TextEditorPreferencies() {
         this.listOfTheme.add("darkTheme");
         this.listOfTheme.add("lightTheme");
+        
+        this.customCssProperty.addListener(new ChangeListener<File>() {
+            @Override
+            public void changed(ObservableValue<? extends File> observable, File oldValue, File newValue) {
+                if (newValue != null) {
+                    listOfTheme.add(newValue.getAbsolutePath());
+                    themeProperty.set(newValue.getAbsolutePath());
+                }
+            }
+        });
     }
 
     public String getTheme() {
-        return theme;
+        return themeProperty.get();
     }
 
     public List<String> getListOfTheme() {
@@ -59,11 +76,11 @@ public class TextEditorPreferencies {
     }
 
     public File getCustomCSS() {
-        return customCSS;
+        return customCssProperty.get();
     }
 
     public void setTheme(String theme) {
-        this.theme = theme;
+        this.themeProperty.set(theme);
     }
 
     public void setListOfTheme(List<String> listOfTheme) {
@@ -79,7 +96,7 @@ public class TextEditorPreferencies {
     }
 
     public void setCustomCSS(File customCSS) {
-        this.customCSS = customCSS;
+        this.customCssProperty.set(customCSS);
     }
     
     

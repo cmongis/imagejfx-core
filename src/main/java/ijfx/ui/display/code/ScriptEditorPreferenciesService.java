@@ -23,11 +23,9 @@ import ijfx.core.prefs.JsonPreferenceService;
 import ijfx.ui.inputharvesting.AbstractWidgetModel;
 import ijfx.ui.inputharvesting.SuppliedWidgetModel;
 import java.io.File;
-import java.util.List;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import net.imagej.ImageJService;
@@ -39,7 +37,6 @@ import org.scijava.service.Service;
 import org.scijava.widget.ChoiceWidget;
 import org.scijava.widget.FileWidget;
 import org.scijava.widget.InputWidget;
-import org.scijava.widget.TextWidget;
 import org.scijava.widget.WidgetService;
 
 /**
@@ -48,37 +45,36 @@ import org.scijava.widget.WidgetService;
  *  
  */
 @Plugin(type = Service.class,priority = Priority.VERY_LOW_PRIORITY)
-public class ScriptEditorPreferenciesService extends AbstractService implements ImageJService{
+public class ScriptEditorPreferenciesService extends AbstractService implements ImageJService, ScriptEditorPreferencies{
     @Parameter
     JsonPreferenceService jsonPreferenceService;
     @Parameter
     WidgetService widgetService;
     
     private String fileName = "ScriptEdtirorPreferences";
-    private TextEditorPreferencies preferencies;
+    private TextEditorPreferencies preferencies= new TextEditorPreferencies();
 
     public ScriptEditorPreferenciesService() {
         
     }
     
+    @Override
     public void loadPreferencies(){
-        try {
-            this.preferencies = jsonPreferenceService.loadFromJson(fileName, preferencies);
-        } catch (Exception e) {
-            this.preferencies = new TextEditorPreferencies();
-        }
-        
-        
+        this.preferencies = jsonPreferenceService.loadFromJson(fileName, preferencies);
+                
     }
     
+    @Override
     public void savePreferencies(){
         jsonPreferenceService.savePreference(preferencies, fileName);
     }
 
-    public TextEditorPreferencies getPreferencies(){
+    @Override
+    public Preferencies getPreferencies(){
         return this.preferencies;
     }
     
+    @Override
     public Node generatepreferenciesWidget(){
         VBox preferenciesBox = new VBox();
         preferenciesBox.setPadding(new Insets(20));

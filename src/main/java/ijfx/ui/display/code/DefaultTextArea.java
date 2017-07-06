@@ -74,7 +74,7 @@ public class DefaultTextArea extends AnchorPane{
                 .subscribe(change -> {
                      if ("".equals(codeArea.getText().trim()) == false) {
                         codeArea.setStyleSpans(0, this.scriptHighlight.computeHighlighting(codeArea.getText()));
-                        lauchAutocompletion();
+                        if (autocomplete) lauchAutocompletion();
                         addVariableAutocompletion();
                         
                     }
@@ -127,7 +127,7 @@ public class DefaultTextArea extends AnchorPane{
                 autocompleteMenu.setMaxHeight(5);
                 autocompleteMenu.setPrefHeight(5);
                 autocompleteMenu.setHeight(10);
-                if (this.autocomplete == true) autocompleteMenu.show(this, Side.BOTTOM, 0, 0);
+                autocompleteMenu.show(this, Side.BOTTOM, 0, 0);
                 
             }
         }
@@ -201,31 +201,20 @@ public class DefaultTextArea extends AnchorPane{
        
    }
    
-   public void setPreferencies(TextEditorPreferencies preferencies){
-       this.autocomplete = preferencies.isAutocompletion();
+    public void setPreferencies(TextEditorPreferencies preferencies){
+        this.autocomplete = preferencies.isAutocompletion();
        
-       /*
-       if (preferencies.containsKey("styleSheet")){
-           if (preferencies.get("styleSheet").get(2).equals("darkTheme")){
-               changeCss("/ijfx/ui/display/code/TextEditorDarkTheme.css");
-           }
-           else if (preferencies.get("styleSheet").get(2).equals("lightTheme")){
+       
+        if (preferencies.getTheme().equals("darkTheme")){
+            changeCss("/ijfx/ui/display/code/TextEditorDarkTheme.css");
+        }
+        else if (preferencies.getTheme().equals("lightTheme")){
                changeCss("/ijfx/ui/display/code/TextEditorLightTheme.css");
            }
-           else{
-               changeCss((String) preferencies.get("styleSheet").get(2));
+        else{
+            changeCss((String) preferencies.getTheme());
            }
            
-       }
-       /*
-       if (preferencies.containsKey("showAutocompletion") ){
-           if (preferencies.get("showAutocompletion").equals("true")){
-               this.autocomplete = true;
-           }
-           else if (preferencies.get("showAutocompletion").equals("false")){
-               this.autocomplete = false;
-           }
-       }
-*/
+       
    }
 }
