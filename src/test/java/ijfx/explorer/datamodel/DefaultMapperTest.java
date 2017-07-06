@@ -101,7 +101,7 @@ public class DefaultMapperTest {
         
         assertNotNull("n is null", instance.map(m));
         assertNotSame("Metadata are the same", m, instance.map(m));
-        //assertEquals("n et map(m) different",n , instance.map(m));
+        assertEquals("n et map(m) different",n , instance.map(m));
     }
 
     /**
@@ -165,9 +165,9 @@ public class DefaultMapperTest {
     @Test
     public void testLookInsideMap() {
         System.out.println("lookInsideMap");
-        Object result = instance.lookInsideMap(oldKey, 5.0);
+        Object result = instance.lookInsideMap(5.0);
         Object expectResult = gfp;
-        //assertEquals("bad research", expectResult, result);
+        assertEquals("bad research", expectResult, result);
         
     }
     
