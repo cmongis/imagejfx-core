@@ -55,9 +55,8 @@ public final class DefaultMapper implements Mapper {
 
     @Override
     public MetaData map(MetaData m) {
-        Object newValue = lookInsideMap(m.getName(), m.getValue());
+        Object newValue = lookInsideMap(m.getValue());
         MetaData n = new GenericMetaData(newKey, newValue);
-        associatedValues (m.getValue(), newValue);
         return n;
         
     }
@@ -109,20 +108,20 @@ public final class DefaultMapper implements Mapper {
      * @param base
      * @return 
      */
-    public Object lookInsideMap (String key, Object base){
-        if (key == null) {
+    public Object lookInsideMap (Object oldKey){
+        if (oldKey != null) {
             
-            if (mapValue.containsKey(base)){
-                return mapValue.get(base);
+            if (mapValue.containsKey(oldKey)){
+                return mapValue.get(oldKey);
             
-        }
-        System.out.println("value not match");
-        return null;
+            }
+            System.out.println("Value not match");
+            return null;
             
             
-        }
+         }
         
-       System.out.println("Wrong key");
+        System.out.println("Wrong key");
         return null;
     
         
