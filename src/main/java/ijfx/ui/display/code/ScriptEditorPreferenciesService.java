@@ -26,6 +26,9 @@ import java.io.File;
 import java.util.List;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import net.imagej.ImageJService;
 import org.scijava.Priority;
@@ -78,13 +81,15 @@ public class ScriptEditorPreferenciesService extends AbstractService implements 
     
     public Node generatepreferenciesWidget(){
         VBox preferenciesBox = new VBox();
-        preferenciesBox.setPadding(Insets.EMPTY);
-         InputWidget<?, Node> textWidget = (InputWidget<?, Node>) widgetService.create(
-                new SuppliedWidgetModel<>(String.class)
-                .setGetter(preferencies::getTheme)
-                .setSetter(preferencies::setTheme)
-                .setStyle(TextWidget.FIELD_STYLE)
-        );
+        preferenciesBox.setPadding(new Insets(20));
+        HBox themeBox = new HBox();
+        themeBox.setPadding(new Insets(20));
+        HBox autocompletionBox = new HBox();
+        autocompletionBox.setPadding(new Insets(20));
+        HBox sidePanelBox =new HBox();
+        sidePanelBox.setPadding(new Insets(20));
+        HBox cssBox =new HBox();
+        cssBox.setPadding(new Insets(20));
         InputWidget<?,Node> booleanWidget = (InputWidget<?, Node>) widgetService.create(
                 new SuppliedWidgetModel<>(Boolean.class)
                 .setGetter(preferencies::isAutocompletion)
@@ -93,6 +98,7 @@ public class ScriptEditorPreferenciesService extends AbstractService implements 
                 .setWidgetLabel("Enable autocompletion")
                 
         );
+        
         InputWidget<?,Node> sidePanelActivator = (InputWidget<?, Node>) widgetService.create(
                 new SuppliedWidgetModel<>(Boolean.class)
                 .setGetter(preferencies::isAutocompletion)
@@ -114,19 +120,23 @@ public class ScriptEditorPreferenciesService extends AbstractService implements 
                 .setSetter(preferencies::setCustomCSS)
                 .setStyle(FileWidget.DIRECTORY_STYLE)
                 .setWidgetLabel("Choose style")
-                
         );
         AbstractWidgetModel styleWidget = (AbstractWidgetModel) setStyleWidget.get();
         for (String theme : preferencies.getListOfTheme()){
             styleWidget.addChoice(theme);
         }
         setStyleWidget = (InputWidget<?, Node>) widgetService.create(styleWidget);
-        textWidget.refreshWidget();
         booleanWidget.refreshWidget();
         sidePanelActivator.refreshWidget();
         setStyleWidget.refreshWidget();
         customCssWidget.refreshWidget();
-        preferenciesBox.getChildren().addAll(textWidget.getComponent(), setStyleWidget.getComponent(), booleanWidget.getComponent(), sidePanelActivator.getComponent(), customCssWidget.getComponent());
+        
+        themeBox.getChildren().addAll(new Label("Select a default theme  "), setStyleWidget.getComponent() );
+        autocompletionBox.getChildren().addAll(new Label("Enable autocompletion  "), booleanWidget.getComponent() );
+        sidePanelBox.getChildren().addAll(new Label("Enable side panel  "), sidePanelActivator.getComponent());
+        cssBox.getChildren().addAll(new Label("Select a custom css file  "), customCssWidget.getComponent());
+        
+        preferenciesBox.getChildren().addAll(themeBox,autocompletionBox, sidePanelBox, cssBox);
         return preferenciesBox;
     }
    
