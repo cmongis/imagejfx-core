@@ -36,7 +36,9 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Cell;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
@@ -61,13 +63,12 @@ public class DefaultAnnotationDisplay extends Dialog<Mapper> implements Annotati
     TextField oldKey, newKey;
     
     @FXML
-    ListView<ValueAnnotationDisplayController> listView;
+    ListView<MetaData> listView;
 
     Dialog<Mapper> dialog;
 
-    private List <ValueAnnotationDisplayController> listLittleV = new ArrayList<>(); //liste des fxml secondaires
-    private List <ValueAnnotationDisplayController> collect = new ArrayList<>(); //je crois que ça sert à rien
-    
+    private List <MetaData> listLittleV = new ArrayList<>(); //liste des fxml secondaires
+    private List <ValueAnnotationDisplayController> list = new ArrayList<>();
     private final ObjectProperty<Text> valueTextProperty = new SimpleObjectProperty();
     private final ObjectProperty<Text> newValueTextProperty = new SimpleObjectProperty();
     
@@ -106,10 +107,9 @@ public class DefaultAnnotationDisplay extends Dialog<Mapper> implements Annotati
                 //si la liste contenant les Metadata est vide, créer un premier metadata sans spécificités
                 if (listLittleV.isEmpty() ){
                     addMapping();
+                    
                 }
-                
-                refresh();
-                                
+                                                
                 showAndWait();
   
             }
@@ -148,8 +148,8 @@ public class DefaultAnnotationDisplay extends Dialog<Mapper> implements Annotati
     private void addMapping() { //rajouter un fxm de cases values dès que le précédent est rempli // ET met à jour le listener
         
         Platform.runLater(()-> {
-            //GenericMetaData m = new GenericMetaData();
-            ValueAnnotationDisplayController v = new ValueAnnotationDisplayController();
+            GenericMetaData v = new GenericMetaData();
+            //ValueAnnotationDisplayController v = new ValueAnnotationDisplayController();
             listLittleV.add(v); //ajoute le futur métadata dans la liste des métadata à ajouter au mapper.
             
             refresh();
@@ -163,6 +163,7 @@ public class DefaultAnnotationDisplay extends Dialog<Mapper> implements Annotati
 
     //Récupère les clefs necessaires au fonctionnement du mapper.
     private void bindData (){ //CA CA MARCHE
+        
         Platform.runLater(()-> {
             mapper.setOldKey(oldKey.getText());
             mapper.setNewKey(newKey.getText());
@@ -174,29 +175,21 @@ public class DefaultAnnotationDisplay extends Dialog<Mapper> implements Annotati
     }
     
     public Mapper mapperAction(){ //permet de d'ajouter les nouveaux metadata dans le map et renvoi le hashmap
+        
         Platform.runLater(()-> {
         bindData();
         
-        collect = (List) listView.getItems().stream().collect(Collectors.toList());
-            for (ValueAnnotationDisplayController item : collect){
-                System.out.println("liste des controleurs secondaires" +item.getValue());
-                /*
-                for (MetaData m : listLittleV){
-                    m.setName(item.getValueTextProperty().toString());
-                    m.setValue(item.getNewValueTextProperty());
-                    //annotationService.addMapper(item, mapper);
-        
-        }
-            */
-        
+        for (ValueAnnotationDisplayController item : list){
+            if (item.getNewValue() != " "){
+                MetaData m = new GenericMetaData(item.getNewValue(), item.getValue());
+                mapper.map(m);
                 
             }
-                
-                });
             
-        
-        
-        
+        }
+            
+                });
+
         return mapper;
         
         
@@ -205,24 +198,20 @@ public class DefaultAnnotationDisplay extends Dialog<Mapper> implements Annotati
     
     public void refresh(){ //permet la corrélation entre les metadata présents dans la liste et l'affichage de la listview.
         
-            /*
-            for (MetaData item : listLittleV){
-                //listView.setCellFactory(lv  -> new ValueAnnotationDisplayController());
-                listView.getItems().add(new ValueAnnotationDisplayController());
-            }
-            
-            */
-            //ValueAnnotationDisplayController v = new ValueAnnotationDisplayController(); NE MARCHE PAS
-
-            listView.setCellFactory(lv  -> new ValueAnnotationDisplayController());
-            
             listView.getItems().clear();
+            listView.setCellFactory(this::createCell);
+
             listView.getItems().setAll(listLittleV);
             
-            
-            
-        
     }
+    
+    public ListCell<MetaData> createCell(ListView<MetaData> newCell){
+        ValueAnnotationDisplayController cell = new ValueAnnotationDisplayController();
+        list.add(cell);
+        return cell;
+    }
+    
+    
   
 
 }
