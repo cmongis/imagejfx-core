@@ -44,7 +44,7 @@ import javafx.scene.text.Text;
  *
  * @author sapho
  */
-public class ValueAnnotationDisplayController extends ListCell<ValueAnnotationDisplayController>  { //avant extends Pane
+public class ValueAnnotationDisplayController extends ListCell<MetaData>  { //avant extends Pane
 
     //@FXML
     private final GridPane pane = new GridPane(); //oui mon gridpane s'appelle pane
@@ -69,6 +69,9 @@ public class ValueAnnotationDisplayController extends ListCell<ValueAnnotationDi
     
     private final ObjectProperty<String> valueTextProperty = new SimpleObjectProperty(value.getText());
     private final ObjectProperty<String> newValueTextProperty = new SimpleObjectProperty(newValue.getText());
+    
+    
+    
     private final ObservableValue<Boolean> fillState = Bindings.createObjectBinding(this:: getTextfieldState);
     private final BooleanProperty isValues = new SimpleBooleanProperty();
     
@@ -77,23 +80,7 @@ public class ValueAnnotationDisplayController extends ListCell<ValueAnnotationDi
     public ValueAnnotationDisplayController() {
         
         Platform.runLater(()-> {
-        //super();
-        /*
-        Platform.runLater( ()-> {
-            pane = new Pane();
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/ijfx/ui/widgets/ValueAnnotationDisplay.fxml"));
-        loader.setController(this);
-            try { 
-                loader.load();
-            } catch (IOException ex) {
-                Logger.getLogger(ValueAnnotationDisplayController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-        init();
-        });
         
-        */
         pane.setPrefSize(WIDTH, HEIGHT);
         value.setPromptText("value");
         newValue.setPromptText("new value");
@@ -117,10 +104,9 @@ public class ValueAnnotationDisplayController extends ListCell<ValueAnnotationDi
         pane.getColumnConstraints().add(new ColumnConstraints(COLUMN_WIDTH));
         
         pane.getChildren().setAll(value, newValue);
-        //setGraphic(pane);
         content.getChildren().add(pane);
         
-        System.out.println("prout");
+        System.out.println("pouet");
         init();
         setGraphic(content);
         });
@@ -128,41 +114,27 @@ public class ValueAnnotationDisplayController extends ListCell<ValueAnnotationDi
     }
     
     
-    /*
+    
    @Override 
    public void updateItem(MetaData item, boolean empty) {
         super.updateItem(item, empty);
+        
+        if (empty){
+            setGraphic(null);
+        }
         if (!empty && item != null){
             value.setPromptText("value");
             newValue.setPromptText("new value");
-            
             setGraphic(content);
             
         }
    }
-    */
+    
 
     public void init(){
         
-        
-        //Platform.runLater(()-> {
-          /*  
-        value.textProperty().bind(valueTextProperty);
-        newValue.textProperty().bind(newValueTextProperty);
-        
-         /*   
-        value.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String trucValue) -> {
-        System.out.printf("value changé : %d -> %d", oldValue, trucValue).println();
-        });
-        /*
-        newValue.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String trucValue) -> {
-        System.out.printf("newValue changé : %d -> %d", oldValue, trucValue).println();
-        });
-*/
-
-        //});
-        
     }
+    
     
     public ObjectProperty getValueTextProperty(){
         return valueTextProperty;
@@ -180,21 +152,19 @@ public class ValueAnnotationDisplayController extends ListCell<ValueAnnotationDi
     public String getNewValue(){
         return newValue.getText();
     }
-    
-    //défini les conditions de l'observableValue.
+        
+    //récupération public de la property
+    public BooleanProperty getIsValues(){
+        return isValues;
+    }
+
+   //défini les conditions de l'observableValue.
     public Boolean getTextfieldState(){
         if (this.value.getText() != null && this.newValue.getText() != null){
             return true;
         }
         return false;
     }
-    
-    //récupération public de la property
-    public BooleanProperty getIsValues(){
-        return isValues;
-    }
-
-   
     
     
 }
