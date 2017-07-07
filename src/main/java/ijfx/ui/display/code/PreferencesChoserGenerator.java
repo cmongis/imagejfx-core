@@ -34,7 +34,7 @@ import org.scijava.widget.WidgetService;
  *
  * @author florian
  */
-public class PreferencesChoserGenerator {
+public class PreferencesChoserGenerator implements PreferencePanelGenerator {
     WidgetService widgetService;
     private VBox widgetBox;
 
@@ -44,10 +44,12 @@ public class PreferencesChoserGenerator {
     }
     
     
+    @Override
     public Node getPanel(){
         return this.widgetBox;
     }
     
+    @Override
     public void addCategory( List<Node> widgets, String name){
         /*
         The good way to use this function is that the nodes in the list are the nodes returned by the method createWidget()
@@ -61,16 +63,19 @@ public class PreferencesChoserGenerator {
         this.widgetBox.getChildren().add(category);
     }
     
+    @Override
     public void addWidget(WidgetModel widgetModel, String name){
         this.widgetBox.getChildren().add(createWidget(widgetModel, name));
     }
     
+    @Override
     public void addWidget(WidgetModel widgetModel){
         InputWidget<?,Node> newWidget =(InputWidget<?, Node>) widgetService.create(widgetModel);
         newWidget.refreshWidget();
         this.widgetBox.getChildren().add(newWidget.getComponent());
     }
     
+    @Override
     public Node createWidget(WidgetModel widgetModel, String name){
          HBox newBox = new HBox();
         newBox.setPadding(new Insets(20));
