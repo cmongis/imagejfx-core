@@ -28,6 +28,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -36,6 +37,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 
 
@@ -44,50 +46,26 @@ import javafx.scene.text.Text;
  *
  * @author sapho
  */
-public class ValueAnnotationDisplayController extends ListCell<MetaData>  { //avant extends Pane
+public class ValueAnnotationDisplayController extends GridPane  { 
 
-    //@FXML
     private final GridPane pane = new GridPane(); //oui mon gridpane s'appelle pane
 
-    //@FXML
     TextField value = new TextField();
     TextField newValue = new TextField();
     
-    
-    
-    private final AnchorPane content = new AnchorPane();
-             
-    
-    private final double MIN_HEIGHT = 120.0;//hauteur
-    private final double MIN_WIDTH = 30.0; //largeur
     private final double HEIGHT = 40.0; //hauteur
     private final double WIDTH = 244.0; //largeur
     private final double PADDING = 4.0;
     private final double COLUMN_WIDTH = 112.0;//largeur 
     private final double TEXT_WIDTH = 50.0;
     private final double TEXT_HEIGTH = 30.0;
+   
     
-    private final ObjectProperty<String> valueTextProperty = new SimpleObjectProperty(value.getText());
-    private final ObjectProperty<String> newValueTextProperty = new SimpleObjectProperty(newValue.getText());
-    
-    
-    
-    private final ObservableValue<Boolean> fillState = Bindings.createObjectBinding(this:: getTextfieldState);
-    private final BooleanProperty isValues = new SimpleBooleanProperty();
-    
-    
-
     public ValueAnnotationDisplayController() {
-        
-        Platform.runLater(()-> {
         
         pane.setPrefSize(WIDTH, HEIGHT);
         value.setPromptText("value");
         newValue.setPromptText("new value");
-        
-        
-        //pane.setPadding(Insets.PADDING);
-        
         
         value.setPrefSize(TEXT_WIDTH, TEXT_HEIGTH);
         value.setPadding(new Insets (5,5,5,15));
@@ -104,44 +82,19 @@ public class ValueAnnotationDisplayController extends ListCell<MetaData>  { //av
         pane.getColumnConstraints().add(new ColumnConstraints(COLUMN_WIDTH));
         
         pane.getChildren().setAll(value, newValue);
-        content.getChildren().add(pane);
         
+        this.getChildren().add(pane); //NE PAS OUBLIER CETTE LIGNE SINON LA CLASSE N'EST PAS UN NODE
         System.out.println("pouet");
-        init();
-        setGraphic(content);
-        });
-
+              
+    }
+   
+    //permet la récupération des property;
+    public StringProperty getValueTextProperty(){        
+        return value.textProperty();
     }
     
-    
-    
-   @Override 
-   public void updateItem(MetaData item, boolean empty) {
-        super.updateItem(item, empty);
-        
-        if (empty){
-            setGraphic(null);
-        }
-        if (!empty && item != null){
-            value.setPromptText("value");
-            newValue.setPromptText("new value");
-            setGraphic(content);
-            
-        }
-   }
-    
-
-    public void init(){
-        
-    }
-    
-    
-    public ObjectProperty getValueTextProperty(){
-        return valueTextProperty;
-    }
-    
-    public ObjectProperty getNewValueTextProperty(){
-        return newValueTextProperty;
+    public StringProperty getNewValueTextProperty(){
+        return newValue.textProperty();
     }
     
     //permet la récupération des données
@@ -152,19 +105,6 @@ public class ValueAnnotationDisplayController extends ListCell<MetaData>  { //av
     public String getNewValue(){
         return newValue.getText();
     }
-        
-    //récupération public de la property
-    public BooleanProperty getIsValues(){
-        return isValues;
-    }
 
-   //défini les conditions de l'observableValue.
-    public Boolean getTextfieldState(){
-        if (this.value.getText() != null && this.newValue.getText() != null){
-            return true;
-        }
-        return false;
-    }
-    
-    
+   
 }
