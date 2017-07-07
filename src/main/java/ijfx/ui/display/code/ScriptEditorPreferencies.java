@@ -19,13 +19,14 @@
  */
 package ijfx.ui.display.code;
 
+import ijfx.core.IjfxService;
 import javafx.scene.Node;
 
 /**
  *
  * @author florian
  */
-public interface ScriptEditorPreferencies {
+public interface ScriptEditorPreferencies extends IjfxService{
 
     Node generatepreferenciesWidget();
 

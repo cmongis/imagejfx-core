@@ -22,6 +22,11 @@ package ijfx.ui.display.code;
 import ijfx.core.activity.Activity;
 import ijfx.core.activity.ActivityService;
 import ijfx.core.prefs.JsonPreferenceService;
+import ijfx.ui.inputharvesting.AbstractWidgetModel;
+import ijfx.ui.inputharvesting.SuppliedWidgetModel;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -31,12 +36,17 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
+import org.scijava.Context;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.viewer.DisplayPanel;
+import org.scijava.widget.ChoiceWidget;
+import org.scijava.widget.FileWidget;
+import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetService;
 
 /**
@@ -56,11 +66,14 @@ public class DefaultParametersChoser extends BorderPane implements Activity{
     WidgetService widgetService;
     @Parameter
     ActivityService activityService;
+    @Parameter
+    Context context;
     
     private VBox mainBox;
     
     private TextEditorPreferencies preferencies;
     private String fileName = "ScriptEdtirorPreferences";
+    private  PreferencesChoserGenerator choserGenerator;
 
     public DefaultParametersChoser() {        
         
@@ -81,8 +94,56 @@ public class DefaultParametersChoser extends BorderPane implements Activity{
         this.setBottom(saveButton);
         this.setTop(closeButton);
         this.setPadding(new Insets(20, 20, 20, 20));
+        
     }
-   
+    
+     public Node generatepreferenciesWidget(){
+        choserGenerator = new PreferencesChoserGenerator(widgetService);
+        List<Node> themeCategory = new ArrayList<>();
+        List<Node> autocompletionCategory = new ArrayList<>();
+        autocompletionCategory.add(this.choserGenerator.createWidget(
+                new SuppliedWidgetModel<>(Boolean.class)
+                .setGetter(preferencies::isAutocompletion)
+                .setSetter(preferencies::setAutocompletion)
+                       
+                .setWidgetLabel("Enable autocompletion")
+                
+        ,"Enable autocompletion" ));
+        
+        autocompletionCategory.add(this.choserGenerator.createWidget(
+                new SuppliedWidgetModel<>(Boolean.class)
+                .setGetter(preferencies::isSidePanel)
+                .setSetter(preferencies::setSidePanel)
+                .setWidgetLabel("Enable side panel")
+                
+        ,"Enable side panel"));
+        AbstractWidgetModel styleWidget = 
+        
+                new SuppliedWidgetModel<>(String.class)
+                .setGetter(preferencies::getTheme)
+                .setSetter(preferencies::setTheme)
+                .setStyle(ChoiceWidget.LIST_BOX_STYLE)
+                .setWidgetLabel("Choose style");
+        
+        themeCategory.add(this.choserGenerator.createWidget(
+                new SuppliedWidgetModel<>(File.class)
+                .setGetter(preferencies::getCustomCSS)
+                .setSetter(preferencies::setCustomCSS)
+                .setStyle(FileWidget.DIRECTORY_STYLE)
+                .setWidgetLabel("Choose style")
+        , "Select an other css file"));
+        
+        
+        for (String theme : preferencies.getListOfTheme()){
+            styleWidget.addChoice(theme);
+        }
+        themeCategory.add(choserGenerator.createWidget(styleWidget, "Select a default theme"));
+        
+        choserGenerator.addCategory(autocompletionCategory, "Autocompletion");
+        choserGenerator.addCategory(themeCategory, "Apperence");
+        return choserGenerator.getPanel();
+    }
+     
     public void savePreferencies(ActionEvent event){
         preferenceService.savePreferencies();
         
@@ -95,7 +156,8 @@ public class DefaultParametersChoser extends BorderPane implements Activity{
     @Override
     public Node getContent() {
         this.preferencies = (TextEditorPreferencies) preferenceService.getPreferencies();
-        mainBox.getChildren().add(preferenceService.generatepreferenciesWidget());
+        mainBox.getChildren().clear();
+        mainBox.getChildren().add(generatepreferenciesWidget());
         return this;
     }
 
