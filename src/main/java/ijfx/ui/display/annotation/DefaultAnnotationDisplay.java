@@ -31,10 +31,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Cell;
 import javafx.scene.control.Dialog;
@@ -42,6 +47,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 import org.scijava.plugin.Parameter;
@@ -63,15 +69,15 @@ public class DefaultAnnotationDisplay extends Dialog<Mapper> implements Annotati
     TextField oldKey, newKey;
     
     @FXML
-    ListView<MetaData> listView;
+    VBox vBox;
 
     Dialog<Mapper> dialog;
 
     private List <MetaData> listLittleV = new ArrayList<>(); //liste des fxml secondaires
     private List <ValueAnnotationDisplayController> list = new ArrayList<>();
-    private final ObjectProperty<Text> valueTextProperty = new SimpleObjectProperty();
-    private final ObjectProperty<Text> newValueTextProperty = new SimpleObjectProperty();
-    
+    private final ObjectProperty valueTextProperty = new SimpleObjectProperty();
+    private final ObjectProperty newValueTextProperty = new SimpleObjectProperty();
+    private ObservableList <ValueAnnotationDisplayController> oList = FXCollections.observableArrayList();
     
     Mapper mapper = new DefaultMapper();
     
@@ -103,13 +109,27 @@ public class DefaultAnnotationDisplay extends Dialog<Mapper> implements Annotati
                 setResultConverter(DefaultAnnotationDisplay.this::convert);
                 
                 
+            
                 
-                //si la liste contenant les Metadata est vide, créer un premier metadata sans spécificités
-                if (listLittleV.isEmpty() ){
-                    addMapping();
-                    
-                }
-                                                
+                miseajour(); //rajoute le controller dans l'observablelist
+                oList.addListener(new ListChangeListener<ValueAnnotationDisplayController>() {
+                    @Override
+                    public void onChanged(ListChangeListener.Change<? extends ValueAnnotationDisplayController> change) {
+                      while (change.next()) {
+                        for (ValueAnnotationDisplayController x : change.getList() ) { 
+                            if(x.)
+                            
+                            
+                        }
+                        for (ValueAnnotationDisplayController x : oList) {
+                          
+                        }
+                      }
+                    }
+                  });
+                //addMapping();
+                
+                              
                 showAndWait();
   
             }
@@ -121,9 +141,7 @@ public class DefaultAnnotationDisplay extends Dialog<Mapper> implements Annotati
     public Mapper convert(ButtonType button) {
 
          if(button == ButtonType.OK) {
-             mapperAction();
-             System.out.println(mapper.getMapObject());
-             return mapper;
+             return mapperAction();
          }
          else {
              return null;
@@ -132,34 +150,14 @@ public class DefaultAnnotationDisplay extends Dialog<Mapper> implements Annotati
      }
 
     
-    /*
-    //ajoute le listener au fxml demandé
-    private void addListener2 (ValueAnnotationDisplayController name){
-        name.getIsValues().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newBoolean) -> {
-            if (newBoolean){
-                    addMapping();
-                
-            }
-        });
+    private ObservableList miseajour(){
+        ValueAnnotationDisplayController x = new ValueAnnotationDisplayController();
+        oList.add(x);
+        vBox.getChildren().add(x); //rajoute le controller dans le vbox
+        return oList;
     }
-    */
     
-        
-    private void addMapping() { //rajouter un fxm de cases values dès que le précédent est rempli // ET met à jour le listener
-        
-        Platform.runLater(()-> {
-            GenericMetaData v = new GenericMetaData();
-            //ValueAnnotationDisplayController v = new ValueAnnotationDisplayController();
-            listLittleV.add(v); //ajoute le futur métadata dans la liste des métadata à ajouter au mapper.
-            
-            refresh();
-        });
-        
-        
-            
-            
-        
-    }
+    
 
     //Récupère les clefs necessaires au fonctionnement du mapper.
     private void bindData (){ //CA CA MARCHE
@@ -169,9 +167,6 @@ public class DefaultAnnotationDisplay extends Dialog<Mapper> implements Annotati
             mapper.setNewKey(newKey.getText());
         });
         
-        
-        
-
     }
     
     public Mapper mapperAction(){ //permet de d'ajouter les nouveaux metadata dans le map et renvoi le hashmap
@@ -181,12 +176,14 @@ public class DefaultAnnotationDisplay extends Dialog<Mapper> implements Annotati
         
         for (ValueAnnotationDisplayController item : list){
             if (item.getNewValue() != " "){
-                MetaData m = new GenericMetaData(item.getNewValue(), item.getValue());
-                mapper.map(m);
+                
+                mapper.associatedValues(item.getValue(),item.getNewValue());
+                
                 
             }
             
         }
+        System.out.println("mapper"+ mapper.getMapObject());
             
                 });
 
@@ -196,22 +193,5 @@ public class DefaultAnnotationDisplay extends Dialog<Mapper> implements Annotati
     }
     
     
-    public void refresh(){ //permet la corrélation entre les metadata présents dans la liste et l'affichage de la listview.
-        
-            listView.getItems().clear();
-            listView.setCellFactory(this::createCell);
-
-            listView.getItems().setAll(listLittleV);
-            
-    }
-    
-    public ListCell<MetaData> createCell(ListView<MetaData> newCell){
-        ValueAnnotationDisplayController cell = new ValueAnnotationDisplayController();
-        list.add(cell);
-        return cell;
-    }
-    
-    
-  
 
 }
