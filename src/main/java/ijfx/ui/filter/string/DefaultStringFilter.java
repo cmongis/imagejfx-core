@@ -149,7 +149,7 @@ public class DefaultStringFilter extends BorderPane implements Initializable, St
     }
 
     @Override
-    public void setAllPossibleValues(Collection<String> list) {
+    public void setAllPossibleValues(Collection<? extends String> list) {
 
         allItems.clear();
 

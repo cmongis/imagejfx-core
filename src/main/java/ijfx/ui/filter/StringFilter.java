@@ -1,4 +1,4 @@
-    /*
+/*
     This file is part of ImageJ FX.
 
     ImageJ FX is free software: you can redistribute it and/or modify
@@ -29,13 +29,6 @@ import javafx.scene.Node;
  *
  * @author Cyril MONGIS, 2016
  */
-public interface StringFilter {
-    
-    void setAllPossibleValues(Collection<String> values);
-    
+public interface StringFilter extends DataFilter<String> {
     StringProperty keyWordProperty();
-    
-    Property<Predicate<String>> predicateProperty();
-    
-    Node getContent();
 }

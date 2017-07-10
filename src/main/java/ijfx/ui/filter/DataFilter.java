@@ -19,42 +19,31 @@
  */
 package ijfx.ui.filter;
 
-import ijfx.core.metadata.MetaDataOwner;
+import java.util.Collection;
 import java.util.function.Predicate;
+import javafx.beans.value.ObservableValue;
+import javafx.scene.Node;
 
 /**
  *
- * @author Pierre BONNEAU
+ * @author cyril
  */
-public class NumberOwnerPredicate<T extends MetaDataOwner> implements Predicate<T>{
+public interface DataFilter<T> {
+
+    public static String DEFAULT_NAME = "Filter";
     
-    String keyName;
-    
-    Double value;
-    
-    Predicate<Double> predicate;
-    
-    public NumberOwnerPredicate(String keyName, Predicate<Double> predicate){
-        this.keyName = keyName;
-        this.predicate = predicate;
+    void setAllPossibleValues(Collection<? extends T> values);
+
+    default String getName() {
+        return DEFAULT_NAME;
     }
     
-    @Override
-    public boolean test(T t) {
-        value = t.getMetaDataSet().get(keyName).getDoubleValue();
-        return predicate.test(value);
+    public default Predicate<T> getPredicate() {
+        return predicateProperty().getValue();
     }
-    
-    public Double getKey(){
-        return this.value;
-    }
-   
-    
-    public Predicate<Double> getPredicate(){
-        return this.predicate;
-    }
-    
-    public void setPredicate(Predicate<Double> predicate){
-        this.predicate = predicate;
-    }
+
+    ObservableValue<Predicate<T>> predicateProperty();
+
+    Node getContent();
+
 }
