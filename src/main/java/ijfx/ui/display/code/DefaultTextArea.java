@@ -92,7 +92,6 @@ public class DefaultTextArea extends AnchorPane{
         textProperty.bind(this.codeArea.textProperty());
         
         this.getChildren().add(this.codeArea);
-        //getStylesheets().add(getClass().getResource("/ijfx/ui/display/code/TextEditorDarkTheme.css").toExternalForm());
         this.autocompletion = new DefaultAutocompletion(this);
         
         

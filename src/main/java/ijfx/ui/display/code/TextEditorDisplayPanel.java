@@ -135,16 +135,6 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
         return display.get(0).getCode();
     } 
     
-    public VBox createSideBar(){
-        VBox vBox = new VBox();
-        
-        
-        return vBox;
-    }
-    
-    public void setPreferencies(){
-        
-    }
     
     @Override
     public void view(DisplayWindow window, ScriptDisplay display){
