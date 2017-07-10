@@ -143,6 +143,7 @@ public class PaneCellUpdateProcess<T> {
         List<Node> collect = updates
                 .stream()
                 .map(r -> r.paneCell.getContent())
+                .filter(node->nodeList.contains(node) == false)
                 .collect(Collectors.toList());
 
         Platform.runLater(() -> nodeList.addAll(collect));

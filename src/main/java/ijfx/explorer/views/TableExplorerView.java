@@ -83,7 +83,7 @@ public class TableExplorerView implements ExplorerView {
 
         tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         tableView.getSelectionModel().getSelectedItems().addListener(this::onListChange);
-        tableView.getSelectionModel().selectedItemProperty().addListener(this::onSelectedItemChanged);
+        //tableView.getSelectionModel().selectedItemProperty().addListener(this::onSelectedItemChanged);
         tableView.setRowFactory(this::createRow);
         tableView.setId(TABLE_VIEW_ID);
 
@@ -175,17 +175,6 @@ public class TableExplorerView implements ExplorerView {
         //hintService.displayHint(new DefaultHint(String.format("#%s",TABLE_VIEW_ID),"Double click on an element to open it."), false);
     }
 
-    private void onSelectedItemChanged(Observable obs, Explorable oldValue, Explorable newValue) {
-        currentItems.forEach(item -> {
-            item.selectedProperty().setValue(tableView.getSelectionModel().getSelectedItems().contains(item));
-        });
-
-        if (eventService != null) {
-            eventService.publish(new ExplorerSelectionChangedEvent().setObject(explorerService.getSelectedItems()));
-        }
-
-    }
-
     private TableRow<Explorable> createRow(TableView<Explorable> explorable) {
 
         TableRow<Explorable> row = new TableRow<>();
@@ -216,6 +205,7 @@ public class TableExplorerView implements ExplorerView {
     public void refresh() {
        
         setItem(currentItems);
+        setSelectedItem(currentItems.stream().filter(Explorable::isSelected).collect(Collectors.toList()));
         wrapperList.values().forEach(ReadOnlyTagWrapper::refresh);
 
     }

@@ -146,10 +146,12 @@ public class TaggablePane {
     private void onPossibleTagAdded(List<? extends Tag> tagList) {
 
       
-        tagList
+        List<Node> collect = tagList
                 .stream()
                 .map(this::createAddButton)
-                .collect(Collectors.toCollection(possibleTagsFlowPane::getChildren));
+                .collect(Collectors.toList());
+        
+        FXUtilities.addLater(collect, possibleTagsFlowPane.getChildren());
 
     }
 
@@ -161,7 +163,7 @@ public class TaggablePane {
                 .filter(button -> tagList.contains(button.getUserData()))
                 .collect(Collectors.toList());
 
-        possibleTagsFlowPane.getChildren().remove(collect);
+        FXUtilities.removeLater(collect, possibleTagsFlowPane.getChildren());
     }
 
     public void setTags(Collection<Tag> tags) {
@@ -203,7 +205,9 @@ public class TaggablePane {
     }
 
     public void refresh() {
+        
         CollectionsUtils.synchronize(getTaggable().getTagList(), tags);
+        
     }
 
     public Button createRemoveButton(Tag tag) {

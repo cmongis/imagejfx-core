@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.chart.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<fx:root minHeight="200.0" minWidth="200.0" styleClass="number-filter" type="BorderPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <center>
+      <AreaChart fx:id="areaChart" createSymbols="false" BorderPane.alignment="CENTER">
+        <xAxis>
+          <NumberAxis fx:id="categoryAxis" autoRanging="false" minorTickCount="1" side="BOTTOM" tickLabelsVisible="false" />
+        </xAxis>
+        <yAxis>
+          <NumberAxis fx:id="numberAxis" side="LEFT" />
+        </yAxis>
+      </AreaChart>
+   </center>
+   <bottom>
+      <BorderPane fx:id="borderPane" BorderPane.alignment="CENTER">
+         <left>
+            <TextField fx:id="lowTextField" style="-fx-pref-width: 5em;" styleClass="number" BorderPane.alignment="CENTER" />
+         </left>
+         <right>
+            <TextField fx:id="highTextField" style="-fx-pref-width: 5em;" styleClass="number" BorderPane.alignment="CENTER" />
+         </right>
+         <center>
+            <Label fx:id="valueCountLabel" text="Label" BorderPane.alignment="CENTER" />
+         </center>
+      </BorderPane>
+   </bottom>
+</fx:root>

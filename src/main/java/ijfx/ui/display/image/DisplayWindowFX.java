@@ -19,6 +19,7 @@
  */
 package ijfx.ui.display.image;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventType;
@@ -143,5 +144,12 @@ public class DisplayWindowFX extends Window implements DisplayWindow {
 
     void putInFront(Event event) {
         displayService.setActiveDisplay(getDisplay());
+    }
+    
+    @Override
+    public void requestFocus() {
+        displayService.setActiveDisplay(getDisplay());
+        Platform.runLater(super::requestFocus);
+        
     }
 }

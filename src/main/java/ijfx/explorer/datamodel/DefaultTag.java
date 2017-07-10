@@ -42,6 +42,11 @@ public class DefaultTag implements Tag {
     }
 
     @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
+    
+    @Override
     public boolean equals(Object object) {
         if (object instanceof Tag) {
             return ((Tag) object).getName().equals(getName());

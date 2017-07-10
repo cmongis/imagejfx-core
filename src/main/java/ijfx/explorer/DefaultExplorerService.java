@@ -31,9 +31,11 @@ import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.datamodel.wrappers.ImageRecordIconizer;
 import ijfx.explorer.events.DisplayedListChanged;
 import ijfx.explorer.events.ExploredListChanged;
+import ijfx.explorer.events.ExplorerSelectionChangedEvent;
 import ijfx.ui.loading.LoadingScreenService;
 import ijfx.ui.main.ImageJFX;
 import ijfx.ui.utils.SelectableManager;
+import ijfx.ui.utils.SelectionChange;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,7 +47,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import javafx.beans.Observable;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import mongis.utils.CallbackTask;
@@ -85,21 +86,21 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     @Parameter
     private Context context;
   
-    private Predicate<MetaDataOwner> lastFilter;
-    private Predicate<MetaDataOwner> optionalFilter;
+    private Predicate<Explorable> lastFilter;
+    private Predicate<Explorable> optionalFilter;
 
     private final IntegerProperty selected = new SimpleIntegerProperty(0);
 
     private List<Explorable> selectedItems = new ArrayList<>();
 
-    private SelectableManager<Explorable> selectionManager = new SelectableManager<>(this::onExplorableSelected);
+    private SelectableManager<Explorable> selectionManager = new SelectableManager<>();
    
 
     @Override
     public void initialize() {
        
-        
-        selected.addListener(this::notifySelectionChanged);
+       selectionManager.getChangeBuffer()
+               .subscribe(this::notifySelectionChange);
 
     }
 
@@ -115,16 +116,16 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     }
 
     @Override
-    public void applyFilter(Predicate<MetaDataOwner> predicate) {
+    public void applyFilter(Predicate<Explorable> predicate) {
 
-        new CallbackTask<Predicate<MetaDataOwner>, List<Explorable>>(predicate)
+        new CallbackTask<Predicate<Explorable>, List<Explorable>>(predicate)
                 .run(this::filter)
                 .then(this::setFilteredItems)
                 .start();
 
     }
 
-    protected List<Explorable> filter(Predicate<MetaDataOwner> predicate) {
+    protected List<Explorable> filter(Predicate<Explorable> predicate) {
         logger.info(String.format("Filtering %d items", getItems().size()));
         if (predicate == null && optionalFilter == null) {
             return getItems();
@@ -154,7 +155,7 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     }
 
     @Override
-    public void setOptionalFilter(Predicate<MetaDataOwner> additionalFilter) {
+    public void setOptionalFilter(Predicate<Explorable> additionalFilter) {
         this.optionalFilter = additionalFilter;
         applyFilter(lastFilter);
     }
@@ -188,7 +189,15 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     }
 
     
-
+    private void notifySelectionChange(List<SelectionChange<Explorable>> changes) {
+        
+        ExplorerSelectionChangedEvent event = new ExplorerSelectionChangedEvent(changes);
+        
+        
+        eventService.publishLater(event);
+    }
+    
+    /*
     private void onExplorableSelected(Explorable explorable, Boolean selected) {
       
        
@@ -198,7 +207,7 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
        
        this.selected.setValue(selectedItems.size());
        
-    }
+    }*/
 
     public void open(Iconazable explorable) {
 
@@ -240,12 +249,7 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     }
     
     
-    private void notifySelectionChanged(Observable obs, Object oldValue, Object newValue) {
-        
-       logger.info("The selection has changed to "+newValue);
-        
-        
-    }
+
     
     public IntegerProperty selectedCountProperty() {
         return selected;

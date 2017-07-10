@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -28,6 +25,9 @@
                <center>
                    <HBox fx:id="bottomCenterHBox" styleClass="hbox" BorderPane.alignment="CENTER" />
                </center>
+               <top>
+                  <VBox fx:id="bottomTopVBox" BorderPane.alignment="CENTER" />
+               </top>
            </BorderPane>
        </bottom>
        <top>

@@ -71,8 +71,9 @@ public abstract class AbstractFXInputWidget<T> extends AbstractInputWidget<T,Nod
     }
     
     @Override
-    public void refreshWidget() {   
-        modelBinder.refreshWidget((T)get().getValue());
+    public void refreshWidget() {
+        T value = (T) get().getValue();
+        modelBinder.refreshWidget(value);
     }
     
     @Override

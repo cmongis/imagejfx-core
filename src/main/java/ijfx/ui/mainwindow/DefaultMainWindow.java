@@ -115,6 +115,9 @@ public class DefaultMainWindow implements MainWindow {
     @FXML
     private VBox topToolBarVBox;
 
+    @FXML
+    private VBox bottomTopVBox;
+    
     private SideBar sideBar;
 
     List<ContextualContainer<Node>> contextualContainer = new ArrayList<>();
@@ -224,6 +227,10 @@ public class DefaultMainWindow implements MainWindow {
         registerContextualContainer(topToolBarVBox)
                 .setAnimationOnShow(Animations.FADEIN)
                 .setAnimationOnHide(Animations.FADEOUT);
+        
+        registerContextualContainer(bottomTopVBox)
+                .setAnimationOnShow(Animations.QUICK_EXPAND)
+                .setAnimationOnHide(Animations.DISAPPEARS_DOWN);
     }
 
     private void configureSideBar(SideBar sideBar) {

@@ -17,23 +17,24 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.explorer.datamodel;
+package ijfx.ui.metadata;
 
-import ijfx.core.metadata.MetaDataOwner;
+import ijfx.core.metadata.MetaData;
 import java.util.Set;
 
 /**
  *
  * @author cyril
  */
-public interface Taggable extends MetaDataOwner{
-
-    void addTag(Tag tag);
-
-    void deleteTag(Tag tag);
-
-    Set<Tag> getTagList();
+public interface MetaDataEditor {
     
-    boolean has(Tag tag);
-
+    
+    
+    public void setKeyPossibilities(Set<String> possibilities);
+    
+    public void setMetaData(MetaData m);
+    
+    public void refresh();
+    
+    
 }

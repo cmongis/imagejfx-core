@@ -28,6 +28,8 @@ import javafx.scene.control.Tooltip;
 import org.scijava.Priority;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.plugin.SciJavaPlugin;
 import org.scijava.service.Service;
 
 /**
@@ -53,10 +55,20 @@ public class FXUiCommandService extends DefaultUiCommandService implements IjfxS
         
     }
     
+    public Button createButton(SciJavaPlugin plugin) {
+         Button button = new Button(SciJavaUtils.getLabel(plugin),fxIconService.getIconAsNode(plugin));
+         button.setTooltip(new Tooltip(SciJavaUtils.getDescription(plugin)));
+         return button;
+    }
+    
+    public Button createButton(PluginInfo<?> infos) {
+        Button button = new Button(infos.getLabel(),fxIconService.getIconAsNode(infos.getIconPath()));
+        button.setTooltip(new Tooltip(infos.getDescription()));
+        return button;
+    }
+    
     public <T> Button createButton(UiCommand<T> action, T object) {
-        Button button = new Button(SciJavaUtils.getLabel(action),fxIconService.getIconAsNode(action));
-        
-        button.setTooltip(new Tooltip(SciJavaUtils.getDescription(action)));
+       Button button = createButton(action);
         
         button.setOnAction(event->{
            action.run(object);

@@ -17,23 +17,28 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.explorer.datamodel;
-
-import ijfx.core.metadata.MetaDataOwner;
-import java.util.Set;
+package ijfx.ui.utils;
 
 /**
  *
  * @author cyril
  */
-public interface Taggable extends MetaDataOwner{
-
-    void addTag(Tag tag);
-
-    void deleteTag(Tag tag);
-
-    Set<Tag> getTagList();
+public class SelectionChange<T> {
     
-    boolean has(Tag tag);
+    final T selectable;
+    final Boolean newState;
 
+    public SelectionChange(T selectable, Boolean newState) {
+        this.selectable = selectable;
+        this.newState = newState;
+    }
+
+    public Boolean getNewState() {
+        return newState;
+    }
+
+    public T getSelectable() {
+        return selectable;
+    }
+    
 }

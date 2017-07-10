@@ -25,6 +25,7 @@ import ijfx.explorer.ExplorableDisplay;
 import ijfx.explorer.views.ExplorerView;
 import ijfx.ui.display.image.AbstractFXDisplayPanel;
 import ijfx.ui.display.image.FXDisplayPanel;
+import ijfx.ui.metadata.MetaDataBar;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,6 +34,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import org.scijava.Context;
 import org.scijava.event.EventService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -59,7 +61,12 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
 
     @Parameter
     EventService eventService;
-    
+
+    @Parameter
+    Context context;
+
+    MetaDataBar metaDataBar;
+
     public ExplorableDisplayPanel() {
         super(ExplorableDisplay.class);
     }
@@ -71,10 +78,18 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
 
         tabPane = new TabPane();
 
+        metaDataBar = new MetaDataBar(context);
+        
+        
+        root.getChildren().add(metaDataBar);
+        AnchorPane.setLeftAnchor(metaDataBar, 0d);
+        AnchorPane.setRightAnchor(metaDataBar, 0d);
+        AnchorPane.setTopAnchor(metaDataBar, 0d);
+        
         AnchorPane.setBottomAnchor(tabPane, 15d);
         AnchorPane.setLeftAnchor(tabPane, 0d);
         AnchorPane.setRightAnchor(tabPane, 0d);
-        AnchorPane.setTopAnchor(tabPane, 0d);
+        AnchorPane.setTopAnchor(tabPane, 30d);
 
         root.getChildren().add(tabPane);
         redoLayout();
@@ -86,7 +101,7 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
         Tab tab = new Tab();
         tab.setContent(view.getUIComponent());
         tab.setGraphic(root);
-        tab.setUserData(view);       
+        tab.setUserData(view);
         tab.setText(SciJavaUtils.getLabel(view));
         tab.setGraphic(fxIconService.getIconAsNode(view));
         return tab;
@@ -121,14 +136,14 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
     public void redraw() {
 
         Platform.runLater(() -> {
-            
+
             viewList
                     .stream()
                     .forEach(view -> {
                         view.setItem(getDisplay().getDisplayedItems());
                         view.refresh();
                     });
-            
+
         });
     }
 

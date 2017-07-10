@@ -17,23 +17,21 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.explorer.datamodel;
+package ijfx.commands.explorable;
 
-import ijfx.core.metadata.MetaDataOwner;
-import java.util.Set;
+import ijfx.explorer.ExplorableDisplay;
+import org.scijava.command.Command;
+import org.scijava.plugin.Parameter;
 
 /**
  *
  * @author cyril
  */
-public interface Taggable extends MetaDataOwner{
-
-    void addTag(Tag tag);
-
-    void deleteTag(Tag tag);
-
-    Set<Tag> getTagList();
+public interface ExplorableDisplayCommand extends Command{
     
-    boolean has(Tag tag);
-
+   
+    
+    
+    
+    
 }

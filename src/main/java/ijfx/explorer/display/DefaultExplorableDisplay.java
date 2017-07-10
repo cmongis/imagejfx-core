@@ -23,6 +23,7 @@ import ijfx.explorer.ExplorableDisplay;
 import ijfx.explorer.ExplorableList;
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.ui.utils.SelectableManager;
+import ijfx.ui.utils.SelectionChange;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -41,22 +42,26 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = Display.class)
 public class DefaultExplorableDisplay extends AbstractDisplay<ExplorableList> implements ExplorableDisplay {
 
-    public DefaultExplorableDisplay() {
+   
+
+    @Parameter
+    private EventService eventService;
+
+    private List<Explorable> displayedItems = new ArrayList<>();
+
+    private List<Explorable> items = new ArrayList<>();
+    private final SelectableManager<Explorable> selectableManager = new SelectableManager<>();
+
+    
+     public DefaultExplorableDisplay() {
         super(ExplorableList.class);
 
         selectableManager
                 .getChangeBuffer()
                 .subscribe(this::onItemSelectionChanged);
     }
-
-    @Parameter
-    EventService eventService;
-
-    List<Explorable> displayedItems = new ArrayList<>();
-
-    List<Explorable> items = new ArrayList<>();
-    private final SelectableManager<Explorable> selectableManager = new SelectableManager<>();
-
+    
+    
     @Override
     public int size() {
         return items.size();
@@ -113,8 +118,10 @@ public class DefaultExplorableDisplay extends AbstractDisplay<ExplorableList> im
 
     }
 
-    private void onItemSelectionChanged(List<? super SelectableManager<Explorable>.Change<Explorable>> items) {
+    private void onItemSelectionChanged(List<? extends SelectionChange<Explorable>> list) {
 
+        
+        
         eventService.publishLater(new DisplayUpdatedEvent(this, DisplayUpdatedEvent.DisplayUpdateLevel.UPDATE));
 
     }
