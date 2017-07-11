@@ -47,10 +47,12 @@ import javafx.scene.text.Text;
  * @author sapho
  */
 public class ValueAnnotationDisplayController extends GridPane  { 
+    
+    Boolean wasModify = false;
 
     private final GridPane pane = new GridPane(); //oui mon gridpane s'appelle pane
 
-    TextField value = new TextField();
+    TextField oldValue = new TextField();
     TextField newValue = new TextField();
     
     private final double HEIGHT = 40.0; //hauteur
@@ -60,17 +62,18 @@ public class ValueAnnotationDisplayController extends GridPane  {
     private final double TEXT_WIDTH = 50.0;
     private final double TEXT_HEIGTH = 30.0;
    
+    public final ObservableValue<Boolean> modifyState = Bindings.createObjectBinding(this::getState, oldValue.textProperty(), newValue.textProperty());
     
     public ValueAnnotationDisplayController() {
         
         pane.setPrefSize(WIDTH, HEIGHT);
-        value.setPromptText("value");
+        oldValue.setPromptText("value");
         newValue.setPromptText("new value");
         
-        value.setPrefSize(TEXT_WIDTH, TEXT_HEIGTH);
-        value.setPadding(new Insets (5,5,5,15));
-        value.setAlignment(Pos.CENTER);
-        GridPane.setConstraints(value, 0, 0);
+        oldValue.setPrefSize(TEXT_WIDTH, TEXT_HEIGTH);
+        oldValue.setPadding(new Insets (5,5,5,15));
+        oldValue.setAlignment(Pos.CENTER);
+        GridPane.setConstraints(oldValue, 0, 0);
         //
         newValue.setPrefSize(TEXT_WIDTH, TEXT_HEIGTH);
         newValue.setPadding(new Insets (5,15,5,0)); //top droite bas gauche
@@ -81,30 +84,48 @@ public class ValueAnnotationDisplayController extends GridPane  {
         pane.getColumnConstraints().add(new ColumnConstraints(COLUMN_WIDTH));
         pane.getColumnConstraints().add(new ColumnConstraints(COLUMN_WIDTH));
         
-        pane.getChildren().setAll(value, newValue);
+        pane.getChildren().setAll(oldValue, newValue);
         
         this.getChildren().add(pane); //NE PAS OUBLIER CETTE LIGNE SINON LA CLASSE N'EST PAS UN NODE
         System.out.println("pouet");
               
     }
+    
+    public Boolean getState (){
+        if (oldValue.textProperty().isEmpty() && newValue.textProperty().isEmpty()){
+            return true;
+        }
+        return true;
+    }
    
     //permet la récupération des property;
     public StringProperty getValueTextProperty(){        
-        return value.textProperty();
+        return oldValue.textProperty();
     }
     
     public StringProperty getNewValueTextProperty(){
         return newValue.textProperty();
     }
     
+    public TextField getTextField(){
+        return newValue;
+    }
+    
     //permet la récupération des données
     public String getValue(){
-        return value.getText();
+        return oldValue.getText();
     }
     
     public String getNewValue(){
         return newValue.getText();
     }
 
+   public Boolean getWasModify(){
+       return this.wasModify;
+   }
    
+   public ObservableValue<Boolean> getWasModifyState (){
+       return modifyState;
+       
+   }
 }
