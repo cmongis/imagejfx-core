@@ -47,7 +47,7 @@ import org.scijava.plugin.Plugin;
  * @author cyril
  */
 @Plugin(type = UiPlugin.class)
-@UiConfiguration(id = "tag-bar", localization = Localization.BOTTOM_TOP, context = "explorable-open")
+@UiConfiguration(id = "tag-bar", localization = Localization.RIGHT, context = "explorable-open")
 public class TagEditingBar implements UiPlugin {
 
     private TaggablePane taggablePane;
@@ -70,7 +70,7 @@ public class TagEditingBar implements UiPlugin {
     @Override
     public UiPlugin init() throws Exception {
 
-        taggablePane = new TaggablePane(context)
+        taggablePane = new TaggablePane(context,TaggablePane.Orientation.VERTICAL)
                 .setOnAdd(this::addTag)
                 .setOnRemove(this::removeTag);
         
