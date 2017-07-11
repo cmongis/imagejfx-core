@@ -79,6 +79,8 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
 
     TaggableFilterPanel filterPanel;
 
+    private static double leftBorder = 10;
+    
     public ExplorableDisplayPanel() {
         super(ExplorableDisplay.class);
     }
@@ -99,7 +101,7 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
         AnchorPane.setTopAnchor(metaDataBar, 0d);
 
         AnchorPane.setBottomAnchor(tabPane, 15d);
-        AnchorPane.setLeftAnchor(tabPane, 0d);
+        AnchorPane.setLeftAnchor(tabPane, leftBorder);
         AnchorPane.setRightAnchor(tabPane, 0d);
         AnchorPane.setTopAnchor(tabPane, 30d);
 
@@ -109,9 +111,10 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
         AnchorPane.setTopAnchor(filterPanel.getPane(), 40d);
         AnchorPane.setBottomAnchor(filterPanel.getPane(), 0d);
 
-        SideMenuBinding binding = new SideMenuBinding(filterPanel.getPane());
-        binding.showProperty().bind(filterButton.selectedProperty());
-
+        SideMenuBinding binding = new SideMenuBinding(filterPanel.getPane())
+                .setxWhenHidden(-leftBorder);
+        binding.showProperty().bind(filterPanel.getPane().hoverProperty());
+       
         Rectangle clip = new Rectangle();
         clip.widthProperty().bind(root.widthProperty());
         clip.heightProperty().bind(root.heightProperty().add(-5));
