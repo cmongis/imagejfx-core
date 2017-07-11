@@ -1948,12 +1948,15 @@ list-cell:filled:selected:focused, .list-cell:filled:selected{
     -fx-effect:none;
     -fx-background-radius: 3.0 24.0 24.0 3.0;
     -fx-content-display:right;
-    
+    -fx-graphic-text-gap:10px;
+    -fx-font-size:15px;
+    -fx-font-weight:bold;
 }
+
 #tagFlowPane, #possibleTagsFlowPane {
     -fx-vgap:10px;
     -fx-hgap:10px;
-    -fx-padding:10px;
+    -fx-padding:0px;
 }
 
 #possibleTagsFlowPane .tag {
@@ -1973,7 +1976,10 @@ list-cell:filled:selected:focused, .list-cell:filled:selected{
 }
 .taggable-pane > .label {
     -fx-padding:10px;
-    -fx-padding:20px 20px 20px 0;
+    -fx-padding:30px 0px 15px 0;
+}
+.taggable-pane.vertical {
+    -fx-pref-width:250px;
 }
 .tag-suggestions .list-cell {
     -fx-padding:0 0.4em 0 0;
