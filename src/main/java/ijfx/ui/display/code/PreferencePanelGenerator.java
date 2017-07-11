@@ -17,26 +17,26 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.commands.script;
+package ijfx.ui.display.code;
 
-import ijfx.ui.display.code.ScriptDisplay;
-import org.scijava.command.ContextCommand;
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
+import java.util.List;
+import javafx.scene.Node;
+import org.scijava.widget.WidgetModel;
 
 /**
  *
  * @author florian
  */
-@Plugin(type = ScriptCommand.class,menuPath = "Parameters > switch light/dark theme")
+public interface PreferencePanelGenerator {
 
-public class DarkThemeOption extends ContextCommand implements ScriptCommand{
-    @Parameter
-    ScriptDisplay scriptDisplay;
-    
-    @Override
-    public void run() {
-        scriptDisplay.switchTheme();
-    }
+    void addCategory(List<Node> widgets, String name);
+
+    void addWidget(WidgetModel widgetModel, String name);
+
+    void addWidget(WidgetModel widgetModel);
+
+    Node createWidget(WidgetModel widgetModel, String name);
+
+    Node getPanel();
     
 }

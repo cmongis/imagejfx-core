@@ -229,5 +229,9 @@ public abstract class AbstractWidgetModel<T> implements WidgetModel {
     public void setContext(Context context) {
         this.context = context;
     }
+    
+    public void addChoice(String choice){
+        this.choices.add(choice);
+    }
 
 }

@@ -19,15 +19,10 @@
  */
 package ijfx.ui.display.code;
 
-import org.scijava.event.SciJavaEvent;
-
 /**
  *
  * @author florian
  */
-public class ChangeThemeEvent extends SciJavaEvent{
-
-    public ChangeThemeEvent() {
-    }
+public interface Preferencies {
     
 }

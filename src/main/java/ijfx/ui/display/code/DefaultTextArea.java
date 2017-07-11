@@ -20,10 +20,9 @@
 package ijfx.ui.display.code;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -36,12 +35,9 @@ import javafx.scene.layout.AnchorPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.Paragraph;
-import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.StyledText;
 import org.scijava.Context;
 import org.scijava.command.CommandInfo;
-import org.scijava.command.CommandService;
-import org.scijava.plugin.Parameter;
 import org.scijava.script.ScriptLanguage;
 
 /**
@@ -53,16 +49,17 @@ public class DefaultTextArea extends AnchorPane{
     private CodeArea codeArea = null;
     private LanguageKeywords languageKeywords;
     private ScriptHighlight scriptHighlight;
-    
+    private AutocompletionList listProvider;
+    private boolean autocomplete = true;
+    private ContextMenu autocompleteMenu = new ContextMenu();
     
     private final StringProperty selectedTextProperty;
     private final StringProperty textProperty;
     private final ObjectProperty<IndexRange> selectionProperty;
     
-    private String THEME = "dark";
     
     private Hashtable KEYWORDS_PATTERN_TABLE = new Hashtable();
-   private DefaultAutocompletion autocompletion;
+    private Autocompletion autocompletion;
     
     public DefaultTextArea() {
         
@@ -77,8 +74,9 @@ public class DefaultTextArea extends AnchorPane{
                 .subscribe(change -> {
                      if ("".equals(codeArea.getText().trim()) == false) {
                         codeArea.setStyleSpans(0, this.scriptHighlight.computeHighlighting(codeArea.getText()));
-                        lauchAutocompletion();
+                        if (autocomplete) lauchAutocompletion();
                         addVariableAutocompletion();
+                        
                     }
                     
                 });
@@ -94,23 +92,21 @@ public class DefaultTextArea extends AnchorPane{
         textProperty.bind(this.codeArea.textProperty());
         
         this.getChildren().add(this.codeArea);
-        getStylesheets().add(getClass().getResource("/ijfx/ui/display/code/TextEditorDarkTheme.css").toExternalForm());
+        //getStylesheets().add(getClass().getResource("/ijfx/ui/display/code/TextEditorDarkTheme.css").toExternalForm());
         this.autocompletion = new DefaultAutocompletion(this);
         
         
     }
     
     public void setAutocompletion(List<CommandInfo> entriesList){
-        AutocompletionList listProvider = new DefaultAutocompletionListProvider(entriesList);
-        SortedSet<String> entries = listProvider.getEntries();
-        this.autocompletion.setEntries(entries);
+        this.listProvider = new DefaultAutocompletionListProvider(entriesList);
+        this.autocompletion.setEntries(listProvider.getEntries());
     }
     
     public void initLanguage(ScriptLanguage language){
         this.languageKeywords.setLanguage(language);
         this.KEYWORDS_PATTERN_TABLE = this.languageKeywords.getKeywords();
         this.scriptHighlight.setKeywords(this.KEYWORDS_PATTERN_TABLE);
-        this.codeArea.redo();
         
     }
     /**
@@ -126,12 +122,13 @@ public class DefaultTextArea extends AnchorPane{
         Paragraph paragraph = codeArea.getParagraph(codeArea.getCurrentParagraph());
         Collection style = (Collection) paragraph.getStyleAtPosition(selection.getStart());
         if (style.toArray()[0].equals("null")){
-            ContextMenu contextMenu = this.autocompletion.computeAutocompletion(word);
-            if (contextMenu != null) {
-                contextMenu.setMaxHeight(5);
-                contextMenu.setPrefHeight(5);
-                contextMenu.setHeight(10);
-                contextMenu.show(this, Side.BOTTOM, 0, 0);
+            this.autocompleteMenu = this.autocompletion.computeAutocompletion(word);
+            if (autocompleteMenu != null) {
+                autocompleteMenu.setMaxHeight(5);
+                autocompleteMenu.setPrefHeight(5);
+                autocompleteMenu.setHeight(10);
+                autocompleteMenu.show(this, Side.BOTTOM, 0, 0);
+                
             }
         }
         
@@ -147,8 +144,8 @@ public class DefaultTextArea extends AnchorPane{
                 if (word.getStyle().toArray()[0].equals("null")){
                     String[] newEntries = word.getText().split(" ");
                     for (String newEntry : newEntries){
-                        if (!this.autocompletion.getEntries().contains(newEntry) && !newEntry.equals(currentWord)){
-                            this.autocompletion.getEntries().add(newEntry);
+                        if (!this.listProvider.getEntries().contains(newEntry) && !newEntry.equals(currentWord)){
+                            this.listProvider.getEntries().add(newEntry);
                         }
                     }
                     
@@ -165,9 +162,8 @@ public class DefaultTextArea extends AnchorPane{
         context.inject(this);
     }
     public void setText(String text){
-        Platform.runLater( () ->{
-            this.codeArea.replaceText(text);
-        });
+
+        this.codeArea.replaceText(text);
     }
     
     public void replaceWord(String word){
@@ -198,21 +194,27 @@ public class DefaultTextArea extends AnchorPane{
     public void redo(){
         this.codeArea.redo();
     }
-    public void switchTheme(){
-        if (THEME.equals("light")){
-            changeCss("/ijfx/ui/display/code/TextEditorDarkTheme.css");
-            THEME = "dark";
-        }
-        else if (THEME.equals("dark")){
-             changeCss("/ijfx/ui/display/code/TextEditorLightTheme.css");
-             THEME = "light";
-             
-        }
-    }
+    
    public void changeCss (String path){
        this.getStylesheets().clear();
        this.getStylesheets().add(getClass().getResource(path).toExternalForm());
        
    }
-    
+   
+    public void setPreferencies(TextEditorPreferencies preferencies){
+        this.autocomplete = preferencies.isAutocompletion();
+       
+       
+        if (preferencies.getTheme().equals("darkTheme")){
+            changeCss("/ijfx/ui/display/code/TextEditorDarkTheme.css");
+        }
+        else if (preferencies.getTheme().equals("lightTheme")){
+               changeCss("/ijfx/ui/display/code/TextEditorLightTheme.css");
+           }
+        else{
+            changeCss((String) preferencies.getTheme());
+           }
+           
+       
+   }
 }

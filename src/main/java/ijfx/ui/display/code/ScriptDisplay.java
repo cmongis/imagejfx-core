@@ -53,6 +53,5 @@ public interface ScriptDisplay extends Display<Script> {
     void setText(ObservableValue textValue);
     void setSelection(IndexRange indexRange);
     String getText();
-    void switchTheme();
     
 }

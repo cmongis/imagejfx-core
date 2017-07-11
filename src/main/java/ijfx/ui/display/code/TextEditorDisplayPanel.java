@@ -21,11 +21,8 @@ package ijfx.ui.display.code;
 
 import ijfx.ui.display.image.AbstractFXDisplayPanel;
 import ijfx.ui.display.image.FXDisplayPanel;
-import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.beans.property.adapter.JavaBeanStringProperty;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -40,7 +37,6 @@ import org.scijava.command.CommandService;
 import org.scijava.event.EventHandler;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.prefs.PrefService;
 import org.scijava.script.ScriptLanguage;
 import org.scijava.script.ScriptService;
 import org.scijava.ui.viewer.DisplayWindow;
@@ -58,16 +54,13 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     @Parameter
     CommandService commandService;
     @Parameter
-    PrefService prefService;
+    ScriptEditorPreferencies scriptEditorPreferenciesService;
+    
     BorderPane root;
-    //BorderPane borderPane;
     ScriptDisplay display;
-    //static DefaultTextArea textArea;
     DefaultTextArea textArea;
     MenuButton languageButton;
     Button runButton;
-    //static CodeArea codeArea;
-    JavaBeanStringProperty codeProperty; 
         
     public TextEditorDisplayPanel() {
         super(ScriptDisplay.class);
@@ -90,20 +83,14 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
         
         this.root.setBottom(new HBox(this.runButton,this.languageButton));
         this.languageButton.setFont(new Font(12));
-        
+                
         this.textArea.setAutocompletion(commandService.getCommands());
-        
+        this.textArea.setPreferencies((TextEditorPreferencies) scriptEditorPreferenciesService.getPreferencies());
         changeLanguage(display.getLanguage());
-        initCode();
-      
-        
-        textArea.setText(display.textProperty().getValue());
-        display.textProperty().bind(this.textArea.textProperty());
-        display.selectedTextProperty().bind(this.textArea.selectedTextProperty());
-        display.selectionProperty().bind(this.textArea.selectionProperty());
-        
+        initCode();        
         
     }
+    
     public MenuButton createLanguageButton(String name){
         
         MenuButton mb = new MenuButton(name);
@@ -129,15 +116,19 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
         return rb;
     }
     
+   
     public void initCode(){
-        this.textArea.setText(display.get(0).getCode());
+        Platform.runLater( () ->{
+            this.textArea.setText(display.get(0).getCode());
+            display.textProperty().bind(this.textArea.textProperty());
+            display.selectedTextProperty().bind(this.textArea.selectedTextProperty());
+            display.selectionProperty().bind(this.textArea.selectionProperty());
+        });
         
     }
     
     public void setCode(String code) {
-        
         display.get(0).setCode(code);
-
     }
 
     public String getCode() {
@@ -151,15 +142,14 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
         return vBox;
     }
     
+    public void setPreferencies(){
+        
+    }
+    
     @Override
     public void view(DisplayWindow window, ScriptDisplay display){
         this.display = display;
-        
-          
-    
-        
-        //System.out.println("affichage : " + display.get(0));
-        //this.root.initText(display);
+
     }
 
     @Override
@@ -178,10 +168,10 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     @Override
     public void redraw() {
         initCode();
+        this.textArea.setPreferencies((TextEditorPreferencies) scriptEditorPreferenciesService.getPreferencies());
     }
     
     public void changeLanguage(ScriptLanguage language){
-        //String path = findFileLanguage(language);
         this.textArea.initLanguage(language);
     }
 
@@ -195,10 +185,5 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
         this.textArea.redo();
 
     }
-    @EventHandler
-    public void onChangeThemeEvent(ChangeThemeEvent event){
-        this.textArea.switchTheme();
-        this.initCode();
-
-    }
+    
 }
