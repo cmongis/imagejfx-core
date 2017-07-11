@@ -19,8 +19,6 @@
  */
 package ijfx.ui.display.annotation;
 
-import ijfx.core.metadata.GenericMetaData;
-import ijfx.core.metadata.MetaData;
 import ijfx.explorer.datamodel.DefaultMapper;
 import ijfx.explorer.datamodel.Mapper;
 import ijfx.ui.service.AnnotationService;
@@ -29,27 +27,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Cell;
 import javafx.scene.control.Dialog;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-import javafx.util.Callback;
 import org.scijava.plugin.Parameter;
 
 /**
@@ -73,12 +66,12 @@ public class DefaultAnnotationDisplay extends Dialog<Mapper> implements Annotati
 
     Dialog<Mapper> dialog;
 
-    private List <MetaData> listLittleV = new ArrayList<>(); //liste des fxml secondaires
-    private List <ValueAnnotationDisplayController> list = new ArrayList<>();
-    private final ObjectProperty valueTextProperty = new SimpleObjectProperty();
-    private final ObjectProperty newValueTextProperty = new SimpleObjectProperty();
-    private ObservableList <ValueAnnotationDisplayController> oList = FXCollections.observableArrayList();
+    private List <ValueAnnotationDisplayController> updatedList = new ArrayList<>();
+    private ObservableList <ValueAnnotationDisplayController> oList = FXCollections.observableArrayList(c -> new ObservableValue[]{c.getValueTextProperty(), c.getNewValueTextProperty()});
+        
     
+            
+            
     Mapper mapper = new DefaultMapper();
     
     public DefaultAnnotationDisplay() throws IOException {
@@ -111,49 +104,51 @@ public class DefaultAnnotationDisplay extends Dialog<Mapper> implements Annotati
                 
             
                 
-                miseajour(); //rajoute le controller dans l'observablelist
-                oList.addListener(new ListChangeListener<ValueAnnotationDisplayController>() {
-                    @Override
-                    public void onChanged(ListChangeListener.Change<? extends ValueAnnotationDisplayController> change) {
-                      while (change.next()) {
-                        for (ValueAnnotationDisplayController x : change.getList() ) { 
-                            if(x.)
-                            
-                            
-                        }
-                        for (ValueAnnotationDisplayController x : oList) {
-                          
-                        }
-                      }
-                    }
-                  });
-                //addMapping();
+                firstUse(); //rajoute le controller dans l'observablelist
                 
-                              
+                oList.addListener((ListChangeListener.Change<? extends ValueAnnotationDisplayController> change) -> { 
+                    System.out.println("+Notification"); 
+                    while (change.next()) { 
+                        if(change.wasAdded()) {
+                            vBox.getChildren().addAll(change.getAddedSubList());
+                                 
+                        }
+                        if(change.wasRemoved()){
+                            vBox.getChildren().removeAll(change.getAddedSubList());
+                        }
+                        if (change.wasUpdated()) {
+                            
+                            if (!updatedList.contains(change.getList().get(change.getFrom()))){
+                                updatedList.add(change.getList().get(change.getFrom()));
+                                ValueAnnotationDisplayController y = new ValueAnnotationDisplayController();
+                                oList.add(y);
+                            }
+                            
+                            if (updatedList.contains(change.getList().get(change.getFrom()))&& change.getList().get(change.getFrom()).getWasModify()){
+                                    oList.remove(change.getList().get(change.getFrom()));
+                                    updatedList.remove(change.getList().get(change.getFrom()));
+                                }
+                                
+                            }
+                            
+                            System.out.println("coucou "+ updatedList);
+                           
+                        
+                    }
+                });
+                      
                 showAndWait();
   
             }
         });
     }
+       
     
-    
-    //necessaire au bon fonctionnement du dialog, c'est la fontion qui se déclenche quand on clique sur ok
-    public Mapper convert(ButtonType button) {
-
-         if(button == ButtonType.OK) {
-             return mapperAction();
-         }
-         else {
-             return null;
-         }
-
-     }
-
-    
-    private ObservableList miseajour(){
+    private ObservableList firstUse(){ //création du premier controlleur et mise dans la liste
         ValueAnnotationDisplayController x = new ValueAnnotationDisplayController();
         oList.add(x);
-        vBox.getChildren().add(x); //rajoute le controller dans le vbox
+        vBox.getChildren().add(x);
+        
         return oList;
     }
     
@@ -169,12 +164,26 @@ public class DefaultAnnotationDisplay extends Dialog<Mapper> implements Annotati
         
     }
     
+    
+    //necessaire au bon fonctionnement du dialog, c'est la fontion qui se déclenche quand on clique sur ok
+    public Mapper convert(ButtonType button) { //CA CA MARCHE
+
+         if(button == ButtonType.OK) {
+             return mapperAction();
+         }
+         else {
+             return null;
+         }
+
+     }
+    
+    
     public Mapper mapperAction(){ //permet de d'ajouter les nouveaux metadata dans le map et renvoi le hashmap
         
         Platform.runLater(()-> {
         bindData();
         
-        for (ValueAnnotationDisplayController item : list){
+        for (ValueAnnotationDisplayController item : oList){
             if (item.getNewValue() != " "){
                 
                 mapper.associatedValues(item.getValue(),item.getNewValue());
@@ -191,6 +200,8 @@ public class DefaultAnnotationDisplay extends Dialog<Mapper> implements Annotati
         
         
     }
+    
+    
     
     
 
