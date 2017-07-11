@@ -68,7 +68,8 @@ public class NanorcParser implements LanguageKeywords{
             this.keywordsTable.clear();
             this.nanorcFile = getClass().getResource(findFileLanguage(language)).getFile();
             nanoRcParseV2(this.nanorcFile);
-            computeComment();
+            //computeComment();
+            System.out.println(this.keywordsTable);
         } catch (NullPointerException e) {
             System.out.println("No nanorc file for this language");
             this.keywordsTable = new Hashtable();
@@ -119,6 +120,43 @@ public class NanorcParser implements LanguageKeywords{
                             this.keywordsTable.put(splitedLine[1], pattern); //                                  adding the list in the hash table
                         }
                     }
+                    else if (splitedLine[2].matches("start.*")){
+                        if (this.keywordsTable.containsKey(splitedLine[1])){
+                            String pattern = (String) this.keywordsTable.get(splitedLine[1]);
+                            String patternStart = splitedLine[2];
+                            patternStart = patternStart.replace("start=\"", "");
+                            patternStart = patternStart.substring(0, patternStart.length()-1);
+                            patternStart = patternStart.replace("[^'),]", "");
+                            patternStart = patternStart.replace("[^\"),]", "");
+                            patternStart = patternStart.replace("\\\"\\\"\\\"", "\"\"\"");
+                            String patternEnd = splitedLine[3];
+                            patternEnd = patternEnd.replace("end=\"(^|[^(\\])", "");
+                            patternEnd = patternEnd.substring(0, patternEnd.length()-1);
+                            patternStart = patternEnd.replace("\\\"\\\"\\\"", "\"\"\"");
+                            pattern = pattern.concat("|" + patternStart + "(.|\\R)*?" + patternEnd);
+                            //System.out.println("patternStart: " + patternStart + "\n" + "patternEnd: " + patternEnd);
+                            //System.out.println(pattern);
+                            this.keywordsTable.put(splitedLine[1], pattern);
+                        }
+                        else {
+                            String patternStart = splitedLine[2];
+                            patternStart = patternStart.replace("start=\"", "");
+                            patternStart = patternStart.substring(0, patternStart.length()-1);
+                            patternStart = patternStart.replace("[^'),]", "");
+                            patternStart = patternStart.replace("[^\"),]", "");
+                            patternStart = patternStart.replace("\\\"\\\"\\\"", "\"\"\"");
+                            String patternEnd = splitedLine[3];
+                            patternEnd = patternEnd.replace("end=\"", "");
+                            patternEnd = patternEnd.substring(0, patternEnd.length()-1);
+                            patternEnd = patternEnd.replace("(^|[^(\\])", "");
+                            patternStart = patternEnd.replace("\\\\\"\\\\\"\\\\\"", "\"\"\"");
+                            
+                            String pattern = patternStart.concat("(.|\\R)*?" + patternEnd);
+                            this.keywordsTable.put(splitedLine[1], pattern);
+                        }
+                    System.out.println(this.keywordsTable.get(splitedLine[1]));
+                    }
+                    
                     
                 }
             }

@@ -70,7 +70,7 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     public void pack() {
         
         this.root = new BorderPane();
-        this.textArea = new DefaultTextArea();
+        this.textArea = new DefaultTextArea(commandService.getCommands(), (TextEditorPreferencies) scriptEditorPreferenciesService.getPreferencies());
         this.root.setCenter(this.textArea);
         textArea.setBottomAnchor(this.textArea.getCodeArea(), 15d);
         textArea.setTopAnchor(this.textArea.getCodeArea(), 0d);
@@ -84,8 +84,7 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
         this.root.setBottom(new HBox(this.runButton,this.languageButton));
         this.languageButton.setFont(new Font(12));
                 
-        this.textArea.setAutocompletion(commandService.getCommands());
-        this.textArea.setPreferencies((TextEditorPreferencies) scriptEditorPreferenciesService.getPreferencies());
+        
         changeLanguage(display.getLanguage());
         initCode();        
         

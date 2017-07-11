@@ -16,7 +16,7 @@ color brightgreen ""([^"\]|\\.)+""
 # Comments.
 color brightred "(^|[[:blank:]])#.*$"
 # Triple-quoted strings.
-color brightgreen    start="'''[^'),]" end="(^|[^(\])'''"
+color brightgreen start="'''[^'),]" end="(^|[^(\])'''"
 color brightgreen start="\"\"\"[^"),]" end="(^|[^(\])\"\"\""
 
 # Reminders.
