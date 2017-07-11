@@ -78,14 +78,23 @@ public class TaggablePane {
     };
 
     private final String TAG_CSS_CLASS = "tag";
-    
-    public TaggablePane(Context context) {
+
+    private static final String FXML_VERTICAL = "TaggablePane_V.fxml";
+    private static final String FXML_HORIZONTAL = "TaggablePane.fxml";
+
+    public enum Orientation {
+        VERTICAL, HORIZONTAL
+
+    }
+
+    public TaggablePane(Context context, Orientation orientation) {
 
         context.inject(context);
 
         try {
-
-            root = FXUtilities.loadFXML(this, "TaggablePane.fxml");
+            String fxml = orientation == Orientation.HORIZONTAL ? FXML_HORIZONTAL : FXML_VERTICAL;
+            root
+                    = FXUtilities.loadFXML(this, fxml);
 
             tags.addListener(ListChangeListenerBuilder
                     .<Tag>create()
@@ -102,7 +111,6 @@ public class TaggablePane {
             );
 
             //taggableProperty.addListener(this::onTaggableChanged);
-
             tagTextField.addEventFilter(KeyEvent.KEY_RELEASED, this::onEnterPressed);
         } catch (IOException e) {
             ImageJFX.getLogger().log(Level.SEVERE, "Error when creating taggable pane", e);
@@ -117,9 +125,8 @@ public class TaggablePane {
 
     private void onTagAdded(List<? extends Tag> tagList) {
 
-          System.out.println(String.format("### %d tags added",tagList.size()));
-        
-        
+        System.out.println(String.format("### %d tags added", tagList.size()));
+
         List<Button> collect = tagList
                 .stream()
                 .map(this::createRemoveButton)
@@ -130,10 +137,9 @@ public class TaggablePane {
     }
 
     private void onTagRemoved(List<? extends Tag> tagList) {
-        
-         System.out.println(String.format("### %d tags removed",tagList.size()));
-        
-        
+
+        System.out.println(String.format("### %d tags removed", tagList.size()));
+
         List<Node> collect = tagFlowPane
                 .getChildren()
                 .stream()
@@ -145,18 +151,17 @@ public class TaggablePane {
 
     private void onPossibleTagAdded(List<? extends Tag> tagList) {
 
-      
         List<Node> collect = tagList
                 .stream()
                 .map(this::createAddButton)
                 .collect(Collectors.toList());
-        
+
         FXUtilities.addLater(collect, possibleTagsFlowPane.getChildren());
 
     }
 
     private void onPossibleTagRemoved(List<? extends Tag> tagList) {
-         
+
         List<Node> collect = possibleTagsFlowPane
                 .getChildren()
                 .stream()
@@ -167,8 +172,8 @@ public class TaggablePane {
     }
 
     public void setTags(Collection<Tag> tags) {
-        
-        System.out.println(String.format("!!! Synchronizing %d to %d",tags.size(),this.tags.size()));
+
+        System.out.println(String.format("!!! Synchronizing %d to %d", tags.size(), this.tags.size()));
         CollectionsUtils.synchronize(tags, this.tags);
     }
 
@@ -198,21 +203,21 @@ public class TaggablePane {
     public Taggable getTaggable() {
         return taggableProperty.getValue();
     }
-    
+
     public void setTaggle(Taggable taggable) {
         taggableProperty.setValue(taggable);
-        
+
     }
 
     public void refresh() {
-        
+
         CollectionsUtils.synchronize(getTaggable().getTagList(), tags);
-        
+
     }
 
     public Button createRemoveButton(Tag tag) {
 
-        Button button =  GlyphsDude.createIconButton(FontAwesomeIcon.REMOVE, tag.getName());
+        Button button = GlyphsDude.createIconButton(FontAwesomeIcon.REMOVE, tag.getName());
         button.setUserData(tag);
         button.getStyleClass().add(TAG_CSS_CLASS);
         button.setOnAction(event -> removeAction.accept(getTaggable(), tag));
@@ -223,7 +228,7 @@ public class TaggablePane {
 
         Button button = GlyphsDude.createIconButton(FontAwesomeIcon.PLUS, tag.getName());
         button.setUserData(tag);
-         button.getStyleClass().add(TAG_CSS_CLASS);
+        button.getStyleClass().add(TAG_CSS_CLASS);
         button.setOnAction(event -> addAction.accept(getTaggable(), tag));
 
         return button;
