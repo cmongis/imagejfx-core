@@ -41,7 +41,7 @@
     -fx-font-weight: bold;
 }
 .green {
-    -fx-fill: green;
+    -fx-fill: palegreen;
     -fx-font-weight: bold;
 }
 .yellow {
@@ -69,7 +69,7 @@
     -fx-font-weight: bold;
 }
 .brightblue {
-    -fx-fill: dodgerblue;
+    -fx-fill: lightskyblue;
     -fx-font-weight: bold;
 }
 .brightgreen {
