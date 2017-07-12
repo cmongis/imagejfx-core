@@ -119,7 +119,7 @@ public class PaneCellController<T extends Object> {
         }
 
         updateProcess = new PaneCellUpdateProcess(items, cachedControllerList, pane.getChildren(), cellFactory);
-
+        
         return new CallbackTask<Void, Void>().start();
 
     }
