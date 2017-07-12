@@ -121,7 +121,7 @@ public class DefaultTextArea extends AnchorPane{
         
         Paragraph paragraph = codeArea.getParagraph(codeArea.getCurrentParagraph());
         Collection style = (Collection) paragraph.getStyleAtPosition(selection.getStart());
-        if (style.toArray()[0].equals("null")){
+        if (style.size() > 0 && style.toArray()[0].equals("null")){
             this.autocompleteMenu = this.autocompletion.computeAutocompletion(word);
             if (autocompleteMenu != null) {
                 autocompleteMenu.setMaxHeight(5);
@@ -141,7 +141,7 @@ public class DefaultTextArea extends AnchorPane{
         codeArea.deselect();
         for (Paragraph<Collection<String>, StyledText<Collection<String>>, Collection<String>> paragraph : this.codeArea.getParagraphs()){
             for (StyledText<Collection<String>> word : paragraph.getSegments()){
-                if (word.getStyle().toArray()[0].equals("null")){
+                if (word.getStyle().size() > 0 && word.getStyle().toArray()[0].equals("null")){
                     String[] newEntries = word.getText().split(" ");
                     for (String newEntry : newEntries){
                         if (!this.listProvider.getEntries().contains(newEntry) && !newEntry.equals(currentWord)){
