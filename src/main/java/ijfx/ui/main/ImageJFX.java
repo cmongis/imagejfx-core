@@ -54,9 +54,14 @@ public final class ImageJFX  {
     public static Logger getLogger() {
         if (logger == null) {
             logger = Logger.getLogger("ImageJFX");
-
+            
+           // System.setProperty("java.util.logging.SimpleFormatter.format", 
+            //"%1$tF %1$tT %4$s %2$s %5$s%6$s%n");
+            System.setProperty("java.util.logging.SimpleFormatter.format", "[%4$s][%2$s] %5$s [%1$tc]%n");
+            
+            
         }
-
+        
         return logger;
     }
 
