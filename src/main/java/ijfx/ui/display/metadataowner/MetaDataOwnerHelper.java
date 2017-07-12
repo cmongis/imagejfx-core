@@ -60,17 +60,16 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
     List<TableColumn<T, ?>> additionalColumns = new ArrayList<>();
 
     String currentColumn;
-    
+
     public MetaDataOwnerHelper(TableView<T> tableView) {
         this.tableView = tableView;
         MenuItem item = new MenuItem("Edit");
         menu.getItems().add(item);
-        
-        item.setOnAction(event->{
-            
-           
+
+        item.setOnAction(event -> {
+
         });
-        
+
         // adding a listener that
         // will get the current selected column
         // for further processes
@@ -79,20 +78,22 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
                 .getSelectedCells()
                 .addListener(
                         ListChangeListenerBuilder
-                        .<TablePosition>create()
-                        .onChange(event->{
-                            currentColumn = event
-                                    .getList()
-                                    .get(0)
-                                    .getTableColumn()
-                                    .getUserData()
-                                    .toString();
-                        })
-                        .build()
+                                .<TablePosition>create()
+                                .onChange(event -> {
+                                    if(event.getList().get(0).getTableColumn() == null) return;
+                                    Object userData = event.getList()
+                                            .get(0)
+                                            .getTableColumn()
+                                            .getUserData();
+                                    if (userData != null) {
+                                        currentColumn = userData.toString();
+                                    }
+                                })
+                                .build()
                 );
-        
+
         tableView.setContextMenu(menu);
-        
+
     }
 
     public void addAdditionalColumn(TableColumn<T, ?> column) {
@@ -170,20 +171,20 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
     }
 
     ContextMenu menu = new ContextMenu();
-    
+
     protected TableColumn<T, MetaData> generateColumn(String key) {
         TableColumn<T, MetaData> column = new TableColumn<>();
         column.setUserData(key);
         column.setCellValueFactory(this::getCellValueFactory);
         column.setEditable(true);
-       
+
         return column;
     }
 
-    public void onCellEdit(CellEditEvent<T,MetaData> event) {
-        
+    public void onCellEdit(CellEditEvent<T, MetaData> event) {
+
     }
-    
+
     public void setPriority(String... keyName) {
         // if(priority.isSame(keyName) == false) {
         priority = new MetaDataKeyPrioritizer(keyName);
