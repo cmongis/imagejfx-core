@@ -87,4 +87,9 @@ public class ItemWrapper implements Item{
         item.setNumber(n);
     }
     
+    @Override
+    public int hashCode() {
+        return getName().hashCode();
+    }
+    
 }
