@@ -108,7 +108,7 @@ public class DefaultFolderManagerService extends AbstractService implements Fold
 
     Logger logger = ImageJFX.getLogger();
 
-    ExplorationMode currentExplorationMode;
+    ExplorationMode currentExplorationMode = ExplorationMode.FILE;
 
     List<Explorable> currentItems;
 
