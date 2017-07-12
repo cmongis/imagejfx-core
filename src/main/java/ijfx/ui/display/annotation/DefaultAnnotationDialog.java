@@ -142,6 +142,8 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
                 getDialogPane().setContent(root);
                 getDialogPane().getButtonTypes().addAll(ButtonType.OK,ButtonType.CANCEL);
                 setResultConverter(DefaultAnnotationDialog.this::convert);
+                oldKey.setPromptText("key");
+                newKey.setPromptText("new key");
     }
        
     /**
