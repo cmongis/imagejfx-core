@@ -121,8 +121,8 @@ public class ExplorerActivity extends AnchorPane implements Activity {
     @FXML
     private ToggleButton planeModeToggleButton;
 
-    @FXML
-    private ToggleButton objectModeToggleButton;
+    //@FXML
+    //private ToggleButton objectModeToggleButton;
 
     @FXML
     private Button statisticsButton;
@@ -170,8 +170,6 @@ public class ExplorerActivity extends AnchorPane implements Activity {
 
     private List<Runnable> folderUpdateHandler = new ArrayList<>();
 
-    private Property<ExplorationMode> explorationModeProperty = new SimpleObjectProperty<>();
-
     private BooleanProperty folderListEmpty = new SimpleBooleanProperty(true);
 
     private BooleanProperty explorerListEmpty = new SimpleBooleanProperty(true);
@@ -205,11 +203,11 @@ public class ExplorerActivity extends AnchorPane implements Activity {
             filterScrollPane.setTranslateX(-300);
 
             explorationModeToggleGroup = new ToggleGroup();
-            explorationModeToggleGroup.getToggles().addAll(fileModeToggleButton, planeModeToggleButton, objectModeToggleButton);
-
+            explorationModeToggleGroup.getToggles().addAll(fileModeToggleButton, planeModeToggleButton);
+            explorationModeToggleGroup.selectToggle(fileModeToggleButton);
             fileModeToggleButton.setUserData(ExplorationMode.FILE);
             planeModeToggleButton.setUserData(ExplorationMode.PLANE);
-            objectModeToggleButton.setUserData(ExplorationMode.OBJECT);
+            //objectModeToggleButton.setUserData(ExplorationMode.OBJECT);
 
             explorationModeToggleGroup.selectedToggleProperty().addListener(this::onToggleSelectionChanged);
 
@@ -304,7 +302,7 @@ public class ExplorerActivity extends AnchorPane implements Activity {
 
     }
 
-    public void updateExplorerView(ExplorerView view) {
+    private void updateExplorerView(ExplorerView view) {
         this.view = view;
         //contentBorderPane.setCenter(view.getNode());
 
