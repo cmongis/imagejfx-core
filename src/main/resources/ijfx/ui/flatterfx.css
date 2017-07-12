@@ -2236,6 +2236,11 @@ list-cell:filled:selected:focused, .list-cell:filled:selected{
     -fx-padding:0 10 0 45px;
 
 }
+
+.filter-pane-container {
+    -fx-background-color:-bg-darker;
+    -fx-pref-width:250px;
+}
 #filterScrollPane {
     -fx-pref-width:300px;
 }

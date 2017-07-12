@@ -126,14 +126,16 @@
                            <graphic>
                               <FontAwesomeIconView glyphName="FILE" />
                            </graphic></ToggleButton>
-                        <ToggleButton fx:id="planeModeToggleButton" mnemonicParsing="false" text="Planes">
+                        <ToggleButton fx:id="planeModeToggleButton" mnemonicParsing="false" text="Planes" styleClass="last">
                            <graphic>
                               <FontAwesomeIconView glyphName="PAPER_PLANE" />
                            </graphic></ToggleButton>
-                        <ToggleButton fx:id="objectModeToggleButton" mnemonicParsing="false" styleClass="last" text="Object">
+                           <!--
+                        <ToggleButton fx:id="objectModeToggleButton" mnemonicParsing="false"  text="Object">
                            <graphic>
                               <FontAwesomeIconView glyphName="BEER" />
                            </graphic></ToggleButton>
+                           -->
                      </children>
                   </HBox>
                   <HBox fx:id="filterHBox" alignment="CENTER_LEFT" spacing="5.0">
