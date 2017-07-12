@@ -101,7 +101,7 @@ public class DefaultExplorableDisplay extends AbstractDisplay<ExplorableList> im
 
     @Override
     public List<Explorable> getSelected() {
-        return items
+        return displayedItems
                 .stream()
                 .filter(Explorable::isSelected)
                 .collect(Collectors.toList());
