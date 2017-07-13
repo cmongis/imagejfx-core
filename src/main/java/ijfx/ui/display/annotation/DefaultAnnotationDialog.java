@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -62,7 +61,7 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
     VBox vBox;
 
     Dialog<Mapper> dialog;
-    String FXMLWAY = "/ijfx/ui/widgets/AnnotationDisplay.fxml";
+    String FXMLWAY = "/ijfx/ui/widgets/AnnotationDialog.fxml";
     
     
     //Main List. This observableList observe this tow objects properties in each controller. If theses properties change, a notification is sended.
