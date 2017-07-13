@@ -57,7 +57,7 @@
                         </MenuItem>
                     </items>
                      <graphic>
-                        <FontAwesomeIconView />
+                        <FontAwesomeIconView glyphName="BARS" />
                      </graphic>
                      <styleClass>
                         <String fx:value="discrete" />

@@ -25,6 +25,7 @@ import ijfx.core.uiplugin.Localization;
 import ijfx.core.workflow.DefaultWorkflow;
 import ijfx.core.workflow.WorkflowIOService;
 import ijfx.core.workflow.WorkflowStep;
+import ijfx.core.workflow.WorkflowStepModifiedEvent;
 import ijfx.ui.main.ImageJFX;
 import java.io.File;
 import java.io.IOException;
@@ -44,15 +45,19 @@ import org.scijava.ui.DialogPrompt;
 import org.scijava.ui.UIService;
 import ijfx.ui.UiPlugin;
 import ijfx.ui.UiConfiguration;
+import java.util.ArrayList;
+import java.util.List;
+import javafx.application.Platform;
 import javafx.scene.control.ListCell;
 import mongis.utils.FXUtilities;
+import org.scijava.event.EventHandler;
 
 /**
  *
  * @author Cyril MONGIS, 2015
  */
 @Plugin(type = UiPlugin.class)
-@UiConfiguration(id = "historyPanel", localization = Localization.RIGHT, context = "imagej+visualize -overlay-selected", order = 2)
+@UiConfiguration(id = "historyPanel", localization = Localization.RIGHT, context = "imagej+no-display-open imagej+image-open -overlay-selected", order = 2)
 public class HistoryPanel extends TitledPane implements UiPlugin {
 
     @FXML
@@ -73,6 +78,10 @@ public class HistoryPanel extends TitledPane implements UiPlugin {
     @FXML
     StackPane stackPane;
 
+    
+    
+    List<HistoryStep> cellList = new ArrayList<>();
+    
     private final static String SAVE_WORKFLOW = "Save workflow";
     private final static String LOAD_WORKFLOW = "Load workflow";
     private final static String ERROR_MESSAGE = "Error when reading the workflow.";
@@ -108,6 +117,7 @@ public class HistoryPanel extends TitledPane implements UiPlugin {
     public ListCell<WorkflowStep> createCell(ListView<WorkflowStep> param) {
         HistoryStep cell = new HistoryStep();
         context.inject(cell);
+        cellList.add(cell);
         return cell;
     }
     
@@ -179,6 +189,16 @@ public class HistoryPanel extends TitledPane implements UiPlugin {
     @FXML
     void deleteAll() {
         historyService.getStepList().clear();
+    }
+    
+    @EventHandler
+    public void onWorkflowStepModified(WorkflowStepModifiedEvent event) {
+        if(listView.getItems().contains(event.getObject())) {
+            cellList
+                    .stream()
+                    .filter(cell->cell.getItem() == event.getObject())
+                    .forEach(cell-> Platform.runLater(cell::refresh));
+        }
     }
 
 }

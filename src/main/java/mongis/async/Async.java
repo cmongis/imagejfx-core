@@ -30,7 +30,7 @@ public class Async {
     
     public static <T> CallableTask callable(Callable<T> callable) {
         
-        return new CallableTask(callable);
+        return new CallableTask<T>(callable);
         
     }
     

@@ -21,31 +21,31 @@
  */
 package ijfx.core.uicontext;
 
-
 import ijfx.core.overlay.OverlaySelectionEvent;
 import ijfx.core.overlay.OverlaySelectionService;
 import ijfx.core.overlay.OverlayUtilsService;
-import ijfx.core.utils.AxisUtils;
-import mongis.utils.RequestBuffer;
-import mongis.utils.TimedBuffer;
-import net.imagej.Dataset;
+import ijfx.core.uicontext.calculator.UiContextCalculator;
+import ijfx.ui.main.ImageJFX;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import net.imagej.ImageJService;
-import net.imagej.axis.Axes;
-import net.imagej.display.ImageDisplay;
 import net.imagej.display.ImageDisplayService;
 import net.imagej.display.OverlayService;
-import net.imagej.overlay.BinaryMaskOverlay;
-import net.imagej.table.TableDisplay;
-import org.scijava.display.Display;
 import org.scijava.display.DisplayService;
 import org.scijava.display.event.DisplayActivatedEvent;
+import org.scijava.display.event.DisplayCreatedEvent;
 import org.scijava.display.event.DisplayDeletedEvent;
 import org.scijava.display.event.DisplayUpdatedEvent;
 import org.scijava.event.EventHandler;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
+import rx.subjects.PublishSubject;
 
 /**
  *
@@ -54,89 +54,134 @@ import org.scijava.service.Service;
 @Plugin(type = Service.class)
 public class UiContextCalculatorService extends AbstractService implements ImageJService {
 
-    public final static String CTX_OVERLAY_SELECTED = "overlay-selected";
-    public final static String CTX_RGB_IMAGE = "rgb-img";
-    public final static String CTX_MULTI_Z_IMAGE = "multi-z-img";
-    public final static String CTX_MULTI_CHANNEL_IMG = "multi-channel-img";
-    public final static String CTX_MULTI_N_IMG = "multi-n-img";
-    public final static String CTX_MULTI_TIME_IMG = "multi-time-img";
-    public final static String CTX_TABLE_DISPLAY = "table-open";
-    public final static String CTX_IMAGE_DISPLAY = "image-open";
-    public final static String CTX_IMAGE_BINARY = "binary";
-    public final static String CTX_MEASURE_DISPLAY = "measure-open";
-    public final static String CTX_ANY_DISPLAY = "any-display-open";
-    public final static String CTX_MASK = "mask";
+    @Parameter
+    private DisplayService displayService;
 
     @Parameter
-    DisplayService displayService;
+    private ImageDisplayService imageDisplayService;
 
     @Parameter
-    ImageDisplayService imageDisplayService;
+    private OverlayService overlayService;
 
     @Parameter
-    OverlayService overlayService;
+    private OverlaySelectionService overlaySelectionService;
 
     @Parameter
-    OverlaySelectionService overlaySelectionService;
+    private UiContextService contextService;
 
     @Parameter
-    UiContextService contextService;
+    private OverlayUtilsService overlayUtilsService;
 
     @Parameter
-    OverlayUtilsService overlayUtilsService;
+    private PluginService pluginService;
 
-    private final RequestBuffer requestBuffer = new RequestBuffer(2);
+    Logger logger = ImageJFX.getLogger();
 
-    TimedBuffer<Runnable> requestBuffer2 = new TimedBuffer<Runnable>().setAction(list -> list.get(list.size() - 1).run());
+    public static String NO_DISPLAY_OPEN = "no-display-open";
 
-    public void determineContext(Display display) {
-        requestBuffer2.add(() -> {
+    private List<UiContextCalculator> calculatorList;
 
-            if (overlaySelectionService == null) {
-                overlayService.getContext().inject(this);
+    PublishSubject<ContextCalculationTask> taskStream = PublishSubject.create();
+
+    public void determineContext(Object object) {
+
+        if (calculatorList == null) {
+            calculatorList = pluginService.createInstancesOfType(UiContextCalculator.class);
+        }
+
+        taskStream.onNext(new ContextCalculationTask(object));
+
+    }
+
+    @Override
+    public void initialize() {
+
+        taskStream
+                // buffers request for 100 MS
+                .buffer(500, TimeUnit.MILLISECONDS)
+                .filter(list -> list.isEmpty() == false)
+                // takes the list
+                .subscribe(this::onTask);
+
+        determineContext(null);
+
+    }
+
+    public void onTask(List<ContextCalculationTask> taskList) {
+
+        Set<ContextCalculationTask> taskSet = taskList
+                .stream()
+                // groups by the object they should handle
+                .collect(Collectors.toSet());
+        logger.info(String.format("Reduced %d to %d calculation tasks.", taskList.size(), taskSet.size()));
+
+        // just take the first task since they are all the same
+        taskSet.forEach(this::executeTask);
+
+        logger.info("End of task execution.");
+
+        contextService.update();
+
+    }
+
+    private void executeTask(ContextCalculationTask task) {
+
+        logger.info(String.format("Executing task for %s", task.getObject()));
+
+        task.run();
+    }
+
+    public static final Integer NULL = new Integer(0);
+
+    private class ContextCalculationTask {
+
+        final Object object;
+
+        public ContextCalculationTask(Object object) {
+
+            if (object == null) {
+                this.object = NULL;
+            } else {
+                this.object = object;
             }
-            ImageDisplay imageDisplay = null;
 
-            contextService.toggleContext(CTX_IMAGE_DISPLAY, display != null && ImageDisplay.class.isAssignableFrom(display.getClass()));
-            contextService.toggleContext(CTX_TABLE_DISPLAY, display != null && TableDisplay.class.isAssignableFrom(display.getClass()));
-            //contextService.toggleContext(CTX_MEASURE_DISPLAY, display != null && SegmentedObjectDisplay.class.isAssignableFrom(display.getClass()));
-            contextService.toggleContext(CTX_ANY_DISPLAY, displayService.getDisplays().size() > 0);
+        }
 
-            // calculation specific to iamge display
-            if (display instanceof ImageDisplay) {
-                imageDisplay = (ImageDisplay) display;
+        public Object getObject() {
+            return object;
+        }
 
-                contextService.toggleContext(CTX_OVERLAY_SELECTED, imageDisplay != null && overlaySelectionService.getSelectedOverlays(imageDisplay).size() > 0);
+        @Override
+        public boolean equals(Object o) {
 
-                contextService.toggleContext(CTX_MULTI_Z_IMAGE, imageDisplay != null && AxisUtils.hasAxisType(imageDisplay, Axes.Z));
+            if (o instanceof ContextCalculationTask) {
+                ContextCalculationTask task = ((ContextCalculationTask) o);
+                return task.getObject() == object || object.equals(task.getObject());
+            }
+            return false;
 
-                contextService.toggleContext(CTX_MULTI_CHANNEL_IMG, imageDisplay != null && AxisUtils.hasAxisType(imageDisplay, Axes.CHANNEL));
+        }
 
-                contextService.toggleContext(CTX_MULTI_TIME_IMG, imageDisplay != null && AxisUtils.hasAxisType(imageDisplay, Axes.TIME));
+        @Override
+        public int hashCode() {
+            return object.hashCode();
+        }
 
-                contextService.toggleContext(CTX_RGB_IMAGE, imageDisplay != null && imageDisplayService.getActiveDataset(imageDisplay).isRGBMerged());
-
-                contextService.toggleContext(CTX_IMAGE_BINARY, imageDisplay != null && imageDisplayService.getActiveDataset(imageDisplay).getValidBits() == 1);
-
-                contextService.toggleContext(CTX_MULTI_N_IMG, imageDisplay != null && imageDisplay.numDimensions() > 2);
-
-                contextService.toggleContext(CTX_MASK, overlayUtilsService.findOverlayOfType(imageDisplay, BinaryMaskOverlay.class) != null);
-
-                Dataset dataset = null;
-                if (display != null) {
-                    dataset = (Dataset) imageDisplay.getActiveView().getData();
-                    for (int i = 1; i <= 32; i *= 2) {
-                        contextService.toggleContext(String.valueOf(dataset.getValidBits()) + "-bits", dataset.getValidBits() == i);
-                    }
+        public void run() {
+            for (UiContextCalculator plugin : calculatorList) {
+                if (object == NULL || plugin.supports(object) == false) {
+                    plugin.calculate(null);
                 } else {
-                    for (int i = 1; i <= 32; i *= 2) {
-                        contextService.toggleContext(String.valueOf(i) + "-bits", false);
-                    }
+                    plugin.calculate(object);
                 }
             }
-            contextService.update();
+        }
 
-        });
+    }
+
+    @EventHandler
+    public void handleEvent(DisplayCreatedEvent event) {
+        determineContext(event.getObject());
     }
 
     @EventHandler
@@ -146,11 +191,7 @@ public class UiContextCalculatorService extends AbstractService implements Image
 
     @EventHandler
     public void handleEvent(DisplayActivatedEvent event) {
-        displayService.getDisplays().stream().forEach((display) -> {
-            if (display != event.getDisplay()) {
-                determineContext(display);
-            }
-        });
+
         determineContext(event.getDisplay());
     }
 
@@ -164,9 +205,11 @@ public class UiContextCalculatorService extends AbstractService implements Image
     public void handleEvent(DisplayDeletedEvent event) {
 
         if (imageDisplayService.getImageDisplays().size() > 0) {
+
             displayService.setActiveDisplay(imageDisplayService.getImageDisplays().get(0));
             determineContext(imageDisplayService.getImageDisplays().get(0));
         } else {
+
             determineContext(null);
         }
 

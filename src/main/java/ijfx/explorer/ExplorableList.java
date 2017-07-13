@@ -21,11 +21,21 @@ package ijfx.explorer;
 
 import ijfx.explorer.datamodel.Explorable;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  *
  * @author cyril
  */
 public class ExplorableList extends ArrayList<Explorable>{
+    
+    public ExplorableList() {
+        super();
+    }
+    
+    public ExplorableList(Collection<Explorable> list) {
+        super(list.size());
+        addAll(list);
+    }
     
 }

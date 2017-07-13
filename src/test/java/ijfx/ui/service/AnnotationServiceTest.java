@@ -19,8 +19,8 @@
  */
 package ijfx.ui.service;
 
-import de.saxsys.javafx.test.JfxRunner;
-import de.saxsys.javafx.test.TestInJfxThread;
+//import de.saxsys.javafx.test.JfxRunner;
+//import de.saxsys.javafx.test.TestInJfxThread;
 
 
 import ijfx.core.IjfxTest;
@@ -45,7 +45,7 @@ import org.scijava.plugin.Parameter;
  * @author sapho
  */
 
-@RunWith(JfxRunner.class)
+//@RunWith(JfxRunner.class)
 public class AnnotationServiceTest extends IjfxTest{
     
     @Parameter
@@ -65,7 +65,7 @@ public class AnnotationServiceTest extends IjfxTest{
     }
     
     @Before
-    @TestInJfxThread
+    //@TestInJfxThread
     public void setUp() throws Exception {
         
         key = "key";

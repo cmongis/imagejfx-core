@@ -19,13 +19,14 @@
  */
 package ijfx.explorer.datamodel;
 
+import ijfx.core.metadata.MetaDataOwner;
 import java.util.Set;
 
 /**
  *
  * @author cyril
  */
-public interface Taggable {
+public interface Taggable extends MetaDataOwner{
 
     void addTag(Tag tag);
 

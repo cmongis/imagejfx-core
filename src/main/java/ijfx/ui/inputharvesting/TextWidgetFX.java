@@ -20,13 +20,20 @@
 package ijfx.ui.inputharvesting;
 
 import ijfx.ui.main.ImageJFX;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import org.controlsfx.control.textfield.AutoCompletionBinding;
+import org.controlsfx.control.textfield.TextFields;
 import org.scijava.plugin.Plugin;
 import org.scijava.widget.InputWidget;
 import org.scijava.widget.TextWidget;
@@ -51,7 +58,12 @@ public class TextWidgetFX extends AbstractFXInputWidget<String> implements TextW
 
     private ModelBinder<String> modelBinder;
 
+    private Label label;
     private Node node;
+
+    private AutoCompletionBinding<String> autocompleteBinding;
+
+    public static final String AUTOCOMPLETED_TEXTFIELD = "autocompleted textfield";
 
     @Override
     public void set(WidgetModel model) {
@@ -64,7 +76,13 @@ public class TextWidgetFX extends AbstractFXInputWidget<String> implements TextW
         } catch (NullPointerException exp) {
             ImageJFX.getLogger().fine("No choices for " + model.getItem().getName());
         }
-        if (choices != null && choices.length > 0) {
+
+        if (isStyle(AUTOCOMPLETED_TEXTFIELD)) {
+            textField = new TextField();
+            //autocompleteBinding = TextFields.bindAutoCompletion(textField, this::getSuggestions);
+            node = textField;
+            bindProperty(textField.textProperty());
+        } else if (choices != null && choices.length > 0) {
             comboBox = new ComboBox<>();
             comboBox.getItems().addAll(model.getChoices());
             bindProperty(comboBox.valueProperty());
@@ -80,20 +98,27 @@ public class TextWidgetFX extends AbstractFXInputWidget<String> implements TextW
             passwordField = new PasswordField();
             node = passwordField;
             bindProperty(passwordField.textProperty());
+        } else if (model.isMessage()) {
+            label = new Label();
+            label.getStyleClass().add("input-message");
+            bindProperty(label.textProperty());
+            node = label;
         } else {
             textField = new TextField();
+
+            if (model.isStyle(AUTOCOMPLETED_TEXTFIELD)) {
+                autocompleteBinding = TextFields.bindAutoCompletion(textField, this::getSuggestions);
+            }
+
             node = textField;
             bindProperty(textField.textProperty());
         }
 
     }
 
-    private String getWidgetStyle() {
-        return get().getItem().getWidgetStyle();
-    }
-
     private boolean isStyle(String style) {
-        return getWidgetStyle().equals(style);
+
+        return get().isStyle(style);
     }
 
     @Override
@@ -109,6 +134,29 @@ public class TextWidgetFX extends AbstractFXInputWidget<String> implements TextW
     @Override
     public boolean supports(WidgetModel model) {
         return super.supports(model) && model.isText();
+    }
+
+    @Override
+    public void refreshWidget() {
+        super.refreshWidget();
+
+        if (get().isStyle(AUTOCOMPLETED_TEXTFIELD)) {
+
+        }
+
+    }
+
+    private Collection<String> getSuggestions(AutoCompletionBinding.ISuggestionRequest request) {
+
+        if (get().getChoices() != null) {
+            return Stream.of(get()
+                    .getChoices())
+                    .filter(str -> str.contains(request.getUserText()))
+                    .collect(Collectors.toList());
+        } else {
+            return new ArrayList<>();
+        }
+
     }
 
 }

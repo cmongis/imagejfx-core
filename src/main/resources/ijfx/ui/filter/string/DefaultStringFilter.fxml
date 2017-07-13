@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<fx:root minHeight="-Infinity" minWidth="-Infinity" type="BorderPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+    <stylesheets>
+        <URL value="@widget.css" />
+    </stylesheets>
+   <children>
+
+   </children>
+   <top>
+      <TextField fx:id="textField" onKeyReleased="#updateDisplayedItems" promptText="Filter propositions here..." BorderPane.alignment="CENTER" />
+   </top>
+   <bottom>
+      <ToggleButton fx:id="moreButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Show all possibilities..." BorderPane.alignment="CENTER" />
+   </bottom>
+   <center>
+      <ListView fx:id="listView" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets bottom="10.0" />
+         </BorderPane.margin></ListView>
+   </center>
+</fx:root>

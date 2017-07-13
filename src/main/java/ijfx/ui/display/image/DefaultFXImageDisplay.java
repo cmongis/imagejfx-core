@@ -22,14 +22,17 @@ package ijfx.ui.display.image;
 import ijfx.core.image.DisplayRangeService;
 import ijfx.core.utils.AxisUtils;
 import ijfx.ui.main.ImageJFX;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
-import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.application.Platform;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.adapter.JavaBeanDoubleProperty;
 import javafx.beans.property.adapter.JavaBeanDoublePropertyBuilder;
 import javafx.beans.property.adapter.JavaBeanObjectPropertyBuilder;
 import javafx.beans.property.adapter.JavaBeanProperty;
-import javafx.beans.property.adapter.ReadOnlyJavaBeanDoubleProperty;
+import net.imagej.Dataset;
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
 import net.imagej.display.DatasetView;
@@ -41,6 +44,7 @@ import org.scijava.Priority;
 import org.scijava.display.Display;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import rx.subjects.PublishSubject;
 
 /**
  *
@@ -75,8 +79,18 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
 
     private JavaBeanProperty<int[]> compositeChannelsProperty;
 
+    private IntegerProperty refreshPerSecond = new SimpleIntegerProperty();
+
+    private PublishSubject<Integer> publishSubject = PublishSubject.create();
+
+    private final Boolean updateLock = Boolean.TRUE;
+
     public DefaultFXImageDisplay() {
         super();
+
+        publishSubject
+                .buffer(1, TimeUnit.SECONDS)
+                .subscribe(list -> Platform.runLater(() -> refreshPerSecond.setValue(list.size())));
 
     }
 
@@ -84,6 +98,10 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
 
         return imageDisplayService.getActiveDatasetView(this);
 
+    }
+    
+    private Dataset getDataset() {
+        return getDatasetView().getData();
     }
 
     public void updateAsync() {
@@ -120,6 +138,7 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
     public void setCurrentLUTMin(double min) {
 
         getDatasetView().setChannelRange(getCurrentChannel(), min, getCurrentLUTMax());
+        getDataset().setChannelMinimum(getCurrentChannel(), min);
         currentLUTMinProperty().fireValueChangedEvent();
         updateAsync();
     }
@@ -141,6 +160,7 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
     @Override
     public void setCurrentLUTMax(double max) {
         getDatasetView().setChannelRange(getCurrentChannel(), getCurrentLUTMin(), max);
+        getDataset().setChannelMaximum(getCurrentChannel(), max);
         currentLUTMaxProperty().fireValueChangedEvent();
         updateAsync();
     }
@@ -254,6 +274,9 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
     }
 
     public int[] getCompositeChannels() {
+        if(getDatasetView().getProjector() == null) {
+            return new int[0];
+        }
         return IntStream
                 .range(0, getChannelNumber())
                 .filter(i -> getDatasetView().getProjector().isComposite(i))
@@ -285,7 +308,7 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
     /*
         Helper classes
      */
-    private int getChannelNumber() {
+    public int getChannelNumber() {
 
         if (AxisUtils.hasAxisType(this, Axes.CHANNEL)) {
             return (int) dimension(dimensionIndex(Axes.CHANNEL));
@@ -335,15 +358,25 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
 
     @Override
     public void update() {
+
         super.update();
-        checkProperties();
+
+        publishSubject.onNext(1);
+        checkLUProperties();
     }
 
-    private void checkProperties() {
+    public void checkProperties() {
+        currentLUTProperty().fireValueChangedEvent();
+    }
+    
+    private void checkLUProperties() {
 
         currentLUTMinProperty().fireValueChangedEvent();
         currentLUTMaxProperty().fireValueChangedEvent();
 
     }
 
+    public IntegerProperty refreshPerSecond() {
+        return refreshPerSecond;
+    }
 }

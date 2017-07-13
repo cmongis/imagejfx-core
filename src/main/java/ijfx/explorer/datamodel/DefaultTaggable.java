@@ -19,6 +19,7 @@
  */
 package ijfx.explorer.datamodel;
 
+import ijfx.core.metadata.MetaDataSet;
 import ijfx.ui.service.AnnotationService;
 import java.util.HashSet;
 import java.util.Set;
@@ -61,6 +62,11 @@ public class DefaultTaggable implements Taggable {
         }
         }
         return state;
+    }
+
+    @Override
+    public MetaDataSet getMetaDataSet() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
    

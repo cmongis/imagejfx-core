@@ -19,6 +19,7 @@
  */
 package ijfx.ui.display.image;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventType;
@@ -40,56 +41,51 @@ import org.scijava.ui.viewer.DisplayWindow;
  *
  * @author cyril
  */
+public class DisplayWindowFX extends Window implements DisplayWindow {
 
-public class DisplayWindowFX extends Window implements DisplayWindow{
-
-    
     static String TITLE_CLASS_NAME = "ijfx-window-titlebar";
 
     static String WINDOW_CLASS_NAME = "ijfx-window";
-    
-    
+
     @Parameter
     PluginService pluginService;
-    
+
     @Parameter
     EventService eventService;
-    
+
     @Parameter
     DisplayService displayService;
-    
+
     FXDisplayPanel panel;
-    
+
     Display<?> display;
-    
+
     public DisplayWindowFX(Display<?> display) {
-        
+
         setWidth(400);
         setHeight(300);
         this.display = display;
         display.getContext().inject(this);
-        
+
         panel = pluginService
                 .createInstancesOfType(FXDisplayPanel.class)
                 .stream()
-                .filter(plugin->plugin.canView(display))
+                .filter(plugin -> plugin.canView(display))
                 .findFirst()
                 .orElse(null);
-        
-        panel.view(this,display);
-        
-        if(panel != null) {
+
+        panel.view(this, display);
+
+        if (panel != null) {
             panel.display(display);
             panel.pack();
-            
+
             setContentPane(panel.getUIComponent());
-        }
-        else {
+        } else {
             setContentPane(new StackPane(new Label("No Display plugin :-(")));
         }
-        
-        
-         for (EventType<? extends MouseEvent> t : new EventType[]{MouseEvent.MOUSE_CLICKED, MouseEvent.DRAG_DETECTED, MouseEvent.MOUSE_PRESSED}) {
+
+        for (EventType<? extends MouseEvent> t : new EventType[]{MouseEvent.MOUSE_CLICKED, MouseEvent.DRAG_DETECTED, MouseEvent.MOUSE_PRESSED}) {
             addEventHandler(t, this::putInFront);
             getContentPane().addEventHandler(t, this::putInFront);
 
@@ -105,33 +101,25 @@ public class DisplayWindowFX extends Window implements DisplayWindow{
         getStyleClass().add(WINDOW_CLASS_NAME);
         setTitleBarStyleClass(TITLE_CLASS_NAME);
         setMovable(true);
-        
-        
-        
-        
+
     }
 
     public Display<?> getDisplay() {
         return display;
     }
-    
-    
-    
+
     public FXDisplayPanel getDisplayPanel() {
         return panel;
     }
-    
-  
-    
-    
+
     @Override
     public void setContent(DisplayPanel panel) {
-       
+
     }
 
     @Override
     public void pack() {
-       
+
     }
 
     @Override
@@ -141,24 +129,27 @@ public class DisplayWindowFX extends Window implements DisplayWindow{
 
     @Override
     public int findDisplayContentScreenX() {
-       return 0;
+        return 0;
     }
 
     @Override
     public int findDisplayContentScreenY() {
-      return 0;
+        return 0;
     }
-    
-    
-     protected void onWindowClosed(ActionEvent event) {
 
-        //mageDisplayService.getActiveDataset(imageDisplay).
+    protected void onWindowClosed(ActionEvent event) {
         getDisplay().close();
         eventService.publishLater(new DisplayDeletedEvent(getDisplay()));
     }
 
     void putInFront(Event event) {
         displayService.setActiveDisplay(getDisplay());
-
+    }
+    
+    @Override
+    public void requestFocus() {
+        displayService.setActiveDisplay(getDisplay());
+        Platform.runLater(super::requestFocus);
+        
     }
 }

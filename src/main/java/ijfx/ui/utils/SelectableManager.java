@@ -22,13 +22,17 @@ package ijfx.ui.utils;
 import ijfx.core.datamodel.Selectable;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 
 /**
  *
@@ -36,14 +40,26 @@ import javafx.collections.ObservableList;
  */
 public class SelectableManager<T extends Selectable> {
 
-    Map<T, SelectionListener> listeners = new HashMap<>();
+    private final Map<T, SelectionListener> listeners = new HashMap<>();
 
     private BiConsumer<T, Boolean> consumer;
 
-    private ObservableList<T> itemList = FXCollections.observableArrayList();
+    private final ObservableList<T> itemList = FXCollections.observableArrayList();
 
+    private final PublishSubject<SelectionChange<T>> changeStream = PublishSubject.create();
+    
+    private final Observable<List<SelectionChange<T>>> changeBuffer;
+    
+    
     public SelectableManager() {
         this.itemList.addListener(this::onItemListChanged);
+        
+        
+        changeBuffer = changeStream
+                .buffer(100, TimeUnit.MILLISECONDS)
+                .filter(list->list.isEmpty() == false);
+                
+                
     }
 
     public SelectableManager(BiConsumer<T, Boolean> consumer) {
@@ -80,6 +96,12 @@ public class SelectableManager<T extends Selectable> {
         listeners.remove(explorable);
     }
 
+    public Observable<List<SelectionChange<T>>> getChangeBuffer() {
+        return changeBuffer;
+    }
+    
+    
+
     public void setItem(Collection<? extends T> collection) {
 
         itemList.clear();
@@ -87,6 +109,7 @@ public class SelectableManager<T extends Selectable> {
 
     }
 
+    
     private class SelectionListener implements ChangeListener<Boolean> {
 
         private final T exp;
@@ -100,6 +123,7 @@ public class SelectableManager<T extends Selectable> {
             if (consumer != null) {
                 consumer.accept(exp, newValue);
             }
+            changeStream.onNext(new SelectionChange<T>(exp,newValue));
         }
     }
 }

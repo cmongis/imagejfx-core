@@ -21,6 +21,8 @@ package ijfx.core.workflow;
 
 import java.util.ArrayList;
 import org.scijava.Context;
+import org.scijava.event.EventService;
+import org.scijava.plugin.Parameter;
 import org.scijava.widget.DefaultWidgetModel;
 import org.scijava.widget.InputPanel;
 
@@ -34,6 +36,9 @@ public class WorkflowStepWidgetModel extends DefaultWidgetModel {
 
     final String parameterName;
 
+    @Parameter
+    EventService eventService;
+    
     public WorkflowStepWidgetModel(Context context, WorkflowStep step, String parameter, InputPanel<?, ?> panel) {
         super(context, panel, step.getModule(), step.getModule().getInfo().getInput(parameter), new ArrayList<>());
         this.step = step;
@@ -56,6 +61,9 @@ public class WorkflowStepWidgetModel extends DefaultWidgetModel {
             super.setValue(object);
 
             step.getParameters().put(parameterName, object);
+            
+            eventService.publish(new WorkflowStepModifiedEvent().setObject(step));
+            
         }
     }
 

@@ -19,7 +19,7 @@
  */
 package ijfx.explorer.events;
 
-import ijfx.explorer.Folder;
+import ijfx.explorer.core.Folder;
 import ijfx.ui.IjfxEvent;
 
 /**

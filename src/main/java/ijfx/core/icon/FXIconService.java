@@ -19,6 +19,7 @@
  */
 package ijfx.core.icon;
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import ijfx.core.IjfxService;
 import ijfx.core.utils.SciJavaUtils;
 import javafx.scene.Node;
@@ -36,6 +37,10 @@ public interface FXIconService extends IjfxService {
         return getIconAsNode(SciJavaUtils.getIconPath(plugin));
     }
     
+    FontAwesomeIcon getIcon(String iconPath);
+    
+    void registerEquivalent(Class<?> clazz, String fontawesomeId);
+  
     
     
 }

@@ -21,24 +21,37 @@ package ijfx.explorer;
 
 
 import ijfx.core.datamodel.Iconazable;
+import ijfx.core.imagedb.ImageRecord;
+import ijfx.core.imagedb.ImageRecordService;
+import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataOwner;
+import ijfx.core.timer.Timer;
+import ijfx.core.timer.TimerService;
 import ijfx.explorer.datamodel.Explorable;
+import ijfx.explorer.datamodel.wrappers.ImageRecordIconizer;
 import ijfx.explorer.events.DisplayedListChanged;
 import ijfx.explorer.events.ExploredListChanged;
+import ijfx.explorer.events.ExplorerSelectionChangedEvent;
 import ijfx.ui.loading.LoadingScreenService;
 import ijfx.ui.main.ImageJFX;
 import ijfx.ui.utils.SelectableManager;
+import ijfx.ui.utils.SelectionChange;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import javafx.beans.Observable;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import mongis.utils.CallbackTask;
+import mongis.utils.ProgressHandler;
+import org.scijava.Context;
 import org.scijava.event.EventService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -62,25 +75,32 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     @Parameter
     private LoadingScreenService loadingScreenService;
 
+    @Parameter
+    private TimerService timerService;
+    
+    @Parameter
+    private ImageRecordService imageRecordService;
     
     private final Logger logger = ImageJFX.getLogger();
     
+    @Parameter
+    private Context context;
   
-    private Predicate<MetaDataOwner> lastFilter;
-    private Predicate<MetaDataOwner> optionalFilter;
+    private Predicate<Explorable> lastFilter;
+    private Predicate<Explorable> optionalFilter;
 
     private final IntegerProperty selected = new SimpleIntegerProperty(0);
 
     private List<Explorable> selectedItems = new ArrayList<>();
 
-    private SelectableManager<Explorable> selectionManager = new SelectableManager<>(this::onExplorableSelected);
+    private SelectableManager<Explorable> selectionManager = new SelectableManager<>();
    
 
     @Override
     public void initialize() {
        
-        
-        selected.addListener(this::notifySelectionChanged);
+       selectionManager.getChangeBuffer()
+               .subscribe(this::notifySelectionChange);
 
     }
 
@@ -96,16 +116,16 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     }
 
     @Override
-    public void applyFilter(Predicate<MetaDataOwner> predicate) {
+    public void applyFilter(Predicate<Explorable> predicate) {
 
-        new CallbackTask<Predicate<MetaDataOwner>, List<Explorable>>(predicate)
+        new CallbackTask<Predicate<Explorable>, List<Explorable>>(predicate)
                 .run(this::filter)
                 .then(this::setFilteredItems)
                 .start();
 
     }
 
-    protected List<Explorable> filter(Predicate<MetaDataOwner> predicate) {
+    protected List<Explorable> filter(Predicate<Explorable> predicate) {
         logger.info(String.format("Filtering %d items", getItems().size()));
         if (predicate == null && optionalFilter == null) {
             return getItems();
@@ -135,7 +155,7 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     }
 
     @Override
-    public void setOptionalFilter(Predicate<MetaDataOwner> additionalFilter) {
+    public void setOptionalFilter(Predicate<Explorable> additionalFilter) {
         this.optionalFilter = additionalFilter;
         applyFilter(lastFilter);
     }
@@ -169,7 +189,15 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     }
 
     
-
+    private void notifySelectionChange(List<SelectionChange<Explorable>> changes) {
+        
+        ExplorerSelectionChangedEvent event = new ExplorerSelectionChangedEvent(changes);
+        
+        
+        eventService.publishLater(event);
+    }
+    
+    /*
     private void onExplorableSelected(Explorable explorable, Boolean selected) {
       
        
@@ -179,7 +207,7 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
        
        this.selected.setValue(selectedItems.size());
        
-    }
+    }*/
 
     public void open(Iconazable explorable) {
 
@@ -221,15 +249,49 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     }
     
     
-    private void notifySelectionChanged(Observable obs, Object oldValue, Object newValue) {
-        
-       logger.info("The selection has changed to "+newValue);
-        
-        
-    }
+
     
     public IntegerProperty selectedCountProperty() {
         return selected;
+    }
+    
+    
+    public Stream<Explorable> indexDirectory(ProgressHandler origProgress, File directory) {
+
+        //if(progress == null) progress = new SilentProgressHandler();
+        final ProgressHandler progress = ProgressHandler.check(origProgress);
+
+        Timer timer = timerService.getTimer(this.getClass());
+        timer.start();
+        Collection<? extends ImageRecord> records = imageRecordService.getRecordsFromDirectory(progress, directory);
+        timer.elapsed("record fetching");
+        progress.setStatus("Reading folder...");
+
+        progress.setTotal(records.size());
+
+        return records
+                .stream()
+                .parallel()
+                .map(record -> {
+                    progress.increment(1);
+                    return getSeries(record);
+                })
+                .flatMap(self -> self);
+
+    }
+
+    public Stream<Explorable> getSeries(ImageRecord record) {
+        if (record.getMetaDataSet().containsKey(MetaData.SERIE_COUNT) && record.getMetaDataSet().get(MetaData.SERIE_COUNT).getIntegerValue() > 1) {
+
+            int serieCount = record.getMetaDataSet().get(MetaData.SERIE_COUNT).getIntegerValue();
+
+            return IntStream
+                    .range(0, serieCount)
+                    .mapToObj(i -> new ImageRecordIconizer(context, record, i));
+
+        } else {
+            return Stream.of(new ImageRecordIconizer(context, record));
+        }
     }
 
 }

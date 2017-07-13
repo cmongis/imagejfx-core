@@ -1,0 +1,141 @@
+/*
+    This file is part of ImageJ FX.
+
+    ImageJ FX is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    ImageJ FX is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with ImageJ FX.  If not, see <http://www.gnu.org/licenses/>. 
+    
+     Copyright 2015,2016 Cyril MONGIS, Michael Knop
+        
+*//* 
+   Created on : 15 mai 2017, 14:28:34
+   Author     : florian
+*/
+.keyword {
+    -fx-fill: purple;
+    -fx-font-weight: bold;
+}
+.white {
+    -fx-fill: white;
+    -fx-font-weight: bold;
+}
+.black {
+    -fx-fill: white;
+    -fx-font-weight: bold;
+}
+.red {
+    -fx-fill: red;
+    -fx-font-weight: bold;
+}
+.blue {
+    -fx-fill: dodgerblue;
+    -fx-font-weight: bold;
+}
+.green {
+    -fx-fill: green;
+    -fx-font-weight: bold;
+}
+.yellow {
+    -fx-fill: orange;
+    -fx-font-weight: bold;
+}
+.magenta {
+    -fx-fill: magenta;
+    -fx-font-weight: bold;
+}
+.cyan {
+    -fx-fill: blue;
+    -fx-font-weight: bold;
+}
+.brightwhite {
+    -fx-fill: white;
+    -fx-font-weight: bold;
+}
+.brightblack {
+    -fx-fill: black;
+    -fx-font-weight: bold;
+}
+.brightred {
+    -fx-fill: red;
+    -fx-font-weight: bold;
+}
+.brightblue {
+    -fx-fill: dodgerblue;
+    -fx-font-weight: bold;
+}
+.brightgreen {
+    -fx-fill: green;
+    -fx-font-weight: bold;
+}
+.brightyellow {
+    -fx-fill: orange;
+    -fx-font-weight: bold;
+}
+.brightmagenta {
+    -fx-fill: magenta;
+    -fx-font-weight: bold;
+}
+.brightcyan {
+    -fx-fill: gold;
+    -fx-font-weight: bold;
+}
+.semicolon {
+    -fx-fill: white;
+    -fx-font-weight: bold;
+}
+.paren {
+    -fx-fill: firebrick;
+    -fx-font-weight: bold;
+}
+.bracket {
+    -fx-fill: darkgreen;
+    -fx-font-weight: bold;
+}
+.brace {
+    -fx-fill: teal;
+    -fx-font-weight: bold;
+}
+.string {
+    -fx-fill: lightskyblue;
+}
+
+.comment {
+	-fx-fill: lightskyblue;
+}
+.COMMENT {
+	-fx-fill: lightskyblue;
+}
+.uncompleteBracket{
+    -fx-fill: red;
+    -fx-font-weight: bold;
+    -fx-underline : true;
+    
+}
+.null{
+    -fx-fill:white;
+}
+.styled-text-area{
+    -fx-background-color:#383f50;
+}
+.lineno{
+    -fx-background-color:#282E3A;
+}
+/*
+.text{
+    -fx-fill:white;
+}
+*/
+/*
+.paragraph-box:has-caret {
+    -fx-background-color: #f2f9fc;
+}
+*/

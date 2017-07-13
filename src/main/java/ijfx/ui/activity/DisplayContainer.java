@@ -26,13 +26,14 @@ import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import jfxtras.scene.control.window.Window;
+import org.scijava.display.Display;
 import org.scijava.plugin.Plugin;
 
 /**
  *
  * @author cyril
  */
-@Plugin(type = Activity.class, name = "display container")
+@Plugin(type = Activity.class, name = "imagej")
 public class DisplayContainer extends StackPane implements Activity {
 
     public AnchorPane anchorPane = new AnchorPane();
@@ -58,6 +59,10 @@ public class DisplayContainer extends StackPane implements Activity {
     @Override
     public Task updateOnShow() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    public void showContextMenu(String menuRoot, Display<?> display, int x, int y) {
+        
     }
 
 }

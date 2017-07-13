@@ -37,6 +37,9 @@ public interface UiPluginService extends ImageJService,UiPluginSorter<Node>{
 
     UiConfiguration getInfos(UiPlugin plugin);
 
+    
+    <T extends UiPlugin> T getUiPlugin(Class<T> type);
+    
     Collection<UiPlugin> getUiPluginList();
     
     Collection<UiPlugin> loadAll(ProgressHandler handler) throws Exception;

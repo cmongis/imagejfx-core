@@ -22,8 +22,8 @@ package ijfx.ui.widgets;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import ijfx.core.image.DisplayRangeService;
+import ijfx.core.uiplugin.FXUiCommandService;
 import ijfx.core.usage.Usage;
-import ijfx.ui.display.image.DefaultFXImageDisplay;
 import ijfx.ui.display.image.FXImageDisplay;
 import ijfx.ui.main.ImageJFX;
 import java.io.IOException;
@@ -68,6 +68,8 @@ import org.scijava.Context;
 import org.scijava.command.Command;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
+import ijfx.core.uiplugin.UiCommand;
+import ijfx.core.uiplugin.UiCommandService;
 
 /**
  *
@@ -113,6 +115,12 @@ public class ImageDisplayAdjuster extends BorderPane {
     @Parameter
     DisplayRangeService displayRangeService;
 
+    @Parameter
+    UiCommandService uiActionService;
+    
+    @Parameter
+    FXUiCommandService fxUiActionService;
+    
     private HoverDescriptionBinding descriptionBinding;
 
     public ImageDisplayAdjuster(Context context) {
@@ -212,9 +220,43 @@ public class ImageDisplayAdjuster extends BorderPane {
         Bindings.bindBidirectional(maxValueTextField.textProperty(), rangeSlider.highValueProperty(), smartNumberStringConverter);
 
         channelSlider.setVisible(false);
+        
+        
+        initActions();
 
     }
 
+    public void refresh() {
+        
+    }
+    
+    private void initActions() {
+        
+        List<UiCommand<ImageDisplayAdjuster>> actions = uiActionService.getAssociatedAction(ImageDisplayAdjuster.class);
+        
+        int len = actions.size();
+        int limit = len > 3 ? 3 : len;
+        
+        actions
+                    .subList(0, limit)
+                    .stream()
+                    .map(action->fxUiActionService.createButton(action, this))
+                    .peek(this::listenButton)
+                    .collect(Collectors.toCollection(toolbar::getItems));
+        
+        if(len > limit) {
+            actions
+                    .subList(limit, len)
+                    .stream()
+                    .map(action->fxUiActionService.createMenuItem(action, this))
+                    
+                    .collect(Collectors.toCollection(moreMenuButton::getItems));
+
+        }
+       
+        
+    }
+    
     private List<LUTView> generateLUTViews() {
 
         return displayRangeService.availableColorTableProperty()
@@ -329,6 +371,12 @@ public class ImageDisplayAdjuster extends BorderPane {
         return inUseProperty;
     }
 
+    
+    private void listenButton(Button item) {
+         descriptionBinding.bind(item, item.getTooltip().getText());
+         Usage.listenButton(item, CHANNEL_ADJUSTER, item.getText());
+    }
+    
     public ImageDisplayAdjuster addButton(String name, FontAwesomeIcon icon, String description, EventHandler<ActionEvent> runnable) {
 
         Button item = new Button(name, GlyphsDude.createIcon(icon));
@@ -344,6 +392,8 @@ public class ImageDisplayAdjuster extends BorderPane {
         return this;
     }
 
+    
+    /**
     public ImageDisplayAdjuster addButton(String name, FontAwesomeIcon icon, String description, Class<? extends Command> module, Object... parameters) {
 
         return addButton(name, icon, description, event -> {
@@ -369,7 +419,7 @@ public class ImageDisplayAdjuster extends BorderPane {
         moreMenuButton.getItems().add(item);
 
         return this;
-    }
+    }*/
 
     // Helper class that indicate when the mouse hovers an menu item
     private class HoverListener extends SimpleBooleanProperty {

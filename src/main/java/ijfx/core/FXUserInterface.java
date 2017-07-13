@@ -30,6 +30,9 @@ import ijfx.ui.dialog.FxPromptDialog;
 import ijfx.ui.display.image.DisplayWindowFX;
 import ijfx.ui.main.ImageJFX;
 import static ijfx.ui.main.ImageJFX.getStylesheet;
+import ijfx.ui.plugin.console.ConsoleUIPlugin;
+import ijfx.ui.plugin.statusbar.DefaultFXStatusBar;
+import ijfx.ui.plugin.statusbar.FXStatusBar;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
@@ -59,13 +62,13 @@ import org.scijava.thread.ThreadService;
 import org.scijava.ui.ApplicationFrame;
 import org.scijava.ui.Desktop;
 import org.scijava.ui.DialogPrompt;
-import org.scijava.ui.StatusBar;
 import org.scijava.ui.SystemClipboard;
 import org.scijava.ui.ToolBar;
 import org.scijava.ui.UIService;
 import org.scijava.ui.UserInterface;
 import org.scijava.ui.console.ConsolePane;
 import org.scijava.ui.viewer.DisplayViewer;
+import ijfx.core.uiplugin.UiCommandService;
 
 /**
  *
@@ -90,27 +93,30 @@ public class FXUserInterface extends Application implements UserInterface {
 
     @Parameter
     private UiPluginService uiPluginService;
-    
+
     @Parameter
     private static EventService eventService;
-    
+
     @Parameter
     private UiContextService uiContextService;
-    
+
     @Parameter
     private DisplayService displayService;
-    
+
     @Parameter
     private ThreadService threadService;
-    
+
     @Parameter
     private ActivityService activityService;
-    
+
     @Parameter
     private static UIService uiService;
 
-    public static Stage STAGE;
+    @Parameter
+    private static UiCommandService uiCommandService;
     
+    public static Stage STAGE;
+
     JavaFXClipboard clipboard;
 
     public FXUserInterface() {
@@ -133,21 +139,18 @@ public class FXUserInterface extends Application implements UserInterface {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-       
-        
+
         SCENE = new Scene(new BorderPane());
-        //scene.setRoot(getMainWindow().getUiComponent());
         SCENE.getStylesheets().add(getStylesheet());
         
-        
         SCENE.setRoot(getMainWindow().getUiComponent());
-        
+
         // scene.getStylesheets().add("http://fonts.googleapis.com/css?family=Open+Sans");
         //scene.getStylesheets().add("http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css");
         //Font.loadFont(FontAwesomeIconView.class.getResource("fontawesome-webfont.ttf").toExternalForm().toString(), 0);
         primaryStage.setTitle("ImageJ FX");
         primaryStage.setScene(SCENE);
-        
+
         primaryStage.setOnCloseRequest(new javafx.event.EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent t) {
@@ -155,7 +158,7 @@ public class FXUserInterface extends Application implements UserInterface {
                 System.exit(0);
             }
         });
-        
+
         primaryStage.show();
 
         FXUserInterface ui = (FXUserInterface) context.getService(UIService.class).getUI(ImageJFX.UI_NAME);
@@ -169,29 +172,28 @@ public class FXUserInterface extends Application implements UserInterface {
      * Method ran after launching the FXThread
      */
     public void initialize() {
-        
+
         // registering the ui slots of the MainWindow
         getMainWindow()
                 .getContextualContainerList()
                 .forEach(uiContextService::addContextualView);
-        
+
         // loading the plugins
-        Task task = new CallbackTask<Object,Collection<UiPlugin>>()
+        Task task = new CallbackTask<Object, Collection<UiPlugin>>()
                 .runLongCallable(uiPluginService::loadAll)
                 .then(this::onAllUiPluginLoaded)
                 .start();
-        
-        
+
         getMainWindow()
                 .addForegroundTask(task);
-        
+
     }
-    
+
     public void onAllUiPluginLoaded(Collection<UiPlugin> plugins) {
-        uiContextService.enter("imagej","visualize");
+        uiContextService.enter("imagej", "visualize", "always");
         uiContextService.update();
         activityService.open(DisplayContainer.class);
-        
+
     }
 
     @Override
@@ -210,13 +212,15 @@ public class FXUserInterface extends Application implements UserInterface {
     }
 
     @Override
-    public StatusBar getStatusBar() {
-        return null;
+    public FXStatusBar getStatusBar() {
+        return uiPluginService.getUiPlugin(DefaultFXStatusBar.class);
     }
 
     @Override
     public ConsolePane<?> getConsolePane() {
-        return null;
+
+        return uiPluginService.getUiPlugin(ConsoleUIPlugin.class);
+
     }
 
     @Override
@@ -231,9 +235,7 @@ public class FXUserInterface extends Application implements UserInterface {
 
     @Override
     public DisplayWindowFX createDisplayWindow(Display<?> display) {
-       
         return new DisplayWindowFX(display);
-        
     }
 
     @Override
@@ -282,7 +284,10 @@ public class FXUserInterface extends Application implements UserInterface {
 
     @Override
     public void showContextMenu(String menuRoot, Display<?> display, int x, int y) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        if (activityService.getCurrentActivityAsClass() == DisplayContainer.class) {
+            activityService.getActivity(DisplayContainer.class).showContextMenu(menuRoot, display, x, y);
+        }
     }
 
     @Override
@@ -302,6 +307,10 @@ public class FXUserInterface extends Application implements UserInterface {
                 // get the first MainWindow plugin
                 mainWindow = (MainWindow) pluginService.createInstancesOfType(MainWindow.class).get(0);
                 mainWindow.init();
+                
+                uiCommandService
+                        .getAssociatedAction(MainWindow.class)
+                        .forEach(mainWindow::displaySideMenuAction);
             } catch (Exception e) {
                 ImageJFX.getLogger().log(Level.SEVERE, "No main window plugin where found.", e);
             }
@@ -320,65 +329,71 @@ public class FXUserInterface extends Application implements UserInterface {
 
     @Override
     public void show(String name, Object o) {
-      final Display<?> display;
-		if (o instanceof Display) {
-			display = (Display<?>) o;
-		}
-		else {
-			display = displayService.createDisplay(name, o);
-		}
-		if (!isVisible()) {
-			// NB: If this UI is invisible, the display will not be automatically
-			// shown. So in that case, we show it explicitly here.
-			show(display);
-		}
+        final Display<?> display;
+        if (o instanceof Display) {
+            display = (Display<?>) o;
+        } else {
+            display = displayService.createDisplay(name, o);
+        }
+        if (!isVisible()) {
+            // NB: If this UI is invisible, the display will not be automatically
+            // shown. So in that case, we show it explicitly here.
+            show(display);
+        }
     }
 
     @Override
     public void show(Display<?> display) {
-        
+
         Logger log = ImageJFX.getLogger();
-        
-       if (uiService.getDisplayViewer(display) != null) {
-			// display is already being shown
-			return;
-		}
 
-		final List<PluginInfo<DisplayViewer<?>>> viewers =
-			uiService.getViewerPlugins();
+        if (uiService.getDisplayViewer(display) != null) {
+            // display is already being shown
+            return;
+        }
 
-		DisplayViewer<?> displayViewer = null;
-		for (final PluginInfo<DisplayViewer<?>> info : viewers) {
-			// check that viewer can actually handle the given display
-			final DisplayViewer<?> viewer = pluginService.createInstance(info);
-			if (viewer == null) continue;
-			if (!viewer.canView(display)) continue;
-			if (!viewer.isCompatible(this)) continue;
-			displayViewer = viewer;
-			break; // found a suitable viewer; we are done
-		}
-		if (displayViewer == null) {
-			log.warning("For UI '" + getClass().getName() +
-				"': no suitable viewer for display: " + display);
-			return;
-		}
+        final List<PluginInfo<DisplayViewer<?>>> viewers
+                = uiService.getViewerPlugins();
 
-		final DisplayViewer<?> finalViewer = displayViewer;
-		threadService.queue(new Runnable() {
-			@Override
-			public void run() {
-				final DisplayWindowFX displayWindow = createDisplayWindow(display);
-				finalViewer.view(displayWindow, display);
-                                finalViewer.setPanel(displayWindow.getDisplayPanel());
-				displayWindow.setTitle(display.getName());
-				uiService.addDisplayViewer(finalViewer);
-				displayWindow.showDisplay(true);
-				display.update();
-                                
-                                activityService.getActivity(DisplayContainer.class).addWindow(displayWindow);
-                                activityService.open(DisplayContainer.class);
-			}
-		});
+        DisplayViewer<?> displayViewer = null;
+        for (final PluginInfo<DisplayViewer<?>> info : viewers) {
+            // check that viewer can actually handle the given display
+            final DisplayViewer<?> viewer = pluginService.createInstance(info);
+            if (viewer == null) {
+                continue;
+            }
+            if (!viewer.canView(display)) {
+                continue;
+            }
+            if (!viewer.isCompatible(this)) {
+                continue;
+            }
+            displayViewer = viewer;
+            break; // found a suitable viewer; we are done
+        }
+        if (displayViewer == null) {
+            log.warning("For UI '" + getClass().getName()
+                    + "': no suitable viewer for display: " + display);
+            return;
+        }
+
+        final DisplayViewer<?> finalViewer = displayViewer;
+        threadService.queue(new Runnable() {
+            @Override
+            public void run() {
+                final DisplayWindowFX displayWindow = createDisplayWindow(display);
+                finalViewer.view(displayWindow, display);
+                finalViewer.setPanel(displayWindow.getDisplayPanel());
+                displayWindow.setTitle(display.getName());
+                uiService.addDisplayViewer(finalViewer);
+                displayWindow.showDisplay(true);
+                display.update();
+                displayService.setActiveDisplay(display);
+
+                activityService.getActivity(DisplayContainer.class).addWindow(displayWindow);
+                activityService.open(DisplayContainer.class);
+            }
+        });
     }
 
     @Override
@@ -434,13 +449,17 @@ public class FXUserInterface extends Application implements UserInterface {
     public void setPriority(double priority) {
 
     }
-    
-   /*
+
+    /*
         Event
-    */
-    
+     */
     @EventHandler
     public void onActivityChanged(ActivityChangedEvent event) {
         getMainWindow().displayActivity(event.getActivity());
+    }
+
+    public void reloadCss() {
+        SCENE.getStylesheets().remove(getStylesheet());
+        SCENE.getStylesheets().add(getStylesheet());
     }
 }

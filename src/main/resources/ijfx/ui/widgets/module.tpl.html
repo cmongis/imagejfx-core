@@ -1,0 +1,48 @@
+
+
+<h3>{{className}}
+   
+</h3>
+ <small>{{class}}</small>
+ <br><br>
+<h4>Inputs</h4>
+
+<table class="table">
+    <tr>
+        <th>name</th>
+        <th>type</th>
+        <th>IO type</th>
+    </tr>
+    
+    {%for input in inputs%}
+    
+    <tr>
+        <td>{{input.name}}</td>
+        <td>{{input.ioType}}</td>
+        <td>{{input.type}}</td>
+        
+    </tr>
+    
+    {% endfor %}
+</table>
+<br><br>
+<h4>Outputs</h4>
+
+<table class="table">
+    <tr>
+        <th>name</th>
+        <th>type</th>
+        <th>IO type</th>
+    </tr>
+    
+    {%for input in inputs%}
+    
+    <tr>
+        <td>{{output.name}}</td>
+        <td>{{output.ioType}}</td>
+        <td>{{output.type}}</td>
+        
+    </tr>
+    
+    {% endfor %}
+</table>

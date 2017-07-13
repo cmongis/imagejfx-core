@@ -21,45 +21,54 @@ package ijfx.explorer;
 
 import ijfx.core.IjfxService;
 import ijfx.core.datamodel.Iconazable;
+import ijfx.core.imagedb.ImageRecord;
 import ijfx.core.metadata.MetaDataOwner;
 import ijfx.explorer.datamodel.Explorable;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 import javafx.beans.property.IntegerProperty;
+import mongis.utils.ProgressHandler;
 
 /**
  *
  * @author Cyril MONGIS, 2016
  */
-public interface ExplorerService extends IjfxService{
-    
+public interface ExplorerService extends IjfxService {
+
     List<Explorable> getItems();
-    
-    
+
     void setItems(List<Explorable> items);
-    
-    void applyFilter(Predicate<MetaDataOwner> predicate);
-    
-    void setOptionalFilter(Predicate<MetaDataOwner> addionnalFilter);
-    
+
+    void applyFilter(Predicate<Explorable> predicate);
+
+    void setOptionalFilter(Predicate<Explorable> addionnalFilter);
+
     List<Explorable> getFilteredItems();
-    
+
     List<? extends Explorable> getSelectedItems();
-    
+
     void selectItem(Explorable explorable);
-    
+
     void toggleSelection(Explorable explorable);
-    
+
     /**
-     *  Open the iconazable displaying a loading screen
+     * Open the iconazable displaying a loading screen
+     *
      * @param iconazable to open
      */
     void open(Iconazable iconazable);
-    
+
     void openSelection();
-    
+
     IntegerProperty selectedCountProperty();
-    
+
     public ArrayList<String> getMetaDataKey(List<? extends Explorable> items);
+
+    public Stream<Explorable> indexDirectory(ProgressHandler origProgress, File directory);
+    
+    
+    public Stream<Explorable> getSeries(ImageRecord explorable);
 }

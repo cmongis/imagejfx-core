@@ -27,6 +27,7 @@ import ijfx.ui.RichMessageDisplayer;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
@@ -44,6 +45,7 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.image.Image;
@@ -100,6 +102,17 @@ public class FXUtilities {
         return loader;
     }
 
+    public static <T extends Parent> T loadFXML(Object controller, String url) throws IOException {
+
+        FXMLLoader loader = new FXMLLoader(controller.getClass().getResource(url));
+        loader.setController(controller);
+
+        loader.load();
+
+        return (T) loader.getRoot();
+
+    }
+
     private static Node loadController(FXMLLoader loader) {
         try {
             loader.load();
@@ -114,25 +127,23 @@ public class FXUtilities {
     public static CallableTask<WebView> createWebView() {
         return new CallableTask<>(WebView::new).startInFXThread();
     }
-    
-    public static CallbackTask<String,WebView> createWebView(Object root,String mdFile) {
-        return new CallbackTask<String,WebView>()
+
+    public static CallbackTask<String, WebView> createWebView(Object root, String mdFile) {
+        return new CallbackTask<String, WebView>()
                 .setInput(mdFile)
-                .run(input->{
-               WebView webView = new WebView();
-               RichMessageDisplayer displayer = new RichMessageDisplayer(webView)
-                       .addStringProcessor(Processor::process);
-               try {
-               displayer.setContent(root.getClass(), input);
-               }catch(Exception e) {
-                   e.printStackTrace();
-               }
-               return webView;
-            }).submit(Platform::runLater);
+                .run(input -> {
+                    WebView webView = new WebView();
+                    RichMessageDisplayer displayer = new RichMessageDisplayer(webView)
+                            .addStringProcessor(Processor::process);
+                    try {
+                        displayer.setContent(root.getClass(), input);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return webView;
+                }).submit(Platform::runLater);
 
     }
-
-
 
     public static void modifyUiThreadSafe(Runnable r) {
         if (Platform.isFxApplicationThread()) {
@@ -145,6 +156,27 @@ public class FXUtilities {
     public static void close(Pane pane) {
         Stage stage = (Stage) pane.getScene().getWindow();
         stage.close();
+    }
+
+    public static <T> void addLater(Collection<? extends T> source, Collection<T> target) {
+
+        Platform.runLater(() -> {
+            if (target.containsAll(source) == false) {
+                target.addAll(source);
+            }
+
+        });
+
+    }
+
+    public static <T extends Node> void addLater(Collection<? extends T> source, Pane parent) {
+        addLater(source, parent.getChildren());
+    }
+
+    public static <T> void removeLater(Collection<? extends T> source, Collection<T> target) {
+
+        Platform.runLater(() -> target.removeAll(source));
+
     }
 
     /**
@@ -212,13 +244,13 @@ public class FXUtilities {
             }
         }
     }
-    
+
     public static <T> T runAndWait(Callable<T> t) {
-        
-       
-        
+
         try {
-             if(Platform.isFxApplicationThread()) return t.call();
+            if (Platform.isFxApplicationThread()) {
+                return t.call();
+            }
             return new CallableTask<T>(t)
                     .startInFXThread()
                     .get();
@@ -226,9 +258,8 @@ public class FXUtilities {
             Logger.getLogger(FXUtilities.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ExecutionException ex) {
             Logger.getLogger(FXUtilities.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        catch(Exception e) {
-            Logger.getLogger(FXUtilities.class.getName()).log(Level.SEVERE,null,e);
+        } catch (Exception e) {
+            Logger.getLogger(FXUtilities.class.getName()).log(Level.SEVERE, null, e);
         }
         return null;
     }
@@ -236,17 +267,16 @@ public class FXUtilities {
     public static void injectFXML(Object rootAndController) throws IOException {
 
         String fileName = rootAndController.getClass().getSimpleName() + ".fxml";
-        
+
         //System.out.println(rootAndController.getClass().getResource(fileName));
         injectFXML(rootAndController, fileName);
     }
-    
+
     public static void injectFXMLUnsafe(Object rootAndController) {
         try {
             injectFXML(rootAndController);
-        }
-        catch(IOException ioe) {
-            ImageJFX.getLogger().log(Level.SEVERE,null,ioe);
+        } catch (IOException ioe) {
+            ImageJFX.getLogger().log(Level.SEVERE, null, ioe);
         }
     }
 
@@ -258,14 +288,12 @@ public class FXUtilities {
         loader.setRoot(rootController);
         loader.setController(rootController);
         //loader.setResources(ImageJFX.getResourceBundle());
-        
-        
+
         loader.setLocation(rootController.getClass().getResource(location));
         loader.setClassLoader(rootController.getClass().getClassLoader());
-       
+
         loader.load();
-        
-       
+
         URL css
                 = rootController.getClass().getResource(rootController.getClass().getSimpleName() + ".css");
 
@@ -363,7 +391,7 @@ public class FXUtilities {
     public static File openFile(String title, String defaultFolder, String extensionTitle, String... extensions) {
         Task<File> task = new Task<File>() {
             public File call() {
-               return openFileSync(title,defaultFolder,extensionTitle,extensions);
+                return openFileSync(title, defaultFolder, extensionTitle, extensions);
             }
         };
         Platform.runLater(task);
@@ -371,23 +399,25 @@ public class FXUtilities {
         try {
             return task.get();
         } catch (InterruptedException ex) {
-            ImageJFX.getLogger().log(Level.SEVERE,"Error when selecting file",ex);
+            ImageJFX.getLogger().log(Level.SEVERE, "Error when selecting file", ex);
         } catch (ExecutionException ex) {
-           ImageJFX.getLogger().log(Level.SEVERE,"Error when selecting file",ex);
+            ImageJFX.getLogger().log(Level.SEVERE, "Error when selecting file", ex);
         }
 
         return null;
     }
-    
-    public static File openFileSync(String title, String defaultFolder, String extensionTitle, String... extensions) {
-         FileChooser fileChooser = new FileChooser();
 
-                File file = null;
-                fileChooser.setTitle(title);
-                if(defaultFolder != null) fileChooser.setInitialDirectory(new File(defaultFolder));
-                fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter(extensionTitle, extensions));
-                file = fileChooser.showOpenDialog(null);
-                return file;
+    public static File openFileSync(String title, String defaultFolder, String extensionTitle, String... extensions) {
+        FileChooser fileChooser = new FileChooser();
+
+        File file = null;
+        fileChooser.setTitle(title);
+        if (defaultFolder != null) {
+            fileChooser.setInitialDirectory(new File(defaultFolder));
+        }
+        fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter(extensionTitle, extensions));
+        file = fileChooser.showOpenDialog(null);
+        return file;
     }
 
     public static List<File> openFiles(String title, String defaultFolder, String extensionTitle, String... extensions) {
@@ -458,7 +488,9 @@ public class FXUtilities {
         FileChooser fileChooser = new FileChooser();
         File file = null;
         fileChooser.setTitle(title);
-        if(defaultFolder != null) fileChooser.setInitialDirectory(new File(defaultFolder));
+        if (defaultFolder != null) {
+            fileChooser.setInitialDirectory(new File(defaultFolder));
+        }
         fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter(extensionTitle, extensions));
         file = fileChooser.showSaveDialog(null);
         return file;
@@ -529,34 +561,31 @@ public class FXUtilities {
         });
 
     }
-    
+
     public static Image colorTableToImage(ColorTable table, int width, int height) {
-        return colorTableToImage(table, width, height,2);
+        return colorTableToImage(table, width, height, 2);
     }
-    
-    public static Image colorTableToImage(ColorTable table, int width, int height,int border) {
-        
-        
+
+    public static Image colorTableToImage(ColorTable table, int width, int height, int border) {
+
         WritableImage image = new WritableImage(width, height);
-        
+
         PixelWriter pixelWriter = image.getPixelWriter();
-        
+
         int color;
-        for(int x = border; x!= width-border; x++) {
-            color = table.lookupARGB(border, width-1-(border*2), x);
-            for (int y = border; y!= height-border;y++) {
+        for (int x = border; x != width - border; x++) {
+            color = table.lookupARGB(border, width - 1 - (border * 2), x);
+            for (int y = border; y != height - border; y++) {
                 pixelWriter.setArgb(x, y, color);
             }
         }
-        
+
         return image;
-        
-        
+
     }
-    
-    
+
     public static void makeListViewMultipleSelection(ListView listView) {
-        
+
         EventHandler<MouseEvent> eventHandler = (event)
                 -> {
             if (!event.isShortcutDown()) {
@@ -568,113 +597,111 @@ public class FXUtilities {
         listView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         listView.addEventFilter(MouseEvent.MOUSE_PRESSED, eventHandler);
         listView.addEventFilter(MouseEvent.MOUSE_RELEASED, eventHandler);
-        
-    }
-    
-    private static MouseEvent cloneMouseEvent( MouseEvent event )
-{
-    switch (Toolkit.getToolkit().getPlatformShortcutKey())
-    {
-        case SHIFT:
-            return new MouseEvent(
-                    event.getSource(),
-                    event.getTarget(),
-                    event.getEventType(),
-                    event.getX(),
-                    event.getY(),
-                    event.getScreenX(),
-                    event.getScreenY(),
-                    event.getButton(),
-                    event.getClickCount(),
-                    true,
-                    event.isControlDown(),
-                    event.isAltDown(),
-                    event.isMetaDown(),
-                    event.isPrimaryButtonDown(),
-                    event.isMiddleButtonDown(),
-                    event.isSecondaryButtonDown(),
-                    event.isSynthesized(),
-                    event.isPopupTrigger(),
-                    event.isStillSincePress(),
-                    event.getPickResult()
-            );
-
-        case CONTROL:
-            return new MouseEvent(
-                    event.getSource(),
-                    event.getTarget(),
-                    event.getEventType(),
-                    event.getX(),
-                    event.getY(),
-                    event.getScreenX(),
-                    event.getScreenY(),
-                    event.getButton(),
-                    event.getClickCount(),
-                    event.isShiftDown(),
-                    true,
-                    event.isAltDown(),
-                    event.isMetaDown(),
-                    event.isPrimaryButtonDown(),
-                    event.isMiddleButtonDown(),
-                    event.isSecondaryButtonDown(),
-                    event.isSynthesized(),
-                    event.isPopupTrigger(),
-                    event.isStillSincePress(),
-                    event.getPickResult()
-            );
-
-        case ALT:
-            return new MouseEvent(
-                    event.getSource(),
-                    event.getTarget(),
-                    event.getEventType(),
-                    event.getX(),
-                    event.getY(),
-                    event.getScreenX(),
-                    event.getScreenY(),
-                    event.getButton(),
-                    event.getClickCount(),
-                    event.isShiftDown(),
-                    event.isControlDown(),
-                    true,
-                    event.isMetaDown(),
-                    event.isPrimaryButtonDown(),
-                    event.isMiddleButtonDown(),
-                    event.isSecondaryButtonDown(),
-                    event.isSynthesized(),
-                    event.isPopupTrigger(),
-                    event.isStillSincePress(),
-                    event.getPickResult()
-            );
-
-        case META:
-            return new MouseEvent(
-                    event.getSource(),
-                    event.getTarget(),
-                    event.getEventType(),
-                    event.getX(),
-                    event.getY(),
-                    event.getScreenX(),
-                    event.getScreenY(),
-                    event.getButton(),
-                    event.getClickCount(),
-                    event.isShiftDown(),
-                    event.isControlDown(),
-                    event.isAltDown(),
-                    true,
-                    event.isPrimaryButtonDown(),
-                    event.isMiddleButtonDown(),
-                    event.isSecondaryButtonDown(),
-                    event.isSynthesized(),
-                    event.isPopupTrigger(),
-                    event.isStillSincePress(),
-                    event.getPickResult()
-            );
-
-        default: // well return itself then
-            return event;
 
     }
-}
-    
+
+    private static MouseEvent cloneMouseEvent(MouseEvent event) {
+        switch (Toolkit.getToolkit().getPlatformShortcutKey()) {
+            case SHIFT:
+                return new MouseEvent(
+                        event.getSource(),
+                        event.getTarget(),
+                        event.getEventType(),
+                        event.getX(),
+                        event.getY(),
+                        event.getScreenX(),
+                        event.getScreenY(),
+                        event.getButton(),
+                        event.getClickCount(),
+                        true,
+                        event.isControlDown(),
+                        event.isAltDown(),
+                        event.isMetaDown(),
+                        event.isPrimaryButtonDown(),
+                        event.isMiddleButtonDown(),
+                        event.isSecondaryButtonDown(),
+                        event.isSynthesized(),
+                        event.isPopupTrigger(),
+                        event.isStillSincePress(),
+                        event.getPickResult()
+                );
+
+            case CONTROL:
+                return new MouseEvent(
+                        event.getSource(),
+                        event.getTarget(),
+                        event.getEventType(),
+                        event.getX(),
+                        event.getY(),
+                        event.getScreenX(),
+                        event.getScreenY(),
+                        event.getButton(),
+                        event.getClickCount(),
+                        event.isShiftDown(),
+                        true,
+                        event.isAltDown(),
+                        event.isMetaDown(),
+                        event.isPrimaryButtonDown(),
+                        event.isMiddleButtonDown(),
+                        event.isSecondaryButtonDown(),
+                        event.isSynthesized(),
+                        event.isPopupTrigger(),
+                        event.isStillSincePress(),
+                        event.getPickResult()
+                );
+
+            case ALT:
+                return new MouseEvent(
+                        event.getSource(),
+                        event.getTarget(),
+                        event.getEventType(),
+                        event.getX(),
+                        event.getY(),
+                        event.getScreenX(),
+                        event.getScreenY(),
+                        event.getButton(),
+                        event.getClickCount(),
+                        event.isShiftDown(),
+                        event.isControlDown(),
+                        true,
+                        event.isMetaDown(),
+                        event.isPrimaryButtonDown(),
+                        event.isMiddleButtonDown(),
+                        event.isSecondaryButtonDown(),
+                        event.isSynthesized(),
+                        event.isPopupTrigger(),
+                        event.isStillSincePress(),
+                        event.getPickResult()
+                );
+
+            case META:
+                return new MouseEvent(
+                        event.getSource(),
+                        event.getTarget(),
+                        event.getEventType(),
+                        event.getX(),
+                        event.getY(),
+                        event.getScreenX(),
+                        event.getScreenY(),
+                        event.getButton(),
+                        event.getClickCount(),
+                        event.isShiftDown(),
+                        event.isControlDown(),
+                        event.isAltDown(),
+                        true,
+                        event.isPrimaryButtonDown(),
+                        event.isMiddleButtonDown(),
+                        event.isSecondaryButtonDown(),
+                        event.isSynthesized(),
+                        event.isPopupTrigger(),
+                        event.isStillSincePress(),
+                        event.getPickResult()
+                );
+
+            default: // well return itself then
+                return event;
+
+        }
+    }
+
 }

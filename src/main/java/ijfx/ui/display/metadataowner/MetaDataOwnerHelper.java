@@ -35,8 +35,14 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellEditEvent;
+import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
+import mongis.utils.properties.ListChangeListenerBuilder;
 
 /**
  *
@@ -51,18 +57,50 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
     //LinkedHashSet<String> priority = new LinkedHashSet();
     MetaDataKeyPrioritizer priority = new MetaDataKeyPrioritizer(new String[0]);
 
-    List<TableColumn<T,?>> additionalColumns = new ArrayList<>();
-    
-    
+    List<TableColumn<T, ?>> additionalColumns = new ArrayList<>();
+
+    String currentColumn;
+
     public MetaDataOwnerHelper(TableView<T> tableView) {
         this.tableView = tableView;
+        MenuItem item = new MenuItem("Edit");
+        menu.getItems().add(item);
+
+        item.setOnAction(event -> {
+
+        });
+
+        // adding a listener that
+        // will get the current selected column
+        // for further processes
+        tableView
+                .getSelectionModel()
+                .getSelectedCells()
+                .addListener(
+                        ListChangeListenerBuilder
+                                .<TablePosition>create()
+                                .onChange(event -> {
+                                    if(event.getList().get(0).getTableColumn() == null) return;
+                                    Object userData = event.getList()
+                                            .get(0)
+                                            .getTableColumn()
+                                            .getUserData();
+                                    if (userData != null) {
+                                        currentColumn = userData.toString();
+                                    }
+                                })
+                                .build()
+                );
+
+        tableView.setContextMenu(menu);
+
     }
 
-    public void addAdditionalColumn(TableColumn<T,?> column) {
+    public void addAdditionalColumn(TableColumn<T, ?> column) {
         this.additionalColumns.add(column);
         this.tableView.getColumns().add(column);
     }
-    
+
     public void setItem(List<? extends T> mList) {
         tableView.getItems().clear();
         tableView.getItems().addAll(mList);
@@ -97,7 +135,7 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
 
     protected void updateColumns(List<String> columnList) {
         columnList.sort(priority);
-      
+
         if (!columnList.equals(currentColumns)) {
             System.out.println("The columns are not the same, updating");
             setColumnNumber(columnList.size());
@@ -125,19 +163,26 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
         if (actualSize > number) {
             tableView.getColumns().removeAll(tableView.getColumns().subList(number - 1, actualSize - 1));
         } else {
-            tableView.getColumns().addAll(0,IntStream
+            tableView.getColumns().addAll(0, IntStream
                     .range(0, number - actualSize)
                     .mapToObj(i -> generateColumn(""))
                     .collect(Collectors.toList()));
         }
     }
 
+    ContextMenu menu = new ContextMenu();
+
     protected TableColumn<T, MetaData> generateColumn(String key) {
         TableColumn<T, MetaData> column = new TableColumn<>();
         column.setUserData(key);
         column.setCellValueFactory(this::getCellValueFactory);
-        
+        column.setEditable(true);
+
         return column;
+    }
+
+    public void onCellEdit(CellEditEvent<T, MetaData> event) {
+
     }
 
     public void setPriority(String... keyName) {
@@ -164,17 +209,24 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
     protected ObservableValue<MetaData> getCellValueFactory(TableColumn.CellDataFeatures<T, MetaData> cell) {
         String key = cell.getTableColumn().getUserData().toString();
         MetaData value = cell.getValue().getMetaDataSet().get(key);
-        
+
         return new ReadOnlyObjectWrapper<>(value);
     }
-    
+
     private double round(double value, int places) {
-         BigDecimal bd = new BigDecimal(value);
-         
-    bd = bd.setScale(places, RoundingMode.HALF_UP);
-    return bd.doubleValue();
+        BigDecimal bd = new BigDecimal(value);
+
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 
-    
-   
+    private class MetaDataTableCell<T extends MetaDataOwner> extends TableCell<T, MetaData> {
+
+        public MetaDataTableCell() {
+            super();
+
+        }
+
+    }
+
 }

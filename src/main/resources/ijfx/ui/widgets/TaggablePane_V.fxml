@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <TextField fx:id="tagTextField" promptText="Type a tag and press enter" />
+      <Label text="Tags :" />
+      <FlowPane fx:id="tagFlowPane" />
+      <Label fx:id="possibleTagsLabel" text="Possible tags :" />
+      <FlowPane fx:id="possibleTagsFlowPane" />
+   </children>
+   <styleClass>
+      <String fx:value="taggable-pane" />
+      <String fx:value="vertical" />
+   </styleClass>
+</VBox>

@@ -45,7 +45,9 @@
 
 
 }
-
+.side-window {
+    -fx-padding:10 10 10 10;
+}
 .root.transparent {
     -fx-background-color:transparent;
 }
@@ -262,7 +264,7 @@
 .button.larger {
     -fx-padding:9px;
 }
-.button.smaller, .toggle-button.smaller, .menu-button.smaller {
+.button.smaller, .toggle-button.smaller, .menu-button.smaller, .smaller .button {
     -fx-font-size:12px;
 }
 .toggle-group {
@@ -549,8 +551,6 @@
 .context-menu {
     -fx-background-color:-bg-light;
     -fx-padding:0;
-
-
 }
 
 .context-menu .label {
@@ -584,6 +584,10 @@
 }
 .menu-item .glyph-icon{
     -fx-stroke-fill:-txt-highlight;  
+}
+
+.context-menu.input-panel .menu-item:focused {
+    -fx-background-color:transparent;
 }
 
 .ij1-command {
@@ -1401,15 +1405,17 @@ list-cell:filled:selected:focused, .list-cell:filled:selected{
 
 }
 #imagej-toolbar  {
-    -fx-spacing:10;
+    -fx-spacing:0;
     -fx-padding: 0 0 0 10;
 }
 #imagej-toolbar .toggle-button {
     -fx-background-color:-flatter-primary;
+    -fx-pref-width:42px;
 }
 #imagej-toolbar .toggle-button:selected {
     -fx-background-color:-flatter-success;
 }
+
 .module-search-textfield:focus {
     -fx-effect:dropshadow(gaussian, rgb(0.0, 0.0, 0.0, 0.2), 0.0, 0.0, 0.0, 1.0); 
 
@@ -1688,6 +1694,10 @@ list-cell:filled:selected:focused, .list-cell:filled:selected{
 .input-harvester .text-area {
     -fx-max-width:230px;
 }
+.input-harvester .input-message {
+    -fx-alignment:CENTER_LEFT;
+    
+}
 
 
 .interval-input-skin {
@@ -1933,6 +1943,44 @@ list-cell:filled:selected:focused, .list-cell:filled:selected{
     -fx-background-color:-bg-dark;
 }
 
+
+.tag {
+    -fx-effect:none;
+    -fx-background-radius: 3.0 24.0 24.0 3.0;
+    -fx-content-display:right;
+    -fx-graphic-text-gap:10px;
+    -fx-font-size:15px;
+    -fx-font-weight:bold;
+}
+
+#tagFlowPane, #possibleTagsFlowPane {
+    -fx-vgap:10px;
+    -fx-hgap:10px;
+    -fx-padding:0px;
+}
+
+#possibleTagsFlowPane .tag {
+    -fx-background-color:transparent;
+    -fx-border-width:2px;
+    -fx-border-radius: 3.0 24.0 24.0 3.0;
+    -fx-border-color:-flatter-primary;
+}
+#possibleTagsFlowPane .tag:hover {
+    -fx-translate-x:0;
+    -fx-translate-y:0;
+    -fx-background-color:-flatter-primary;
+    -fx-border-color:-flatter-primary;
+}
+#possibleTagsLabel {
+    
+}
+.taggable-pane > .label {
+    -fx-padding:10px;
+    -fx-padding:30px 0px 15px 0;
+}
+.taggable-pane.vertical {
+    -fx-pref-width:250px;
+}
 .tag-suggestions .list-cell {
     -fx-padding:0 0.4em 0 0;
 }
@@ -2188,6 +2236,11 @@ list-cell:filled:selected:focused, .list-cell:filled:selected{
     -fx-padding:0 10 0 45px;
 
 }
+
+.filter-pane-container {
+    -fx-background-color:-bg-darker;
+    -fx-pref-width:250px;
+}
 #filterScrollPane {
     -fx-pref-width:300px;
 }
@@ -2368,9 +2421,28 @@ Label.chart-legend-item{
 .choice-cell:selected .description {
     -fx-text-fill:derive(-flatter-primary,30%);
 }
-/*
 
-    Display Pane
-    
+
+/*
+    Status bar
 */
 
+.status-bar{
+    -fx-spacing:1em;
+}
+.status-bar .progress-bar{
+    -fx-margin:1em;
+    -fx-pref-height:20px;
+    -fx-min-height:10px;
+}
+
+/*
+    MetaData bar
+*/
+.metadata-bar {
+
+}
+.metadata-bar > .label{
+    -fx-font-size:14px;
+    -fx-padding:4px 4px 4px 10px;
+}

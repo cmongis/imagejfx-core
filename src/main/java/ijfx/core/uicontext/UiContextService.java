@@ -58,7 +58,7 @@ public class UiContextService extends AbstractService implements UiContextManage
 
     final private Set<String> currentContextList = new CopyOnWriteArraySet<>();
     final private Set<String> lastContextList = new CopyOnWriteArraySet<>();
-    
+
     private ContextLinkSet linkSet = new ContextLinkSet();
 
     private HashMap<String, ContextualContainer> viewMap = new HashMap<>();
@@ -67,22 +67,21 @@ public class UiContextService extends AbstractService implements UiContextManage
 
     @Parameter
     EventService eventService;
-    
-    
+
     @Override
     public void initialize() {
         super.initialize();
         logger.info("Importing context configuration.");
         importContextConfiguration();
     }
-    
+
     public UiContextManager registerWidget(ContextualWidget widget) {
         widgets.put(widget.getName(), widget);
-        
-        if(widget.getContextualView() != null) {
-           viewMap.get(widget.getContextualView()).registerWidget(widget);
+
+        if (widget.getContextualView() != null) {
+            viewMap.get(widget.getContextualView()).registerWidget(widget);
         }
-        
+
         return this;
     }
 
@@ -103,44 +102,44 @@ public class UiContextService extends AbstractService implements UiContextManage
         }
 
         logger.info("Entering context " + enteredContext);
-        
-            // for each context acutally present
-            for (String currentContext : currentContextList) {
-       //currentContextList.forEach(currentContext -> {
 
-                // if the context is incompatible with the newly entered context
-                // the actual context is left to the profit of the new one
-                getUIContext(currentContext).getIncompatibles().forEach(concurrent -> {
-                    if (enteredContext.equals(concurrent)) {
-                        leave(currentContext);
-                    }
-                });
+        // for each context acutally present
+        for (String currentContext : currentContextList) {
+            //currentContextList.forEach(currentContext -> {
 
-            };
-
-            //every incompatible context are left
-            getUIContext(enteredContext).getIncompatibles().forEach(concurrent -> leave(concurrent));
-
-            logger.info("Entering context " + enteredContext);
-
-            // for each context acutally present
-            currentContextList.forEach(currentContext -> {
-
-                // if the context is incompatible with the newly entered context
-                // the actual context is left to the profit of the new one
-                getUIContext(currentContext).getIncompatibles().forEach(concurrent -> {
-                    if (enteredContext.equals(concurrent)) {
-                        leave(currentContext);
-                    }
-                });
-
+            // if the context is incompatible with the newly entered context
+            // the actual context is left to the profit of the new one
+            getUIContext(currentContext).getIncompatibles().forEach(concurrent -> {
+                if (enteredContext.equals(concurrent)) {
+                    leave(currentContext);
+                }
             });
 
-            //every incompatible context are left
-            getUIContext(enteredContext).getIncompatibles().forEach(concurrent -> leave(concurrent));
+        };
 
-            currentContextList.add(enteredContext);
-        
+        //every incompatible context are left
+        getUIContext(enteredContext).getIncompatibles().forEach(concurrent -> leave(concurrent));
+
+        logger.info("Entering context " + enteredContext);
+
+        // for each context acutally present
+        currentContextList.forEach(currentContext -> {
+
+            // if the context is incompatible with the newly entered context
+            // the actual context is left to the profit of the new one
+            getUIContext(currentContext).getIncompatibles().forEach(concurrent -> {
+                if (enteredContext.equals(concurrent)) {
+                    leave(currentContext);
+                }
+            });
+
+        });
+
+        //every incompatible context are left
+        getUIContext(enteredContext).getIncompatibles().forEach(concurrent -> leave(concurrent));
+
+        currentContextList.add(enteredContext);
+
         hasChanged = true;
 
         return this;
@@ -169,30 +168,34 @@ public class UiContextService extends AbstractService implements UiContextManage
 
     @Override
     public UiContextManager update() {
-        
-        if(!hasChanged()) return this;
-        
+
+        if (!hasChanged()) {
+            return this;
+        }
+
         logger.info("Updating...");
         logger.info("Actual context : " + getActualContextListAsString());
-        
+
         lastContextList.clear();
         lastContextList.addAll(currentContextList);
-        
+
         //logger.info(linkSet.toString());
         // for each controller, update the controller by telling it which widget it should show
         // and which widget it should hide
-        viewMap.values().parallelStream().forEach(controller -> updateController(controller));
-        
+        viewMap
+                .values()
+                .stream()
+                .forEach(controller -> updateController(controller));
+
         eventService.publish(new UiContextUpdatedEvent().setObject(currentContextList));
-        
+
         return this;
     }
-    
+
     public boolean hasChanged() {
-        
+
         return !(currentContextList.containsAll(lastContextList) && lastContextList.size() == currentContextList.size());
-        
-        
+
     }
 
     public <T> void updateController(ContextualContainer<T> view) {
@@ -200,29 +203,29 @@ public class UiContextService extends AbstractService implements UiContextManage
         ArrayList<ContextualWidget<T>> toShow = new ArrayList<>();
         ArrayList<ContextualWidget<T>> toHide = new ArrayList<>();
 
-        view.getWidgetList().parallelStream().forEach(widget -> {
-            boolean shouldShow = shouldShow(widget);
-            boolean shouldHide = !shouldShow;
+        view
+                .getWidgetList()
+                .parallelStream()
+                .forEach(widget -> {
+                    boolean shouldShow = shouldShow(widget);
+                    boolean shouldHide = !shouldShow;
 
-            //logger.info("Should "+widget+" be shown :"+shouldShow);
-            if (shouldShow && widget.isHidden()) {
-                toShow.add(widget);
-                logger.info("Adding widget :  " + widget);
-            } else if (shouldHide && !widget.isHidden()) {
-                toHide.add(widget);
-                logger.info("Hidding widget " + widget);
-            }
+                    //logger.info("Should "+widget+" be shown :"+shouldShow);
+                    if (shouldShow && widget.isHidden()) {
+                        toShow.add(widget);
+                        logger.info("Marking widget for SHOW:  " + widget);
+                    } else if (shouldHide && !widget.isHidden()) {
+                        toHide.add(widget);
+                        logger.info("Marking widget for HIDE " + widget);
+                    }
 
-        });
+                });
         try {
-        view.onContextChanged(toShow, toHide);
-        }
-        catch(Exception e) {
+            view.onContextChanged(toShow, toHide);
+        } catch (Exception e) {
             logger.log(Level.SEVERE, "Error when updating ContextualView", e);
         }
-        
-        
-        
+
     }
 
     public boolean shouldShow(String contextualWidget) {
@@ -232,12 +235,9 @@ public class UiContextService extends AbstractService implements UiContextManage
     public boolean shouldShow(ContextualWidget widget) {
 
         ConditionList isPresentInAContext = new ConditionList();
-        
+
         ConditionList isNegatedByAContext = new ConditionList();
-        
-        
-        
-        
+
         /*
          //check for each actual context token if the widget is linked to it
          for (String contextName : currentContextList) {
@@ -249,17 +249,18 @@ public class UiContextService extends AbstractService implements UiContextManage
 
          //check
          isPresentInAContext.add(linkSet.contains(link));*/
-
         linkSet.parallelStream().filter(link -> link.getWidgetName().equals(widget.getName())).forEach(link -> {
             isPresentInAContext.add(link.fullFill(currentContextList));
         });
-        
+
         linkSet.parallelStream().filter(link -> link.getWidgetName().equals(widget.getName())).forEach(link -> {
             isNegatedByAContext.add(link.negate(currentContextList));
         });
-        
+
         // the widget should be hidden if one of the link negates it appearance.
-        if(isNegatedByAContext.isOneTrue()) return false;
+        if (isNegatedByAContext.isOneTrue()) {
+            return false;
+        }
 
         // if the widget is at least linked to one context, then it should be shown
         return isPresentInAContext.isOneTrue();
@@ -286,9 +287,7 @@ public class UiContextService extends AbstractService implements UiContextManage
 
             return this;
         }
-        
-        
-        
+
         linkSet.add(new UiContextLink(widget, context, linkType));
         return this;
     }
@@ -312,7 +311,7 @@ public class UiContextService extends AbstractService implements UiContextManage
 
     @Override
     public <T> UiContextManager addContextualView(ContextualContainer<T> contextualView) {
-        
+
         logger.info(String.format("Registering the contextual view : %s", contextualView.getName()));
         viewMap.put(contextualView.getName(), contextualView);
         contextualView
@@ -341,7 +340,7 @@ public class UiContextService extends AbstractService implements UiContextManage
         try {
             resultJson = mapper.writeValueAsString(uiContextMap.values());
         } catch (JsonProcessingException ex) {
-            ImageJFX.getLogger().log(Level.SEVERE,"Error when exporting context configuration.",ex);;
+            ImageJFX.getLogger().log(Level.SEVERE, "Error when exporting context configuration.", ex);;
         }
 
         return resultJson;
@@ -351,13 +350,12 @@ public class UiContextService extends AbstractService implements UiContextManage
     public void importContextConfiguration() {
 
         try {
-            String json = IOUtils.toString(getClass().getResourceAsStream("/ijfx/service/uicontext/ContextService.json"));
+            String json = IOUtils.toString(getClass().getResourceAsStream("/ijfx/core/uicontext/ContextService.json"));
             importContextConfiguration(json);
         } catch (IOException ex) {
-            logger.log(Level.SEVERE,"Failed to load the ContextService.json file",ex);
-        }
-        catch(Exception e) {
-            logger.log(Level.SEVERE,"Error when exporting configuration");
+            logger.log(Level.SEVERE, "Failed to load the ContextService.json file", ex);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error when exporting configuration");
         }
 
     }
@@ -371,11 +369,11 @@ public class UiContextService extends AbstractService implements UiContextManage
             contextList = mapper.readValue(json, TypeFactory.defaultInstance().constructCollectionType(List.class, UiContext.class));
 
         } catch (IOException ex) {
-            logger.log(Level.SEVERE,"Error when converting the json file into context configuration.",ex);
+            logger.log(Level.SEVERE, "Error when converting the json file into context configuration.", ex);
         }
 
         contextList.forEach(context -> {
-            logger.info(String.format("Loaded context %s which is incompatible with : %s",context.getId(),context.getIncompatibles().stream().collect(Collectors.joining(", "))));
+            logger.info(String.format("Loaded context %s which is incompatible with : %s", context.getId(), context.getIncompatibles().stream().collect(Collectors.joining(", "))));
             uiContextMap.put(context.getId(), context);
         });
 
@@ -422,14 +420,13 @@ public class UiContextService extends AbstractService implements UiContextManage
     public HashMap<String, UiContext> getUIContextMap() {
         return uiContextMap;
     }
-    
+
     public void clean() {
-       currentContextList.clear();
+        currentContextList.clear();
     }
-    
-   public Set<String> getContextList() {
-       return currentContextList;
-   }
-    
-    
+
+    public Set<String> getContextList() {
+        return currentContextList;
+    }
+
 }

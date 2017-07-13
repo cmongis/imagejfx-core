@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+
+<fx:root id="AnchorPane" prefHeight="575.0" prefWidth="765.0" stylesheets="@../../flatterfx.css" type="AnchorPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <BorderPane fx:id="borderPane" layoutX="-3.0" layoutY="-2.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="575.0" prefWidth="765.0">
+         <top>
+            <HBox depthTest="ENABLE" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+               <children>
+                  <MenuButton fx:id="fileButton" mnemonicParsing="false" text="File">
+                     <font>
+                        <Font size="17.0" />
+                     </font>
+                  </MenuButton>
+                  <MenuButton fx:id="editButton" mnemonicParsing="false" text="Edit">
+                     <font>
+                        <Font size="17.0" />
+                     </font>
+                  </MenuButton>
+                  <MenuButton fx:id="languageButton" mnemonicParsing="false" text="Language">
+                     <font>
+                        <Font size="17.0" />
+                     </font>
+                  </MenuButton>
+               </children>
+            </HBox>
+         </top>
+      </BorderPane>
+   </children>
+</fx:root>

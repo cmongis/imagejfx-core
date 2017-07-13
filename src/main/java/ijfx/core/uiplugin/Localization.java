@@ -35,6 +35,7 @@ public class Localization {
     public static final String TOP_RIGHT = "topRightHBox";
     public static final String BOTTOM_RIGHT = "bottomRightHBox";
     public static final String LEFT = "leftVBox";
+    public static final String BOTTOM_TOP = "bottomTopVBox";
     //public static final String CENTER = "centerStackPane";
 
 }

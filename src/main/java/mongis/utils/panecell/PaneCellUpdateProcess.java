@@ -19,6 +19,7 @@
  */
 package mongis.utils.panecell;
 
+import ijfx.ui.main.ImageJFX;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
@@ -51,12 +52,22 @@ public class PaneCellUpdateProcess<T> {
 
     boolean cancelled = false;
 
+    Logger logger = ImageJFX.getLogger();
+    
     public PaneCellUpdateProcess(List<T> items, List<PaneCell<T>> cachedController, List<Node> toUpdate, Callable<PaneCell<T>> factory) {
         this.items = items;
         this.cachedController = cachedController;
         this.nodeList = toUpdate;
         this.factory = factory;
+        
+        logger.info(String.format("Updating PaneCells : items=%d, cache=%d,nodes=%d",items.size(),cachedController.size(),toUpdate.size()));
+        
+        
+        
         nodeList.clear();
+        
+        
+        
         createQueue
                 .limit(items.size())
                 .onBackpressureBuffer()
@@ -75,6 +86,7 @@ public class PaneCellUpdateProcess<T> {
                 .buffer(20)
                 .subscribe(this::toAdd, this::onError);
 
+        // if there are more items than controllers in the cache, new controllers must be created
         if (items.size() >= cachedController.size()) {
 
             if (cachedController.size() > 0) // creating CellUpdate request
@@ -108,7 +120,6 @@ public class PaneCellUpdateProcess<T> {
         if (cancelled) {
             return;
         }
-        System.out.println("creation request");
         PaneCell<T> create = c.create();
         updateQueue.onNext(new CellUpdate(create, c.object));
     }
@@ -120,15 +131,11 @@ public class PaneCellUpdateProcess<T> {
     }
 
     private void onUpdateRequest(CellUpdate request) {
-
-        System.out.println("update request");
         if (cancelled) {
             return;
         }
-
         request.update();
         updateCount++;
-
     }
 
     private void toAdd(List<CellUpdate> updates) {
@@ -147,6 +154,7 @@ public class PaneCellUpdateProcess<T> {
         List<Node> collect = updates
                 .stream()
                 .map(r -> r.paneCell.getContent())
+                .filter(node->nodeList.contains(node) == false)
                 .collect(Collectors.toList());
 
         Platform.runLater(() -> nodeList.addAll(collect));
@@ -155,7 +163,7 @@ public class PaneCellUpdateProcess<T> {
 
     public void cancel() {
         cancelled = true;
-        System.out.println("Cancelling...");
+        
     }
 
     private class CellCreation {

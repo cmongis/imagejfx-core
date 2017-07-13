@@ -24,22 +24,22 @@ import ijfx.core.FXUserInterface;
 import ijfx.core.activity.Activity;
 import ijfx.core.hint.Hint;
 import ijfx.core.hint.HintService;
+import ijfx.core.icon.FXIconService;
 import ijfx.core.mainwindow.MainWindow;
-import ijfx.core.mainwindow.SideMenuAction;
 import ijfx.core.uicontext.ContextualContainer;
 import ijfx.core.uicontext.ContextualWidget;
 import ijfx.core.uicontext.UiContextService;
 import ijfx.core.uiplugin.UiPluginService;
+import ijfx.core.utils.SciJavaUtils;
 import ijfx.ui.UiPlugin;
 import ijfx.ui.UiPluginSorter;
 import ijfx.ui.loading.LoadingPopup;
+import ijfx.ui.plugin.statusbar.DefaultFXStatusBar;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.animation.Transition;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleListProperty;
 import javafx.concurrent.Task;
@@ -57,12 +57,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javax.management.Notification;
 import mongis.utils.BindingsUtils;
-import mongis.utils.CallableTask;
 import mongis.utils.TaskList2;
 import mongis.utils.animation.Animations;
-import mongis.utils.animation.TransitionQueueNG;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import ijfx.core.uiplugin.UiCommand;
+import ijfx.core.uiplugin.UiCommandService;
+import javafx.application.Platform;
 
 /**
  * Controller class for the main window
@@ -114,6 +115,9 @@ public class DefaultMainWindow implements MainWindow {
     @FXML
     private VBox topToolBarVBox;
 
+    @FXML
+    private VBox bottomTopVBox;
+    
     private SideBar sideBar;
 
     List<ContextualContainer<Node>> contextualContainer = new ArrayList<>();
@@ -133,6 +137,12 @@ public class DefaultMainWindow implements MainWindow {
 
     @Parameter
     FXUserInterface fxUserInterface;
+
+    @Parameter
+    FXIconService fxIconService;
+
+    @Parameter
+    UiCommandService uiActionService;
 
     @Override
     public void init() {
@@ -154,7 +164,6 @@ public class DefaultMainWindow implements MainWindow {
                 rightVBox.pseudoClassStateChanged(EMPTY, newValue);
             });
 
-           
             mainBorderPane.setOpacity(1.0);
             mainBorderPane.setCenter(new Label("Loading..."));
 
@@ -166,9 +175,7 @@ public class DefaultMainWindow implements MainWindow {
 
             registerWidgetControllers();
 
-            new CallableTask<SideBar>(SideBar::new)
-                    .then(this::configureSideBar)
-                    .start();
+            configureSideBar(new SideBar());
 
         } catch (IOException ex) {
             Logger.getLogger(DefaultMainWindow.class.getName()).log(Level.SEVERE, "Error when loading the DefaultMainWindow FXML", ex);
@@ -220,14 +227,18 @@ public class DefaultMainWindow implements MainWindow {
         registerContextualContainer(topToolBarVBox)
                 .setAnimationOnShow(Animations.FADEIN)
                 .setAnimationOnHide(Animations.FADEOUT);
+        
+        registerContextualContainer(bottomTopVBox)
+                .setAnimationOnShow(Animations.QUICK_EXPAND)
+                .setAnimationOnHide(Animations.DISAPPEARS_DOWN);
     }
 
     private void configureSideBar(SideBar sideBar) {
-       
+
         this.sideBar = sideBar;
-        
+
         mainAnchorPane.getChildren().add(sideBar.getNode());
-        
+
         BindingsUtils.bindNodeToPseudoClass(HIDDEN, sideBar.getNode(), Bindings.createBooleanBinding(() -> sideBar.getNode().getTranslateX() <= -1.0 * sideBar.getNode().getWidth() + 2, sideBar.getNode().translateXProperty()));
 
     }
@@ -277,18 +288,21 @@ public class DefaultMainWindow implements MainWindow {
 
     @Override
     public void displayActivity(Activity activity) {
-        
-       
+        /*
         Transition configure = Animations.ZOOMOUT.configure(mainBorderPane.getCenter(), 400);
-        
-        configure.setOnFinished(event->{
+
+        configure.setOnFinished(event -> {
             mainBorderPane.setCenter(activity.getContent());
-             Animations.ZOOMIN.configure(mainBorderPane.getCenter(), 400).play();
+            Animations.ZOOMIN.configure(mainBorderPane.getCenter(), 400).play();
         });
-       
-        configure.play();
-        
-        
+
+        configure.play();*
+
+         */
+        Platform.runLater(() -> {
+            mainBorderPane.setCenter(activity.getContent());
+        });
+
     }
 
     @Override
@@ -297,8 +311,17 @@ public class DefaultMainWindow implements MainWindow {
     }
 
     @Override
-    public void displaySideMenuAction(SideMenuAction action) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void displaySideMenuAction(UiCommand<MainWindow> action) {
+
+        final FontAwesomeIcon icon = fxIconService.getIcon(SciJavaUtils.getIconPath(action));
+
+        final String label = SciJavaUtils.getLabel(action);
+
+        SideMenuButton sideMenuButton = new SideMenuButton(label, icon);
+        sideMenuButton.setOnMouseClicked(event -> {
+            action.run(this);
+        });
+        sideBar.addButton(sideMenuButton);
     }
 
     @Override
@@ -313,12 +336,14 @@ public class DefaultMainWindow implements MainWindow {
 
     @Override
     public void addBackgroundTask(Task task) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        uiPluginService
+                .getUiPlugin(DefaultFXStatusBar.class)
+                .addTask(task);
     }
 
     @Override
     public void setReady(boolean ready) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
     }
 
     @Override

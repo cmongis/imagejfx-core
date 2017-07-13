@@ -141,9 +141,8 @@ public class DefaultWorkflowStep implements WorkflowStep {
 
         if (module == null) {
             createModule(commandService, moduleSerivce);
-            prefill();
         }
-
+         
         return module;
     }
 

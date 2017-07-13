@@ -19,10 +19,14 @@
  */
 package ijfx.ui.display.image;
 
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import ijfx.core.image.DisplayRangeService;
+import ijfx.core.overlay.OverlayDrawingService;
+import ijfx.core.overlay.OverlayUtilsService;
 import ijfx.core.timer.Timer;
 import ijfx.core.timer.TimerService;
-import ijfx.plugins.display.AutoContrast;
+import ijfx.core.uicontext.UiContextService;
+import ijfx.ui.display.overlay.MoveablePoint;
+import ijfx.ui.display.overlay.OverlayModifier;
 import ijfx.ui.display.tool.HandTool;
 import ijfx.ui.main.ImageJFX;
 import ijfx.ui.widgets.ImageDisplayAdjuster;
@@ -32,16 +36,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -55,6 +65,8 @@ import net.imagej.display.DatasetView;
 import net.imagej.display.ImageCanvas;
 import net.imagej.display.ImageDisplay;
 import net.imagej.display.ImageDisplayService;
+import net.imagej.display.OverlayService;
+import net.imagej.display.OverlayView;
 import net.imagej.ui.viewer.image.ImageDisplayPanel;
 import net.imglib2.display.screenimage.awt.ARGBScreenImage;
 import net.imglib2.type.numeric.RealType;
@@ -65,7 +77,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.tool.ToolService;
 import org.scijava.ui.viewer.DisplayWindow;
-import org.scijava.util.IntCoords;
+import org.scijava.util.RealCoords;
 
 /**
  *
@@ -104,6 +116,12 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
     @FXML
     private BorderPane topBorderPane;
 
+    private AnchorPane modifiersAnchorPane;
+    
+    private Label fpsLabel = new Label();
+    
+    private IntegerProperty fpsProperty = new SimpleIntegerProperty();
+    
     /*
         Services
      */
@@ -119,13 +137,36 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
     @Parameter
     Context context;
 
+    @Parameter
+    OverlayDrawingService overlayDrawingService;
+
+    @Parameter
+    OverlayUtilsService overlayUtilsService;
+
+    @Parameter
+    OverlayService overlayService;
+    
+    @Parameter
+    UiContextService uiContextService;
+
+    @Parameter
+    DisplayRangeService displayRangeService;
+    
+    
     /*
         Drawing related
      */
     private Canvas canvas;
 
+    private CanvasListener canvasListener;
+
     private WritableImage buffer;
 
+    private OverlayDrawingManager overlayDrawingManager;
+
+    /*
+        Extra UI Elements
+     */
     private static final Logger logger = ImageJFX.getLogger();
 
     private ImageDisplayAdjuster adjuster;
@@ -143,6 +184,9 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
 
     private final BooleanProperty anyAxisSliderInUse = new SimpleBooleanProperty(true);
 
+    
+    
+    
     public ImageDisplayPanelFX() {
 
         try {
@@ -172,6 +216,18 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
             return;
         }
 
+        installCanvas();
+        
+        //anchorPane.setFocusTraversable(true);
+        //topBorderPane.setFocusTraversable(true);
+        
+        toolService.setActiveTool(toolService.getTool(HandTool.class));
+        anchorPane.addEventHandler(KeyEvent.ANY, System.out::println);
+        setFocusTraversable(false);
+        /*
+       
+        */
+        
         showBottomPanel
                 .bind(
                         anyAxisSliderInUse
@@ -189,6 +245,17 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
                 .setOnTrue(0.0)
                 .bind(showBottomPanel, bottomPane.translateYProperty());
 
+        
+        Label fpsLabel = new Label();
+        
+        fpsLabel.textProperty().bind(fpsProperty.asString());
+        
+        
+        AnchorPane.setBottomAnchor(fpsLabel, 10d);
+        AnchorPane.setRightAnchor(fpsLabel,10d);
+        
+        modifiersAnchorPane.getChildren().add(fpsLabel);
+        modifiersAnchorPane.addEventHandler(MouseEvent.ANY, event->canvas.requestFocus());
         /*
             Creating fixed UI elements and properties
          */
@@ -212,10 +279,15 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
     public void view(DisplayWindow window, FXImageDisplay display) {
         this.window = window;
         this.display = display;
+        
+        fpsProperty.bind(display.refreshPerSecond());
+        
+        installCanvas();
+
     }
 
     @Override
-    public ImageDisplay getDisplay() {
+    public FXImageDisplay getDisplay() {
         return display;
     }
 
@@ -227,14 +299,55 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
     @Override
     public void redoLayout() {
 
+        Platform.runLater(this::redoLayoutSafe);
+    }
+
+    public void redoLayoutSafe() {
         // removing the adjuster if exists
+
+        installAdjuster();
+
+        installCanvas();
+
+        // redrawing
+        redraw();
+
+        // creating the channel switches
+        createChannelSwitchs();
+
+        resetAxisSliders();
+
+    }
+
+    private void installCanvas() {
+        if (display != null && canvas == null && canvasListener == null) {
+            canvas = new Canvas();
+            new CanvasListener(display, canvas);
+            // adding the canvas
+            modifiersAnchorPane = new AnchorPane();
+            modifiersAnchorPane.prefWidthProperty().bind(canvas.widthProperty());
+            modifiersAnchorPane.prefHeightProperty().bind(canvas.heightProperty());
+            modifiersAnchorPane.setPickOnBounds(false);
+            modifiersAnchorPane.maxWidthProperty().bind(canvas.widthProperty());
+            modifiersAnchorPane.maxHeightProperty().bind(canvas.heightProperty());
+            stackPane.getChildren().addAll(canvas,modifiersAnchorPane);
+            
+            /*
+             * Makes sure the key events are transmitted to the cavnas
+             */
+            //stackPane.setFocusTraversable(true);
+            //modifiersAnchorPane.setFocusTraversable(true);
+            
+        }
+    }
+
+    private void installAdjuster() {
         if (adjuster != null) {
-            anchorPane.getChildren().remove(adjuster);
+            return;
         }
 
         // creating a new one
-        adjuster = new ImageDisplayAdjuster(context)
-                .addButton("Auto contrast", FontAwesomeIcon.MAGIC, "Calculate the min and max of each channel and adjust their display range accordingly", AutoContrast.class);
+        adjuster = new ImageDisplayAdjuster(context);
 
         // adding it to the AnchorPane
         anchorPane.getChildren().add(1, adjuster);
@@ -253,24 +366,7 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
 
         // tying the new adjuster to the display
         adjuster.imageDisplayProperty().setValue(display);
-
-        // creating a new canvas
-        canvas = new Canvas();
-
-        new CanvasListener(display, canvas);
-
-        // adding the canvas
-        stackPane.getChildren().add(canvas);
-        toolService.setActiveTool(toolService.getTool(HandTool.class));
-
-        // redrawing
-        redraw();
-
-        // creating the channel switches
-        createChannelSwitchs();
-
-        resetAxisSliders();
-
+        adjuster.refresh();
     }
 
     private void resetAxisSliders() {
@@ -316,6 +412,8 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
             useIjfxRender();
             axisSliderList
                     .forEach(AxisSlider::refresh);
+
+            redrawOverlays();
         });
     }
 
@@ -332,15 +430,23 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
     @Override
     public void display(FXImageDisplay t) {
         this.display = t;
+        
+       fpsProperty.bind(t.refreshPerSecond());
+        
         redoLayout();
+        
+        displayRangeService.autoContrast(display);
+        for(int i =2 ; i!= display.numDimensions();i++) {
+            display.setPosition(0,i);
+        }
+        display.checkProperties();
+        imageDisplayService.getActiveDatasetView(display).getProjector().map();
         redraw();
+        
     }
 
     private void onPanelSizeChanged(Observable obs, Number oldValue, Number newValue) {
-        Platform.runLater(() -> {
-
-            redraw();
-        });
+        Platform.runLater(this::redraw);
     }
 
     private <T extends RealType<T>> void useIjfxRender() {
@@ -377,25 +483,25 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
 
         ImageCanvas viewport = getDisplay().getCanvas();
 
-        IntCoords panOffset = viewport.getPanOffset();
+        RealCoords center = viewport.getPanCenter();
         
-        final double sx = panOffset.x;
-        final double sy = panOffset.y;
+        double zoomFactor = viewport.getZoomFactor();
 
-         
-        
-        final double sw = 1.0 * viewport.getViewportWidth() / viewport.getZoomFactor();
-        final double sh = 1.0 * viewport.getViewportHeight() / viewport.getZoomFactor();
+        final double sx = center.x - (viewport.getViewportWidth() / 2 / zoomFactor);
+        final double sy = center.y - (viewport.getViewportHeight() / 2 / zoomFactor);
 
-        System.out.println(String.format("sx = %.0f, sy = %.0f, sw = %.0f, sh =%.0f",sx,sy,sw,sh));
-        
+        final double sw = 1.0 * viewport.getViewportWidth() / zoomFactor;
+        final double sh = 1.0 * viewport.getViewportHeight() / zoomFactor;
+
+        System.out.println(String.format("sx = %.0f, sy = %.0f, sw = %.0f, sh =%.0f", sx, sy, sw, sh));
+
         // the target image (which is the canvas itself
         final double tx = 0;
         final double ty = 0;
         final double tw = canvas.getWidth();
         final double th = canvas.getHeight();
 
-        canvas.getGraphicsContext2D().clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        canvas.getGraphicsContext2D().clearRect(0, 0, tw, th);
         // drawing the part of the image seen by the camera into
         // the canvas
         canvas
@@ -456,22 +562,76 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
 
     private void createChannelSwitchs() {
 
+        if (buttonHBox.getChildren().size() == display.getChannelNumber()) {
+            return;
+        }
+
         buttonHBox.getChildren().clear();
 
         if (getDatasetview().getChannelCount() > 1) {
 
             for (int i = 1; i != getDatasetview().getChannelCount() + 1; i++) {
                 LUTSwitchButton button = new LUTSwitchButton(display);
-
-                context.inject(button);
                 final int channel = i - 1;
                 button.imageDisplayProperty().setValue(display);
                 button.channelProperty().set(channel);
                 buttonHBox.getChildren().add(button);
-
+                
+               
             }
 
         }
 
+    }
+
+    private void redrawOverlays() {
+        if (overlayDrawingManager == null) {
+            overlayDrawingManager = new OverlayDrawingManager(display, canvas);
+        }
+        overlayDrawingManager.redraw();
+        refreshModifiers();
+    }
+
+    private void refreshModifiers() {
+        
+        
+        
+        // checking modifiers of overlay that has been deleted
+        List<Node> points = overlayDrawingManager
+                .checkDeletedOverlay(overlayService.getOverlays(display))
+                .stream()
+                .peek(overlayDrawingManager::delete)
+                .map(modifier->modifier.getModifiers(display, null))
+                
+                .flatMap(List<MoveablePoint>::stream)
+                .collect(Collectors.toList());
+        
+        modifiersAnchorPane.getChildren().removeAll(points);
+        
+        display
+                .stream()
+                .filter((view) -> view instanceof OverlayView)
+                .map(o -> (OverlayView) o)
+                .forEach(this::checkModifier);
+
+    }
+
+    private void checkModifier(OverlayView overlayView) {
+
+        OverlayModifier modifier = overlayDrawingManager.getModifier(overlayView.getData());
+        if(modifier == null) return;
+        List<MoveablePoint> modifiers = modifier.getModifiers(display, overlayView.getData());
+        if (overlayView.isSelected()) {
+            if (modifiersAnchorPane.getChildren().containsAll(modifiers) == false) {
+                modifiersAnchorPane.getChildren().addAll(modifiers);
+                 
+            }
+            modifier.refresh();
+        }
+        else {
+            modifiersAnchorPane.getChildren().removeAll(modifiers);
+           
+        }
+        modifier.refresh();
     }
 }
