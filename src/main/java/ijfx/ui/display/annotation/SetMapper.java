@@ -40,7 +40,7 @@ public class SetMapper extends AbstractExplorableDisplayCommand{
         
        items
                .stream()
-               .forEach(this::setValue);
+               .forEach(this::setMapper);
        
        
        display.update();
