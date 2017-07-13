@@ -22,7 +22,7 @@ package ijfx.ui.test;
 import ijfx.core.uiextra.ChoiceDialog;
 import ijfx.explorer.datamodel.DefaultMapper;
 import ijfx.explorer.datamodel.Mapper;
-import ijfx.ui.display.annotation.DefaultAnnotationDisplay;
+import ijfx.ui.display.annotation.DefaultAnnotationDialog;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -57,10 +57,10 @@ public class DummySomething extends ContextCommand{
 @Override
     public void run() {
         
-        Platform.runLater( ()-> {
-             DefaultAnnotationDisplay annot = null;
+        Platform.runLater(()-> {
+             DefaultAnnotationDialog annot = null;
         try {
-           annot = new DefaultAnnotationDisplay();
+           annot = new DefaultAnnotationDialog();
         } catch (IOException ex) {
             Logger.getLogger(DummySomething.class.getName()).log(Level.SEVERE, null, ex);
         }

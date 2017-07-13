@@ -17,12 +17,31 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.ui.display.annotation;
+package ijfx.explorer.commands;
+
+import ijfx.ui.display.annotation.DefaultAnnotationDialog;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
+import org.scijava.plugin.Plugin;
 
 /**
  *
  * @author sapho
  */
-public interface AnnotationDisplay {
+
+@Plugin(type = Command.class,menuPath = "Plugins > Explorer > Add Mapper Second Try")
+public class AddMapperSecondTry extends ContextCommand{
+
+    @Override
+    public void run() {
+        try {
+            DefaultAnnotationDialog d = new DefaultAnnotationDialog();
+            } catch (IOException ex) {
+            Logger.getLogger(AddMapper.class.getName()).log(Level.SEVERE, null, ex);
+    }
     
+}
 }

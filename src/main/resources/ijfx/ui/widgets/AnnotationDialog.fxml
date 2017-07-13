@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
+
+<Pane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="380.0" prefWidth="289.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <TextField fx:id="oldKey" layoutX="14.0" layoutY="14.0" prefHeight="30.0" prefWidth="116.0" />
+      <TextField fx:id="newKey" layoutX="159.0" layoutY="14.0" prefHeight="30.0" prefWidth="116.0" />
+      <VBox fx:id="vBox" fillWidth="false" layoutX="10.0" layoutY="64.0" prefHeight="282.0" prefWidth="270.0" spacing="2.0" />
+      <Line endX="125.0" layoutX="144.0" layoutY="52.0" startX="-125.0" stroke="#ae9b9b" />
+   </children>
+</Pane>
