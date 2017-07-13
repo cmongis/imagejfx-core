@@ -66,7 +66,7 @@ public class AddMapper extends ContextCommand{
             DefaultMapper mapper = new DefaultMapper(newKey, key);
             mapper.associatedValues(basisValue, newValue);
                         
-            for (Explorable e : display.getSelected()){
+            for (MetaDataOwner e : display.getSelected()){
                 MetaDataSet f = e.getMetaDataSet();
                 MetaData d = mapper.map(f.get(key));
                 f.put(newKey, d);
