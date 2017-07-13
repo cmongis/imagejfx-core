@@ -27,6 +27,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Logger;
+import javafx.scene.Parent;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import net.imagej.ImageJ;
@@ -109,11 +110,17 @@ public final class ImageJFX  {
         
         ImageJ imagej = new ImageJ();
         imagej.ui().setDefaultUI(imagej.ui().getUI(UI_NAME));
-        imagej.ui().showUI(UI_NAME);
-        
+        //imagej.ui().showUI(UI_NAME);
+        //imagej.ui().setDefaultUI(imagej.ui().getUI(SwingUI.NAME));
+        imagej.ui().showUI();   
         
     }
     
+    public static void applyBaseCss(Parent parent) {
+        
+       parent.getStylesheets().add(getStylesheet());
+        
+    }
     
     public static String getStylesheet() {
         return STYLESHEET_ADDR;
