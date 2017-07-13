@@ -20,15 +20,13 @@
 package ijfx.explorer.commands;
 
 import ijfx.core.metadata.MetaData;
+import ijfx.core.metadata.MetaDataOwner;
 import ijfx.core.metadata.MetaDataSet;
 import ijfx.explorer.ExplorableDisplay;
 import ijfx.explorer.datamodel.DefaultMapper;
 import ijfx.explorer.datamodel.Explorable;
-import ijfx.ui.display.annotation.DefaultAnnotationDialog;
 import ijfx.ui.service.AnnotationService;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.stream.Stream;
 import org.scijava.ItemIO;
 import org.scijava.command.Command;
 import org.scijava.command.ContextCommand;
@@ -67,22 +65,16 @@ public class AddMapper extends ContextCommand{
             
             DefaultMapper mapper = new DefaultMapper(newKey, key);
             mapper.associatedValues(basisValue, newValue);
-            
-            //display.getSelected().forEach(c -> mapper.map((MetaData)c));
-            
-            
-            for (Explorable e :display.getSelected()){
-            MetaDataSet f = e.getMetaDataSet();
-            
-            MetaData d = mapper.map((MetaData)e);
-            e.getMetaDataSet().put(d);
+                        
+            for (Explorable e : display.getSelected()){
+                MetaDataSet f = e.getMetaDataSet();
+                MetaData d = mapper.map(f.get(key));
+                f.put(newKey, d);
             }
+
               
         }
-        
-
-
-        
+    
     }
     
     
