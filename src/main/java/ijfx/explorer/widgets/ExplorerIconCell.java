@@ -21,6 +21,7 @@ package ijfx.explorer.widgets;
 
 import ijfx.core.datamodel.Iconazable;
 import ijfx.explorer.ExplorerService;
+import ijfx.explorer.datamodel.Explorable;
 import javafx.scene.image.Image;
 import mongis.utils.panecell.PaneIconCell;
 import org.scijava.plugin.Parameter;
@@ -29,7 +30,7 @@ import org.scijava.plugin.Parameter;
  *
  * @author Cyril MONGIS, 2016
  */
-public class ExplorerIconCell extends PaneIconCell<Iconazable>{
+public class ExplorerIconCell extends PaneIconCell<Explorable>{
     
     @Parameter
     ExplorerService explorerService;
@@ -41,25 +42,26 @@ public class ExplorerIconCell extends PaneIconCell<Iconazable>{
         setSubtitleFactory(this::getSubtitle);
         setImageFactory(this::getImage);
         onScreenProperty().setValue(Boolean.FALSE);
-        
     }
     
     @Override
-    public void setItem(Iconazable icon) {
+    public void setItem(Explorable icon) {
         
         
         if(icon == getItem()) return;
             
-        
+        /*
         // we must bind the selected property
         if(getItem() != null) {
             getItem().selectedProperty().unbindBidirectional(selectedProperty());
-        }
+        }*/
         
         super.setItem(icon);
+        
+        /*
         if(icon != null) {
             selectedProperty().bindBidirectional(icon.selectedProperty());
-        }
+        }*/
     }
     
     public String getTitle(Iconazable iconazable) {

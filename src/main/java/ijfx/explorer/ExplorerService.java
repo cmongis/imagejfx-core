@@ -19,10 +19,10 @@
  */
 package ijfx.explorer;
 
+import com.google.common.collect.Lists;
 import ijfx.core.IjfxService;
 import ijfx.core.datamodel.Iconazable;
 import ijfx.core.imagedb.ImageRecord;
-import ijfx.core.metadata.MetaDataOwner;
 import ijfx.explorer.datamodel.Explorable;
 import java.io.File;
 import java.util.ArrayList;
@@ -46,9 +46,19 @@ public interface ExplorerService extends IjfxService {
 
     void setOptionalFilter(Predicate<Explorable> addionnalFilter);
 
-    List<Explorable> getFilteredItems();
+    List<Explorable> getDisplayedItems();
 
     List<? extends Explorable> getSelectedItems();
+
+    void selectItems(List<? extends Explorable> items);
+
+    default void selectItems(Explorable... items) {
+        selectItems(Lists.newArrayList(items));
+    }
+    
+    default void selectAll() {
+        selectItems(getDisplayedItems());
+    }
 
     void selectItem(Explorable explorable);
 
@@ -68,7 +78,6 @@ public interface ExplorerService extends IjfxService {
     public ArrayList<String> getMetaDataKey(List<? extends Explorable> items);
 
     public Stream<Explorable> indexDirectory(ProgressHandler origProgress, File directory);
-    
-    
+
     public Stream<Explorable> getSeries(ImageRecord explorable);
 }

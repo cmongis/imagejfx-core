@@ -28,6 +28,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import org.scijava.script.ScriptLanguage;
 
 /**
@@ -68,7 +69,8 @@ public class NanorcParser implements LanguageKeywords{
             this.keywordsTable.clear();
             this.nanorcFile = getClass().getResource(findFileLanguage(language)).getFile();
             nanoRcParseV2(this.nanorcFile);
-            computeComment();
+            //computeComment();
+            System.out.println(this.keywordsTable);
         } catch (NullPointerException e) {
             System.out.println("No nanorc file for this language");
             this.keywordsTable = new Hashtable();
@@ -110,18 +112,82 @@ public class NanorcParser implements LanguageKeywords{
                                 newWords = newWords.replace("\"\\<(", "").replace(")\\>\"", "");
                                 pattern = pattern.replace(")\\b", "|"+newWords);
                                 pattern = pattern.concat(")\\b");
-                                this.keywordsTable.put(splitedLine[1], pattern);
+                                addKeyword(pattern, splitedLine[1]);
+                                //this.keywordsTable.put(splitedLine[1], pattern);
                             }
                         else {
                             String pattern = splitedLine[2];
                             pattern= pattern.replace("\"\\<(", "\\b(");
                             pattern = pattern.replace(")\\>\"", ")\\b");
-                            this.keywordsTable.put(splitedLine[1], pattern); //                                  adding the list in the hash table
+                            addKeyword(pattern, splitedLine[1]);
+                            //this.keywordsTable.put(splitedLine[1], pattern); //                                  adding the list in the hash table
                         }
                     }
+                    else if (splitedLine[2].matches("start.*")){
+                        if (this.keywordsTable.containsKey(splitedLine[1])){
+                            String pattern = (String) this.keywordsTable.get(splitedLine[1]);
+                            
+                            String[] patterns = computeCommentPattern(splitedLine);
+                            pattern = pattern.concat("|" + patterns[0] + "(.|\\R)*?" + patterns[1]);
+                            addKeyword(pattern, splitedLine[1]);
+                            //this.keywordsTable.put(splitedLine[1], pattern);
+                        }
+                        else {
+                           
+                            String[] patterns = computeCommentPattern(splitedLine);
+                            String pattern = patterns[0].concat("(.|\\R)*?" + patterns[1]);
+                            addKeyword(pattern, splitedLine[1]);
+                            //this.keywordsTable.put(splitedLine[1], pattern);
+                        }
+                    //System.out.println(this.keywordsTable.get(splitedLine[1]));
+                    }
+                    else {
+                        if (this.keywordsTable.containsKey(splitedLine[1])){
+                            // TODO : gerer quand il faut concatener avec une couleur existente
+                            String pattern = splitedLine[2];
+                            pattern = pattern.substring(1, pattern.length()-1);
+                            pattern = pattern.replace(".*$", "[^\n]*");
+                            String oldpattern = (String) this.keywordsTable.get(splitedLine[1]);
+                            pattern = oldpattern.concat("|" + pattern);
+                            addKeyword(pattern, splitedLine[1]);
+                            //this.keywordsTable.put(splitedLine[1], pattern);
+                        }
+                        else {
+                            String pattern = splitedLine[2];
+                            pattern = pattern.substring(1, pattern.length()-1);
+                            pattern = pattern.replace(".*$", "[^\n]*");
+                            addKeyword(pattern, splitedLine[1]);
+                            //this.keywordsTable.put(splitedLine[1], pattern);
+                        }
+                        
+                    }
+                    
                     
                 }
             }
         }
+    }
+    
+    public String[] computeCommentPattern(String[] splitedLine){
+         String patternStart = splitedLine[2];
+        patternStart = patternStart.replace("start=\"", "");
+        patternStart = patternStart.substring(0, patternStart.length()-1);
+        patternStart = patternStart.replace("[^'),]", "");
+        patternStart = patternStart.replace("[^\"),]", "");
+        patternStart = patternStart.replace("\\\"\\\"\\\"", "\"\"\"");
+        String patternEnd = splitedLine[3];
+        patternEnd = patternEnd.replace("end=\"(^|[^(\\])", "");
+        patternEnd = patternEnd.substring(0, patternEnd.length()-1);
+        patternEnd = patternEnd.replace("\\\"\\\"\\\"", "\"\"\"");
+        return new String[]{patternStart,patternEnd};
+    }
+    
+    public void addKeyword(String pattern, String key){
+        try {
+            Pattern.compile(pattern.concat("|(?<" + key.toString() + ">" + pattern + ")"));
+            this.keywordsTable.put(key, pattern);
+        } catch (Exception e) {
+        }
+        
     }
 }

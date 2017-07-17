@@ -17,20 +17,32 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.datamodel;
+package ijfx.ui.main;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.scene.image.Image;
+import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.ui.UIService;
 
 /**
  *
- * @author Cyril MONGIS, 2016
+ * @author cyril
  */
-public interface Iconazable {
+@Plugin(type = Command.class, menuPath="Help > Switch to ImageJ-FX")
+public class ActivateImageJFX extends ContextCommand {
+
+    @Parameter
+    UIService uiService;
     
-    String getTitle();
-    String getSubtitle();
-    String getInformations();
-    Image getImage();
-    public void open() throws Exception; 
+    @Override
+    public void run() {
+        
+        uiService.setDefaultUI(uiService.getUI(ImageJFX.UI_NAME));
+        uiService.showUI(ImageJFX.UI_NAME);
+        
+        
+        
+    }
+    
 }

@@ -55,15 +55,12 @@ public class SetValue extends AbstractExplorableDisplayCommand{
     
     public void setValue(Explorable exp) {
         MetaDataSet set = exp.getMetaDataSet();
-        System.out.println(set);
         if(set.containsKey(key) == false) {
             set.put(MetaData.create(key, value));
         }
         else {
             set.get(key).setValue(value);
         }
-        System.out.println(set);
-        
     }
     
     public void init() {

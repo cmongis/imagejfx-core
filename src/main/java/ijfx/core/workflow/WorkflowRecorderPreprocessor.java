@@ -39,6 +39,7 @@ import org.scijava.module.process.AbstractPreprocessorPlugin;
 import org.scijava.module.process.PreprocessorPlugin;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.UIService;
 
 /**
  *
@@ -61,9 +62,14 @@ public class WorkflowRecorderPreprocessor extends AbstractPreprocessorPlugin {
 
     private final Logger logger = ImageJFX.getLogger();
 
+    @Parameter
+    UIService uiService;
+    
     @Override
     public void process(Module module) {
-
+         
+        if(uiService.isDefaultUI(ImageJFX.UI_NAME) == false) return;
+        
         if (workflowExecutorSrv.isRunning() || batchService.isRunning()) {
             return;
         }

@@ -28,6 +28,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
+import org.scijava.script.ScriptLanguage;
 
 /**
  *
@@ -37,6 +38,7 @@ public class DefaultScriptHighlighting implements ScriptHighlight{
     
      private Hashtable KEYWORDS_PATTERN_TABLE;
      private  Pattern PATTERN;
+     private LanguageKeywords languageKeywords;
      
     private String OPEN_PAREN = "\\(";
     private String CLOSE_PAREN = "\\)";
@@ -59,6 +61,12 @@ public class DefaultScriptHighlighting implements ScriptHighlight{
         initPattern();
     }
     
+    public DefaultScriptHighlighting(ScriptLanguage language) {
+        this.languageKeywords = new NanorcParser();
+        this.languageKeywords.setLanguage(language);
+        this.KEYWORDS_PATTERN_TABLE = this.languageKeywords.getKeywords();
+        initPattern();
+    }
     
     
     @Override
@@ -70,16 +78,15 @@ public class DefaultScriptHighlighting implements ScriptHighlight{
                 = new StyleSpansBuilder<>();
         Hashtable<String,List> orphan = detectBracket(text);
         while(matcher.find()) {
-            String result = testMatcher(matcher);
+            String wordMatch = keywordsMatcher(matcher);
             String orphelinBracket = higlightOrphelinBracket(lastKwEnd, matcher.start(), orphan);
             String styleClass =
-                    result != null ? result : 
+                    wordMatch != null ? wordMatch : 
                     orphelinBracket != null ? orphelinBracket:
                     matcher.group("SEMICOLON") != null ? "semicolon" :
                     matcher.group("STRING") != null ? "string" :
-                    matcher.group("COMMENT") != null ? "comment" :
+                    //matcher.group("COMMENT") != null ? "comment" :
                     "null";  assert styleClass != null;
-            
             
             spansBuilder.add(Collections.singleton("null"), matcher.start() - lastKwEnd);               // ajoute un style null entre les deux styles 
              spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start()); // ajout du style en question sur le nombre de characteres apropriés
@@ -90,7 +97,7 @@ public class DefaultScriptHighlighting implements ScriptHighlight{
         return spansBuilder.create();
     }
     
-     public String testMatcher(Matcher matcher){
+     public String keywordsMatcher(Matcher matcher){
         for (Object key : KEYWORDS_PATTERN_TABLE.keySet()){
             if (matcher.group(key.toString()) != null) return key.toString();
         }
@@ -183,6 +190,14 @@ public class DefaultScriptHighlighting implements ScriptHighlight{
     @Override
     public void setKeywords(Hashtable keywordTable) {
         this.KEYWORDS_PATTERN_TABLE = keywordTable;
+        initPattern();
+    }
+    
+    @Override
+    public void setLangage(ScriptLanguage language) {
+        this.languageKeywords = new NanorcParser();
+        this.languageKeywords.setLanguage(language);
+        this.KEYWORDS_PATTERN_TABLE = this.languageKeywords.getKeywords();
         initPattern();
     }
 }

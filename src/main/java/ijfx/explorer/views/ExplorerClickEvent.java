@@ -17,20 +17,43 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.datamodel;
+package ijfx.explorer.views;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.scene.image.Image;
+import ijfx.explorer.datamodel.Explorable;
+import javafx.scene.input.MouseEvent;
 
 /**
  *
- * @author Cyril MONGIS, 2016
+ * @author cyril
  */
-public interface Iconazable {
+public class ExplorerClickEvent {
     
-    String getTitle();
-    String getSubtitle();
-    String getInformations();
-    Image getImage();
-    public void open() throws Exception; 
+    private final Explorable explorable;
+    
+    private final MouseEvent event;
+    
+    private boolean doubleClick;
+
+    public ExplorerClickEvent(Explorable explorable, MouseEvent event, boolean doubleClick) {
+        this.explorable = explorable;
+        this.event = event;
+        this.doubleClick = doubleClick;
+    }
+
+    public boolean isDoubleClick() {
+        return doubleClick;
+    }
+
+    public Explorable getExplorable() {
+        return explorable;
+    }
+
+    public MouseEvent getEvent() {
+        return event;
+    }
+    
+    
+    
+    
+    
 }

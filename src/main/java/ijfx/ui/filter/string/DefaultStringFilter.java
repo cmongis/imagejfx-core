@@ -20,6 +20,7 @@
 package ijfx.ui.filter.string;
 
 import ijfx.ui.filter.StringFilter;
+import ijfx.ui.utils.CollectionsUtils;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -52,6 +53,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import mongis.utils.properties.ListChangeListenerBuilder;
 
 /**
  * FXML Controller class
@@ -71,7 +73,8 @@ public class DefaultStringFilter extends BorderPane implements Initializable, St
     private ToggleButton moreButton;
     @FXML
     private ListView<Item> listView;
-    private final ObservableList<Item> allItems = FXCollections.observableArrayList();
+    
+    private final ObservableList<ItemWrapper> allItems = FXCollections.observableArrayList();
     private final ObservableList<Item> displayedItems = FXCollections.observableArrayList();
     //private boolean bigger = false;
 
@@ -113,6 +116,8 @@ public class DefaultStringFilter extends BorderPane implements Initializable, St
             //textField.disableProperty().bind(lotOfItems.not());
             listView.prefHeightProperty().bind(prefHeight);
             
+           
+            
             showAll.bind(moreButton.selectedProperty());
             showAll.addListener(this::onShowAllPropertyChange);
         } catch (IOException e) {
@@ -121,6 +126,11 @@ public class DefaultStringFilter extends BorderPane implements Initializable, St
 //        predicateProperty().addListener();
     }
 
+    
+   
+    
+    
+    
     public ListCell<Item> createListCell(ListView<Item> listView) {
 
         // I give a pointer to a runnable that will be executed each time
@@ -149,9 +159,9 @@ public class DefaultStringFilter extends BorderPane implements Initializable, St
     }
 
     @Override
-    public void setAllPossibleValues(Collection<? extends String> list) {
+    public synchronized void setAllPossibleValues(Collection<? extends String> list) {
 
-        allItems.clear();
+        //allItems.clear();
 
         Map<String, Integer> itemCount;
         itemCount = new HashMap<>();
@@ -162,12 +172,14 @@ public class DefaultStringFilter extends BorderPane implements Initializable, St
                 itemCount.put(s, itemCount.get(s) + 1);
             }
         });
-        List<Item> items = new ArrayList<>();
+        List<ItemWrapper> items = new ArrayList<>();
         itemCount.forEach((s, i) -> items.add(new ItemWrapper(s, i)));
 
-        allItems.clear();
-        allItems.addAll(items);
+        CollectionsUtils.synchronize(items, allItems);
         
+        // updating count
+        allItems.forEach(item->item.setNumber(itemCount.get(item.getName())));
+
         updateDisplayedItems();
         
         predicateProperty().setValue(null);
@@ -186,7 +198,7 @@ public class DefaultStringFilter extends BorderPane implements Initializable, St
     
     private void updateDisplayedItems(String s, boolean showAll, boolean lotOfItems) {
       
-        List<Item> itemToShow;
+        List<ItemWrapper> itemToShow;
 
         // if there is a query
         // we filter
@@ -199,21 +211,19 @@ public class DefaultStringFilter extends BorderPane implements Initializable, St
         else {
             itemToShow = allItems.subList(0, 5);
         }
-
-        // clearing the displayed items
-        displayedItems.clear();
-
-        displayedItems.addAll(itemToShow);
-        listView.setItems(displayedItems);
+        
+       displayedItems.clear();
+       displayedItems.addAll(itemToShow);
+        
+       CollectionsUtils.synchronize(displayedItems, listView.getItems());
 
     }
 
     
 
-    public void setPredicate() {
+    private void setPredicate() {
         List<String> listBuffer = new ArrayList<>();
 
-        System.out.println(displayedItems.stream().filter(e -> e.getState()).count());
         if (displayedItems.stream().filter(e -> e.getState()).count() == 0) {
 
             predicate.setValue(null);

@@ -19,8 +19,8 @@
  */
 package mongis.utils.panecell;
 
+import ijfx.explorer.datamodel.Explorable;
 import ijfx.ui.main.ImageJFX;
-
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -33,13 +33,12 @@ import java.util.stream.IntStream;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableSet;
+import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.scene.Node;
-import javafx.scene.control.Tooltip;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import mongis.utils.CallbackTask;
+import mongis.utils.properties.ListChangeListenerBuilder;
 import mongis.utils.properties.ServiceProperty;
 
 /**
@@ -63,10 +62,34 @@ public class PaneCellController<T extends Object> {
 
     private Pane pane;
 
-    private ObservableSet<T> selectedItems = FXCollections.observableSet();
+    private ObservableList<T> selectedItems = FXCollections.observableArrayList();
 
     public PaneCellController(Pane pane) {
         setPane(pane);
+
+        selectedItems.addListener(ListChangeListenerBuilder
+                .<T>create()
+                .onChange(changes -> {
+                    changes
+                            .getAddedSubList()
+                            .stream()
+                            .mapToInt(this::indexOf)
+                            .mapToObj(itemControllerList::get)
+                            .forEach(ctrl -> ctrl.selectedProperty().setValue(true));
+
+                    changes
+                            .getRemoved()
+                            .stream()
+                            .mapToInt(this::indexOf)
+                            .mapToObj(itemControllerList::get)
+                            .forEach(ctrl -> ctrl.selectedProperty().setValue(false));
+                })
+                .build());
+
+    }
+
+    private int indexOf(T item) {
+        return currentItems.indexOf(item);
     }
 
     /**
@@ -119,21 +142,20 @@ public class PaneCellController<T extends Object> {
         }
 
         updateProcess = new PaneCellUpdateProcess(items, cachedControllerList, pane.getChildren(), cellFactory);
-        
+
         return new CallbackTask<Void, Void>().start();
 
     }
 
     private List<PaneCell<T>> retrieve(Integer number) {
 
-        
         int cacheSize = cachedControllerList.size();
         int missingControllers = number - cacheSize;
-        
+
         if (missingControllers > 0) {
             fillCache(missingControllers);
         }
-       
+
         return cachedControllerList.subList(0, number);
     }
 
@@ -216,5 +238,9 @@ public class PaneCellController<T extends Object> {
                 .stream()
                 .map(child -> (PaneCell) child)
                 .collect(Collectors.toList());
+    }
+
+    public List<? extends T> getSelectedItems() {
+        return selectedItems;
     }
 }

@@ -50,15 +50,17 @@ public class DefaultExplorableDisplay extends AbstractDisplay<ExplorableList> im
     private List<Explorable> displayedItems = new ArrayList<>();
 
     private List<Explorable> items = new ArrayList<>();
-    private final SelectableManager<Explorable> selectableManager = new SelectableManager<>();
+    //private final SelectableManager<Explorable> selectableManager = new SelectableManager<>();
 
+    private List<Explorable> selected = new ArrayList();
     
      public DefaultExplorableDisplay() {
         super(ExplorableList.class);
 
+        /*
         selectableManager
                 .getChangeBuffer()
-                .subscribe(this::onItemSelectionChanged);
+                .subscribe(this::onItemSelectionChanged);*/
     }
     
     
@@ -76,7 +78,7 @@ public class DefaultExplorableDisplay extends AbstractDisplay<ExplorableList> im
     public boolean add(ExplorableList list) {
 
         displayedItems.addAll(list);
-        selectableManager.setItem(list);
+        //selectableManager.setItem(list);
         return items.addAll(list);
     }
 
@@ -88,34 +90,40 @@ public class DefaultExplorableDisplay extends AbstractDisplay<ExplorableList> im
     @Override
     public void setFilter(Predicate<Explorable> filter) {
         if (filter == null) {
-            displayedItems.clear();
-            displayedItems.addAll(items);
+            displayedItems = new ArrayList<>(items);
+            //displayedItems.addAll(items);
+            
         } else {
             displayedItems.clear();
-            displayedItems = displayedItems
+            displayedItems = items
                     .stream()
                     .filter(filter)
                     .collect(Collectors.toList());
+            
+            selected = displayedItems
+                    .stream()
+                    .filter(item->selected.contains(item))
+                    .collect(Collectors.toList());
         }
+        
     }
 
     @Override
     public List<Explorable> getSelected() {
-        return displayedItems
-                .stream()
-                .filter(Explorable::isSelected)
-                .collect(Collectors.toList());
+        return selected;
     }
 
     @Override
     public void setSelected(List<Explorable> explorable) {
 
         clearSelection();
+        
+        selected.addAll(explorable);
 
     }
 
     private void clearSelection() {
-
+        selected.clear();
     }
 
     private void onItemSelectionChanged(List<? extends SelectionChange<Explorable>> list) {
@@ -124,6 +132,19 @@ public class DefaultExplorableDisplay extends AbstractDisplay<ExplorableList> im
         
         eventService.publishLater(new DisplayUpdatedEvent(this, DisplayUpdatedEvent.DisplayUpdateLevel.UPDATE));
 
+    }
+
+    @Override
+    public void select(Explorable explorable) {
+        if(selected.contains(explorable) == false) {
+            selected.add(explorable);
+            selected.sort((e1,e2)->{
+               return Integer.compare(getItems().indexOf(e1),getItems().indexOf(e2));
+            });
+        }
+            
+        
+        
     }
 
 }

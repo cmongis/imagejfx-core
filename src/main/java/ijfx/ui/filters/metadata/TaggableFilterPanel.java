@@ -43,13 +43,15 @@ public class TaggableFilterPanel extends FilterPanel<Taggable>{
     
    public Void generateFilters(ProgressHandler handler, List<? extends Taggable> items) {
 
+       
+        factory.recycleCache();
         handler.setProgress(0.1);
-
+        
         Set<String> keySet = new HashSet();
         
         // first we get all the possible keys
         items
-                .stream()
+                .parallelStream()
                 .filter(owner -> owner != null)
                 .map(owner -> owner.getMetaDataSet().keySet())
                 .forEach(keys -> keySet.addAll(keys));
@@ -60,9 +62,12 @@ public class TaggableFilterPanel extends FilterPanel<Taggable>{
        List<DataFilter<Taggable>> metadataFilters = keySet
                .stream()
                .filter(MetaData::canDisplay)
-               .sorted((k1, k2) -> k1.compareTo(k2))
+               
+              
+               .parallel()
                .map(key->(DataFilter<Taggable>)factory.generateFilter(items, key))
                .filter(filter->filter != null)
+                .sorted((k1, k2) -> k1.getName().compareTo(k2.getName()))
                .collect(Collectors.toList());
        
        List<DataFilter<Taggable>> filters = new ArrayList<>();

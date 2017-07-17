@@ -62,10 +62,11 @@ import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -88,6 +89,7 @@ import mongis.utils.CallableTask;
 import mongis.utils.CallbackTask;
 import mongis.utils.FXUtilities;
 import mongis.utils.TextFileUtils;
+import mongis.utils.properties.ListChangeListenerBuilder;
 import org.reactfx.EventStreams;
 import org.scijava.event.EventHandler;
 import org.scijava.plugin.Parameter;
@@ -123,7 +125,6 @@ public class ExplorerActivity extends AnchorPane implements Activity {
 
     //@FXML
     //private ToggleButton objectModeToggleButton;
-
     @FXML
     private Button statisticsButton;
 
@@ -132,7 +133,7 @@ public class ExplorerActivity extends AnchorPane implements Activity {
 
     @FXML
     private ScrollPane filterScrollPane;
-    
+
     private ToggleGroup explorationModeToggleGroup;
 
     private final ObjectProperty<ExplorerView> currentView = new SimpleObjectProperty<>();
@@ -185,10 +186,8 @@ public class ExplorerActivity extends AnchorPane implements Activity {
 
     List<Explorable> currentItems;
 
-  
-
     TaggableFilterPanel filterPanel = new TaggableFilterPanel();
-    
+
     public ExplorerActivity() {
         try {
             FXUtilities.injectFXML(this);
@@ -212,9 +211,7 @@ public class ExplorerActivity extends AnchorPane implements Activity {
             explorationModeToggleGroup.selectedToggleProperty().addListener(this::onToggleSelectionChanged);
 
             tabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
-
                 currentView.setValue((ExplorerView) newTab.getUserData());
-
             });
 
             currentView.addListener(this::onViewModeChanged);
@@ -224,12 +221,13 @@ public class ExplorerActivity extends AnchorPane implements Activity {
             folderListEmpty.addListener(this::onFolderListEmptyPropertyChange);
             explorerListEmpty.addListener(this::onExplorerListEmptyPropertyChange);
 
-           
             filterScrollPane.setContent(filterPanel.getPane());
-            
+
             //fluentIconBinding(fileModeToggleButton,planeModeToggleButton,objectModeToggleButton);
             EventStreams.valuesOf(filterTextField.textProperty()).successionEnds(Duration.ofSeconds(1))
                     .subscribe(this::updateTextFilter);
+
+            
 
         } catch (IOException ex) {
             Logger.getLogger(ExplorerActivity.class.getName()).log(Level.SEVERE, null, ex);
@@ -287,7 +285,7 @@ public class ExplorerActivity extends AnchorPane implements Activity {
         if (folderManagerService.getCurrentFolder() == null) {
             return new ArrayList<Explorable>();
         } else {
-            return explorerService.getFilteredItems();
+            return explorerService.getDisplayedItems();
         }
     }
 
@@ -306,9 +304,11 @@ public class ExplorerActivity extends AnchorPane implements Activity {
         this.view = view;
         //contentBorderPane.setCenter(view.getNode());
 
-        view.setItem(explorerService.getFilteredItems());
+        view.setItems(explorerService.getDisplayedItems());
     }
 
+    
+    
     public void updateUi(List<? extends Explorable> explorable) {
 
         updateFolderList();
@@ -321,7 +321,7 @@ public class ExplorerActivity extends AnchorPane implements Activity {
         }
 
         if (explorable != null) {
-            view.setItem(explorable);
+            view.setItems(explorable);
         }
 
         if (folderListEmpty.getValue()) {
@@ -410,7 +410,6 @@ public class ExplorerActivity extends AnchorPane implements Activity {
         return cell;
     }
 
-
     public void updateFilters() {
 
         Task task = new CallbackTask<List<? extends Explorable>, Void>()
@@ -422,13 +421,6 @@ public class ExplorerActivity extends AnchorPane implements Activity {
         loadingScreenService.frontEndTask(task, true);
 
     }
-
-   
-
-    
-
-   
-
 
     /*
         View related functions
@@ -456,10 +448,7 @@ public class ExplorerActivity extends AnchorPane implements Activity {
      */
     @FXML
     public void selectAll() {
-        explorerService
-                .getFilteredItems()
-                .stream()
-                .forEach(item -> item.selectedProperty().setValue(true));
+        explorerService.selectAll();
     }
 
     @FXML
@@ -548,8 +537,7 @@ public class ExplorerActivity extends AnchorPane implements Activity {
         if (explorerService == null) {
             return false;
         }
-        return explorerService.getFilteredItems().stream().filter(item -> item.selectedProperty().getValue()).count()
-                == explorerService.getFilteredItems().size();
+        return explorerService.getDisplayedItems().size() == explorerService.getSelectedItems().size();
     }
 
     protected void updateTextFilter(final String query) {

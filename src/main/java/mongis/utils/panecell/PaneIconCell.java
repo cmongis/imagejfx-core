@@ -27,6 +27,7 @@ import ijfx.ui.utils.LoadingIcon;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.Observable;
@@ -105,6 +106,10 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
 
     private Task currentImageSearch;
 
+    private Consumer<T> onSimpleClick = t->{};
+    
+    private Consumer<T> onDoubleClick = t->{};
+    
     Logger logger = ImageJFX.getLogger();
 
     private boolean isInsideScrollWindow = false;
@@ -247,6 +252,17 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
 
     }
 
+    public void setOnDoubleClick(Consumer<T> onDoubleClick) {
+        this.onDoubleClick = onDoubleClick;
+    }
+
+    public void setOnSimpleClick(Consumer<T> onSimpleClick) {
+        this.onSimpleClick = onSimpleClick;
+    }
+
+    
+    
+    
     public void onItemChanged(Observable obs, T oldItem, T newItem) {
 
         // cancelling the possible image search
@@ -403,16 +419,18 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
             onDoubleClick();
         }
        
+        else {
             onSimpleClick();
+        }
         
     }
 
     protected void onSimpleClick() {
-        selectedProperty().setValue(!selectedProperty().getValue());
+        onSimpleClick.accept(getItem());
     }
 
     protected void onDoubleClick() {
-        
+        onDoubleClick.accept(getItem());
     }
 
     protected void onSubtitleVisibleChanged(Observable obs, Boolean oldValue, Boolean newValue) {

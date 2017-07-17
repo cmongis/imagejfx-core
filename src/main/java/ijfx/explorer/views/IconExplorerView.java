@@ -20,17 +20,17 @@
 package ijfx.explorer.views;
 
 
-import ijfx.core.datamodel.Iconazable;
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.widgets.ExplorerIconCell;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
+import java.util.function.Consumer;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SelectionModel;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.TilePane;
@@ -52,10 +52,13 @@ public class IconExplorerView extends ScrollPane implements ExplorerView {
 
     private ScrollBinder binder;
 
-    private final PaneCellController<Iconazable> cellPaneCtrl = new PaneCellController<>(tilePane);
+    private final PaneCellController<Explorable> cellPaneCtrl = new PaneCellController<>(tilePane);
 
     private List<? extends Explorable> itemsList;
     
+    private Consumer<ExplorerClickEvent> onItemClicked;
+    
+  
    
     @Parameter
     private Context context;
@@ -85,7 +88,7 @@ public class IconExplorerView extends ScrollPane implements ExplorerView {
         tilePane.setHgap(hgap);
     }
 
-    public void setCellFactory(Callable<PaneCell<? extends Iconazable>> callable) {
+    public void setCellFactory(Callable<PaneCell<? extends Explorable>> callable) {
         cellPaneCtrl.setCellFactory(callable);
     }
     
@@ -96,36 +99,39 @@ public class IconExplorerView extends ScrollPane implements ExplorerView {
     }
 
     @Override
-    public void setItem(List<? extends Explorable> items) {
+    public void setItems(List<? extends Explorable> items) {
         //loadingScreenService.frontEndTask(cellPaneCtrl.update(new ArrayList<Iconazable>(items)),false);
         
         this.itemsList = items;
-        cellPaneCtrl.update(new ArrayList<Iconazable>(items));
+        cellPaneCtrl.update(new ArrayList<Explorable>(items));
        
         
     }
 
-    private PaneCell<Iconazable> createIcon() {
+    private PaneCell<Explorable> createIcon() {
         ExplorerIconCell cell = new ExplorerIconCell();
+        cell.setOnSimpleClick(explorable->{
+            
+            onItemClicked.accept(new ExplorerClickEvent(explorable, null, true));
+        });
         context.inject(cell);
         return cell;
     }
+    
+    
 
     @Override
     public List<? extends Explorable> getSelectedItems() {
-        return itemsList
-                .stream()
-                .map(item->(Explorable)item)
-                .filter(item->item.selectedProperty().getValue())
-                .collect(Collectors.toList());
+        return new ArrayList<>(cellPaneCtrl.getSelectedItems());
     }
 
     
     private void onMouseClick(MouseEvent event){
         
         if(event.getTarget() == tilePane) {
-            cellPaneCtrl.getItems().forEach(item->item.selectedProperty().setValue(false));
+            cellPaneCtrl.select(new ArrayList<>());
         }
+        
         
     }
     
@@ -136,7 +142,9 @@ public class IconExplorerView extends ScrollPane implements ExplorerView {
 
     @Override
     public void setSelectedItem(List<? extends Explorable> items) {
-      
+        
+        cellPaneCtrl.select(new ArrayList<>(items));
+                
     }
     
     private void onDisplayedNodesChanged(ListChangeListener.Change<? extends Node> change) {
@@ -148,7 +156,20 @@ public class IconExplorerView extends ScrollPane implements ExplorerView {
     }
     
     public void refresh() {
-        
+         
+    }
+
+    public void setOnItemClicked(Consumer<ExplorerClickEvent> onItemClicked) {
+        this.onItemClicked = onItemClicked;
+    }
+
+ 
+    
+    
+
+    @Override
+    public SelectionModel getSelectionModel() {
+        return null;
     }
     
 }

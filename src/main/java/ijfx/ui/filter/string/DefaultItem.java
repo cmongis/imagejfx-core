@@ -29,6 +29,8 @@ public class DefaultItem implements Item{
     private boolean state;
     private int number;
 
+    
+    
     public DefaultItem(String s, Integer i) {
         this.name = s;
         this.number = i;

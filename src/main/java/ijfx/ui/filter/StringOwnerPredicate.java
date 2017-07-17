@@ -28,9 +28,9 @@ import java.util.function.Predicate;
  */
 public class StringOwnerPredicate<T extends MetaDataOwner> implements Predicate<T>{
     
-    String keyName;
+    private String keyName;
     
-    String value;
+    //String value;
     
     Predicate<String> predicate;
     
@@ -41,7 +41,7 @@ public class StringOwnerPredicate<T extends MetaDataOwner> implements Predicate<
     
     @Override
     public boolean test(T t) {
-        value = t.getMetaDataSet().get(keyName).getStringValue();
+        String value = t.getMetaDataSet().get(keyName).getStringValue();
 
         return predicate.test(value);
     }

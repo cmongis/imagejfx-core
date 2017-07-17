@@ -24,6 +24,7 @@ import ijfx.core.metadata.MetaDataKeyPrioritizer;
 import ijfx.core.metadata.MetaDataOwner;
 import ijfx.core.metadata.MetaDataSet;
 import ijfx.core.metadata.MetaDataSetUtils;
+import java.lang.ref.WeakReference;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import javafx.beans.property.ReadOnlyObjectPropertyBase;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ContextMenu;
@@ -52,12 +54,14 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
 
     final TableView<T> tableView;
 
-    Set<String> currentColumns = new HashSet<>();
+    private Set<String> currentColumns = new HashSet<>();
 
     //LinkedHashSet<String> priority = new LinkedHashSet();
-    MetaDataKeyPrioritizer priority = new MetaDataKeyPrioritizer(new String[0]);
+    private MetaDataKeyPrioritizer priority = new MetaDataKeyPrioritizer(new String[0]);
 
-    List<TableColumn<T, ?>> additionalColumns = new ArrayList<>();
+    private List<TableColumn<T, ?>> additionalColumns = new ArrayList<>();
+
+    private List<WeakReference<RefreshableProperty<T>>> propertyList = new ArrayList<>();
 
     String currentColumn;
 
@@ -80,7 +84,9 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
                         ListChangeListenerBuilder
                                 .<TablePosition>create()
                                 .onChange(event -> {
-                                    if(event.getList().get(0).getTableColumn() == null) return;
+                                    if (event.getList().get(0).getTableColumn() == null) {
+                                        return;
+                                    }
                                     Object userData = event.getList()
                                             .get(0)
                                             .getTableColumn()
@@ -128,6 +134,10 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
 
         updateColumns(MetaDataSetUtils.getAllPossibleKeys(mList).stream().filter(MetaData::canDisplay).sorted(priority).collect(Collectors.toList()));
     }
+    
+    protected void updateColumns() {
+        setColumnsFromItems(tableView.getItems());
+    }
 
     protected void updateColums(String... columnList) {
         updateColumns(Arrays.asList(columnList));
@@ -172,10 +182,10 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
 
     ContextMenu menu = new ContextMenu();
 
-    protected TableColumn<T, MetaData> generateColumn(String key) {
-        TableColumn<T, MetaData> column = new TableColumn<>();
+    protected TableColumn<T, String> generateColumn(String key) {
+        TableColumn<T, String> column = new TableColumn<>();
         column.setUserData(key);
-        column.setCellValueFactory(this::getCellValueFactory);
+        column.setCellValueFactory(this::observableWrapper);
         column.setEditable(true);
 
         return column;
@@ -206,11 +216,34 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
         return 0;
     }
 
-    protected ObservableValue<MetaData> getCellValueFactory(TableColumn.CellDataFeatures<T, MetaData> cell) {
+    /*
+    private ObservableValue<MetaData> getCellValueFactory(TableColumn.CellDataFeatures<T, MetaData> cell) {
         String key = cell.getTableColumn().getUserData().toString();
         MetaData value = cell.getValue().getMetaDataSet().get(key);
 
         return new ReadOnlyObjectWrapper<>(value);
+    }*/
+
+    protected ObservableValue<String> observableWrapper(TableColumn.CellDataFeatures<T, String> cell) {
+
+        String key = cell.getTableColumn().getUserData().toString();
+        //MetaData value = cell.getValue().getMetaDataSet().get(key)
+
+        int hash = key.hashCode() + cell.getValue().hashCode();
+        
+        WeakReference<RefreshableProperty<T>> property
+                = propertyList
+                        .stream()
+                        .filter(ref -> ref.get() != null && ref.get().hashCode() == hash)
+                        .findFirst()
+                        .orElse(null);
+
+        if (property == null) {
+            property = new WeakReference<>(new RefreshableProperty<>(cell.getValue(), key));
+            propertyList.add(property);
+        }
+        return property.get();
+
     }
 
     private double round(double value, int places) {
@@ -227,6 +260,73 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
 
         }
 
+    }
+
+    public synchronized void refresh() {
+        
+        
+        updateColumns();
+        
+        
+        propertyList = propertyList
+                .stream()
+                .filter(property -> property.get() != null)
+                .collect(Collectors.toList());
+
+        for (WeakReference<RefreshableProperty<T>> ref : propertyList) {
+            ref.get().refresh();
+        }
+
+    }
+
+    /*
+        Property related function
+     */
+    protected class RefreshableProperty<T extends MetaDataOwner> extends ReadOnlyObjectPropertyBase<String> {
+
+        final T owner;
+        final String keyName;
+        String strValue;
+
+        public int hashCode() {
+            return owner.hashCode() + keyName.hashCode();
+        }
+
+        public RefreshableProperty(T owner, String keyName) {
+            this.owner = owner;
+            this.keyName = keyName;
+            MetaData m = owner.getMetaDataSet().get(keyName);
+            strValue = m != null ? m.getStringValue() : null;
+        }
+
+        public void refresh() {
+            String oldValue = strValue;
+            String newValue = get();
+            strValue = newValue;
+            if (oldValue == null && newValue != null) {
+                fireValueChangedEvent();
+                return;
+            }
+
+            if (oldValue != null && oldValue.equals(newValue) == false) {
+                fireValueChangedEvent();
+            }
+        }
+
+        @Override
+        public String get() {
+            return owner.getMetaDataSet().get(keyName).getStringValue();
+        }
+
+        @Override
+        public Object getBean() {
+            return owner;
+        }
+
+        @Override
+        public String getName() {
+            return keyName;
+        }
     }
 
 }

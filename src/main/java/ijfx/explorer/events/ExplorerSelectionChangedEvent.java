@@ -31,6 +31,11 @@ import org.scijava.event.SciJavaEvent;
  */
 public class ExplorerSelectionChangedEvent extends SciJavaEvent{
 
+    
+    public ExplorerSelectionChangedEvent() {
+        
+    }
+    
     public ExplorerSelectionChangedEvent(List<SelectionChange<Explorable>> changes) {
     
         setSelectedSublist(changes

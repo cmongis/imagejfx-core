@@ -93,14 +93,14 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
 
     private List<Explorable> selectedItems = new ArrayList<>();
 
-    private SelectableManager<Explorable> selectionManager = new SelectableManager<>();
+    //private SelectableManager<Explorable> selectionManager = new SelectableManager<>();
    
 
     @Override
     public void initialize() {
        
-       selectionManager.getChangeBuffer()
-               .subscribe(this::notifySelectionChange);
+      // selectionManager.getChangeBuffer()
+             //  .subscribe(this::notifySelectionChange);
 
     }
 
@@ -111,7 +111,7 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
         if(explorableList == null) explorableList = new ArrayList<>();
         eventService.publish(new ExploredListChanged().setObject(items));
         applyFilter(lastFilter);
-        selectionManager.setItem(explorableList);
+        //selectionManager.setItem(explorableList);
         
     }
 
@@ -145,7 +145,7 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     }
 
     @Override
-    public List<Explorable> getFilteredItems() {
+    public List<Explorable> getDisplayedItems() {
         return filteredList;
     }
 
@@ -162,15 +162,13 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
 
     @Override
     public List<? extends Explorable> getSelectedItems() {
-        return filteredList
-                .stream()
-                .filter(item -> item.selectedProperty().getValue())
-                .collect(Collectors.toList());
+        return selectedItems;
     }
 
     @Override
     public void selectItem(Explorable explorable) {
-        explorable.selectedProperty().setValue(true);
+        selectedItems.add(explorable);
+        publishSelectionEvent();
     }
 
     @Override
@@ -243,9 +241,14 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     @Override
     public void toggleSelection(Explorable explorable) {
 
-        boolean value = explorable.selectedProperty().getValue();
-        logger.log(Level.INFO, String.format("Toggling selection for {0} from {1} to {2}", explorable.getTitle(), value, !value));
-        explorable.selectedProperty().setValue(!value);
+        if(selectedItems.contains(explorable)) {
+            selectedItems.remove(explorable);
+        }
+        else {
+            selectedItems.add(explorable);
+        }
+        
+        publishSelectionEvent();
     }
     
     
@@ -294,4 +297,14 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
         }
     }
 
+    
+    public void publishSelectionEvent() {
+        eventService.publish(new ExplorerSelectionChangedEvent());
+    }
+
+    @Override
+    public void selectItems(List<? extends Explorable> items) {
+        selectedItems.addAll(items);
+        publishSelectionEvent();
+    }
 }

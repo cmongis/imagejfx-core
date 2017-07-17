@@ -22,19 +22,24 @@ package ijfx.explorer.display;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import ijfx.core.icon.FXIconService;
+import ijfx.core.timer.Timer;
+import ijfx.core.timer.TimerService;
 import ijfx.core.utils.SciJavaUtils;
 import ijfx.explorer.ExplorableDisplay;
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.datamodel.Taggable;
+import ijfx.explorer.views.ExplorerClickEvent;
 import ijfx.explorer.views.ExplorerView;
 import ijfx.ui.bindings.SideMenuBinding;
 import ijfx.ui.display.image.AbstractFXDisplayPanel;
 import ijfx.ui.display.image.FXDisplayPanel;
 import ijfx.ui.filters.metadata.TaggableFilterPanel;
+import ijfx.ui.main.ImageJFX;
 import ijfx.ui.metadata.MetaDataBar;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.Observable;
@@ -43,7 +48,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -55,7 +59,6 @@ import org.scijava.event.EventService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
-import sun.security.jca.GetInstance;
 
 /**
  *
@@ -82,6 +85,9 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
     @Parameter
     Context context;
 
+    @Parameter
+    TimerService timerService;
+
     MetaDataBar metaDataBar;
 
     BooleanProperty inZone = new SimpleBooleanProperty(false);
@@ -91,6 +97,8 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
     List<Explorable> displayed;
 
     private final double leftBorder = 36;
+
+    Logger logger = ImageJFX.getLogger();
 
     public ExplorableDisplayPanel() {
         super(ExplorableDisplay.class);
@@ -125,7 +133,7 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
 
         //
         HBox sideBox = new HBox();
-        Label label = new Label("Filter",new FontAwesomeIconView(FontAwesomeIcon.FILTER));
+        Label label = new Label("Filter", new FontAwesomeIconView(FontAwesomeIcon.FILTER));
         label.setRotate(90);
         sideBox.getStyleClass().add("filter-pane-container");
         sideBox.getChildren().addAll(filterPanel.getPane(), label);
@@ -168,13 +176,16 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
 
         if (displayed != getDisplay().getDisplayedItems()
                 || displayed.size() != getDisplay().getDisplayedItems().size()) {
-
-            view.setItem(getDisplay().getDisplayedItems());
+            displayed = getDisplay().getDisplayedItems();
+            view.setItems(getDisplay().getDisplayedItems());
+        } else {
+            view.refresh();
         }
-        if (view.getSelectedItems().size() != getDisplay().getSelected().size()
-                || !view.getSelectedItems().containsAll(getDisplay().getSelected())) {
+        if (!view.getSelectedItems().containsAll(getDisplay().getSelected())) {
+
             view.setSelectedItem(getDisplay().getSelected());
         }
+
     }
 
     private void onMouseMoved(MouseEvent event) {
@@ -191,8 +202,12 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
     }
 
     private void onFilterChanged(Observable obs, final Predicate<Taggable> old, final Predicate<Taggable> newValue) {
-        getDisplay().setFilter(exp -> newValue.test(exp));
 
+        if (newValue == null) {
+            getDisplay().setFilter(null);
+        } else {
+            getDisplay().setFilter(exp -> newValue.test(exp));
+        }
         // no need to call for display update
         // only the displayed item should be changed anyway
         updateView(getCurrentView());
@@ -206,8 +221,38 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
         tab.setUserData(view);
         tab.setText(SciJavaUtils.getLabel(view));
         tab.setGraphic(fxIconService.getIconAsNode(view));
+
+        view.setOnItemClicked(this::onItemClicked);
+
         return tab;
 
+    }
+
+    public void onItemClicked(ExplorerClickEvent event) {
+
+        int selected = getDisplay().getSelected().size();
+        
+        Explorable clicked = event.getExplorable();
+        
+        boolean isShiftDown = event.getEvent().isShiftDown();
+        boolean isAlreadySelected = getDisplay().getSelected().contains(clicked);
+        
+        if(isShiftDown && selected > 0) {
+            getDisplay().selectUntil(clicked);
+        }
+        
+        else if(isAlreadySelected && selected > 1) {
+            getDisplay().selectOnly(clicked);
+        }
+        else if(isAlreadySelected && selected == 1) {
+            getDisplay().getSelected().remove(clicked);
+        }
+        else {
+            getDisplay().select(clicked);
+        }
+      
+
+        getDisplay().update();
     }
 
     @Override
@@ -236,13 +281,18 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
 
     @Override
     public void redraw() {
+        logger.info("Redrawing for " + getDisplay().getName());
+        Platform.runLater(this::redrawFX);
+    }
 
-        Platform.runLater(() -> {
-            
-            filterPanel.generateFilters(ProgressHandler.check(null), getDisplay().getItems());
-            updateView(getCurrentView());
+    public void redrawFX() {
+        Timer timer = timerService.getTimer(this.getClass());
+        timer.start();
+        updateView(getCurrentView());
+        timer.elapsed("explorable view update");
+        filterPanel.generateFilters(ProgressHandler.check(null), getDisplay().getItems());
+        timer.elapsed("filter generation");
 
-        });
     }
 
 }

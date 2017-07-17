@@ -20,9 +20,11 @@
 package ijfx.ui.filters.metadata;
 
 import ijfx.core.metadata.MetaDataOwner;
+import ijfx.ui.filter.DefaultNumberFilter;
 import ijfx.ui.filter.NumberFilter;
 import ijfx.ui.filter.NumberOwnerPredicate;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Predicate;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -38,8 +40,22 @@ public class NumberFilterWrapper<T extends MetaDataOwner> implements MetaDataOwn
 
     private final NumberFilter filter;
     private final Property<Predicate<T>> metaDataOwnerProperty;
-    private final String keyName;
-    public NumberFilterWrapper(NumberFilter filter, String keyName) {
+    private String keyName;
+    
+    private Collection<? extends T> ownerList;
+    
+    public NumberFilterWrapper() {
+        this(new DefaultNumberFilter());
+    }
+
+    public void setKeyName(String keyName) {
+        this.keyName = keyName;
+    }
+    
+    
+    
+    
+    public NumberFilterWrapper(NumberFilter filter) {
         this.filter = filter;
         this.keyName = keyName;
         this.metaDataOwnerProperty = new SimpleObjectProperty<>(null);

@@ -65,4 +65,8 @@ class TitledPaneFilterWrapper<T> implements DataFilter<T> {
         filter.setAllPossibleValues(values);
     }
     
+    public DataFilter<T> getFilter() {
+        return filter;
+    }
+    
 }

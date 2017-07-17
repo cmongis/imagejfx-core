@@ -20,29 +20,29 @@
 package ijfx.explorer.views;
 
 import ijfx.core.hint.HintService;
-import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataKeyPriority;
 import ijfx.core.metadata.MetaDataSetUtils;
 import ijfx.explorer.ExplorerService;
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.datamodel.Tag;
-import ijfx.explorer.events.ExplorerSelectionChangedEvent;
 import ijfx.ui.display.metadataowner.MetaDataOwnerHelper;
 import ijfx.ui.main.ImageJFX;
-import ijfx.ui.utils.SelectableManager;
 import java.util.List;
 import java.util.WeakHashMap;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import javafx.beans.Observable;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ListChangeListener;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.input.MouseEvent;
 import org.scijava.event.EventService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -67,8 +67,7 @@ public class TableExplorerView implements ExplorerView {
     @Parameter
     private HintService hintService;
 
-    private final SelectableManager<Explorable> selectableManager = new SelectableManager<>(this::onItemSelectionChanged);
-
+    //private final SelectableManager<Explorable> selectableManager = new SelectableManager<>(this::onItemSelectionChanged);
     private static final String TABLE_VIEW_ID = "tableViewView";
 
     private List<? extends Explorable> currentItems;
@@ -79,18 +78,26 @@ public class TableExplorerView implements ExplorerView {
 
     private final WeakHashMap<Explorable, ReadOnlyTagWrapper> wrapperList = new WeakHashMap<>();
 
+    private Consumer<ExplorerClickEvent> onItemClicked;
+
     public TableExplorerView() {
 
         tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        tableView.getSelectionModel().getSelectedItems().addListener(this::onListChange);
+        //tableView.getSelectionModel().getSelectedItems().addListener(this::onListChange);
         //tableView.getSelectionModel().selectedItemProperty().addListener(this::onSelectedItemChanged);
         tableView.setRowFactory(this::createRow);
         tableView.setId(TABLE_VIEW_ID);
 
+        //tableView.addEventHandler(MouseEvent.MOUSE_CLICKED, this::onMouseClick);
         tagColumn.setCellValueFactory(this::getTagListProperty);
         tagColumn.setText("Tags");
         helper.addAdditionalColumn(tagColumn);
 
+    }
+
+    @Override
+    public MultipleSelectionModel getSelectionModel() {
+        return tableView.selectionModelProperty().getValue();
     }
 
     @Override
@@ -101,7 +108,7 @@ public class TableExplorerView implements ExplorerView {
     String[] priority = new String[0];
 
     @Override
-    public void setItem(List<? extends Explorable> items) {
+    public void setItems(List<? extends Explorable> items) {
 
         ImageJFX.getLogger().info(String.format("Setting %d items", items.size()));
 
@@ -121,16 +128,16 @@ public class TableExplorerView implements ExplorerView {
             helper.setItem(items);
         }
 
-        selectableManager.setItem(items);
-
+        //selectableManager.setItem(items);
         currentItems = items;
 
+        /*
         List<? extends Explorable> selected = items
                 .stream()
                 .filter(item -> item.selectedProperty().getValue())
                 .collect(Collectors.toList());
-
-        setSelectedItem(selected);
+        
+        setSelectedItem(selected);*/
         displayHints();
 
     }
@@ -147,10 +154,12 @@ public class TableExplorerView implements ExplorerView {
 
     @Override
     public void setSelectedItem(List<? extends Explorable> items) {
+
         items.forEach(tableView.getSelectionModel()::select);
 
     }
 
+    /*
     private void onListChange(ListChangeListener.Change<? extends Explorable> changes) {
 
         while (changes.next()) {
@@ -168,8 +177,7 @@ public class TableExplorerView implements ExplorerView {
 
         }
 
-    }
-
+    }*/
     private void displayHints() {
 
         //hintService.displayHint(new DefaultHint(String.format("#%s",TABLE_VIEW_ID),"Double click on an element to open it."), false);
@@ -178,14 +186,26 @@ public class TableExplorerView implements ExplorerView {
     private TableRow<Explorable> createRow(TableView<Explorable> explorable) {
 
         TableRow<Explorable> row = new TableRow<>();
-        row.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2 && row.isEmpty() == false) {
-                Explorable e = row.getItem();
-                explorerService.open(e);
-            }
-        });
+        row.addEventFilter(MouseEvent.MOUSE_PRESSED,Event::consume);
+        row.addEventFilter(MouseEvent.MOUSE_CLICKED,new RowListener(row));
 
         return row;
+    }
+
+    private class RowListener implements EventHandler<MouseEvent> {
+
+        private final TableRow<Explorable> row;
+
+        public RowListener(TableRow<Explorable> row) {
+            this.row = row;
+        }
+
+        @Override
+        public void handle(MouseEvent event) {
+            onItemClicked.accept(new ExplorerClickEvent(row.getItem(), event, event.getClickCount() == 2));
+            event.consume();
+        }
+
     }
 
     private void onItemSelectionChanged(Explorable explorable, Boolean selected) {
@@ -203,10 +223,12 @@ public class TableExplorerView implements ExplorerView {
     }
 
     public void refresh() {
-       
-        setItem(currentItems);
-        setSelectedItem(currentItems.stream().filter(Explorable::isSelected).collect(Collectors.toList()));
+
+        //setItem(currentItems);
+        //setSelectedItem(currentItems.stream().filter(Explorable::isSelected).collect(Collectors.toList()));
         wrapperList.values().forEach(ReadOnlyTagWrapper::refresh);
+        
+        helper.refresh();
 
     }
 
@@ -215,9 +237,9 @@ public class TableExplorerView implements ExplorerView {
         final Explorable explorable;
 
         private String lastValue;
-        
+
         private String value;
-        
+
         public ReadOnlyTagWrapper(Explorable explorable) {
             this.explorable = explorable;
         }
@@ -228,21 +250,27 @@ public class TableExplorerView implements ExplorerView {
                     .map(Tag::toString)
                     .collect(Collectors.joining(", "));
         }
-        
+
         @Override
         public String getValue() {
-            if(value == null) computeValue();
+            if (value == null) {
+                computeValue();
+            }
             return value;
         }
 
         public void refresh() {
             value = getValue();
-            if(value.equals(lastValue) == false) {
+            if (value.equals(lastValue) == false) {
                 lastValue = value;
                 fireValueChangedEvent();
             }
-            
+
         }
+    }
+
+    public void setOnItemClicked(Consumer<ExplorerClickEvent> onItemClicked) {
+        this.onItemClicked = onItemClicked;
     }
 
 }

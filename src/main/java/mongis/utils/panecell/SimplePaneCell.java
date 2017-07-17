@@ -47,8 +47,10 @@ public class SimplePaneCell<T> implements PaneCell<T> {
     T item;
     BooleanProperty booleanProperty = new SimpleBooleanProperty();
     BooleanProperty onScreenProperty = new SimpleBooleanProperty();
-    Consumer<T> onClick;
+    Consumer<T> onSimpleClick;
 
+    Consumer<T> onDoubleClick;
+    
     public SimplePaneCell() {
         borderPane.setCenter(imageView);
         borderPane.setBottom(title);
@@ -81,7 +83,7 @@ public class SimplePaneCell<T> implements PaneCell<T> {
 
     private void onMouseClicked(MouseEvent event) {
         event.consume();
-        onClick.accept(item);
+        onSimpleClick.accept(item);
     }
 
     public SimplePaneCell<T> setTitleFactory(Callback<T, String> factory) {
@@ -95,7 +97,7 @@ public class SimplePaneCell<T> implements PaneCell<T> {
     }
 
     public SimplePaneCell<T> setOnMouseClicked(Consumer<T> onClick) {
-        this.onClick = onClick;
+        this.onSimpleClick = onClick;
         return this;
     }
     public SimplePaneCell<T> setWidth(double width) {
@@ -107,5 +109,15 @@ public class SimplePaneCell<T> implements PaneCell<T> {
     public BooleanProperty onScreenProperty() {
         return onScreenProperty;
     }
+
+    public void setOnDoubleClick(Consumer<T> onDoubleClick) {
+        this.onDoubleClick = onDoubleClick;
+    }
+
+    public void setOnSimpleClick(Consumer<T> onSimpleClick) {
+        this.onSimpleClick = onSimpleClick;
+    }
+    
+    
     
 }

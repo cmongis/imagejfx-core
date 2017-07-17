@@ -25,6 +25,7 @@ import ijfx.ui.filter.DefaultNumberFilter;
 import ijfx.ui.filter.NumberFilter;
 import ijfx.ui.filter.StringFilter;
 import ijfx.ui.filter.string.DefaultStringFilter;
+import ijfx.ui.utils.ObjectCache;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,8 +37,33 @@ import java.util.stream.Collectors;
  */
 public class DefaultMetaDataFilterFactory<T extends MetaDataOwner> implements MetaDataFilterFactory<T>{
 
+    
+    ObjectCache<StringFilterWrapper<T>> stringFilterCache = new ObjectCache<>();
+    
+    ObjectCache<NumberFilterWrapper<T>> numberFilterCache = new ObjectCache<>();
+
+    public DefaultMetaDataFilterFactory() {
+        
+        
+        stringFilterCache.setFactory(()-> new StringFilterWrapper<T>());
+        numberFilterCache.setFactory(()->new NumberFilterWrapper<T>());
+    }
+    
+    
+    
+    
+    
+    /** 
+     * Indicates the factory that the previous filters are no longer necessary and they can be
+     * reused
+     */
+    public void recycleCache() {
+        stringFilterCache.reset();
+        numberFilterCache.reset();
+    }
+    
     @Override
-    public MetaDataOwnerFilter<T> generateFilter(Collection<? extends T> ownerList, String keyName) {
+    public synchronized MetaDataOwnerFilter<T> generateFilter(Collection<? extends T> ownerList, String keyName) {
 
         Collection<MetaData> possibleValues = getAllPossibleValues(ownerList, keyName);
         int type = checktype(ownerList, keyName);
@@ -76,7 +102,8 @@ public class DefaultMetaDataFilterFactory<T extends MetaDataOwner> implements Me
         if (ownerList.isEmpty()) {
             return MetaData.TYPE_NOT_SET;
         }
-
+       
+       
         List<MetaData> nonNullMetaData
                 = ownerList
                 .parallelStream()
@@ -100,9 +127,9 @@ public class DefaultMetaDataFilterFactory<T extends MetaDataOwner> implements Me
                 .map(metadata -> metadata.getStringValue())
                 .collect(Collectors.toList());
 
-        StringFilter filter = new DefaultStringFilter();
-        filter.setAllPossibleValues(possibleStringValues);
-        MetaDataOwnerFilter wrapper = new StringFilterWrapper(filter, keyName);
+        StringFilterWrapper wrapper = stringFilterCache.getNext();
+        wrapper.setKeyName(keyName);
+        wrapper.getFilter().setAllPossibleValues(possibleStringValues);
 
         return wrapper;
     }
@@ -116,10 +143,9 @@ public class DefaultMetaDataFilterFactory<T extends MetaDataOwner> implements Me
                 .map(metadata->metadata.getDoubleValue())
                 .collect(Collectors.toList());
 
-        NumberFilter filter = new DefaultNumberFilter();
-        filter.setAllPossibleValue(possibleNumberValues);
-        MetaDataOwnerFilter wrapper = new NumberFilterWrapper(filter, keyName);
-
+        NumberFilterWrapper wrapper = numberFilterCache.getNext();
+        wrapper.setKeyName(keyName);
+        wrapper.getFilter().setAllPossibleValue(possibleNumberValues);
         return wrapper;
     }
 
