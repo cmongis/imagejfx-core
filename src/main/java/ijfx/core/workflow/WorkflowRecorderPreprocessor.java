@@ -67,7 +67,7 @@ public class WorkflowRecorderPreprocessor extends AbstractPreprocessorPlugin {
     
     @Override
     public void process(Module module) {
-        
+         
         if(uiService.isDefaultUI(ImageJFX.UI_NAME) == false) return;
         
         if (workflowExecutorSrv.isRunning() || batchService.isRunning()) {
