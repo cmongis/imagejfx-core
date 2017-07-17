@@ -90,12 +90,12 @@ public class DefaultExplorableDisplay extends AbstractDisplay<ExplorableList> im
     @Override
     public void setFilter(Predicate<Explorable> filter) {
         if (filter == null) {
-            displayedItems.clear();
-            displayedItems.addAll(items);
+            displayedItems = new ArrayList<>(items);
+            //displayedItems.addAll(items);
             
         } else {
             displayedItems.clear();
-            displayedItems = displayedItems
+            displayedItems = items
                     .stream()
                     .filter(filter)
                     .collect(Collectors.toList());
@@ -136,8 +136,15 @@ public class DefaultExplorableDisplay extends AbstractDisplay<ExplorableList> im
 
     @Override
     public void select(Explorable explorable) {
-        if(selected.contains(explorable) == false)
+        if(selected.contains(explorable) == false) {
             selected.add(explorable);
+            selected.sort((e1,e2)->{
+               return Integer.compare(getItems().indexOf(e1),getItems().indexOf(e2));
+            });
+        }
+            
+        
+        
     }
 
 }

@@ -40,6 +40,21 @@ public interface ExplorableDisplay extends Display<ExplorableList>{
     
     public void select(Explorable explorable);
     
+    default void selectUntil(Explorable explorable) {
+        
+        select(explorable);
+        if(getSelected().size() == 0) {
+            
+            return;
+        }
+        int begin = getItems().indexOf(getSelected().get(0));
+        int end =  getItems().indexOf(getSelected().get(getSelected().size()-1))+1;
+        
+        setSelected(getItems().subList(begin, end));
+        
+        
+    }
+    
     default void selectOnly(Explorable explorable) {
         setSelected(Lists.newArrayList(explorable));
     }

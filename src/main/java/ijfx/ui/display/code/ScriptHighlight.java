@@ -22,6 +22,7 @@ package ijfx.ui.display.code;
 import java.util.Collection;
 import java.util.Hashtable;
 import org.fxmisc.richtext.model.StyleSpans;
+import org.scijava.script.ScriptLanguage;
 
 /**
  *
@@ -32,4 +33,5 @@ public interface ScriptHighlight {
    
     public StyleSpans<Collection<String>> computeHighlighting(String text);
     public void setKeywords(Hashtable keywordTable);
+    public void setLangage(ScriptLanguage language);
 }

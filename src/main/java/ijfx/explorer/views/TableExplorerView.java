@@ -227,6 +227,8 @@ public class TableExplorerView implements ExplorerView {
         //setItem(currentItems);
         //setSelectedItem(currentItems.stream().filter(Explorable::isSelected).collect(Collectors.toList()));
         wrapperList.values().forEach(ReadOnlyTagWrapper::refresh);
+        
+        helper.refresh();
 
     }
 

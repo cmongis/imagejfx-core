@@ -159,7 +159,7 @@ public class DefaultStringFilter extends BorderPane implements Initializable, St
     }
 
     @Override
-    public void setAllPossibleValues(Collection<? extends String> list) {
+    public synchronized void setAllPossibleValues(Collection<? extends String> list) {
 
         //allItems.clear();
 
@@ -211,12 +211,8 @@ public class DefaultStringFilter extends BorderPane implements Initializable, St
         else {
             itemToShow = allItems.subList(0, 5);
         }
-
-        // clearing the displayed items
-        displayedItems.clear();
-
-        displayedItems.addAll(itemToShow);
-        listView.setItems(displayedItems);
+        
+       CollectionsUtils.synchronize(displayedItems, listView.getItems());
 
     }
 

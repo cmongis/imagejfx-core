@@ -11,16 +11,16 @@ color brightcyan "\<(and|as|assert|break|class|continue|def|del|elif|else|except
 color green "\<(global|if|import|in|is|lambda|not|or|pass|print|raise|return|try|while|with|yield)\>"
 
 # Single-quoted strings.
-color brightgreen "'([^'\]|\\.)+'"
-color brightgreen ""([^"\]|\\.)+""
+color brightgreen "'([^']|\\.)+'"
+color brightgreen ""([^"]|\\.)+""
 # Comments.
-color brightred "(^|[[:blank:]])#.*$"
+color brightblue "#.*$"
 # Triple-quoted strings.
-color brightgreen    start="'''[^'),]" end="(^|[^(\])'''"
-color brightgreen start="\"\"\"[^"),]" end="(^|[^(\])\"\"\""
-color green "^\#(\@\w+)\(.*$"
+color brightblue start="'''[^'),]" end="(^|[^(\])'''"
+color brightblue start="\"\"\"[^"),]" end="(^|[^(\])\"\"\""
+
 # Reminders.
-color ,yellow "(FIXME|TODO|XXX)"
+ color ,yellow "\<(FIXME|TODO|XXX)\>"
 
 # Trailing whitespace.
-color ,green "[[:space:]]+$"
+color green "[[:space:]]+$"

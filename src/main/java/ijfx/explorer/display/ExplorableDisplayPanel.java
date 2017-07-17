@@ -87,7 +87,7 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
 
     @Parameter
     TimerService timerService;
-    
+
     MetaDataBar metaDataBar;
 
     BooleanProperty inZone = new SimpleBooleanProperty(false);
@@ -202,8 +202,12 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
     }
 
     private void onFilterChanged(Observable obs, final Predicate<Taggable> old, final Predicate<Taggable> newValue) {
-        getDisplay().setFilter(exp -> newValue.test(exp));
 
+        if (newValue == null) {
+            getDisplay().setFilter(null);
+        } else {
+            getDisplay().setFilter(exp -> newValue.test(exp));
+        }
         // no need to call for display update
         // only the displayed item should be changed anyway
         updateView(getCurrentView());
@@ -226,7 +230,28 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
 
     public void onItemClicked(ExplorerClickEvent event) {
 
-        getDisplay().select(event.getExplorable());
+        int selected = getDisplay().getSelected().size();
+        
+        Explorable clicked = event.getExplorable();
+        
+        boolean isShiftDown = event.getEvent().isShiftDown();
+        boolean isAlreadySelected = getDisplay().getSelected().contains(clicked);
+        
+        if(isShiftDown && selected > 0) {
+            getDisplay().selectUntil(clicked);
+        }
+        
+        else if(isAlreadySelected && selected > 1) {
+            getDisplay().selectOnly(clicked);
+        }
+        else if(isAlreadySelected && selected == 1) {
+            getDisplay().getSelected().remove(clicked);
+        }
+        else {
+            getDisplay().select(clicked);
+        }
+      
+
         getDisplay().update();
     }
 

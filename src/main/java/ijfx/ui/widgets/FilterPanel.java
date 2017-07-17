@@ -20,6 +20,7 @@
 package ijfx.ui.widgets;
 
 import ijfx.ui.filter.DataFilter;
+import ijfx.ui.utils.CollectionsUtils;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -47,23 +48,37 @@ public class FilterPanel<T> {
 
     Accordion filterVBox = new Accordion();
 
-    ObservableList<TitledPaneFilterWrapper<T>> filterList = FXCollections.observableArrayList();
+    ObservableList<DataFilter<T>> filterList = FXCollections.observableArrayList();
+
+    ObservableList<TitledPaneFilterWrapper<T>> wrapperList = FXCollections.observableArrayList();
 
     Property<Predicate<T>> predicateProperty = new SimpleObjectProperty<>();
 
-    
     ChangeListener<Predicate<T>> listener = this::onFilterChanged;
-    
+
     public FilterPanel() {
 
-        ListChangeListener<TitledPaneFilterWrapper<T>> listener
+        // adds a listener that creates and remove
+        // wrappers from the wrapper list
+        ListChangeListener<DataFilter<T>> filterLister
                 = ListChangeListenerBuilder
-                        .<TitledPaneFilterWrapper<T>>create()
+                        .<DataFilter<T>>create()
                         .onAdd(this::onFilterAdded)
                         .onRemove(this::onFilterRemoved)
                         .build();
+
+        filterList.addListener(filterLister);
         
-        filterList.addListener(listener);
+        // add a listener that add and remove wrapper nodes
+        // to the panel when added and removed from the list
+        ListChangeListener<TitledPaneFilterWrapper<T>> listener
+                = ListChangeListenerBuilder
+                        .<TitledPaneFilterWrapper<T>>create()
+                        .onAdd(this::onWrapperAdded)
+                        .onRemove(this::onWrapperRemoved)
+                        .build();
+
+        wrapperList.addListener(listener);
     }
 
     public void addAdditionalPane(TitledPane pane) {
@@ -74,9 +89,37 @@ public class FilterPanel<T> {
         return predicateProperty;
     }
 
-    private void onFilterAdded(List<? extends TitledPaneFilterWrapper<T>> addedFilter) {
+    private void onFilterAdded(List< ? extends DataFilter<T>> addedFilter) {
 
-        addedFilter.forEach(this::listenFilter);
+        List<TitledPaneFilterWrapper<T>> collect = addedFilter
+                .stream()
+                .peek(this::listenFilter)
+                .map(TitledPaneFilterWrapper::new)
+                .collect(Collectors.toList());
+
+        wrapperList.addAll(collect);
+
+    }
+
+    private void onFilterRemoved(List<? extends DataFilter<T>> removeFilter) {
+        wrapperList.removeAll(removeFilter
+                .stream()
+                .peek(this::stopListeningToFilter)
+                .map(this::findWrapper)
+                .collect(Collectors.toList()));
+    }
+
+    private TitledPaneFilterWrapper<T> findWrapper(DataFilter<T> filter) {
+
+        return wrapperList
+                .stream()
+                .filter(wrapper -> wrapper.getFilter() == filter)
+                .findFirst()
+                .orElse(null);
+
+    }
+
+    private void onWrapperAdded(List<? extends TitledPaneFilterWrapper<T>> addedFilter) {
 
         FXUtilities.addLater(
                 addedFilter
@@ -88,9 +131,7 @@ public class FilterPanel<T> {
 
     }
 
-    private void onFilterRemoved(List<? extends TitledPaneFilterWrapper<T>> removedFilter) {
-
-        removedFilter.forEach(this::stopListeningToFilter);
+    private void onWrapperRemoved(List<? extends TitledPaneFilterWrapper<T>> removedFilter) {
 
         FXUtilities.removeLater(
                 removedFilter
@@ -103,14 +144,9 @@ public class FilterPanel<T> {
     }
 
     public void setFilters(List<DataFilter<T>> filters) {
-        
-        
-        filterList.clear();
-        filterList.addAll(
-                filters
-                        .stream()
-                        .map(TitledPaneFilterWrapper::new)
-                        .collect(Collectors.toList()));
+
+        CollectionsUtils.synchronize(filters, filters);
+
     }
 
     private void listenFilter(DataFilter<T> filter) {
@@ -118,19 +154,18 @@ public class FilterPanel<T> {
     }
 
     private void stopListeningToFilter(DataFilter<T> filter) {
-        
-        if(filter.predicateProperty() == null) {
-            throw new IllegalArgumentException(String.format("The filter %s[%s] returns no predicate",filter.getName(),filter.getClass().getName()));
+
+        if (filter.predicateProperty() == null) {
+            throw new IllegalArgumentException(String.format("The filter %s[%s] returns no predicate", filter.getName(), filter.getClass().getName()));
         }
-        
+
         filter.predicateProperty().removeListener(listener);
     }
 
-    
     private void updatePredicate() {
-         Predicate<T> predicate = e -> true;
+        Predicate<T> predicate = e -> true;
 
-        List<Predicate<T>> predicateList = filterList
+        List<Predicate<T>> predicateList = wrapperList
                 .stream()
                 .map(f -> f.predicateProperty().getValue())
                 .filter(v -> v != null)
@@ -141,17 +176,13 @@ public class FilterPanel<T> {
             for (Predicate<T> p : predicateList) {
                 predicate = predicate.and(p);
             }
-             predicateProperty.setValue(predicate);
-        }
-        else {
+            predicateProperty.setValue(predicate);
+        } else {
             predicateProperty.setValue(null);
         }
-       
 
-       
     }
-    
-    
+
     private void onFilterChanged(Observable obs, Predicate<T> oldValue, Predicate<T> newValue) {
         Platform.runLater(this::updatePredicate);
     }

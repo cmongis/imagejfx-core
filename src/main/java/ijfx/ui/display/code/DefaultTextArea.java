@@ -20,7 +20,6 @@
 package ijfx.ui.display.code;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import javafx.application.Platform;
@@ -36,7 +35,6 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.Paragraph;
 import org.fxmisc.richtext.model.StyledText;
-import org.scijava.Context;
 import org.scijava.command.CommandInfo;
 import org.scijava.script.ScriptLanguage;
 
@@ -47,24 +45,31 @@ import org.scijava.script.ScriptLanguage;
 public class DefaultTextArea extends AnchorPane{
     
     private CodeArea codeArea = null;
-    private LanguageKeywords languageKeywords;
     private ScriptHighlight scriptHighlight;
     private AutocompletionList listProvider;
     private boolean autocomplete = true;
     private ContextMenu autocompleteMenu = new ContextMenu();
     
-    private final StringProperty selectedTextProperty;
-    private final StringProperty textProperty;
-    private final ObjectProperty<IndexRange> selectionProperty;
+    private StringProperty selectedTextProperty;
+    private StringProperty textProperty;
+    private ObjectProperty<IndexRange> selectionProperty;
     
     
-    private Hashtable KEYWORDS_PATTERN_TABLE = new Hashtable();
     private Autocompletion autocompletion;
     
     public DefaultTextArea() {
         
-        this.languageKeywords = new NanorcParser();
-        this.scriptHighlight = new DefaultScriptHighlighting(this.KEYWORDS_PATTERN_TABLE);
+        initCodeArea();
+    }
+    
+    public DefaultTextArea(List<CommandInfo> entriesList, TextEditorPreferencies preferencies) {
+        
+        initCodeArea();
+        setAutocompletion(entriesList);
+        setPreferencies(preferencies);
+    }
+    
+    public void initCodeArea(){
         
         this.codeArea = new CodeArea();
         this.codeArea.setParagraphGraphicFactory(LineNumberFactory.get(this.codeArea));
@@ -72,30 +77,27 @@ public class DefaultTextArea extends AnchorPane{
         this.codeArea.richChanges()
                 .filter(ch -> !ch.getInserted().equals(ch.getRemoved())) // XXX
                 .subscribe(change -> {
-                     if ("".equals(codeArea.getText().trim()) == false) {
-                        codeArea.setStyleSpans(0, this.scriptHighlight.computeHighlighting(codeArea.getText()));
-                        if (autocomplete) lauchAutocompletion();
+                     if ("".equals(this.codeArea.getText().trim()) == false) {
+                        this.codeArea.setStyleSpans(0, this.scriptHighlight.computeHighlighting(this.codeArea.getText()));
+                        if (this.autocomplete) lauchAutocompletion();
                         addVariableAutocompletion();
                         
                     }
                     
                 });
         
-        selectedTextProperty = new SimpleStringProperty();
-        selectedTextProperty.bind(this.codeArea.selectedTextProperty());
+        this.selectedTextProperty = new SimpleStringProperty();
+        this.selectedTextProperty.bind(this.codeArea.selectedTextProperty());
         
         
-        selectionProperty = new SimpleObjectProperty<>();
-        selectionProperty.bind(this.codeArea.selectionProperty());
+        this.selectionProperty = new SimpleObjectProperty<>();
+        this.selectionProperty.bind(this.codeArea.selectionProperty());
         
-        textProperty = new SimpleStringProperty();
-        textProperty.bind(this.codeArea.textProperty());
+        this.textProperty = new SimpleStringProperty();
+        this.textProperty.bind(this.codeArea.textProperty());
         
         this.getChildren().add(this.codeArea);
-        //getStylesheets().add(getClass().getResource("/ijfx/ui/display/code/TextEditorDarkTheme.css").toExternalForm());
         this.autocompletion = new DefaultAutocompletion(this);
-        
-        
     }
     
     public void setAutocompletion(List<CommandInfo> entriesList){
@@ -104,11 +106,9 @@ public class DefaultTextArea extends AnchorPane{
     }
     
     public void initLanguage(ScriptLanguage language){
-        this.languageKeywords.setLanguage(language);
-        this.KEYWORDS_PATTERN_TABLE = this.languageKeywords.getKeywords();
-        this.scriptHighlight.setKeywords(this.KEYWORDS_PATTERN_TABLE);
-        
+        this.scriptHighlight = new DefaultScriptHighlighting(language);
     }
+    
     /**
      * The autocompletion is performed on the closest word from the carret
      * The autocompletion is computed only if the word in question is not affected by a style this avoid try to compute the autocompletion in comments and strins
@@ -118,20 +118,20 @@ public class DefaultTextArea extends AnchorPane{
         String word = codeArea.getSelectedText();
         IndexRange selection = codeArea.getSelection();
         codeArea.deselect();
-        
         Paragraph paragraph = codeArea.getParagraph(codeArea.getCurrentParagraph());
         Collection style = (Collection) paragraph.getStyleAtPosition(selection.getStart());
-        if (style.size() > 0 && style.toArray()[0].equals("null")){
-            this.autocompleteMenu = this.autocompletion.computeAutocompletion(word);
-            if (autocompleteMenu != null) {
-                autocompleteMenu.setMaxHeight(5);
-                autocompleteMenu.setPrefHeight(5);
-                autocompleteMenu.setHeight(10);
-                autocompleteMenu.show(this, Side.BOTTOM, 0, 0);
-                
+        if (!style.isEmpty()){
+            if (style.toArray()[0].equals("null")){
+                this.autocompleteMenu = this.autocompletion.computeAutocompletion(word);
+                if (autocompleteMenu != null) {
+                    autocompleteMenu.setMaxHeight(5);
+                    autocompleteMenu.setPrefHeight(5);
+                    autocompleteMenu.setHeight(10);
+                    autocompleteMenu.show(this, Side.BOTTOM, 0, 0);
+
+                }
             }
         }
-        
         
     }
     
@@ -141,14 +141,16 @@ public class DefaultTextArea extends AnchorPane{
         codeArea.deselect();
         for (Paragraph<Collection<String>, StyledText<Collection<String>>, Collection<String>> paragraph : this.codeArea.getParagraphs()){
             for (StyledText<Collection<String>> word : paragraph.getSegments()){
-                if (word.getStyle().size() > 0 && word.getStyle().toArray()[0].equals("null")){
-                    String[] newEntries = word.getText().split(" ");
-                    for (String newEntry : newEntries){
-                        if (!this.listProvider.getEntries().contains(newEntry) && !newEntry.equals(currentWord)){
-                            this.listProvider.getEntries().add(newEntry);
+                if (!word.getStyle().isEmpty()){
+                    if (word.getStyle().toArray()[0].equals("null")){
+                        String[] newEntries = word.getText().split(" ");
+                        for (String newEntry : newEntries){
+                            if (!this.listProvider.getEntries().contains(newEntry) && !newEntry.equals(currentWord)){
+                                this.listProvider.getEntries().add(newEntry);
+                            }
                         }
+
                     }
-                    
                 }
             }
             
@@ -158,9 +160,7 @@ public class DefaultTextArea extends AnchorPane{
     public CodeArea getCodeArea() {
         return this.codeArea;
     }
-    public void injectContext(Context context){
-        context.inject(this);
-    }
+    
     public void setText(String text){
 
         this.codeArea.replaceText(text);
