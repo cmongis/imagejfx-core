@@ -46,15 +46,19 @@ public class ObjectCache<T> {
 
     Logger logger = ImageJFX.getLogger();
     
-    private int position;
+    private int position = -1;
     
     
     
     
     public ObjectCache() {
-        
+        reset();
     }
 
+    public int size() {
+        return cache.size();
+    }
+    
     public ObjectCache(Callable<T> factory) {
         this.factory = factory;
     }
@@ -69,29 +73,31 @@ public class ObjectCache<T> {
     }
     
     public void reset() {
-        position = 0;
+        position = -1;
     }
     
     
     public synchronized T getNext() {
+        
+        position++;
+        
         if(position >= cache.size()) {
             // safe way to make sure there will be no missing object in the cache
             // in cache the cache has been cleared
-            cache.addAll(get(null, position,1));
+           get(null, position,1);
         }
         T object = cache.get(position);
-        position++;
         return object;
     }
     
-    public List<T> get(final ProgressHandler handler, int start, Integer size) {
-        int required = start + size - cache.size();
+    public List<T> get(final ProgressHandler handler, final int start, final  Integer size) {
+        int missing = start + size - cache.size();
         
-        if(required > 0) {
-            if(handler != null) handler.setTotal(required);
+        if(missing > 0) {
+            if(handler != null) handler.setTotal(missing);
             
             List<T> collect = IntStream
-                    .range(0, size)
+                    .range(0, missing)
                     .parallel()
                     .mapToObj(i->{
                         if(handler != null) handler.increment(1);
@@ -105,10 +111,9 @@ public class ObjectCache<T> {
                     })
                     .collect(Collectors.toList());
             
-            cache.addAll(collect);
-            
+            cache.addAll(collect); 
         }
-        return cache.subList(0, size);
+        return cache.subList(start, start+size);
     }
     
     public CallbackTask<Integer,List<T>> getAsync(Integer size, Consumer<List<T>> onFinshed) {
@@ -118,7 +123,7 @@ public class ObjectCache<T> {
                 .then(onFinshed);
     }
     
-    public void getAsyncFragmented(ProgressHandler handler, Integer totalSize, int fragment, Consumer<List<T>> onFinshed) {
+    public void getAsyncFragmented(final ProgressHandler handler, Integer totalSize, int fragment, Consumer<List<T>> onFinshed) {
         
         // creating a thread that will hold the creation task
         ExecutorService thread = Executors.newFixedThreadPool(1);

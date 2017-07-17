@@ -143,9 +143,9 @@ public class FilterPanel<T> {
 
     }
 
-    public void setFilters(List<DataFilter<T>> filters) {
+    public synchronized void setFilters(List<DataFilter<T>> filters) {
 
-        CollectionsUtils.synchronize(filters, filters);
+        CollectionsUtils.synchronize(filters, filterList);
 
     }
 
