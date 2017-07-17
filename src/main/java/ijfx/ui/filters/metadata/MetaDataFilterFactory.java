@@ -31,5 +31,6 @@ public interface MetaDataFilterFactory<T extends MetaDataOwner>  {
     
     public MetaDataOwnerFilter<T> generateFilter(Collection<? extends T> ownerList, String keyName);
     
+    public void recycleCache();
     
 }

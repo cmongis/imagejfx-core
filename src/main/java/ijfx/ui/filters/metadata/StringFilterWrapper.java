@@ -22,6 +22,7 @@ package ijfx.ui.filters.metadata;
 import ijfx.core.metadata.MetaDataOwner;
 import ijfx.ui.filter.StringFilter;
 import ijfx.ui.filter.StringOwnerPredicate;
+import ijfx.ui.filter.string.DefaultStringFilter;
 import java.util.Collection;
 import java.util.function.Predicate;
 import javafx.beans.property.Property;
@@ -36,19 +37,33 @@ import javafx.scene.Node;
  */
 public class StringFilterWrapper<T extends MetaDataOwner> implements MetaDataOwnerFilter<T> {
 
-    private final StringFilter filter;
+    private StringFilter filter;
     private final Property<Predicate<T>> metaDataOwnerProperty;
-    private final String keyName;
-    public StringFilterWrapper(StringFilter filter, String keyName) {
+    private String keyName;
+
+    public StringFilterWrapper() {
+        this(new DefaultStringFilter());
+    }
+
+    public void setKeyName(String keyName) {
         this.keyName = keyName;
+    }
+    
+    
+    
+    public StringFilterWrapper(StringFilter filter) {
+
         this.filter = filter;
+        
         metaDataOwnerProperty = new SimpleObjectProperty<>(null);
-       if(filter.predicateProperty().getValue() != null) metaDataOwnerProperty.setValue(new StringOwnerPredicate(keyName, filter.predicateProperty().getValue()));
+        if (filter.predicateProperty().getValue() != null) {
+            metaDataOwnerProperty.setValue(new StringOwnerPredicate(keyName, filter.predicateProperty().getValue()));
+        }
 
         filter.predicateProperty().addListener(new ChangeListener<Predicate<String>>() {
             @Override
             public void changed(ObservableValue<? extends Predicate<String>> ov, Predicate<String> t, Predicate<String> t1) {
-                
+
                 // the predicate should be null if the user did nothing
                 if (t1 == null) {
                     metaDataOwnerProperty.setValue(null);
@@ -76,9 +91,12 @@ public class StringFilterWrapper<T extends MetaDataOwner> implements MetaDataOwn
     public void updatePredicate() {
 
     }
-    
+
     @Override
     public String getName() {
+        if(keyName == null) {
+            return "No key yet";
+        }
         return keyName;
     }
 

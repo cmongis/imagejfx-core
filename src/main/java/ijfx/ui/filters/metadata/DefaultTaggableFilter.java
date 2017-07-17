@@ -52,10 +52,16 @@ public class DefaultTaggableFilter implements TaggableFilter {
     }
 
     public Predicate<Taggable> getPredicate() {
+        
+        if(filter.predicateProperty().getValue() == null) {
+            return null;
+        }
+        
         return taggable -> taggable
                 .getTagList()
                 .parallelStream()
-                .map(Tag::getName).filter(filter.predicateProperty().getValue())
+                .map(Tag::getName)
+                .filter(filter.predicateProperty().getValue())
                 .count() > 0;
     }
 
