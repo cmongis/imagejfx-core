@@ -63,7 +63,7 @@ public class DefaultMetaDataFilterFactory<T extends MetaDataOwner> implements Me
     }
     
     @Override
-    public MetaDataOwnerFilter<T> generateFilter(Collection<? extends T> ownerList, String keyName) {
+    public synchronized MetaDataOwnerFilter<T> generateFilter(Collection<? extends T> ownerList, String keyName) {
 
         Collection<MetaData> possibleValues = getAllPossibleValues(ownerList, keyName);
         int type = checktype(ownerList, keyName);

@@ -212,6 +212,9 @@ public class DefaultStringFilter extends BorderPane implements Initializable, St
             itemToShow = allItems.subList(0, 5);
         }
         
+       displayedItems.clear();
+       displayedItems.addAll(itemToShow);
+        
        CollectionsUtils.synchronize(displayedItems, listView.getItems());
 
     }
