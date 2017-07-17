@@ -87,7 +87,7 @@ public final class ImageJFX  {
     public static final int CORE_NUMBER = getCoreNumber() > 1 ? getCoreNumber() - 1 : getCoreNumber();
     
     private static final ExecutorService service = Executors.newFixedThreadPool(CORE_NUMBER);
-
+    
     public static double getAnimationDurationAsDouble() {
         return ANIMATION_DURATION.toMillis();
     }
@@ -117,9 +117,7 @@ public final class ImageJFX  {
     }
     
     public static void applyBaseCss(Parent parent) {
-        
        parent.getStylesheets().add(getStylesheet());
-        
     }
     
     public static String getStylesheet() {
