@@ -162,13 +162,14 @@ public class ImageRecordIconizer implements Explorable {
         return imageRecord;
     }
 
+    /*
     @Override
     public BooleanProperty selectedProperty() {
         if (selectedProperty == null) {
             selectedProperty = new SimpleBooleanProperty(false);
         }
         return selectedProperty;
-    }
+    }*/
 
     @Override
     public Dataset getDataset() {
