@@ -23,9 +23,11 @@ import ijfx.ui.filter.DataFilter;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -49,6 +51,9 @@ public class FilterPanel<T> {
 
     Property<Predicate<T>> predicateProperty = new SimpleObjectProperty<>();
 
+    
+    ChangeListener<Predicate<T>> listener = this::onFilterChanged;
+    
     public FilterPanel() {
 
         ListChangeListener<TitledPaneFilterWrapper<T>> listener
@@ -98,6 +103,8 @@ public class FilterPanel<T> {
     }
 
     public void setFilters(List<DataFilter<T>> filters) {
+        
+        
         filterList.clear();
         filterList.addAll(
                 filters
@@ -107,7 +114,7 @@ public class FilterPanel<T> {
     }
 
     private void listenFilter(DataFilter<T> filter) {
-        filter.predicateProperty().addListener(this::onFilterChanged);
+        filter.predicateProperty().addListener(listener);
     }
 
     private void stopListeningToFilter(DataFilter<T> filter) {
@@ -116,12 +123,12 @@ public class FilterPanel<T> {
             throw new IllegalArgumentException(String.format("The filter %s[%s] returns no predicate",filter.getName(),filter.getClass().getName()));
         }
         
-        filter.predicateProperty().removeListener(this::onFilterChanged);
+        filter.predicateProperty().removeListener(listener);
     }
 
-    private void onFilterChanged(Observable obs, Predicate<T> oldValue, Predicate<T> newValue) {
-
-        Predicate<T> predicate = e -> true;
+    
+    private void updatePredicate() {
+         Predicate<T> predicate = e -> true;
 
         List<Predicate<T>> predicateList = filterList
                 .stream()
@@ -134,10 +141,19 @@ public class FilterPanel<T> {
             for (Predicate<T> p : predicateList) {
                 predicate = predicate.and(p);
             }
-
+             predicateProperty.setValue(predicate);
         }
+        else {
+            predicateProperty.setValue(null);
+        }
+       
 
-        predicateProperty.setValue(predicate);
+       
+    }
+    
+    
+    private void onFilterChanged(Observable obs, Predicate<T> oldValue, Predicate<T> newValue) {
+        Platform.runLater(this::updatePredicate);
     }
 
     public Node getPane() {
