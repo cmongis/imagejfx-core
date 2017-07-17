@@ -320,6 +320,11 @@ public class FXUserInterface extends Application implements UserInterface {
 
     @Override
     public boolean isVisible() {
+        
+        if(mainWindow == null) {
+            return false;
+        }
+        
         try {
             return getMainWindow().getUiComponent().isVisible();
         } catch (Exception e) {
