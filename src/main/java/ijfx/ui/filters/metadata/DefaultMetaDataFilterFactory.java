@@ -21,14 +21,11 @@ package ijfx.ui.filters.metadata;
 
 import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataOwner;
-import ijfx.ui.filter.DefaultNumberFilter;
-import ijfx.ui.filter.NumberFilter;
-import ijfx.ui.filter.StringFilter;
-import ijfx.ui.filter.string.DefaultStringFilter;
 import ijfx.ui.utils.ObjectCache;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import mongis.utils.CallbackTask;
 
 /**
  *
@@ -89,7 +86,8 @@ public class DefaultMetaDataFilterFactory<T extends MetaDataOwner> implements Me
 
     public Collection<MetaData> getAllPossibleValues(Collection<? extends MetaDataOwner> ownerList, String keyName) {
 
-        return ownerList.stream()
+        return ownerList
+                .parallelStream()
                 .map(owner -> owner.getMetaDataSet().get(keyName))
                 .filter(MetaData::notNull)
                 .collect(Collectors.toList());
@@ -129,7 +127,12 @@ public class DefaultMetaDataFilterFactory<T extends MetaDataOwner> implements Me
 
         StringFilterWrapper wrapper = stringFilterCache.getNext();
         wrapper.setKeyName(keyName);
-        wrapper.getFilter().setAllPossibleValues(possibleStringValues);
+        
+        new CallbackTask<Collection<String>,Void>()
+                .consume(wrapper.getFilter()::setAllPossibleValues)
+                .setInput(possibleStringValues)
+                .start();
+       // wrapper.getFilter().setAllPossibleValues(possibleStringValues);
 
         return wrapper;
     }

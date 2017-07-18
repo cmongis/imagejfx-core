@@ -150,7 +150,9 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
         root.getChildren().addAll(metaDataBar, tabPane, sideBox);
         redoLayout();
         redraw();
-
+        
+        
+        context.inject(filterPanel);
         // adding style class to the filter pane
         filterPanel
                 .getPane()

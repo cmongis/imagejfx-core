@@ -30,6 +30,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import javafx.application.Platform;
 import mongis.utils.CallableTask;
 import mongis.utils.CallbackTask;
 import mongis.utils.ProgressHandler;
@@ -116,12 +117,43 @@ public class ObjectCache<T> {
         return cache.subList(start, start+size);
     }
     
+    public int indexOf(List<T> items) {
+        return cache.indexOf(items.get(0));
+    }
+    
     public CallbackTask<Integer,List<T>> getAsync(Integer size, Consumer<List<T>> onFinshed) {
         return new CallbackTask<Integer,List<T>>()
                 .setInput(size)
-                .run(this::get)
+                .callback(this::get)
                 .then(onFinshed);
     }
+    
+    public List<T> getFragmented(final ProgressHandler handler, Integer totalSize, int fragment, Consumer<List<T>> onFinished) {
+        
+        
+        List<T> finished = new ArrayList<>();
+         for(int i = 0; i < totalSize; i+= fragment) {
+            
+             
+             if(handler.isCancelled()) return null;
+            // defining the number of object required for this fragment
+            final int required = i+fragment < totalSize ? fragment : totalSize - i;
+            
+            // christalizing the start index
+            final int start = i;
+            
+            
+            final List<T> items = get(handler,start,required);
+        
+            
+            finished.addAll(items);
+            Platform.runLater(()->onFinished.accept(items));
+         }
+         
+         return finished;
+         
+    }
+    
     
     public void getAsyncFragmented(final ProgressHandler handler, Integer totalSize, int fragment, Consumer<List<T>> onFinshed) {
         

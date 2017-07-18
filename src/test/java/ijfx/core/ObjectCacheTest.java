@@ -29,36 +29,56 @@ import org.junit.Test;
  * @author cyril
  */
 public class ObjectCacheTest {
-    
-    Double next = new Double(-1);
-    public Double getNext() {
+
+    Integer next = new Integer(-1);
+
+    public Integer getNext() {
         next = next + 1;
-        return  next;
+        return next;
     }
-    
+
     @Test
     public void testCaching() throws Exception {
+
+        ObjectCache<Integer> cache = new ObjectCache<>(this::getNext);
+
         
-        ObjectCache<Double> cache =  new ObjectCache<>(this::getNext);
-        
-        for(int i = 0; i!= 10;i++) {
+        cache.reset();
+        // creating object one after the other
+        for (int i = 0; i != 10; i++) {
             cache.getNext();
         }
+
+        // recycling object
         cache.reset();
-        Assert.assertEquals("first in cache",0,cache.getNext(),0);
+
+        // after recycling, the cache should return the first object which is 0
+        Assert.assertEquals("first in cache", 0, cache.getNext(), 0);
+
+        Assert.assertEquals("cache size", 10, cache.size());
+
+        cache.reset();
+
+        cache.get(null, 0, 20);
+
+        Assert.assertEquals("cache size", 20, cache.size());
+
+        cache.get(null,10,20);
+        Assert.assertEquals("cache size", 30,cache.size());
         
-        Assert.assertEquals("cache = 20",20,cache.get(null, 20).size());
+        // testing async creationg
         System.out.println("Starting the async job");
-        cache.getAsyncFragmented(null, 100, 20,this::onFinished);
-        
-        
+        //cache.getAsyncFragmented(null, 60, 7, this::onFinished);
+
         Thread.sleep(1000);
         
+        //Assert.assertEquals("cache size", 60, cache.size());
+
     }
-    
-    private void onFinished(List<Double> list) {
+
+    private void onFinished(List<Integer> list) {
         System.out.println("1 pool finished");
         list.forEach(System.out::println);
     }
-    
+
 }

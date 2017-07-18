@@ -63,7 +63,7 @@ public class SimplePaneCell<T> implements PaneCell<T> {
     public void setItem(T item) {
         title.setText(titleFactory.call(item));
         this.item = item;
-        new CallbackTask<T, Image>().setInput(item).run(imageFactory).then(imageView::setImage).start();
+        new CallbackTask<T, Image>().setInput(item).callback(imageFactory).then(imageView::setImage).start();
     }
 
     @Override

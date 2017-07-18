@@ -110,7 +110,7 @@ public class CommandRunner {
         CallbackTask<Module, T> task = new CallbackTask<Module, T>()
                 .setInput(module)
                 .setName(title)
-                .run((Module m) -> runModule(clazz, outputName));
+                .callback((Module m) -> runModule(clazz, outputName));
 
         if (show) {
             task.submit(loadScreenService);
