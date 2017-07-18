@@ -119,7 +119,7 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     public void applyFilter(Predicate<Explorable> predicate) {
 
         new CallbackTask<Predicate<Explorable>, List<Explorable>>(predicate)
-                .run(this::filter)
+                .callback(this::filter)
                 .then(this::setFilteredItems)
                 .start();
 
@@ -211,7 +211,7 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
 
         new CallbackTask<Void, Boolean>()
                 .setName("Opening file...")
-                .run((progress, vd) -> {
+                .callback((progress, vd) -> {
                     try {
                         progress.setProgress(1, 5);
                         explorable.open();

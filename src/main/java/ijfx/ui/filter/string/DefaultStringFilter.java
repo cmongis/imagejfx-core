@@ -32,6 +32,7 @@ import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
@@ -53,7 +54,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import mongis.utils.properties.ListChangeListenerBuilder;
 
 /**
  * FXML Controller class
@@ -180,7 +180,7 @@ public class DefaultStringFilter extends BorderPane implements Initializable, St
         // updating count
         allItems.forEach(item->item.setNumber(itemCount.get(item.getName())));
 
-        updateDisplayedItems();
+        Platform.runLater(this::updateDisplayedItems);
         
         predicateProperty().setValue(null);
 

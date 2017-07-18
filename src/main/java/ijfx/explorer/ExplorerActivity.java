@@ -275,7 +275,7 @@ public class ExplorerActivity extends AnchorPane implements Activity {
 
         explorationModeToggleGroup.selectToggle(getToggleButton(folderManagerService.getCurrentExplorationMode()));
         return new CallbackTask<Void, List<Explorable>>()
-                .run(this::update)
+                .callback(this::update)
                 .then(this::updateUi)
                 .start();
     }
@@ -415,7 +415,7 @@ public class ExplorerActivity extends AnchorPane implements Activity {
         Task task = new CallbackTask<List<? extends Explorable>, Void>()
                 .setInput(explorerService.getItems())
                 .setName("Updating filters...")
-                .run(filterPanel::generateFilters)
+                .callback(filterPanel::generateFilters)
                 .start();
 
         loadingScreenService.frontEndTask(task, true);

@@ -144,7 +144,7 @@ public class DefaultFolder implements Folder, FileChangeListener {
 
             Task task = new CallbackTask<Void, List<Explorable>>()
                     .setName("Getting file list...")
-                    .run(this::fetchFiles)
+                    .callback(this::fetchFiles)
                     .then(result -> {
                         files = result;
                         eventService.publish(new FolderUpdatedEvent().setObject(this));

@@ -88,7 +88,7 @@ public class IconExplorerView extends ScrollPane implements ExplorerView {
         tilePane.setHgap(hgap);
     }
 
-    public void setCellFactory(Callable<PaneCell<? extends Explorable>> callable) {
+    public void setCellFactory(Callable<PaneCell<Explorable>> callable) {
         cellPaneCtrl.setCellFactory(callable);
     }
     

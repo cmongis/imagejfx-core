@@ -290,7 +290,7 @@ public class DefaultFolderManagerService extends AbstractService implements Fold
     @Override
     public void completeStatistics() {
         loadingScreenService.frontEndTask(new CallbackTask<List<Explorable>, Integer>()
-                .run(this::fetchMoreStatistics)
+                .callback(this::fetchMoreStatistics)
                 .setInput(getCurrentFolder().getFileList())
                 .then(this::onStatisticComputingEnded)
                 .start()

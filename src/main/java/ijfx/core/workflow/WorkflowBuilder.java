@@ -203,7 +203,7 @@ public class WorkflowBuilder {
 
         return new CallbackTask<List<BatchSingleInput>, Boolean>()
                 .setInput(getInputs())
-                .run((progress, input) -> batchService.applyWorkflow(progress, input, workflow))
+                .callback((progress, input) -> batchService.applyWorkflow(progress, input, workflow))
                 .start();
     }
 
@@ -215,7 +215,7 @@ public class WorkflowBuilder {
     
     public CallbackTask<?, Boolean> getTask() {
         return new CallbackTask<List<BatchSingleInput>, Boolean>()
-                .runLongCallable(this::runSync);
+                .call(this::runSync);
     }
 
     public boolean runSync(ProgressHandler handler) {

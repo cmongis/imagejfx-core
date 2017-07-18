@@ -288,20 +288,20 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
         //otherwise starting to charge everything
         new CallbackTask<T, String>()
                 .setInput(newItem)
-                .run(titleFactory)
+                .callback(titleFactory)
                 .then(this::setTitle)
                 .start();
 
         new CallbackTask<T, String>()
                 .setInput(newItem)
-                .run(subtitleFactory)
+                .callback(subtitleFactory)
                 .then(this::setSubtitle)
                 .start();
 
         
         new CallbackTask<T, FontAwesomeIconView>()
                 .setInput(newItem)
-                .run(iconFactory)
+                .callback(iconFactory)
                 .then(this::setIcon)
                 .start();
 
@@ -310,7 +310,7 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
          */
         new CallbackTask<T, String>()
                 .setInput(newItem)
-                .run(additionalInfoFactory)
+                .callback(additionalInfoFactory)
                 .then(this::setAdditionalData)
                 .start();
 
@@ -336,7 +336,7 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
 
         currentImageSearch = new CallbackTask<T, Image>()
                 .setInput(newItem)
-                .run(imageFactory)
+                .callback(imageFactory)
                 .then(this::setImage)
                 .startIn(refreshThreadPool);
     }

@@ -63,6 +63,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import ijfx.core.uiplugin.UiCommand;
 import ijfx.core.uiplugin.UiCommandService;
+import ijfx.ui.main.ImageJFX;
 import javafx.application.Platform;
 
 /**
@@ -302,6 +303,14 @@ public class DefaultMainWindow implements MainWindow {
         Platform.runLater(() -> {
             mainBorderPane.setCenter(activity.getContent());
         });
+        
+        
+        Task task = activity.updateOnShow();
+        if(task!= null) {
+            ImageJFX
+                    .getThreadPool()
+                    .submit(task);
+        }
 
     }
 

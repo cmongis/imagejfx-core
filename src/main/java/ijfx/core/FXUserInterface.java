@@ -180,7 +180,7 @@ public class FXUserInterface extends Application implements UserInterface {
 
         // loading the plugins
         Task task = new CallbackTask<Object, Collection<UiPlugin>>()
-                .runLongCallable(uiPluginService::loadAll)
+                .call(uiPluginService::loadAll)
                 .then(this::onAllUiPluginLoaded)
                 .start();
 

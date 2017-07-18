@@ -131,7 +131,7 @@ public class FXUtilities {
     public static CallbackTask<String, WebView> createWebView(Object root, String mdFile) {
         return new CallbackTask<String, WebView>()
                 .setInput(mdFile)
-                .run(input -> {
+                .callback(input -> {
                     WebView webView = new WebView();
                     RichMessageDisplayer displayer = new RichMessageDisplayer(webView)
                             .addStringProcessor(Processor::process);

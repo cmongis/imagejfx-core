@@ -227,7 +227,7 @@ public class HistoryStepCtrl extends BorderPane {
     public void execute() {
         new CallbackTask<WorkflowStep, Boolean>()
                 .setInput(getStep())
-                .run(historyExecutorService::executeStep)
+                .callback(historyExecutorService::executeStep)
                 .submit(loadingScreenService)
                 .start();
     }
