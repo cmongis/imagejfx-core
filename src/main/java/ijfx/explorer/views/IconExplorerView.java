@@ -56,7 +56,7 @@ public class IconExplorerView extends ScrollPane implements ExplorerView {
 
     private List<? extends Explorable> itemsList;
     
-    private Consumer<ExplorerClickEvent> onItemClicked;
+    private Consumer<DataClickEvent> onItemClicked;
     
   
    
@@ -110,10 +110,10 @@ public class IconExplorerView extends ScrollPane implements ExplorerView {
 
     private PaneCell<Explorable> createIcon() {
         ExplorerIconCell cell = new ExplorerIconCell();
-        cell.setOnSimpleClick(explorable->{
-            
-            onItemClicked.accept(new ExplorerClickEvent(explorable, null, true));
+        cell.setOnDataClick(event->{
+            onItemClicked.accept(event);
         });
+       
         context.inject(cell);
         return cell;
     }
@@ -159,7 +159,7 @@ public class IconExplorerView extends ScrollPane implements ExplorerView {
          
     }
 
-    public void setOnItemClicked(Consumer<ExplorerClickEvent> onItemClicked) {
+    public void setOnItemClicked(Consumer<DataClickEvent> onItemClicked) {
         this.onItemClicked = onItemClicked;
     }
 

@@ -78,7 +78,7 @@ public class TableExplorerView implements ExplorerView {
 
     private final WeakHashMap<Explorable, ReadOnlyTagWrapper> wrapperList = new WeakHashMap<>();
 
-    private Consumer<ExplorerClickEvent> onItemClicked;
+    private Consumer<DataClickEvent> onItemClicked;
 
     public TableExplorerView() {
 
@@ -202,7 +202,7 @@ public class TableExplorerView implements ExplorerView {
 
         @Override
         public void handle(MouseEvent event) {
-            onItemClicked.accept(new ExplorerClickEvent(row.getItem(), event, event.getClickCount() == 2));
+            onItemClicked.accept(new DataClickEvent(row.getItem(), event, event.getClickCount() == 2));
             event.consume();
         }
 
@@ -269,7 +269,7 @@ public class TableExplorerView implements ExplorerView {
         }
     }
 
-    public void setOnItemClicked(Consumer<ExplorerClickEvent> onItemClicked) {
+    public void setOnItemClicked(Consumer<DataClickEvent> onItemClicked) {
         this.onItemClicked = onItemClicked;
     }
 

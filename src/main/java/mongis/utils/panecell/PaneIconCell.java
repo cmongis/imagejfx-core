@@ -21,6 +21,7 @@ package mongis.utils.panecell;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import ijfx.explorer.views.DataClickEvent;
 import ijfx.ui.main.ImageJFX;
 
 import ijfx.ui.utils.LoadingIcon;
@@ -106,31 +107,25 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
 
     private Task currentImageSearch;
 
-    private Consumer<T> onSimpleClick = t->{};
-    
-    private Consumer<T> onDoubleClick = t->{};
-    
+    private Consumer<DataClickEvent<T>> onClickEvent = t -> {
+    };
+
     Logger logger = ImageJFX.getLogger();
 
     private boolean isInsideScrollWindow = false;
 
     Image currentImage = null;
 
-   // private final static FXMLLoader LOADER = new FXMLLoader(PaneIconCell.class.getResource("/ijfx/ui/explorer/ImageIconItem.fxml"));
-
-  
-
-   
-
+    // private final static FXMLLoader LOADER = new FXMLLoader(PaneIconCell.class.getResource("/ijfx/ui/explorer/ImageIconItem.fxml"));
     private final BooleanProperty isSelectedProperty = new SimpleBooleanProperty(false);
 
     private static final PseudoClass SELECTED = PseudoClass.getPseudoClass("selected");
 
     private static final ExecutorService refreshThreadPool = Executors.newFixedThreadPool(3);
-    
+
     private final BooleanProperty onScreenProperty = new SimpleBooleanProperty(false);
-    
-   LoadingIcon loadingIcon = new LoadingIcon(20);
+
+    LoadingIcon loadingIcon = new LoadingIcon(20);
 
     public PaneIconCell() {
         try {
@@ -144,16 +139,15 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
             }*/
 
             titleLabel.setPrefHeight(100);
-             imageView.setSmooth(false);
-             
+            imageView.setSmooth(false);
+
             //imageView.fitWidthProperty().bind(widthProperty());
             //imageView.fitHeightProperty().bind(widthProperty());
             imageView.setFitWidth(120);
             //imageView.fitWidthProperty().bind(imageViewContainer.widthProperty());
             imageView.setPreserveRatio(true);
             //imageView.fitHeightProperty().bind(imageViewContainer.widthProperty());
-           
-           
+
             item.addListener(this::onItemChanged);
 
             addEventHandler(ScrollWindowEvent.SCROLL_WINDOW_ENTERED, this::onScrollWindow);
@@ -166,9 +160,8 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
             getStyleClass().add("pane-icon-cell");
 
             subtibleVisibleProperty().addListener(this::onSubtitleVisibleChanged);
-            
+
             onScreenProperty().addListener(this::onAppearingOnScreen);
-            
 
         } catch (IOException ex) {
             Logger.getLogger(PaneIconCell.class.getName()).log(Level.SEVERE, null, ex);
@@ -236,33 +229,25 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
     }
 
     public void setImage(Image image) {
-        logger.info("Setting image : "+image);
+        logger.info("Setting image : " + image);
         loadingIcon.stop();
-        
-        if(image == null) {
+
+        if (image == null) {
             setCenter(new FontAwesomeIconView(FontAwesomeIcon.ANGELLIST));
             return;
         };
-        
+
         imageView.setSmooth(false);
-       
-        
+
         setCenter(imageView);
         imageView.setImage(image);
 
     }
 
-    public void setOnDoubleClick(Consumer<T> onDoubleClick) {
-        this.onDoubleClick = onDoubleClick;
+    public void setOnDataClick(Consumer<DataClickEvent<T>> onSimpleClick) {
+        this.onClickEvent = onSimpleClick;
     }
 
-    public void setOnSimpleClick(Consumer<T> onSimpleClick) {
-        this.onSimpleClick = onSimpleClick;
-    }
-
-    
-    
-    
     public void onItemChanged(Observable obs, T oldItem, T newItem) {
 
         // cancelling the possible image search
@@ -279,7 +264,7 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
         if (newItem == null) {
             return;
         }
-        
+
         forceUpdate(newItem);
 
     }
@@ -298,7 +283,6 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
                 .then(this::setSubtitle)
                 .start();
 
-        
         new CallbackTask<T, FontAwesomeIconView>()
                 .setInput(newItem)
                 .callback(iconFactory)
@@ -314,12 +298,12 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
                 .then(this::setAdditionalData)
                 .start();
 
-        if(currentImageSearch != null) {
+        if (currentImageSearch != null) {
             currentImageSearch.cancel();
             currentImage = null;
         }
-        
-        if(onScreenProperty.getValue() == true) {
+
+        if (onScreenProperty.getValue() == true) {
             updateImageAsync(newItem);
         }
 
@@ -386,8 +370,6 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
         return this;
     }
 
-   
-
     public BooleanProperty subtibleVisibleProperty() {
         return subtitleLabel.visibleProperty();
     }
@@ -400,7 +382,7 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
     public boolean isSubtitleVisible() {
         return subtibleVisibleProperty().getValue();
     }
-    
+
     public BooleanProperty onScreenProperty() {
         return onScreenProperty;
     }
@@ -413,24 +395,11 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
     public BooleanProperty showIconProperty() {
         return titleIconView.visibleProperty();
     }
-    
+
     private void onClick(MouseEvent event) {
-        if(event.getClickCount() == 2) {
-            onDoubleClick();
-        }
-       
-        else {
-            onSimpleClick();
-        }
-        
-    }
 
-    protected void onSimpleClick() {
-        onSimpleClick.accept(getItem());
-    }
+        onClickEvent.accept(new DataClickEvent<>(getItem(), event, event.getClickCount() == 2));
 
-    protected void onDoubleClick() {
-        onDoubleClick.accept(getItem());
     }
 
     protected void onSubtitleVisibleChanged(Observable obs, Boolean oldValue, Boolean newValue) {
@@ -440,13 +409,11 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
             titleVBox.getChildren().remove(subtitleLabel);
         }
     }
-    
+
     protected void onAppearingOnScreen(Observable obs, Boolean oldValue, Boolean newValue) {
-        if(newValue) {
+        if (newValue) {
             updateImageAsync(getItem());
         }
     }
-
-
 
 }

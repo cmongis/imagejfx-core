@@ -60,23 +60,19 @@ public class PaneCellController<T extends Object> {
     //private LinkedList<PaneCell<T>> cachedControllerList = new LinkedList<>();
 
     private Callable<PaneCell<T>> cellFactory;
-    
+
     private Logger logger = ImageJFX.getLogger();
 
     private Pane pane;
 
     private ObservableList<T> selectedItems = FXCollections.observableArrayList();
-    
-   // private PaneCellControllerFX<T> updater;
-    
-    
+
+    // private PaneCellControllerFX<T> updater;
     ObjectCache<PaneCell<T>> cache;
-    
+
     public PaneCellController(Pane pane) {
         setPane(pane);
     }
-
-  
 
     /**
      * Set the pane that should be updated by the controller
@@ -93,9 +89,9 @@ public class PaneCellController<T extends Object> {
         cache = new ObjectCache<>(cellFactory);
     }
 
-   // PaneCellUpdateProcess<T> updateProcess;
-
+    // PaneCellUpdateProcess<T> updateProcess;
     Task updateProcess;
+
     /**
      * Give it a list of items coming from the model and the controller will
      * update the pane. If necessary, new PanelCell will be created. Unnecessary
@@ -104,51 +100,53 @@ public class PaneCellController<T extends Object> {
      * @param items List of items coming from the model
      */
     public CallbackTask update(List<T> items) {
-       
-       
-       return new CallbackTask<List<T>,List<PaneCell<T>>>()
-               .setInput(items)
-               .callback(this::retrieveCells)
-               .then(panecell->CollectionsUtils.synchronize(getContent(panecell), pane.getChildren()))
-               .start();
+        currentItems = items;
+        
+        return new CallbackTask<List<T>, List<PaneCell<T>>>()
+                .setInput(items)
+                .callback(this::retrieveCells)
+                .then(panecell -> CollectionsUtils.synchronize(getContent(panecell), pane.getChildren()))
+                .start();
     }
-    
 
     private List<PaneCell<T>> retrieveCells(ProgressHandler handler, List<T> items) {
-         return cache
-                .getFragmented(handler,items.size(), 10,this::onFragmentRetrieved);
+        return cache
+                .getFragmented(handler, items.size(), 10, this::onFragmentRetrieved);
     }
-    
+
     /**
      * Updates the cells when they are retrieved
-     * @param list 
+     *
+     * @param list
      */
-    private void onFragmentRetrieved(List<PaneCell<T>> list){ 
-        
-        List<Node> cells = list
-                .stream()
-                .map(PaneCell<T>::getContent)
-                .collect(Collectors.toList());
-        
-        List<Node> toAdd = CollectionsUtils.toAdd(cells, nodeList);
-        nodeList.addAll(toAdd);
-        final int start = cache.indexOf(list);
-        for(int i = 0;i!=list.size();i++) {
-            list.get(i).setItem(currentItems.get(start+i));   
+    private synchronized void onFragmentRetrieved(List<PaneCell<T>> list) {
+        synchronized (currentItems) {
+            List<Node> cells = list
+                    .stream()
+                    .map(PaneCell<T>::getContent)
+                    .collect(Collectors.toList());
+
+            List<Node> toAdd = CollectionsUtils.toAdd(cells, nodeList);
+            
+            
+            
+            nodeList.addAll(toAdd);
+            final int start = cache.indexOf(list);
+            for (int i = 0; i != list.size(); i++) {
+                list.get(i).setItem(currentItems.get(start + i));
+                updateSelection(list.get(i));
+            }
         }
     }
-    
+
     private void onCellRetrieved(List<PaneCell<T>> allCells) {
         cellList = allCells;
     }
-    
-  
 
     // get the list of cells
     protected Collection<Node> getContent(Collection<PaneCell<T>> cellList) {
         return cellList.stream().map(PaneCell::getContent).collect(Collectors.toList());
     }
-
 
     public Boolean isSelected(T item) {
         return selectedItems.contains(item);
@@ -165,6 +163,7 @@ public class PaneCellController<T extends Object> {
 
     public void select(List<T> items) {
         selectedItems.addAll(items);
+        
         Platform.runLater(this::updateSelection);
     }
 
@@ -177,11 +176,13 @@ public class PaneCellController<T extends Object> {
     }
 
     public void updateSelection() {
+        if(cellList != null)
         cellList.forEach(this::updateSelection);
     }
 
     public void updateSelection(PaneCell<T> cell) {
-        cell.getContent().pseudoClassStateChanged(SELECTED_PSEUDO_CLASS, isSelected(cell.getItem()));
+        boolean isSelected = isSelected(cell.getItem());
+        cell.selectedProperty().setValue(isSelected);
     }
 
     public List<T> getItems() {
@@ -195,14 +196,6 @@ public class PaneCellController<T extends Object> {
     public List<? extends T> getSelectedItems() {
         return selectedItems;
     }
-    
-    
-     PseudoClass SELECTED_PSEUDO_CLASS = new PseudoClass() {
-        private final static String SELECTED = "selected";
 
-        @Override
-        public String getPseudoClassName() {
-            return SELECTED;
-        }
-    };
+   
 }

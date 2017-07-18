@@ -17,30 +17,43 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package mongis.utils.panecell;
+package ijfx.explorer.views;
 
-import ijfx.explorer.views.DataClickEvent;
-import java.util.function.Consumer;
-import javafx.beans.property.BooleanProperty;
-import javafx.scene.Node;
+import ijfx.explorer.datamodel.Explorable;
+import javafx.scene.input.MouseEvent;
 
 /**
- * Interface that dictate the behaviour of object controlled by the PaneCellController.
- * @author Cyril MONGIS, 2016
+ *
+ * @author cyril
  */
-public interface PaneCell<T> {
+public class DataClickEvent<T> {
+    
+    private final T data;
+    
+    private final MouseEvent event;
+    
+    private boolean doubleClick;
+
+    public DataClickEvent(T data, MouseEvent event, boolean doubleClick) {
+        this.data = data;
+        this.event = event;
+        this.doubleClick = doubleClick;
+    }
+
+    public boolean isDoubleClick() {
+        return doubleClick;
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public MouseEvent getEvent() {
+        return event;
+    }
     
     
-    public void setItem(T item);
-    public T getItem();
-    public Node getContent();
     
-    public BooleanProperty selectedProperty();
-    public BooleanProperty onScreenProperty();
- 
     
-    void setOnDataClick(Consumer<DataClickEvent<T>> onSimpleClick);
-    
- 
     
 }
