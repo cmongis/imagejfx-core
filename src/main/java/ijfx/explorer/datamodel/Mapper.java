@@ -37,6 +37,8 @@ public interface Mapper {
     HashMap<Object, Object> getMapObject();
     
     void associatedValues (Object base, Object associated);
+    
+    String getOldKey();
         
     
 }
