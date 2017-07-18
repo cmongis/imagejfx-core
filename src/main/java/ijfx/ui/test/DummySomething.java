@@ -47,7 +47,6 @@ import org.scijava.widget.InputHarvester;
  * @author sapho
  */
 
-//@Plugin(type = PreprocessorPlugin.class, menuPath="Plugins > Test > Generate Dummy Something", priority = InputHarvester.PRIORITY)
 
 @Plugin(type = Command.class, menuPath="Plugins > Test > Generate Dummy Something")
 public class DummySomething extends ContextCommand{
@@ -59,11 +58,7 @@ public class DummySomething extends ContextCommand{
         
         Platform.runLater(()-> {
              DefaultAnnotationDialog annot = null;
-        try {
-           annot = new DefaultAnnotationDialog();
-        } catch (IOException ex) {
-            Logger.getLogger(DummySomething.class.getName()).log(Level.SEVERE, null, ex);
-        }
+             annot = new DefaultAnnotationDialog();
         
                 
         final Dialog<Mapper> dialog = new Dialog<>();
