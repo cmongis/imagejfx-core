@@ -43,29 +43,36 @@ import org.scijava.ui.UserInterface;
  * @author sapho
  */
 
-@Plugin(type = ExplorableDisplayCommand.class, label="Set to annotation...",iconPath="fa:edit",initializer = "init")
+@Plugin(type = ExplorableDisplayCommand.class, label="Set to annotation...",iconPath="fa:edit")
 public class SetAnnotation extends AbstractExplorableDisplayCommand{
     
    
-   AnnotationDialog annot = new DefaultAnnotationDialog();
+   AnnotationDialog annot ;
     
   
 
     @Override
     public void run(List<? extends Explorable> items) {
+        Platform.runLater(() ->{
+            
+        annot = new DefaultAnnotationDialog();
         System.out.println("WOUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        
+        
+        });
         
         items.stream().forEach(this::setAnnotation);
         display.update();
+        
     }
     
     public void setAnnotation(Explorable exp) {
-        
+         Platform.runLater(() ->{
         Mapper finalMapper = annot.mapperAction();
         MetaDataSet set = exp.getMetaDataSet();
         MetaData n = finalMapper.map(set.get(finalMapper.getOldKey()));
         set.put(n);
-        
+        });
         
     }
 
