@@ -75,7 +75,6 @@ public class DataAnnotationController extends GridPane  {
         pane.getChildren().setAll(oldValue, newValue);
         
         this.getChildren().add(pane); //Don't forget this line overwise the class is not a node !
-        System.out.println("coucou");
               
     }
     /**
