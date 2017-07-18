@@ -74,7 +74,7 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
     
     
     
-    public DefaultAnnotationDialog() throws IOException {
+    public DefaultAnnotationDialog()  {
         
         Platform.runLater(new Runnable() {
             @Override
@@ -135,8 +135,8 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
 
                 Pane root = loader.getRoot();
                 ///////////////////////////////////CSS PART
-                //root.getStylesheets().add(getClass().getResource("/ijfx/ui/flatterfx.css").toExternalForm());
-                //root.applyCss();
+                root.getStylesheets().add(getClass().getResource("/ijfx/ui/flatterfx.css").toExternalForm());
+                root.applyCss();
                 ///////////////////////////////////
                 getDialogPane().setContent(root);
                 getDialogPane().getButtonTypes().addAll(ButtonType.OK,ButtonType.CANCEL);
