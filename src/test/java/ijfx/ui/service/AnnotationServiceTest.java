@@ -24,9 +24,15 @@ package ijfx.ui.service;
 
 
 import ijfx.core.IjfxTest;
+import ijfx.core.batch.BatchInputWrapper;
+import ijfx.core.datamodel.MetaDataOwnerList;
 import ijfx.core.metadata.GenericMetaData;
 import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataOwner;
+import ijfx.core.metadata.MetaDataSet;
+import ijfx.core.metadata.MetaDataSetUtils;
+import ijfx.explorer.datamodel.DefaultTaggable;
+import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.datamodel.Tag;
 import ijfx.explorer.datamodel.Taggable;
 import ijfx.explorer.wrappers.MetaDataSetExplorerWrapper;
@@ -58,6 +64,7 @@ public class AnnotationServiceTest extends IjfxTest{
     private Object value;
     private MetaData m; 
     private List<? extends MetaDataOwner> list;
+    private MetaDataSet metaDataSet;
     
     
     
@@ -67,14 +74,20 @@ public class AnnotationServiceTest extends IjfxTest{
     @Before
     //@TestInJfxThread
     public void setUp() throws Exception {
-        
+        metaDataSet = new MetaDataSet();
         key = "key";
         value = "value";
         tag = Tag.create(key);
         m = MetaData.create(key, value);
         list = new ArrayList<MetaDataOwner>();
-        taggable = new MetaDataSetExplorerWrapper();
-        owner = new MetaDataSetExplorerWrapper();
+        taggable = new DefaultTaggable();
+        
+        owner = new MetaDataOwner() {
+            @Override
+            public MetaDataSet getMetaDataSet() {
+                return metaDataSet;            
+            }
+        };
         
         
     }
