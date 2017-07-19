@@ -27,16 +27,11 @@ import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.datamodel.Mapper;
 import ijfx.ui.display.annotation.AnnotationDialog;
 import ijfx.ui.display.annotation.DefaultAnnotationDialog;
-import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.application.Platform;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import org.scijava.plugin.Parameter;
+import java.util.Map;
+import mongis.utils.FXUtilities;
 import org.scijava.plugin.Plugin;
-import org.scijava.ui.UserInterface;
 
 /**
  *
@@ -47,32 +42,61 @@ import org.scijava.ui.UserInterface;
 public class SetAnnotation extends AbstractExplorableDisplayCommand{
     
    
-   AnnotationDialog annot ;
-    
-  
+   private AnnotationDialog<Mapper> annot ;
+   
+   private Mapper mapper;
 
     @Override
     public void run(List<? extends Explorable> items) {
-        Platform.runLater(() ->{
+        
             
-        annot = new DefaultAnnotationDialog();
+        annot = FXUtilities.runAndWait(DefaultAnnotationDialog::new);
         System.out.println("WOUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
         
+        mapper = FXUtilities.runAndWait(annot::showAndWait).orElse(null);
         
-        });
+       if(mapper == null) {
+           cancel("The user canceled");
+           return;
+       }
+      
+       items
+               .stream()
+               .forEach(this::setAnnotation);
         
-        items.stream().forEach(this::setAnnotation);
-        display.update();
-        
+         display.update();
     }
     
+    
     public void setAnnotation(Explorable exp) {
-         Platform.runLater(() ->{
-        Mapper finalMapper = annot.mapperAction();
         MetaDataSet set = exp.getMetaDataSet();
-        MetaData n = finalMapper.map(set.get(finalMapper.getOldKey()));
-        set.put(n);
-        });
+        for(Map.Entry<String, MetaData> entry : set.entrySet()) {
+            System.out.println("name "+ entry.getValue().getName());
+            System.out.println("oldkey "+ mapper.getOldKey());
+            if(entry.getValue().getName().equals(mapper.getOldKey())) {
+                System.out.println("WAAZZZAAAAA");
+                MetaData truc = mapper.map(entry.getValue());
+                set.put(truc);
+            }
+        
+
+    /*
+        if (!mapper.getMapObject().isEmpty()){
+            System.out.println("Je suis dans le if ! vive le if !!");
+            System.out.println("test 1 "+ exp.getMetaDataSet().get(mapper.getOldKey()));
+
+            
+            MetaData n = mapper.map(set.get(mapper.getOldKey()));
+            
+            set.put(n);
+          */
+            
+        
+        }
+        
+   
+        
+        
         
     }
 
