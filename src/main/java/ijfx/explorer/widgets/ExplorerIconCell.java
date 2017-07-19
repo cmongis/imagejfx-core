@@ -49,19 +49,10 @@ public class ExplorerIconCell extends PaneIconCell<Explorable>{
         
         
         if(icon == getItem()) return;
-            
-        /*
-        // we must bind the selected property
-        if(getItem() != null) {
-            getItem().selectedProperty().unbindBidirectional(selectedProperty());
-        }*/
         
         super.setItem(icon);
         
-        /*
-        if(icon != null) {
-            selectedProperty().bindBidirectional(icon.selectedProperty());
-        }*/
+      
     }
     
     public String getTitle(Iconazable iconazable) {

@@ -40,6 +40,7 @@ import ijfx.explorer.events.ExplorerSelectionChangedEvent;
 import ijfx.explorer.events.FolderAddedEvent;
 import ijfx.explorer.events.FolderDeletedEvent;
 import ijfx.explorer.events.FolderUpdatedEvent;
+import ijfx.explorer.views.DataClickEvent;
 import ijfx.ui.filters.metadata.TaggableFilterPanel;
 import ijfx.explorer.views.ExplorerView;
 import ijfx.explorer.views.FolderListCellCtrl;
@@ -167,6 +168,8 @@ public class ExplorerActivity extends AnchorPane implements Activity {
     @Parameter
     private FXUiCommandService uiCommandService;
 
+    
+    
     private ExplorerView view;
 
     private List<Runnable> folderUpdateHandler = new ArrayList<>();
@@ -234,6 +237,9 @@ public class ExplorerActivity extends AnchorPane implements Activity {
         }
 
     }
+    
+    
+    
 
     private void init() {
         if (view == null) {
@@ -288,6 +294,23 @@ public class ExplorerActivity extends AnchorPane implements Activity {
             return explorerService.getDisplayedItems();
         }
     }
+    
+    private void onViewClickEvent(DataClickEvent<Explorable> event) {
+        
+        if(event.isDoubleClick()) {
+          new CallbackTask<>()
+                  .tryRun(event.getData()::open)
+                  .start();
+        }
+        else {
+            
+            explorerService.toggleSelection(event.getData());
+            
+            
+            
+        }
+        
+    }
 
     public void onFolderSelectionChanged(Observable obs, Folder oldValue, Folder newValue) {
         folderManagerService.setCurrentFolder(newValue);
@@ -309,7 +332,7 @@ public class ExplorerActivity extends AnchorPane implements Activity {
 
     
     
-    public void updateUi(List<? extends Explorable> explorable) {
+    public synchronized void updateUi(List<? extends Explorable> explorable) {
 
         updateFolderList();
         init();
@@ -322,6 +345,7 @@ public class ExplorerActivity extends AnchorPane implements Activity {
 
         if (explorable != null) {
             view.setItems(explorable);
+            view.setSelectedItem(explorerService.getSelectedItems());
         }
 
         if (folderListEmpty.getValue()) {
@@ -376,6 +400,18 @@ public class ExplorerActivity extends AnchorPane implements Activity {
         logger.info("Folder updated !");
         folderUpdateHandler.forEach(handler -> handler.run());
     }
+    
+       @EventHandler
+    protected void onExplorationModeChanged(ExplorationModeChangeEvent event) {
+        explorationModeToggleGroup.selectToggle(getToggleButton(event.getObject()));
+    }
+
+    @EventHandler
+    protected void onExplorerServiceSelectionChanged(ExplorerSelectionChangedEvent event) {
+        view.setSelectedItem(explorerService.getSelectedItems());
+    }
+    
+  
 
     private class FolderListCell extends ListCell<Folder> {
 
@@ -431,7 +467,9 @@ public class ExplorerActivity extends AnchorPane implements Activity {
         tab.closableProperty().setValue(false);
         tab.setGraphic(fxIconService.getIconAsNode(view));
         tab.setUserData(view);
-
+        
+        view.setOnItemClicked(this::onViewClickEvent);
+        
         tab.setText(SciJavaUtils.getLabel(view));
 
         return tab;
@@ -567,15 +605,7 @@ public class ExplorerActivity extends AnchorPane implements Activity {
         folderManagerService.setExplorationMode(getExplorationMode(newValue));
     }
 
-    @EventHandler
-    protected void onExplorationModeChanged(ExplorationModeChangeEvent event) {
-        explorationModeToggleGroup.selectToggle(getToggleButton(event.getObject()));
-    }
-
-    @EventHandler
-    protected void onExplorerServiceSelectionChanged(ExplorerSelectionChangedEvent event) {
-
-    }
+ 
 
     private static void fluentIconBinding(ButtonBase... buttons) {
         for (ButtonBase b : buttons) {
