@@ -20,6 +20,7 @@
 package ijfx.ui.display.annotation;
 
 import ijfx.explorer.datamodel.Mapper;
+import java.util.Optional;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ButtonType;
 
@@ -27,11 +28,14 @@ import javafx.scene.control.ButtonType;
  *
  * @author sapho
  */
-public interface AnnotationDialog {
+public interface AnnotationDialog<T> {
     
     ObservableList firstUse();
     void bindData ();
     Mapper convert(ButtonType button);
     Mapper mapperAction();
+    Mapper getMapper();
+    
+    Optional<T> showAndWait();
     
 }
