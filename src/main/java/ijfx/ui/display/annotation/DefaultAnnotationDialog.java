@@ -65,7 +65,7 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
     
     
     //Main List. This observableList observe this tow objects properties in each controller. If theses properties change, a notification is sended.
-    private ObservableList <DataAnnotationController> oList = FXCollections.observableArrayList(c -> new ObservableValue[]{c.getValueTextProperty(), c.getNewValueTextProperty()});
+    private ObservableList <DataAnnotationController> ctrlList = FXCollections.observableArrayList(c -> new ObservableValue[]{c.getValueTextProperty(), c.getNewValueTextProperty()});
     //Secondary list. Purpose : stock temporaly controller to know which controller can create new controller or not.
     private List <DataAnnotationController> updatedList = new ArrayList<>();
     
@@ -75,28 +75,23 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
     
     
     public DefaultAnnotationDialog()  {
-        
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
+      
                 
                 loadFXML();
                 
                 firstUse();
 
-                listenerTraitment();
+                initiazeListeners();
                 
-                showAndWait();
+              
   
-            }
-        });
     }
     
     /**
      * Traitment according properties state and kind of notification.
      */
-    private void listenerTraitment (){
-        oList.addListener((ListChangeListener.Change<? extends DataAnnotationController> change) -> { 
+    private void initiazeListeners (){
+        ctrlList.addListener((ListChangeListener.Change<? extends DataAnnotationController> change) -> { 
         while (change.next()) { 
                         
                         if(change.wasAdded()) {
@@ -109,10 +104,10 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
                             if (!updatedList.contains(change.getList().get(change.getFrom()))){
                                 updatedList.add(change.getList().get(change.getFrom()));
                                 DataAnnotationController y = new DataAnnotationController();
-                                oList.add(y);
+                                ctrlList.add(y);
                             }
                             if (change.getList().get(change.getFrom()).getState()){
-                                oList.remove(change.getList().get(change.getFrom()));
+                                ctrlList.remove(change.getList().get(change.getFrom()));
                             }
                             
                             }
@@ -135,8 +130,8 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
 
                 Pane root = loader.getRoot();
                 ///////////////////////////////////CSS PART
-                root.getStylesheets().add(getClass().getResource("/ijfx/ui/flatterfx.css").toExternalForm());
-                root.applyCss();
+                //root.getStylesheets().add(getClass().getResource("/ijfx/ui/flatterfx.css").toExternalForm());
+                //root.applyCss();
                 ///////////////////////////////////
                 getDialogPane().setContent(root);
                 getDialogPane().getButtonTypes().addAll(ButtonType.OK,ButtonType.CANCEL);
@@ -152,10 +147,10 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
     @Override
     public ObservableList firstUse(){ //création du premier controlleur et mise dans la liste
         DataAnnotationController x = new DataAnnotationController();
-        oList.add(x);
+        ctrlList.add(x);
         vBox.getChildren().add(x);
         
-        return oList;
+        return ctrlList;
     }
     
     
@@ -168,6 +163,7 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
         Platform.runLater(()-> {
             mapper.setOldKey(oldKey.getText());
             mapper.setNewKey(newKey.getText());
+            System.out.println("new key "+newKey.getText());
         });
         
     }
@@ -194,20 +190,22 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
      */
     public Mapper mapperAction(){ 
         
-        Platform.runLater(()-> {
         bindData();
         
-        for (DataAnnotationController item : oList){
+        for (DataAnnotationController item : ctrlList){
             if (item.getNewValue() != " "){
                 mapper.associatedValues(item.getValue(),item.getNewValue());
             }
         }
         System.out.println("mapper"+ mapper.getMapObject());
             
-        });
 
         return mapper;
         
+    }
+    
+    public Mapper getMapper(){
+        return this.mapper;
     }
     
 }
