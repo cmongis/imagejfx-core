@@ -162,7 +162,6 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
         
             mapper.setOldKey(oldKey.getText());
             mapper.setNewKey(newKey.getText());
-            System.out.println("new key "+newKey.getText());
         
     }
     
