@@ -105,7 +105,7 @@ public class PaneCellController<T extends Object> {
         return new CallbackTask<List<T>, List<PaneCell<T>>>()
                 .setInput(items)
                 .callback(this::retrieveCells)
-                .then(panecell -> CollectionsUtils.synchronize(getContent(panecell), pane.getChildren()))
+                .then(this::onCellRetrieved)
                 .start();
     }
 
@@ -120,8 +120,7 @@ public class PaneCellController<T extends Object> {
      * @param list
      */
     private synchronized void onFragmentRetrieved(List<PaneCell<T>> list) {
-        synchronized (currentItems) {
-            List<Node> cells = list
+                    List<Node> cells = list
                     .stream()
                     .map(PaneCell<T>::getContent)
                     .collect(Collectors.toList());
@@ -136,11 +135,12 @@ public class PaneCellController<T extends Object> {
                 list.get(i).setItem(currentItems.get(start + i));
                 updateSelection(list.get(i));
             }
-        }
+        
     }
 
     private void onCellRetrieved(List<PaneCell<T>> allCells) {
         cellList = allCells;
+        CollectionsUtils.synchronize(getContent(cellList), pane.getChildren());
     }
 
     // get the list of cells
@@ -161,9 +161,9 @@ public class PaneCellController<T extends Object> {
         Platform.runLater(this::updateSelection);
     }
 
-    public void select(List<T> items) {
-        selectedItems.addAll(items);
+    public void setSelected(List<T> items) {
         
+        CollectionsUtils.synchronize(items, selectedItems);
         Platform.runLater(this::updateSelection);
     }
 
