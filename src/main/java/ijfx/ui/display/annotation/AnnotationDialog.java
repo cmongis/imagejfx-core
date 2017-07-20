@@ -33,7 +33,6 @@ public interface AnnotationDialog<T> {
     ObservableList firstUse();
     void bindData ();
     Mapper convert(ButtonType button);
-    Mapper mapperAction();
     Mapper getMapper();
     
     Optional<T> showAndWait();
