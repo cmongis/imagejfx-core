@@ -29,6 +29,7 @@ import ijfx.ui.display.annotation.AnnotationDialog;
 import ijfx.ui.display.annotation.DefaultAnnotationDialog;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import mongis.utils.FXUtilities;
 import org.scijava.plugin.Plugin;
 
@@ -48,17 +49,28 @@ public class SetAnnotation extends AbstractExplorableDisplayCommand{
     @Override
     public void run(List<? extends Explorable> items) {
         
-            
+            System.out.println("CA COMMMENCE A TAAAAABLE");
         annot = FXUtilities.runAndWait(DefaultAnnotationDialog::new);
+        
+        List <MetaDataSet> setList = items
+                .stream()
+                .map(n -> n.getMetaDataSet())
+                .collect(Collectors.toList());
+        
+        //System.out.println("setlist"+setList);
+        
+        annot.fillComboBox(setList);
         
         this.mapper = FXUtilities.runAndWait(annot::showAndWait).orElse(null);
         
-       if(mapper == null) {
+        if(mapper == null) {
            cancel("The user canceled");
            return;
-       }
-      
-       items
+        }
+        
+        
+        
+        items
                .stream()
                .forEach(this::setAnnotation);
         
