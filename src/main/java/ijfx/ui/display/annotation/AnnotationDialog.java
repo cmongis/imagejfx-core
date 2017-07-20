@@ -19,7 +19,9 @@
  */
 package ijfx.ui.display.annotation;
 
+import ijfx.core.metadata.MetaDataSet;
 import ijfx.explorer.datamodel.Mapper;
+import java.util.List;
 import java.util.Optional;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ButtonType;
@@ -34,7 +36,7 @@ public interface AnnotationDialog<T> {
     void bindData ();
     Mapper convert(ButtonType button);
     Mapper getMapper();
-    
+    void fillComboBox (List<MetaDataSet> setList);
     Optional<T> showAndWait();
     
 }
