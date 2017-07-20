@@ -19,6 +19,7 @@
  */
 package ijfx.explorer.commands;
 
+import ijfx.core.uicontext.UiContextService;
 import ijfx.core.uiplugin.AbstractUiCommand;
 import ijfx.core.uiplugin.UiCommand;
 import ijfx.explorer.ExplorableList;
@@ -41,6 +42,9 @@ public class OpenInWindow extends AbstractUiCommand<ExplorerActivity>{
     @Parameter
     UIService displayService;
     
+    @Parameter
+    UiContextService uiContextService;
+    
     public OpenInWindow() {
         super(ExplorerActivity.class);
     }
@@ -52,7 +56,7 @@ public class OpenInWindow extends AbstractUiCommand<ExplorerActivity>{
         
         ExplorableList list = new ExplorableList(explorerService.getItems());
         displayService.show(list);
-        
+        uiContextService.update();
     }
     
 }

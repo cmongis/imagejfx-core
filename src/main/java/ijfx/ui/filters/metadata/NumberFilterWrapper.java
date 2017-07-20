@@ -17,9 +17,14 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.ui.filter;
+package ijfx.ui.filters.metadata;
 
 import ijfx.core.metadata.MetaDataOwner;
+import ijfx.ui.filter.DefaultNumberFilter;
+import ijfx.ui.filter.NumberFilter;
+import ijfx.ui.filter.NumberOwnerPredicate;
+import java.util.Collection;
+import java.util.List;
 import java.util.function.Predicate;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -31,13 +36,28 @@ import javafx.scene.Node;
  *
  * @author Pierre BONNEAU
  */
-public class NumberFilterWrapper implements MetaDataOwnerFilter {
+public class NumberFilterWrapper<T extends MetaDataOwner> implements MetaDataOwnerFilter<T> {
 
     private final NumberFilter filter;
-    private final Property<Predicate<MetaDataOwner>> metaDataOwnerProperty;
+    private final Property<Predicate<T>> metaDataOwnerProperty;
+    private String keyName;
+    
+    private Collection<? extends T> ownerList;
+    
+    public NumberFilterWrapper() {
+        this(new DefaultNumberFilter());
+    }
 
-    public NumberFilterWrapper(NumberFilter filter, String keyName) {
+    public void setKeyName(String keyName) {
+        this.keyName = keyName;
+    }
+    
+    
+    
+    
+    public NumberFilterWrapper(NumberFilter filter) {
         this.filter = filter;
+        this.keyName = keyName;
         this.metaDataOwnerProperty = new SimpleObjectProperty<>(null);
 
         if (filter.predicateProperty().getValue() != null) {
@@ -63,11 +83,21 @@ public class NumberFilterWrapper implements MetaDataOwnerFilter {
     }
 
     @Override
-    public Property<Predicate<MetaDataOwner>> predicateProperty() {
+    public Property<Predicate<T>> predicateProperty() {
         return this.metaDataOwnerProperty;
     }
 
     public NumberFilter getFilter() {
         return this.filter;
+    }
+    
+    public String getName() {
+        return keyName;
+    }
+
+    @Override
+    public void setAllPossibleValues(Collection<? extends T> values) {
+        
+
     }
 }

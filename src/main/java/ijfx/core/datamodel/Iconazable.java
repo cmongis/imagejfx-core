@@ -32,8 +32,5 @@ public interface Iconazable {
     String getSubtitle();
     String getInformations();
     Image getImage();
-    public void open() throws Exception;
-    public BooleanProperty selectedProperty();
- 
-    
+    public void open() throws Exception; 
 }

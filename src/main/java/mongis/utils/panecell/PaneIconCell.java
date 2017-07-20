@@ -21,12 +21,14 @@ package mongis.utils.panecell;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import ijfx.explorer.views.DataClickEvent;
 import ijfx.ui.main.ImageJFX;
 
 import ijfx.ui.utils.LoadingIcon;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.Observable;
@@ -105,27 +107,25 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
 
     private Task currentImageSearch;
 
+    private Consumer<DataClickEvent<T>> onClickEvent = t -> {
+    };
+
     Logger logger = ImageJFX.getLogger();
 
     private boolean isInsideScrollWindow = false;
 
     Image currentImage = null;
 
-   // private final static FXMLLoader LOADER = new FXMLLoader(PaneIconCell.class.getResource("/ijfx/ui/explorer/ImageIconItem.fxml"));
-
-  
-
-   
-
+    // private final static FXMLLoader LOADER = new FXMLLoader(PaneIconCell.class.getResource("/ijfx/ui/explorer/ImageIconItem.fxml"));
     private final BooleanProperty isSelectedProperty = new SimpleBooleanProperty(false);
 
     private static final PseudoClass SELECTED = PseudoClass.getPseudoClass("selected");
 
     private static final ExecutorService refreshThreadPool = Executors.newFixedThreadPool(3);
-    
+
     private final BooleanProperty onScreenProperty = new SimpleBooleanProperty(false);
-    
-   LoadingIcon loadingIcon = new LoadingIcon(20);
+
+    LoadingIcon loadingIcon = new LoadingIcon(20);
 
     public PaneIconCell() {
         try {
@@ -139,16 +139,15 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
             }*/
 
             titleLabel.setPrefHeight(100);
-             imageView.setSmooth(false);
-             
+            imageView.setSmooth(false);
+
             //imageView.fitWidthProperty().bind(widthProperty());
             //imageView.fitHeightProperty().bind(widthProperty());
             imageView.setFitWidth(120);
             //imageView.fitWidthProperty().bind(imageViewContainer.widthProperty());
             imageView.setPreserveRatio(true);
             //imageView.fitHeightProperty().bind(imageViewContainer.widthProperty());
-           
-           
+
             item.addListener(this::onItemChanged);
 
             addEventHandler(ScrollWindowEvent.SCROLL_WINDOW_ENTERED, this::onScrollWindow);
@@ -161,9 +160,8 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
             getStyleClass().add("pane-icon-cell");
 
             subtibleVisibleProperty().addListener(this::onSubtitleVisibleChanged);
-            
+
             onScreenProperty().addListener(this::onAppearingOnScreen);
-            
 
         } catch (IOException ex) {
             Logger.getLogger(PaneIconCell.class.getName()).log(Level.SEVERE, null, ex);
@@ -231,20 +229,23 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
     }
 
     public void setImage(Image image) {
-        logger.info("Setting image : "+image);
+        logger.info("Setting image : " + image);
         loadingIcon.stop();
-        
-        if(image == null) {
+
+        if (image == null) {
             setCenter(new FontAwesomeIconView(FontAwesomeIcon.ANGELLIST));
             return;
         };
-        
+
         imageView.setSmooth(false);
-       
-        
+
         setCenter(imageView);
         imageView.setImage(image);
 
+    }
+
+    public void setOnDataClick(Consumer<DataClickEvent<T>> onSimpleClick) {
+        this.onClickEvent = onSimpleClick;
     }
 
     public void onItemChanged(Observable obs, T oldItem, T newItem) {
@@ -263,7 +264,7 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
         if (newItem == null) {
             return;
         }
-        
+
         forceUpdate(newItem);
 
     }
@@ -272,20 +273,19 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
         //otherwise starting to charge everything
         new CallbackTask<T, String>()
                 .setInput(newItem)
-                .run(titleFactory)
+                .callback(titleFactory)
                 .then(this::setTitle)
                 .start();
 
         new CallbackTask<T, String>()
                 .setInput(newItem)
-                .run(subtitleFactory)
+                .callback(subtitleFactory)
                 .then(this::setSubtitle)
                 .start();
 
-        
         new CallbackTask<T, FontAwesomeIconView>()
                 .setInput(newItem)
-                .run(iconFactory)
+                .callback(iconFactory)
                 .then(this::setIcon)
                 .start();
 
@@ -294,16 +294,16 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
          */
         new CallbackTask<T, String>()
                 .setInput(newItem)
-                .run(additionalInfoFactory)
+                .callback(additionalInfoFactory)
                 .then(this::setAdditionalData)
                 .start();
 
-        if(currentImageSearch != null) {
+        if (currentImageSearch != null) {
             currentImageSearch.cancel();
             currentImage = null;
         }
-        
-        if(onScreenProperty.getValue() == true) {
+
+        if (onScreenProperty.getValue() == true) {
             updateImageAsync(newItem);
         }
 
@@ -320,7 +320,7 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
 
         currentImageSearch = new CallbackTask<T, Image>()
                 .setInput(newItem)
-                .run(imageFactory)
+                .callback(imageFactory)
                 .then(this::setImage)
                 .startIn(refreshThreadPool);
     }
@@ -370,8 +370,6 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
         return this;
     }
 
-   
-
     public BooleanProperty subtibleVisibleProperty() {
         return subtitleLabel.visibleProperty();
     }
@@ -384,7 +382,7 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
     public boolean isSubtitleVisible() {
         return subtibleVisibleProperty().getValue();
     }
-    
+
     public BooleanProperty onScreenProperty() {
         return onScreenProperty;
     }
@@ -397,22 +395,11 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
     public BooleanProperty showIconProperty() {
         return titleIconView.visibleProperty();
     }
-    
+
     private void onClick(MouseEvent event) {
-        if(event.getClickCount() == 2) {
-            onDoubleClick();
-        }
-       
-            onSimpleClick();
-        
-    }
 
-    protected void onSimpleClick() {
-        selectedProperty().setValue(!selectedProperty().getValue());
-    }
+        onClickEvent.accept(new DataClickEvent<>(getItem(), event, event.getClickCount() == 2));
 
-    protected void onDoubleClick() {
-        
     }
 
     protected void onSubtitleVisibleChanged(Observable obs, Boolean oldValue, Boolean newValue) {
@@ -422,13 +409,11 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
             titleVBox.getChildren().remove(subtitleLabel);
         }
     }
-    
+
     protected void onAppearingOnScreen(Observable obs, Boolean oldValue, Boolean newValue) {
-        if(newValue) {
+        if (newValue) {
             updateImageAsync(getItem());
         }
     }
-
-
 
 }

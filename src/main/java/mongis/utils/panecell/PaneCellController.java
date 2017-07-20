@@ -20,7 +20,8 @@
 package mongis.utils.panecell;
 
 import ijfx.ui.main.ImageJFX;
-
+import ijfx.ui.utils.CollectionsUtils;
+import ijfx.ui.utils.ObjectCache;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -29,17 +30,17 @@ import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableSet;
+import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.css.PseudoClass;
 import javafx.scene.Node;
-import javafx.scene.control.Tooltip;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import mongis.utils.CallbackTask;
+import mongis.utils.ProgressHandler;
+import mongis.utils.properties.ListChangeListenerBuilder;
 import mongis.utils.properties.ServiceProperty;
 
 /**
@@ -54,16 +55,20 @@ import mongis.utils.properties.ServiceProperty;
 public class PaneCellController<T extends Object> {
 
     private List<T> currentItems;
-    private LinkedList<PaneCell<T>> itemControllerList = new LinkedList<PaneCell<T>>();
-    private LinkedList<PaneCell<T>> cachedControllerList = new LinkedList<>();
+    private List<PaneCell<T>> cellList;
+    private List<Node> nodeList;
+    //private LinkedList<PaneCell<T>> cachedControllerList = new LinkedList<>();
 
-    private Callable<PaneCell<? extends T>> cellFactory;
+    private Callable<PaneCell<T>> cellFactory;
 
     private Logger logger = ImageJFX.getLogger();
 
     private Pane pane;
 
-    private ObservableSet<T> selectedItems = FXCollections.observableSet();
+    private ObservableList<T> selectedItems = FXCollections.observableArrayList();
+
+    // private PaneCellControllerFX<T> updater;
+    ObjectCache<PaneCell<T>> cache;
 
     public PaneCellController(Pane pane) {
         setPane(pane);
@@ -76,13 +81,16 @@ public class PaneCellController<T extends Object> {
      */
     public void setPane(Pane pane) {
         this.pane = pane;
+        nodeList = pane.getChildren();
     }
 
-    public void setCellFactory(Callable<PaneCell<? extends T>> cellFactory) {
+    public void setCellFactory(Callable<PaneCell<T>> cellFactory) {
         this.cellFactory = cellFactory;
+        cache = new ObjectCache<>(cellFactory);
     }
 
-    PaneCellUpdateProcess<T> updateProcess;
+    // PaneCellUpdateProcess<T> updateProcess;
+    Task updateProcess;
 
     /**
      * Give it a list of items coming from the model and the controller will
@@ -91,85 +99,53 @@ public class PaneCellController<T extends Object> {
      *
      * @param items List of items coming from the model
      */
-    public synchronized CallbackTask update(List<T> items) {
-
-        /*
-        return new CallbackTask<Integer, List<PaneCell<T>>>()
-                .setInput(items.size())
-                .setName("Loading...")
-                .run(this::retrieve)
-                .then(controllers -> {
-                    MercuryTimer timer = new MercuryTimer("Browser view");
-                    timer.start();
-                    pane.getChildren().clear();
-                    pane.getChildren().addAll(getContent(controllers));
-                    timer.elapsed("Adding all the controllers");
-                    for (int i = 0; i != items.size(); i++) {
-                      controllers.get(i).setItem(items.get(i));
-                    }
-                    timer.elapsed("Updating all the controllers");
-
-                })
+    public CallbackTask update(List<T> items) {
+        currentItems = items;
+        
+        return new CallbackTask<List<T>, List<PaneCell<T>>>()
+                .setInput(items)
+                .callback(this::retrieveCells)
+                .then(this::onCellRetrieved)
                 .start();
-                
-                * 
-         */
-        if (updateProcess != null) {
-            updateProcess.cancel();
-        }
-
-        updateProcess = new PaneCellUpdateProcess(items, cachedControllerList, pane.getChildren(), cellFactory);
-
-        return new CallbackTask<Void, Void>().start();
-
     }
 
-    private List<PaneCell<T>> retrieve(Integer number) {
+    private List<PaneCell<T>> retrieveCells(ProgressHandler handler, List<T> items) {
+        return cache
+                .getFragmented(handler, items.size(), 10, this::onFragmentRetrieved);
+    }
 
+    /**
+     * Updates the cells when they are retrieved
+     *
+     * @param list
+     */
+    private synchronized void onFragmentRetrieved(List<PaneCell<T>> list) {
+                    List<Node> cells = list
+                    .stream()
+                    .map(PaneCell<T>::getContent)
+                    .collect(Collectors.toList());
+
+            List<Node> toAdd = CollectionsUtils.toAdd(cells, nodeList);
+            
+            
+            
+            nodeList.addAll(toAdd);
+            final int start = cache.indexOf(list);
+            for (int i = 0; i != list.size(); i++) {
+                list.get(i).setItem(currentItems.get(start + i));
+                updateSelection(list.get(i));
+            }
         
-        int cacheSize = cachedControllerList.size();
-        int missingControllers = number - cacheSize;
-        
-        if (missingControllers > 0) {
-            fillCache(missingControllers);
-        }
-       
-        return cachedControllerList.subList(0, number);
+    }
+
+    private void onCellRetrieved(List<PaneCell<T>> allCells) {
+        cellList = allCells;
+        CollectionsUtils.synchronize(getContent(cellList), pane.getChildren());
     }
 
     // get the list of cells
     protected Collection<Node> getContent(Collection<PaneCell<T>> cellList) {
         return cellList.stream().map(PaneCell::getContent).collect(Collectors.toList());
-    }
-
-    // fills the cache by creating a certain number of cells
-    private void fillCache(int number) {
-
-        cachedControllerList.addAll(IntStream.range(0, number + 1).parallel().mapToObj(n -> createPaneCell()).collect(Collectors.toList()));
-
-    }
-
-    PseudoClass SELECTED_PSEUDO_CLASS = new PseudoClass() {
-        private final static String SELECTED = "selected";
-
-        @Override
-        public String getPseudoClassName() {
-            return SELECTED;
-        }
-    };
-
-    // creates a pane cell
-    private PaneCell<T> createPaneCell() {
-        try {
-
-            PaneCell cell = cellFactory.call();
-
-            return cell;
-
-        } catch (Exception ex) {
-            Logger.getLogger(PaneCellController.class.getName()).log(Level.SEVERE, "Error when creating cell", ex);
-        }
-        return null;
     }
 
     public Boolean isSelected(T item) {
@@ -185,8 +161,9 @@ public class PaneCellController<T extends Object> {
         Platform.runLater(this::updateSelection);
     }
 
-    public void select(List<T> items) {
-        selectedItems.addAll(items);
+    public void setSelected(List<T> items) {
+        
+        CollectionsUtils.synchronize(items, selectedItems);
         Platform.runLater(this::updateSelection);
     }
 
@@ -199,22 +176,26 @@ public class PaneCellController<T extends Object> {
     }
 
     public void updateSelection() {
-        itemControllerList.forEach(this::updateSelection);
+        if(cellList != null)
+        cellList.forEach(this::updateSelection);
     }
 
     public void updateSelection(PaneCell<T> cell) {
-        cell.getContent().pseudoClassStateChanged(SELECTED_PSEUDO_CLASS, isSelected(cell.getItem()));
+        boolean isSelected = isSelected(cell.getItem());
+        cell.selectedProperty().setValue(isSelected);
     }
 
     public List<T> getItems() {
         return currentItems;
     }
 
-    public List<PaneCell> getCells() {
-        return pane
-                .getChildren()
-                .stream()
-                .map(child -> (PaneCell) child)
-                .collect(Collectors.toList());
+    public List<PaneCell<T>> getCells() {
+        return cellList;
     }
+
+    public List<? extends T> getSelectedItems() {
+        return selectedItems;
+    }
+
+   
 }

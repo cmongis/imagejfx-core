@@ -23,6 +23,7 @@ import ijfx.explorer.ExplorableDisplay;
 import ijfx.explorer.ExplorableList;
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.ui.utils.SelectableManager;
+import ijfx.ui.utils.SelectionChange;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -41,22 +42,28 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = Display.class)
 public class DefaultExplorableDisplay extends AbstractDisplay<ExplorableList> implements ExplorableDisplay {
 
-    public DefaultExplorableDisplay() {
-        super(ExplorableList.class);
-
-        selectableManager
-                .getChangeBuffer()
-                .subscribe(this::onItemSelectionChanged);
-    }
+   
 
     @Parameter
-    EventService eventService;
+    private EventService eventService;
 
-    List<Explorable> displayedItems = new ArrayList<>();
+    private List<Explorable> displayedItems = new ArrayList<>();
 
-    List<Explorable> items = new ArrayList<>();
-    private final SelectableManager<Explorable> selectableManager = new SelectableManager<>();
+    private List<Explorable> items = new ArrayList<>();
+    //private final SelectableManager<Explorable> selectableManager = new SelectableManager<>();
 
+    private List<Explorable> selected = new ArrayList();
+    
+     public DefaultExplorableDisplay() {
+        super(ExplorableList.class);
+
+        /*
+        selectableManager
+                .getChangeBuffer()
+                .subscribe(this::onItemSelectionChanged);*/
+    }
+    
+    
     @Override
     public int size() {
         return items.size();
@@ -71,7 +78,7 @@ public class DefaultExplorableDisplay extends AbstractDisplay<ExplorableList> im
     public boolean add(ExplorableList list) {
 
         displayedItems.addAll(list);
-        selectableManager.setItem(list);
+        //selectableManager.setItem(list);
         return items.addAll(list);
     }
 
@@ -83,40 +90,61 @@ public class DefaultExplorableDisplay extends AbstractDisplay<ExplorableList> im
     @Override
     public void setFilter(Predicate<Explorable> filter) {
         if (filter == null) {
-            displayedItems.clear();
-            displayedItems.addAll(items);
+            displayedItems = new ArrayList<>(items);
+            //displayedItems.addAll(items);
+            
         } else {
             displayedItems.clear();
-            displayedItems = displayedItems
+            displayedItems = items
                     .stream()
                     .filter(filter)
                     .collect(Collectors.toList());
+            
+            selected = displayedItems
+                    .stream()
+                    .filter(item->selected.contains(item))
+                    .collect(Collectors.toList());
         }
+        
     }
 
     @Override
     public List<Explorable> getSelected() {
-        return items
-                .stream()
-                .filter(Explorable::isSelected)
-                .collect(Collectors.toList());
+        return selected;
     }
 
     @Override
     public void setSelected(List<Explorable> explorable) {
 
         clearSelection();
+        
+        selected.addAll(explorable);
 
     }
 
     private void clearSelection() {
+        selected.clear();
+    }
+
+    private void onItemSelectionChanged(List<? extends SelectionChange<Explorable>> list) {
+
+        
+        
+        eventService.publishLater(new DisplayUpdatedEvent(this, DisplayUpdatedEvent.DisplayUpdateLevel.UPDATE));
 
     }
 
-    private void onItemSelectionChanged(List<? super SelectableManager<Explorable>.Change<Explorable>> items) {
-
-        eventService.publishLater(new DisplayUpdatedEvent(this, DisplayUpdatedEvent.DisplayUpdateLevel.UPDATE));
-
+    @Override
+    public void select(Explorable explorable) {
+        if(selected.contains(explorable) == false) {
+            selected.add(explorable);
+            selected.sort((e1,e2)->{
+               return Integer.compare(getItems().indexOf(e1),getItems().indexOf(e2));
+            });
+        }
+            
+        
+        
     }
 
 }

@@ -158,17 +158,11 @@ public class AnimatedPaneContextualView extends HashMap<String, ContextualWidget
         return this;
     }
 
-
-
-    
     public void registerWidget(ContextualWidget<Node> widget) {
-         
-        put(widget.getName(),widget);
-        
+
+        put(widget.getName(), widget);
+
     }
-    
-    
-    
 
     /**
      *
@@ -227,16 +221,16 @@ public class AnimatedPaneContextualView extends HashMap<String, ContextualWidget
      * @return
      */
     @Override
-    public ContextualContainer onContextChanged(List<? extends ContextualWidget<Node>> toShow, List<? extends ContextualWidget<Node>> toHide) {
+    public synchronized ContextualContainer onContextChanged(List<? extends ContextualWidget<Node>> toShow, List<? extends ContextualWidget<Node>> toHide) {
 
         if (toShow != null && toShow.size() > 0) {
-            logger.info(msg("Must show %d items : ", toShow.size()));
+            logger.info(msg(name + " must show %d items : ", toShow.size()));
         }
-        toShow.forEach(widget -> logger.info("Must show : " + widget.getName()));
+        toShow.forEach(widget -> logger.info(name + " must show : " + widget.getName()));
 
         // logging the items to hide
         if (toHide != null && toHide.size() > 0) {
-            logger.info("must hide " + toShow.size() + " items : ");
+            logger.info(name + " must hide " + toShow.size() + " items : ");
         }
         toHide.forEach(widget -> logger.info("Must hide " + widget.getName()));
 

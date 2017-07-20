@@ -46,9 +46,9 @@ public class SelectableManager<T extends Selectable> {
 
     private final ObservableList<T> itemList = FXCollections.observableArrayList();
 
-    private final PublishSubject<Change<T>> changeStream = PublishSubject.create();
+    private final PublishSubject<SelectionChange<T>> changeStream = PublishSubject.create();
     
-    private final Observable<List<Change<T>>> changeBuffer;
+    private final Observable<List<SelectionChange<T>>> changeBuffer;
     
     
     public SelectableManager() {
@@ -96,7 +96,7 @@ public class SelectableManager<T extends Selectable> {
         listeners.remove(explorable);
     }
 
-    public Observable<List<Change<T>>> getChangeBuffer() {
+    public Observable<List<SelectionChange<T>>> getChangeBuffer() {
         return changeBuffer;
     }
     
@@ -109,27 +109,6 @@ public class SelectableManager<T extends Selectable> {
 
     }
 
-    public class Change<T>  {
-        final T selectable;
-        final Boolean newState;
-
-        public Change(T selectable, Boolean newState) {
-            this.selectable = selectable;
-            this.newState = newState;
-        }
-
-        public Boolean getNewState() {
-            return newState;
-        }
-
-        public T getSelectable() {
-            return selectable;
-        }
-        
-        
-        
-        
-    }
     
     private class SelectionListener implements ChangeListener<Boolean> {
 
@@ -143,11 +122,8 @@ public class SelectableManager<T extends Selectable> {
         public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
             if (consumer != null) {
                 consumer.accept(exp, newValue);
-                
-               
-                
             }
-            changeStream.onNext(new Change<>(exp,newValue));
+            changeStream.onNext(new SelectionChange<T>(exp,newValue));
         }
     }
 }

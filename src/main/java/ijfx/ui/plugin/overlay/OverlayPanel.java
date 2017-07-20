@@ -293,7 +293,7 @@ public class OverlayPanel extends BorderPane implements UiPlugin {
 
         new CallbackTask<Overlay, Map<String, Double>>()
                 .setInput(overlayProperty.getValue())
-                .run(overlay -> {
+                .callback(overlay -> {
                     return statsService.getStatisticsAsMap(imageDisplay, overlay);
                 })
                 .then(map -> {
@@ -394,7 +394,7 @@ public class OverlayPanel extends BorderPane implements UiPlugin {
 
         new CallbackTask<Overlay, XYChart.Series<Double, Double>>()
                 .setInput(overlay)
-                .run(this::getOverlayHistogram)
+                .callback(this::getOverlayHistogram)
                 .then(serie -> {
 
                     timer.start();
@@ -455,7 +455,7 @@ public class OverlayPanel extends BorderPane implements UiPlugin {
     private void updateLineChart(LineOverlay overlay) {
         new CallbackTask<Overlay, XYChart.Series<Double, Double>>()
                 .setInput(overlay)
-                .run(this::getLineChartSerie)
+                .callback(this::getLineChartSerie)
                 .then(this::updateLineChart)
                 .start();
     }

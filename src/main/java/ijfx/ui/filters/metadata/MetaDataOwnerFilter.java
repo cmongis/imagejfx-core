@@ -17,20 +17,18 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.ui.filter;
+package ijfx.ui.filters.metadata;
 
 import ijfx.core.metadata.MetaDataOwner;
-import java.io.IOException;
-import java.util.Collection;
+import ijfx.ui.filter.DataFilter;
 
 /**
  *
  * @author Cyril MONGIS, 2016
  */
-public interface MetaDataFilterFactory  {
+public interface MetaDataOwnerFilter<T extends MetaDataOwner> extends DataFilter<T> {
     
     
-    public MetaDataOwnerFilter generateFilter(Collection<? extends MetaDataOwner> ownerList, String keyName);
-    
+  
     
 }

@@ -19,10 +19,10 @@
  */
 package ijfx.explorer;
 
+import com.google.common.collect.Lists;
 import ijfx.core.IjfxService;
 import ijfx.core.datamodel.Iconazable;
 import ijfx.core.imagedb.ImageRecord;
-import ijfx.core.metadata.MetaDataOwner;
 import ijfx.explorer.datamodel.Explorable;
 import java.io.File;
 import java.util.ArrayList;
@@ -42,13 +42,38 @@ public interface ExplorerService extends IjfxService {
 
     void setItems(List<Explorable> items);
 
-    void applyFilter(Predicate<MetaDataOwner> predicate);
+    void applyFilter(Predicate<Explorable> predicate);
 
-    void setOptionalFilter(Predicate<MetaDataOwner> addionnalFilter);
+    void setOptionalFilter(Predicate<Explorable> addionnalFilter);
 
-    List<Explorable> getFilteredItems();
+    List<Explorable> getDisplayedItems();
 
     List<? extends Explorable> getSelectedItems();
+
+    void selectItems(List<? extends Explorable> items);
+
+    
+    default void selectUntil(Explorable item) {
+        
+        List<Explorable> items = new ArrayList<>(getDisplayedItems());
+        List<Explorable> selected = new ArrayList<>(getSelectedItems());
+        selected.add(item);
+        // sorting item by appearance in item list
+        selected.sort((i1,i2)->Integer.compare(items.indexOf(i1),items.indexOf(i2)));
+        
+        int begin = items.indexOf(selected.get(0));
+        int end =  items.indexOf(selected.get(selected.size()-1))+1;
+        
+        selectItems(items.subList(begin, end));
+    }
+    
+    default void selectItems(Explorable... items) {
+        selectItems(Lists.newArrayList(items));
+    }
+    
+    default void selectAll() {
+        selectItems(getDisplayedItems());
+    }
 
     void selectItem(Explorable explorable);
 
@@ -68,7 +93,6 @@ public interface ExplorerService extends IjfxService {
     public ArrayList<String> getMetaDataKey(List<? extends Explorable> items);
 
     public Stream<Explorable> indexDirectory(ProgressHandler origProgress, File directory);
-    
-    
+
     public Stream<Explorable> getSeries(ImageRecord explorable);
 }

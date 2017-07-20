@@ -17,9 +17,13 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.ui.filter;
+package ijfx.ui.filters.metadata;
 
 import ijfx.core.metadata.MetaDataOwner;
+import ijfx.ui.filter.StringFilter;
+import ijfx.ui.filter.StringOwnerPredicate;
+import ijfx.ui.filter.string.DefaultStringFilter;
+import java.util.Collection;
 import java.util.function.Predicate;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -31,21 +35,35 @@ import javafx.scene.Node;
  *
  * @author Pierre BONNEAU
  */
-public class StringFilterWrapper implements MetaDataOwnerFilter {
+public class StringFilterWrapper<T extends MetaDataOwner> implements MetaDataOwnerFilter<T> {
 
-    private final StringFilter filter;
-    private final Property<Predicate<MetaDataOwner>> metaDataOwnerProperty;
+    private StringFilter filter;
+    private final Property<Predicate<T>> metaDataOwnerProperty;
+    private String keyName;
 
-    public StringFilterWrapper(StringFilter filter, String keyName) {
+    public StringFilterWrapper() {
+        this(new DefaultStringFilter());
+    }
+
+    public void setKeyName(String keyName) {
+        this.keyName = keyName;
+    }
+    
+    
+    
+    public StringFilterWrapper(StringFilter filter) {
 
         this.filter = filter;
+        
         metaDataOwnerProperty = new SimpleObjectProperty<>(null);
-       if(filter.predicateProperty().getValue() != null) metaDataOwnerProperty.setValue(new StringOwnerPredicate(keyName, filter.predicateProperty().getValue()));
+        if (filter.predicateProperty().getValue() != null) {
+            metaDataOwnerProperty.setValue(new StringOwnerPredicate(keyName, filter.predicateProperty().getValue()));
+        }
 
         filter.predicateProperty().addListener(new ChangeListener<Predicate<String>>() {
             @Override
             public void changed(ObservableValue<? extends Predicate<String>> ov, Predicate<String> t, Predicate<String> t1) {
-                
+
                 // the predicate should be null if the user did nothing
                 if (t1 == null) {
                     metaDataOwnerProperty.setValue(null);
@@ -62,7 +80,7 @@ public class StringFilterWrapper implements MetaDataOwnerFilter {
     }
 
     @Override
-    public Property<Predicate<MetaDataOwner>> predicateProperty() {
+    public Property<Predicate<T>> predicateProperty() {
         return this.metaDataOwnerProperty;
     }
 
@@ -72,6 +90,19 @@ public class StringFilterWrapper implements MetaDataOwnerFilter {
 
     public void updatePredicate() {
 
+    }
+
+    @Override
+    public String getName() {
+        if(keyName == null) {
+            return "No key yet";
+        }
+        return keyName;
+    }
+
+    @Override
+    public void setAllPossibleValues(Collection<? extends T> values) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

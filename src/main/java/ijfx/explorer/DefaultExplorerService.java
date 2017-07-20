@@ -31,9 +31,11 @@ import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.datamodel.wrappers.ImageRecordIconizer;
 import ijfx.explorer.events.DisplayedListChanged;
 import ijfx.explorer.events.ExploredListChanged;
+import ijfx.explorer.events.ExplorerSelectionChangedEvent;
 import ijfx.ui.loading.LoadingScreenService;
 import ijfx.ui.main.ImageJFX;
 import ijfx.ui.utils.SelectableManager;
+import ijfx.ui.utils.SelectionChange;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,7 +47,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import javafx.beans.Observable;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import mongis.utils.CallbackTask;
@@ -85,21 +86,21 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     @Parameter
     private Context context;
   
-    private Predicate<MetaDataOwner> lastFilter;
-    private Predicate<MetaDataOwner> optionalFilter;
+    private Predicate<Explorable> lastFilter;
+    private Predicate<Explorable> optionalFilter;
 
     private final IntegerProperty selected = new SimpleIntegerProperty(0);
 
     private List<Explorable> selectedItems = new ArrayList<>();
 
-    private SelectableManager<Explorable> selectionManager = new SelectableManager<>(this::onExplorableSelected);
+    //private SelectableManager<Explorable> selectionManager = new SelectableManager<>();
    
 
     @Override
     public void initialize() {
        
-        
-        selected.addListener(this::notifySelectionChanged);
+      // selectionManager.getChangeBuffer()
+             //  .subscribe(this::notifySelectionChange);
 
     }
 
@@ -110,21 +111,21 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
         if(explorableList == null) explorableList = new ArrayList<>();
         eventService.publish(new ExploredListChanged().setObject(items));
         applyFilter(lastFilter);
-        selectionManager.setItem(explorableList);
+        //selectionManager.setItem(explorableList);
         
     }
 
     @Override
-    public void applyFilter(Predicate<MetaDataOwner> predicate) {
+    public void applyFilter(Predicate<Explorable> predicate) {
 
-        new CallbackTask<Predicate<MetaDataOwner>, List<Explorable>>(predicate)
-                .run(this::filter)
+        new CallbackTask<Predicate<Explorable>, List<Explorable>>(predicate)
+                .callback(this::filter)
                 .then(this::setFilteredItems)
                 .start();
 
     }
 
-    protected List<Explorable> filter(Predicate<MetaDataOwner> predicate) {
+    protected List<Explorable> filter(Predicate<Explorable> predicate) {
         logger.info(String.format("Filtering %d items", getItems().size()));
         if (predicate == null && optionalFilter == null) {
             return getItems();
@@ -144,7 +145,7 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     }
 
     @Override
-    public List<Explorable> getFilteredItems() {
+    public List<Explorable> getDisplayedItems() {
         return filteredList;
     }
 
@@ -154,22 +155,20 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     }
 
     @Override
-    public void setOptionalFilter(Predicate<MetaDataOwner> additionalFilter) {
+    public void setOptionalFilter(Predicate<Explorable> additionalFilter) {
         this.optionalFilter = additionalFilter;
         applyFilter(lastFilter);
     }
 
     @Override
     public List<? extends Explorable> getSelectedItems() {
-        return filteredList
-                .stream()
-                .filter(item -> item.selectedProperty().getValue())
-                .collect(Collectors.toList());
+        return selectedItems;
     }
 
     @Override
     public void selectItem(Explorable explorable) {
-        explorable.selectedProperty().setValue(true);
+        selectedItems.add(explorable);
+        publishSelectionEvent();
     }
 
     @Override
@@ -188,7 +187,15 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     }
 
     
-
+    private void notifySelectionChange(List<SelectionChange<Explorable>> changes) {
+        
+        ExplorerSelectionChangedEvent event = new ExplorerSelectionChangedEvent(changes);
+        
+        
+        eventService.publishLater(event);
+    }
+    
+    /*
     private void onExplorableSelected(Explorable explorable, Boolean selected) {
       
        
@@ -198,13 +205,13 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
        
        this.selected.setValue(selectedItems.size());
        
-    }
+    }*/
 
     public void open(Iconazable explorable) {
 
         new CallbackTask<Void, Boolean>()
                 .setName("Opening file...")
-                .run((progress, vd) -> {
+                .callback((progress, vd) -> {
                     try {
                         progress.setProgress(1, 5);
                         explorable.open();
@@ -234,18 +241,18 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     @Override
     public void toggleSelection(Explorable explorable) {
 
-        boolean value = explorable.selectedProperty().getValue();
-        logger.log(Level.INFO, String.format("Toggling selection for {0} from {1} to {2}", explorable.getTitle(), value, !value));
-        explorable.selectedProperty().setValue(!value);
+        if(selectedItems.contains(explorable)) {
+            selectedItems.remove(explorable);
+        }
+        else {
+            selectedItems.add(explorable);
+        }
+        
+        publishSelectionEvent();
     }
     
     
-    private void notifySelectionChanged(Observable obs, Object oldValue, Object newValue) {
-        
-       logger.info("The selection has changed to "+newValue);
-        
-        
-    }
+
     
     public IntegerProperty selectedCountProperty() {
         return selected;
@@ -290,4 +297,15 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
         }
     }
 
+    
+    public void publishSelectionEvent() {
+        eventService.publish(new ExplorerSelectionChangedEvent());
+    }
+
+    @Override
+    public void selectItems(List<? extends Explorable> items) {
+        selectedItems.clear();
+        selectedItems.addAll(items);
+        publishSelectionEvent();
+    }
 }

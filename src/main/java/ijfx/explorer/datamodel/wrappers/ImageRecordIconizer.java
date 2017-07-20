@@ -75,14 +75,13 @@ public class ImageRecordIconizer implements Explorable {
 
     Set<Tag> tagList = new HashSet<>();
     
-    private BooleanProperty selectedProperty;
 
     private final BooleanProperty visibleProperty = new SimpleBooleanProperty(false);
     
     private final static String SERIE_NAME_FORMAT = "%s - Serie %d";
     private final static String SERIE_SAVE_FORMAT = "%s_serie_%d";
     
-    boolean selected = false;
+    private BooleanProperty selectedProperty;
 
     int imageId = 0;
 
@@ -163,21 +162,14 @@ public class ImageRecordIconizer implements Explorable {
         return imageRecord;
     }
 
-    public void setSelected(boolean selected) {
-        this.selected = selected;
-    }
-
-    public boolean isSelected() {
-        return selected;
-    }
-
+    /*
     @Override
     public BooleanProperty selectedProperty() {
         if (selectedProperty == null) {
-            selectedProperty = new SimpleBooleanProperty(this, "selected", selected);
+            selectedProperty = new SimpleBooleanProperty(false);
         }
         return selectedProperty;
-    }
+    }*/
 
     @Override
     public Dataset getDataset() {
@@ -197,6 +189,8 @@ public class ImageRecordIconizer implements Explorable {
     public void dispose() {
         
     }
+    
+   
     
     public BooleanProperty visibleProperty() {
         return visibleProperty;

@@ -19,6 +19,8 @@
  */
 package mongis.utils.panecell;
 
+import ijfx.explorer.views.DataClickEvent;
+import java.util.function.Consumer;
 import javafx.beans.property.BooleanProperty;
 import javafx.scene.Node;
 
@@ -35,6 +37,10 @@ public interface PaneCell<T> {
     
     public BooleanProperty selectedProperty();
     public BooleanProperty onScreenProperty();
+ 
+    
+    void setOnDataClick(Consumer<DataClickEvent<T>> onSimpleClick);
+    
  
     
 }

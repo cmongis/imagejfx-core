@@ -109,7 +109,7 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
         return this;
     }
 
-    public CallbackTask<INPUT, OUTPUT> run(FailableCallback<INPUT, OUTPUT> callback) {
+    public CallbackTask<INPUT, OUTPUT> callback(FailableCallback<INPUT, OUTPUT> callback) {
         this.callback = callback;
         return this;
     }
@@ -149,12 +149,12 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
         return this;
     }
 
-    public CallbackTask<INPUT, OUTPUT> run(LongCallback<INPUT, OUTPUT> longCallback) {
+    public CallbackTask<INPUT, OUTPUT> callback(LongCallback<INPUT, OUTPUT> longCallback) {
         this.longCallback = longCallback;
         return this;
     }
 
-    public CallbackTask<INPUT, OUTPUT> runLongCallable(LongCallable<OUTPUT> longCallable) {
+    public CallbackTask<INPUT, OUTPUT> call(LongCallable<OUTPUT> longCallable) {
         this.longCallable = longCallable;
         return this;
     }
@@ -275,14 +275,14 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
     public <NEXTOUTPUT> CallbackTask<OUTPUT, NEXTOUTPUT> thenTask(FailableCallback<OUTPUT, NEXTOUTPUT> callback) {
         CallbackTask<OUTPUT, NEXTOUTPUT> task = new CallbackTask<OUTPUT, NEXTOUTPUT>()
                 .setInput(this::getValue)
-                .run(callback);
+                .callback(callback);
         then(task);
         return task;
     }
 
     public CallbackTask<INPUT, OUTPUT> ui() throws Exception {
         if (Platform.isFxApplicationThread()) {
-            call();
+            CallbackTask.this.call();
         } else {
             Platform.runLater(this);
         }

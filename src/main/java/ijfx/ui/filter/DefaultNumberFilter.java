@@ -344,7 +344,7 @@ public class DefaultNumberFilter extends BorderPane implements NumberFilter {
     private void onLowHighValueChanged(Observable obs, Number oldValue, Number newValue) {
         new CallbackTask<Collection<? extends Number>, Long>()
                 .setInput(possibleValues)
-                .run(this::countElementsInRange)
+                .callback(this::countElementsInRange)
                 .then(this::updateCountLabel)
                 .start();
     }

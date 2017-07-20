@@ -63,6 +63,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import ijfx.core.uiplugin.UiCommand;
 import ijfx.core.uiplugin.UiCommandService;
+import ijfx.ui.main.ImageJFX;
 import javafx.application.Platform;
 
 /**
@@ -115,6 +116,9 @@ public class DefaultMainWindow implements MainWindow {
     @FXML
     private VBox topToolBarVBox;
 
+    @FXML
+    private VBox bottomTopVBox;
+    
     private SideBar sideBar;
 
     List<ContextualContainer<Node>> contextualContainer = new ArrayList<>();
@@ -224,6 +228,10 @@ public class DefaultMainWindow implements MainWindow {
         registerContextualContainer(topToolBarVBox)
                 .setAnimationOnShow(Animations.FADEIN)
                 .setAnimationOnHide(Animations.FADEOUT);
+        
+        registerContextualContainer(bottomTopVBox)
+                .setAnimationOnShow(Animations.QUICK_EXPAND)
+                .setAnimationOnHide(Animations.DISAPPEARS_DOWN);
     }
 
     private void configureSideBar(SideBar sideBar) {
@@ -295,6 +303,14 @@ public class DefaultMainWindow implements MainWindow {
         Platform.runLater(() -> {
             mainBorderPane.setCenter(activity.getContent());
         });
+        
+        
+        Task task = activity.updateOnShow();
+        if(task!= null) {
+            ImageJFX
+                    .getThreadPool()
+                    .submit(task);
+        }
 
     }
 

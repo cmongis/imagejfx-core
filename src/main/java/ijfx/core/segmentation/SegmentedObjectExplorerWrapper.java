@@ -140,7 +140,7 @@ public class SegmentedObjectExplorerWrapper extends AbstractExplorable {
     public void open() throws Exception {
         new CallbackTask<File, Void>()
                 .setInput(getFile())
-                .run(f -> {
+                .callback(f -> {
                     overlayUtilsService.openOverlay(f, object.getOverlay());
                     return null;
                 })

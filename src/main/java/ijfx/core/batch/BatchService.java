@@ -136,7 +136,7 @@ public class BatchService extends AbstractService implements ImageJService {
     public Task<Boolean> applyWorkflow(List<BatchSingleInput> inputs, Workflow workflow) {
         return new CallbackTask<List<BatchSingleInput>, Boolean>()
                 .setInput(inputs)
-                .run((progress, input) -> applyWorkflow(progress, inputs, workflow));
+                .callback((progress, input) -> applyWorkflow(progress, inputs, workflow));
     }
 
     public Boolean applyWorkflow(ProgressHandler handler, BatchSingleInput input, Workflow workflow) {

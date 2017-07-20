@@ -21,7 +21,9 @@ package ijfx.explorer.views;
 
 import ijfx.explorer.datamodel.Explorable;
 import java.util.List;
+import java.util.function.Consumer;
 import javafx.scene.Node;
+import javafx.scene.control.SelectionModel;
 import org.scijava.plugin.SciJavaPlugin;
 
 /**
@@ -41,7 +43,7 @@ public interface ExplorerView extends SciJavaPlugin {
      * Sets the list of items
      * @param items 
      */
-    public void setItem(List<? extends Explorable> items);
+    public void setItems(List<? extends Explorable> items);
      
     
     /**
@@ -56,6 +58,11 @@ public interface ExplorerView extends SciJavaPlugin {
      */
     public void setSelectedItem(List<? extends Explorable> items);
     
+    public void setOnItemClicked(Consumer<DataClickEvent> eventHandler);
+    
+    
+    public SelectionModel getSelectionModel();
+        
     public void refresh();
     
 }

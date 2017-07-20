@@ -43,10 +43,11 @@ public abstract class AbstractExplorable implements Explorable {
 
     Set<Tag> tagList = new HashSet<>();
 
+    /*
     @Override
     public BooleanProperty selectedProperty() {
         return selectedProperty;
-    }
+    }*/
 
     @Override
     public MetaDataSet getMetaDataSet() {

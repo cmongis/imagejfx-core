@@ -108,7 +108,7 @@ public class DefaultFolderManagerService extends AbstractService implements Fold
 
     Logger logger = ImageJFX.getLogger();
 
-    ExplorationMode currentExplorationMode;
+    ExplorationMode currentExplorationMode = ExplorationMode.FILE;
 
     List<Explorable> currentItems;
 
@@ -290,7 +290,7 @@ public class DefaultFolderManagerService extends AbstractService implements Fold
     @Override
     public void completeStatistics() {
         loadingScreenService.frontEndTask(new CallbackTask<List<Explorable>, Integer>()
-                .run(this::fetchMoreStatistics)
+                .callback(this::fetchMoreStatistics)
                 .setInput(getCurrentFolder().getFileList())
                 .then(this::onStatisticComputingEnded)
                 .start()

@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import de.jensd.fx.glyphs.fontawesome.*?>
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import java.lang.String?>
 <?import javafx.geometry.Insets?>
@@ -22,7 +17,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 
-<fx:root id="AnchorPane" fx:id="explorerActivity" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="400.0" minWidth="800.0" type="AnchorPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root id="AnchorPane" fx:id="explorerActivity" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="400.0" minWidth="800.0" type="AnchorPane" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <BorderPane maxHeight="1.7976931348623157E308" prefWidth="290.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>
@@ -36,69 +31,80 @@
          </top>
       </BorderPane>
       <BorderPane fx:id="contentBorderPane" layoutX="400.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="54.0">
-         <bottom>
-            <HBox alignment="CENTER_RIGHT" BorderPane.alignment="CENTER_RIGHT">
-               <children>
-                  <Button fx:id="openButton" mnemonicParsing="false" onAction="#openSelection" text="Open">
-                     <graphic>
-                        <FontAwesomeIconView glyphName="IMAGE" />
-                     </graphic>
-                  </Button>
-                  <Button fx:id="statisticsButton" mnemonicParsing="false" onAction="#computeStatistics" text="Compute more statistics">
-                     <graphic>
-                        <FontAwesomeIconView glyphName="BAR_CHART" />
-                     </graphic>
-                     <HBox.margin>
-                        <Insets />
-                     </HBox.margin>
-                  </Button>
-                  <MenuButton fx:id="moreMenuButton" mnemonicParsing="false" styleClass="normal" text="Actions">
-                    <items>
-                      <MenuItem mnemonicParsing="false" onAction="#exportToCSV" text="Export displayed item to CSV" />
-                      <MenuItem mnemonicParsing="false" text="Propositions are welcomed" />
-                        <MenuItem mnemonicParsing="false" onAction="#tellMeMore" text="Tell me more about the explorer" />
-                    </items>
-                     <HBox.margin>
-                        <Insets right="20.0" />
-                     </HBox.margin>
-                     <graphic>
-                        <FontAwesomeIconView glyphName="BARS" />
-                     </graphic>
-                  </MenuButton>
-                  <Button fx:id="selectAllButton" mnemonicParsing="false" onAction="#selectAll" styleClass="success" text="Select all">
-                     <graphic>
-                        <FontAwesomeIconView glyphName="CHECK" />
-                     </graphic>
-                  </Button>
-                  <Button mnemonicParsing="false" onAction="#onSegmentButtonPressed" text="Segment">
-                     <graphic>
-                        <FontAwesomeIconView glyphName="THUMB_TACK" />
-                     </graphic>
-                  </Button>
-                  <Button mnemonicParsing="false" onAction="#onProcessButtonPressed" styleClass="normal" text="Process">
-                     <graphic>
-                        <FontAwesomeIconView glyphName="GEARS" />
-                     </graphic>
-                     <HBox.margin>
-                        <Insets right="10.0" />
-                     </HBox.margin>
-                  </Button>
-               </children>
-               <styleClass>
-                  <String fx:value="hbox" />
-                  <String fx:value="with-top-padding" />
-               </styleClass>
-               <opaqueInsets>
-                  <Insets left="10.0" />
-               </opaqueInsets>
-            </HBox>
-         </bottom>
          <left>
             <ListView fx:id="folderListView" prefWidth="290.0" BorderPane.alignment="CENTER" />
          </left>
          <center>
             <TabPane fx:id="tabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER" />
-         </center></BorderPane>
+         </center>
+         <bottom>
+            <BorderPane BorderPane.alignment="CENTER">
+               <left>
+                  <HBox BorderPane.alignment="CENTER">
+                     <children>
+                        <Button fx:id="selectAllButton" mnemonicParsing="false" onAction="#selectAll" text="Select all">
+                           <graphic>
+                              <FontAwesomeIconView glyphName="CHECK_SQUARE_ALT" />
+                           </graphic>
+                           <styleClass>
+                              <String fx:value="success" />
+                              <String fx:value="first" />
+                           </styleClass>
+                        </Button>
+                        <Button fx:id="deselectAllButton" mnemonicParsing="false" onAction="#unselectAll" text="Unselect all">
+                           <graphic>
+                              <FontAwesomeIconView glyphName="SQUARE" />
+                           </graphic>
+                           <styleClass>
+                              <String fx:value="danger" />
+                              <String fx:value="last" />
+                           </styleClass>
+                        </Button>
+                     </children>
+                     <padding>
+                        <Insets left="300.0" />
+                     </padding>
+                  </HBox>
+               </left>
+               <right>
+                  <HBox styleClass="toggle-group" BorderPane.alignment="CENTER">
+                     <children>
+                        <Button fx:id="openButton" mnemonicParsing="false" onAction="#openSelection" text="Open">
+                           <graphic>
+                              <FontAwesomeIconView glyphName="IMAGE" />
+                           </graphic>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#onProcessButtonPressed" styleClass="normal" text="Process">
+                           <graphic>
+                              <FontAwesomeIconView glyphName="GEARS" />
+                           </graphic>
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#onSegmentButtonPressed" text="Segment">
+                           <graphic>
+                              <FontAwesomeIconView glyphName="THUMB_TACK" />
+                           </graphic>
+                        </Button>
+                        <MenuButton fx:id="moreMenuButton" mnemonicParsing="false" styleClass="normal" text="Actions">
+                          <items>
+                            <MenuItem mnemonicParsing="false" onAction="#exportToCSV" text="Export displayed item to CSV" />
+                            <MenuItem mnemonicParsing="false" text="Propositions are welcomed" />
+                              <MenuItem mnemonicParsing="false" onAction="#tellMeMore" text="Tell me more about the explorer" />
+                          </items>
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                           <graphic>
+                              <FontAwesomeIconView glyphName="BARS" />
+                           </graphic>
+                        </MenuButton>
+                     </children>
+                  </HBox>
+               </right>
+            </BorderPane>
+         </bottom></BorderPane>
       <BorderPane fx:id="toolbarBorderPane" styleClass="toolbar" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <left>
             <HBox fx:id="folderTitleHBox" prefWidth="250.0" spacing="10.0" BorderPane.alignment="CENTER">
@@ -126,14 +132,16 @@
                            <graphic>
                               <FontAwesomeIconView glyphName="FILE" />
                            </graphic></ToggleButton>
-                        <ToggleButton fx:id="planeModeToggleButton" mnemonicParsing="false" text="Planes">
+                        <ToggleButton fx:id="planeModeToggleButton" mnemonicParsing="false" styleClass="last" text="Planes">
                            <graphic>
                               <FontAwesomeIconView glyphName="PAPER_PLANE" />
                            </graphic></ToggleButton>
-                        <ToggleButton fx:id="objectModeToggleButton" mnemonicParsing="false" styleClass="last" text="Object">
+                           <!--
+                        <ToggleButton fx:id="objectModeToggleButton" mnemonicParsing="false"  text="Object">
                            <graphic>
                               <FontAwesomeIconView glyphName="BEER" />
                            </graphic></ToggleButton>
+                           -->
                      </children>
                   </HBox>
                   <HBox fx:id="filterHBox" alignment="CENTER_LEFT" spacing="5.0">

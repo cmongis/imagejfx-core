@@ -128,8 +128,6 @@ public class DefaultActivityService extends AbstractService implements ActivityS
             } catch (Exception ex) {
                 logger.log(Level.SEVERE, "Error when initializing activity", ex);
             }
-        } else {
-            System.out.println("it exists !");
         }
         return (T) activityMap.get(activityClass.getName());
     }

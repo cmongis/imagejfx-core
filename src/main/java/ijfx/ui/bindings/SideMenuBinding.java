@@ -35,22 +35,36 @@ import javafx.scene.Node;
  */
 public class SideMenuBinding {
 
-    BooleanProperty show = new SimpleBooleanProperty(false);
+    private BooleanProperty show = new SimpleBooleanProperty(false);
 
-    final Node node;
+    private final Node node;
 
-    double xWhenHidden = 20;
+    private double xWhenHidden = 20;
     
     public SideMenuBinding(Node node) {
         this.node = node;
         
         show.addListener(this::onShowChanged);
         node.translateXProperty().addListener(this::onTranslatePropertyChanged);
+        
+         
+        
+    }
+    
+    public void refresh() {
+        onShowChanged(show, Boolean.FALSE, showProperty().getValue());
     }
 
     public BooleanProperty showProperty() {
         return show;
     }
+
+    public SideMenuBinding setxWhenHidden(double xWhenHidden) {
+        this.xWhenHidden = xWhenHidden;
+        return this;
+    }
+    
+    
 
     private void onShowChanged(Observable obs, Boolean oldValue, Boolean newValue) {
 

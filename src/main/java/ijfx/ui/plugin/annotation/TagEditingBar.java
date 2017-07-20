@@ -22,6 +22,7 @@ package ijfx.ui.plugin.annotation;
 import ijfx.core.metadata.MetaDataService;
 import ijfx.core.uiplugin.Localization;
 import ijfx.explorer.ExplorableDisplay;
+import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.datamodel.Tag;
 import ijfx.explorer.datamodel.Taggable;
 import ijfx.ui.UiConfiguration;
@@ -29,6 +30,7 @@ import ijfx.ui.UiPlugin;
 import ijfx.ui.widgets.TaggablePane;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -45,7 +47,7 @@ import org.scijava.plugin.Plugin;
  * @author cyril
  */
 @Plugin(type = UiPlugin.class)
-@UiConfiguration(id = "tag-bar", localization = Localization.BOTTOM_CENTER, context = "explorable-open")
+@UiConfiguration(id = "tag-bar", localization = Localization.RIGHT, context = "explorable-open")
 public class TagEditingBar implements UiPlugin {
 
     private TaggablePane taggablePane;
@@ -68,7 +70,7 @@ public class TagEditingBar implements UiPlugin {
     @Override
     public UiPlugin init() throws Exception {
 
-        taggablePane = new TaggablePane(context)
+        taggablePane = new TaggablePane(context,TaggablePane.Orientation.VERTICAL)
                 .setOnAdd(this::addTag)
                 .setOnRemove(this::removeTag);
         
@@ -77,8 +79,8 @@ public class TagEditingBar implements UiPlugin {
     }
     
     public void addTag(Taggable taggable, Tag tag) {
-        display.getSelected()
-                .forEach(explorable->explorable.addTag(tag));
+        List<Explorable> selected = display.getSelected();
+                selected.forEach(explorable->explorable.addTag(tag));
         display.update();
     }
     
@@ -122,7 +124,7 @@ public class TagEditingBar implements UiPlugin {
                 .getSelected()
                 .stream()
                 .flatMap(explorable -> explorable.getTagList().stream())
-                .collect(Collectors.toList()));
+                .collect(Collectors.toSet()));
 
         taggablePane.setPossibleTags(
                 limitToLast(
@@ -142,7 +144,7 @@ public class TagEditingBar implements UiPlugin {
             return new ArrayList(collection).subList(collection.size()-6, collection.size()-1);
         }
         else {
-            return collection;
+            return new ArrayList(collection);
         }
         
     }

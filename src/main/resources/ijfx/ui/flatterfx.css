@@ -23,7 +23,7 @@
 
     -fx-font-family:'FontAwesome';
     -fx-disabled-opacity: 0.6; 
-
+    -btn-radius:3.0;
     -flatter-red: rgb(237.0, 68.0, 37.0);
     -flatter-blue: #5F90B0; 
     -flatter-green:rgb(48,138,80);
@@ -162,9 +162,9 @@
 .toggle-button, .button,.menu-button,.split-menu-button > .label{
     -fx-background-color: -flatter-primary;
     -fx-background-insets:  0.0;
-    -fx-background-radius: 2.0;
+    -fx-background-radius: 1.0;
     -fx-border-width: 0.0;
-    -fx-padding: .4em;
+    -fx-padding: .4em 0.9em .4em .9em;
     -fx-margin: 1em;
 
     -fx-text-fill: -fx-text-base-color;
@@ -182,13 +182,13 @@
 }
 
 .button:hover, .toggle-button:hover, .combo-box:hover ,.split-menu-button > .label:hover{
-    -fx-background-color:derive(-flatter-primary,5%);
+    -fx-background-color:derive(-flatter-primary,-15%);
 
     -fx-stroke-width:3px;
     -fx-stroke:white;
 
-    -fx-translate-x:-1px;
-    -fx-translate-y:-1px;
+    /*-fx-translate-x:-1px;
+    //-fx-translate-y:-1px;*/
 }
 
 .toggle-button:focused,
@@ -264,7 +264,7 @@
 .button.larger {
     -fx-padding:9px;
 }
-.button.smaller, .toggle-button.smaller, .menu-button.smaller {
+.button.smaller, .toggle-button.smaller, .menu-button.smaller, .smaller .button {
     -fx-font-size:12px;
 }
 .toggle-group {
@@ -276,10 +276,10 @@
 }
 
 .toggle-group .toggle-button.first, .toggle-group .button.first, .split-menu-button > .label {
-    -fx-background-radius: 2.0 0 0 2.0;
+    -fx-background-radius: 1.0 0 0 1.0;
 }
 .toggle-group .toggle-button.last, .toggle-group .button.last, .toggle-group .menu-button.last, .split-menu-button > .arrow-button{
-    -fx-background-radius: 0.0 2.0 2.0 0.0;
+    -fx-background-radius: 0.0 1.0 1.0 0.0;
 }
 .toggle-group .toggle-button:hover {
     -fx-translate-x:0;
@@ -322,13 +322,13 @@
 .text-area , .text-field, .text-field:focused, .text-area:focused{
     -fx-background-color: white;
     -fx-background-insets:  0.0;
-    -fx-background-radius: 2.0;
+    -fx-background-radius: 3.0;
     -fx-padding: 7px 7px 8px 7px;
     -fx-border-width: 0.0;
     -fx-prompt-text-fill: derive(-dark, 50.0%);
     -fx-highlight-fill: rgb(94.0, 203.0, 234.0);
     -fx-text-fill:-dark;
-    -fx-effect:-flatter-shadow;
+    /*-fx-effect:-flatter-shadow;*/
 
 }
 
@@ -374,9 +374,9 @@
 }
 
 .text-area:focused, .text-field:focused {
-    -fx-background-color: -flatter-blue, white;
-    -fx-background-insets: 0.0, 0.1em;
-    -fx-background-radius: 2.0;
+    -fx-background-color: -flatter-primary, white;
+    -fx-background-insets: 0px,1px;
+    /*-fx-background-radius: 1.0;*/
 }
 
 .scroll-bar:vertical > .track-background,
@@ -1946,23 +1946,41 @@ list-cell:filled:selected:focused, .list-cell:filled:selected{
 
 .tag {
     -fx-effect:none;
-    -fx-background:transparent;
     -fx-background-radius: 3.0 24.0 24.0 3.0;
     -fx-content-display:right;
-    
+    -fx-graphic-text-gap:10px;
+    -fx-font-size:15px;
+    -fx-font-weight:bold;
 }
+
 #tagFlowPane, #possibleTagsFlowPane {
     -fx-vgap:10px;
     -fx-hgap:10px;
-    -fx-padding:10px;
+    -fx-padding:0px;
 }
 
 #possibleTagsFlowPane .tag {
     -fx-background-color:transparent;
-    -fx-stroke-width:2px;
-    -fx-stroke:-flatter-primary;
+    -fx-border-width:2px;
+    -fx-border-radius: 3.0 24.0 24.0 3.0;
+    -fx-border-color:-flatter-primary;
 }
-
+#possibleTagsFlowPane .tag:hover {
+    -fx-translate-x:0;
+    -fx-translate-y:0;
+    -fx-background-color:-flatter-primary;
+    -fx-border-color:-flatter-primary;
+}
+#possibleTagsLabel {
+    
+}
+.taggable-pane > .label {
+    -fx-padding:10px;
+    -fx-padding:30px 0px 15px 0;
+}
+.taggable-pane.vertical {
+    -fx-pref-width:250px;
+}
 .tag-suggestions .list-cell {
     -fx-padding:0 0.4em 0 0;
 }
@@ -2218,6 +2236,11 @@ list-cell:filled:selected:focused, .list-cell:filled:selected{
     -fx-padding:0 10 0 45px;
 
 }
+
+.filter-pane-container {
+    -fx-background-color:-bg-darker;
+    -fx-pref-width:250px;
+}
 #filterScrollPane {
     -fx-pref-width:300px;
 }
@@ -2411,4 +2434,15 @@ Label.chart-legend-item{
     -fx-margin:1em;
     -fx-pref-height:20px;
     -fx-min-height:10px;
+}
+
+/*
+    MetaData bar
+*/
+.metadata-bar {
+
+}
+.metadata-bar > .label{
+    -fx-font-size:14px;
+    -fx-padding:4px 4px 4px 10px;
 }

@@ -26,7 +26,7 @@ import java.util.function.Predicate;
  *
  * @author Pierre BONNEAU
  */
-public class NumberOwnerPredicate implements Predicate<MetaDataOwner>{
+public class NumberOwnerPredicate<T extends MetaDataOwner> implements Predicate<T>{
     
     String keyName;
     
@@ -40,7 +40,7 @@ public class NumberOwnerPredicate implements Predicate<MetaDataOwner>{
     }
     
     @Override
-    public boolean test(MetaDataOwner t) {
+    public boolean test(T t) {
         value = t.getMetaDataSet().get(keyName).getDoubleValue();
         return predicate.test(value);
     }

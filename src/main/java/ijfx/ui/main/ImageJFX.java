@@ -27,6 +27,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Logger;
+import javafx.scene.Parent;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import net.imagej.ImageJ;
@@ -54,9 +55,14 @@ public final class ImageJFX  {
     public static Logger getLogger() {
         if (logger == null) {
             logger = Logger.getLogger("ImageJFX");
-
+            
+           // System.setProperty("java.util.logging.SimpleFormatter.format", 
+            //"%1$tF %1$tT %4$s %2$s %5$s%6$s%n");
+            System.setProperty("java.util.logging.SimpleFormatter.format", "[%4$s][%2$s] %5$s [%1$tc]%n%7");
+            
+            
         }
-
+        
         return logger;
     }
 
@@ -81,7 +87,7 @@ public final class ImageJFX  {
     public static final int CORE_NUMBER = getCoreNumber() > 1 ? getCoreNumber() - 1 : getCoreNumber();
     
     private static final ExecutorService service = Executors.newFixedThreadPool(CORE_NUMBER);
-
+    
     public static double getAnimationDurationAsDouble() {
         return ANIMATION_DURATION.toMillis();
     }
@@ -104,11 +110,15 @@ public final class ImageJFX  {
         
         ImageJ imagej = new ImageJ();
         imagej.ui().setDefaultUI(imagej.ui().getUI(UI_NAME));
-        imagej.ui().showUI(UI_NAME);
-        
+        //imagej.ui().showUI(UI_NAME);
+        //imagej.ui().setDefaultUI(imagej.ui().getUI(SwingUI.NAME));
+        imagej.ui().showUI();   
         
     }
     
+    public static void applyBaseCss(Parent parent) {
+       parent.getStylesheets().add(getStylesheet());
+    }
     
     public static String getStylesheet() {
         return STYLESHEET_ADDR;

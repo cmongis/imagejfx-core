@@ -19,6 +19,7 @@
  */
 package mongis.utils.panecell;
 
+import ijfx.explorer.views.DataClickEvent;
 import java.util.function.Consumer;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -31,23 +32,23 @@ import javafx.scene.layout.BorderPane;
 import javafx.util.Callback;
 import mongis.utils.CallbackTask;
 import mongis.utils.FailableCallback;
-import mongis.utils.panecell.PaneCell;
 
 /**
  *
  * @author cyril
  */
 public class SimplePaneCell<T> implements PaneCell<T> {
-    
-    BorderPane borderPane = new BorderPane();
-    Label title = new Label();
-    ImageView imageView = new ImageView();
-    Callback<T, String> titleFactory = (s) -> "No name";
-    FailableCallback<T, Image> imageFactory = (i) -> null;
-    T item;
-    BooleanProperty booleanProperty = new SimpleBooleanProperty();
-    BooleanProperty onScreenProperty = new SimpleBooleanProperty();
-    Consumer<T> onClick;
+
+    private BorderPane borderPane = new BorderPane();
+    private Label title = new Label();
+    private ImageView imageView = new ImageView();
+    private Callback<T, String> titleFactory = (s) -> "No name";
+    private FailableCallback<T, Image> imageFactory = (i) -> null;
+    private T item;
+    private BooleanProperty booleanProperty = new SimpleBooleanProperty();
+    private BooleanProperty onScreenProperty = new SimpleBooleanProperty();
+
+    private Consumer<DataClickEvent<T>> onClickEvent;
 
     public SimplePaneCell() {
         borderPane.setCenter(imageView);
@@ -61,7 +62,7 @@ public class SimplePaneCell<T> implements PaneCell<T> {
     public void setItem(T item) {
         title.setText(titleFactory.call(item));
         this.item = item;
-        new CallbackTask<T, Image>().setInput(item).run(imageFactory).then(imageView::setImage).start();
+        new CallbackTask<T, Image>().setInput(item).callback(imageFactory).then(imageView::setImage).start();
     }
 
     @Override
@@ -81,7 +82,9 @@ public class SimplePaneCell<T> implements PaneCell<T> {
 
     private void onMouseClicked(MouseEvent event) {
         event.consume();
-        onClick.accept(item);
+
+        onClickEvent.accept(new DataClickEvent<>(getItem(), event, event.getClickCount() == 2));
+
     }
 
     public SimplePaneCell<T> setTitleFactory(Callback<T, String> factory) {
@@ -94,18 +97,20 @@ public class SimplePaneCell<T> implements PaneCell<T> {
         return this;
     }
 
-    public SimplePaneCell<T> setOnMouseClicked(Consumer<T> onClick) {
-        this.onClick = onClick;
-        return this;
-    }
+
+
     public SimplePaneCell<T> setWidth(double width) {
         imageView.setFitWidth(width);
         imageView.setPreserveRatio(true);
         return this;
     }
-    
+
     public BooleanProperty onScreenProperty() {
         return onScreenProperty;
     }
-    
+
+    public void setOnDataClick(Consumer<DataClickEvent<T>> onSimpleClick) {
+        this.onClickEvent = onSimpleClick;
+    }
+
 }

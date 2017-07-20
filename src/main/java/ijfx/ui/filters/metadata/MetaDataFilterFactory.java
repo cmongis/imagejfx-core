@@ -17,23 +17,20 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.ui.filter;
+package ijfx.ui.filters.metadata;
 
 import ijfx.core.metadata.MetaDataOwner;
-import java.util.function.Predicate;
-import javafx.beans.property.Property;
-import javafx.scene.Node;
+import java.util.Collection;
 
 /**
  *
  * @author Cyril MONGIS, 2016
  */
-public interface MetaDataOwnerFilter {
+public interface MetaDataFilterFactory<T extends MetaDataOwner>  {
     
     
-    public Node getContent();
+    public MetaDataOwnerFilter<T> generateFilter(Collection<? extends T> ownerList, String keyName);
     
-    Property<Predicate<MetaDataOwner>> predicateProperty();
-    
+    public void recycleCache();
     
 }
