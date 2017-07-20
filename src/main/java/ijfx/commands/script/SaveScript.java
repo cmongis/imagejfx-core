@@ -19,22 +19,58 @@
  */
 package ijfx.commands.script;
 
+import ijfx.ui.display.code.ScriptDisplay;
+import ijfx.ui.main.ImageJFX;
+import java.io.File;
+import java.util.logging.Level;
+import org.scijava.command.ContextCommand;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.plugins.commands.io.OpenFile;
+import org.scijava.ui.DialogPrompt;
+import org.scijava.ui.UIService;
+import org.scijava.util.FileUtils;
+import org.scijava.widget.FileWidget;
 
 /**
  *
  * @author florian
  */
-@Plugin(type = ScriptCommand.class, menuPath = "File > Save")
-public class SaveScript extends OpenFile implements ScriptCommand{
+@Plugin(type = ScriptCommand.class, menuPath = "File > Save", initializer = "init")
+public class SaveScript extends ContextCommand implements ScriptCommand {
+
+    @Parameter
+    ScriptDisplay scriptDisplay;
+
+    @Parameter
+    File outputFile;
+
+    @Parameter
+    UIService uiService;
 
     @Override
     public void run() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        if(outputFile == null) {
+            outputFile = uiService.chooseFile(new File("./",scriptDisplay.getName()+scriptDisplay.getLanguage().getExtensions().get(0)), FileWidget.SAVE_STYLE);
+        }
+        
+        
+        try {
+            FileUtils.writeFile(outputFile, scriptDisplay.get(0).getCode().getBytes());
+        } catch (Exception e) {
+            uiService.showDialog("Error when saving file", DialogPrompt.MessageType.ERROR_MESSAGE);
+            ImageJFX.getLogger().log(Level.SEVERE, "Error when saving " + outputFile.getPath(), e);
+        }
     }
 
-   
-    
-    
+    public void init() {
+
+        String sourceFile = scriptDisplay.get(0).getSourceFile();
+
+        if (sourceFile != null && new File(sourceFile).exists()) {
+            outputFile = new File(sourceFile);
+        }
+
+    }
+
 }

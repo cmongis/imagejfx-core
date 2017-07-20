@@ -35,7 +35,7 @@ import org.scijava.script.ScriptLanguage;
  * @author cyril
  */
 @Plugin(type = Command.class, menuPath = "File > New script...")
-public class NewScript extends ContextCommand{
+public class NewScript extends ContextCommand implements ScriptCommand{
     
     @Parameter(label = "Language")
     ScriptLanguage language;

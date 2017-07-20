@@ -49,6 +49,15 @@ public class MetaDataSetUtils {
         return possibleKeys;
     }
     
+    public static Set<MetaData> getValues(List<? extends MetaDataOwner> list, String key) {
+        
+        return list
+                .stream()
+                .map(owner->owner.getMetaDataSet().getOrDefault(key, MetaData.NULL))
+                .filter(m->m!=MetaData.NULL)
+                .collect(Collectors.toSet());
+    }
+    
     public static Set<String> getAllPossibleKeys(List<MetaDataSet> setList) {
         Set<String> possibleKeys = new HashSet<>();
         setList.forEach(set -> {
