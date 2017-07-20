@@ -24,6 +24,7 @@ import ijfx.core.uiplugin.Localization;
 import ijfx.ui.UiConfiguration;
 import ijfx.ui.UiPlugin;
 import ijfx.ui.widgets.ModuleInfoPane;
+import ijfx.ui.widgets.PluginInfoPane;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,19 +32,27 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import org.scijava.Context;
+import org.scijava.command.Command;
 import org.scijava.command.CommandInfo;
 import org.scijava.command.CommandService;
+import org.scijava.module.ModuleInfo;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginInfo;
 
 /**
  *
@@ -51,22 +60,30 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = UiPlugin.class)
 @UiConfiguration(id = "research function panel", localization = Localization.RIGHT, context="script-open")
-public class ScriptEditorSidePanel extends TabPane implements UiPlugin{
+public class ScriptEditorSidePanel extends BorderPane implements UiPlugin{
     @Parameter
     UiContextService uiContextService;
     @Parameter
     CommandService commandService;
     @Parameter
     ScriptEditorPreferencies scriptEditorPreferencies;
+    @Parameter
+    Context context;
     
     @FXML
     TextField searchField;
     @FXML 
-    ListView<CommandInfo> listView;
+    ListView<PluginInfo> listView;
     @FXML
     TabPane tabPane;
+    @FXML
+    Button methodsButton;
+    @FXML
+    Button servicesButton;
     
-    private List<CommandInfo> entriesList;
+    private List<CommandInfo> methodsList;
+    private List<PluginInfo<?>> servicesList;
+    private Panel panelDisplayed = Panel.METHODS;
     
     public ScriptEditorSidePanel() throws IOException {
         
@@ -76,46 +93,95 @@ public class ScriptEditorSidePanel extends TabPane implements UiPlugin{
         loader.setController(this); //definition du controlleur
         loader.load(); // generation de la fenetre.
         
-        listView.setCellFactory(this::createCell);
+        
+        initButtons();
+        listView.setCellFactory(this::createCell);        
         
     }
     
-    private ListCell<CommandInfo> createCell (ListView<CommandInfo> commandInfo){
+    private ListCell<PluginInfo> createCell (ListView<PluginInfo> commandInfo){
         return new CommandInfoListCell();
     }
     
     public UiPlugin init() {
         
-        this.entriesList = commandService.getCommands();
+        this.listView.getItems().clear();
+        this.methodsList = commandService.getCommands();
+        this.servicesList = context.getPluginIndex().getAll();// List<PluginInfo<?>>
         
-        this.listView.getItems().addAll(entriesList);
-        this.listView.setOnMouseClicked(this::onAction);
-        this.searchField.setOnKeyPressed(this::onSearch);
+        if (panelDisplayed.equals(Panel.METHODS)){
+            this.listView.getItems().addAll(methodsList);
+            this.listView.setOnMouseClicked(this::onActionMethod);
+            this.searchField.setOnKeyPressed(this::onSearchMethod);
+        }
+        else if (panelDisplayed.equals(Panel.SERVICES)){
+            this.listView.getItems().addAll(servicesList);
+            this.listView.setOnMouseClicked(this::onActionService);
+            this.searchField.setOnKeyPressed(this::onSearchService);
+        }
+        
+        
         this.listView.refresh();
         
 	return this;
     }
     
+    public void initButtons(){
+        methodsButton.setOnAction((event) -> {
+                switchPanel(Panel.METHODS);
+            });
+        servicesButton.setOnAction((event) -> {
+                switchPanel(Panel.SERVICES);
+            });
+    }
     
-    public void onAction( MouseEvent event){
+    public void onActionMethod( MouseEvent event){
         ModuleInfoPane moduleInfoPane = new ModuleInfoPane();
-        CommandInfo item = this.listView.getSelectionModel().getSelectedItem();
-        moduleInfoPane.setModuleInfo(item);
+        PluginInfo item = this.listView.getSelectionModel().getSelectedItem();
+        moduleInfoPane.setModuleInfo((ModuleInfo) item);                           // pas le bon typemade
         String[] className = item.getClassName().split("\\.");
         Tab newTab = new Tab(className[className.length-1]);
         
         newTab.setContent(moduleInfoPane);
-        this.getTabs().add(newTab);
+        this.tabPane.getTabs().add(newTab);
                
     }
     
-    public void onSearch(KeyEvent event){
+    public void onActionService( MouseEvent event){
+        PluginInfoPane moduleInfoPane = new PluginInfoPane();
+        PluginInfo item = this.listView.getSelectionModel().getSelectedItem();
+        moduleInfoPane.setModuleInfo(item);                           // pas le bon typemade
+        String[] className = item.getClassName().split("\\.");
+        Tab newTab = new Tab(className[className.length-1]);
+        
+        newTab.setContent(moduleInfoPane);
+        this.tabPane.getTabs().add(newTab);
+               
+    }
+    
+    public void onSearchMethod(KeyEvent event){
         /*
         This function look only for the word typed before, the last letter typed is not compted
         I don't know how to do it 
         */
         String word = this.searchField.getText();
-        List<CommandInfo> filteredEntries = this.entriesList
+        List<PluginInfo<Command>> filteredEntries = this.methodsList
+              .stream()
+              .filter(e -> e.getClassName().toLowerCase().contains(word.toLowerCase()))
+              .collect(Collectors.toList()); 
+        
+        this.listView.getItems().clear();
+        this.listView.getItems().addAll(filteredEntries);
+        this.listView.refresh();
+    }
+    
+    public void onSearchService(KeyEvent event){
+        /*
+        This function look only for the word typed before, the last letter typed is not compted
+        I don't know how to do it 
+        */
+        String word = this.searchField.getText();
+        List<PluginInfo> filteredEntries = this.servicesList
               .stream()
               .filter(e -> e.getClassName().toLowerCase().contains(word.toLowerCase()))
               .collect(Collectors.toList()); 
@@ -134,7 +200,12 @@ public class ScriptEditorSidePanel extends TabPane implements UiPlugin{
         else return null;
     }
     
-    private class CommandInfoListCell extends ListCell<CommandInfo> {
+    public void switchPanel(Panel panel){
+        this.panelDisplayed = panel;
+        init();
+    }
+    
+    private class CommandInfoListCell extends ListCell<PluginInfo> {
         /*
         Ici on definis comment la vue doit afficher les tache, 
         */
@@ -147,7 +218,7 @@ public class ScriptEditorSidePanel extends TabPane implements UiPlugin{
             
         }
 
-        private void onItemChanged(ObservableValue obs, CommandInfo oldValue, CommandInfo newValue) {
+        private void onItemChanged(ObservableValue obs, PluginInfo oldValue, PluginInfo newValue) {
             
             
             
@@ -163,5 +234,24 @@ public class ScriptEditorSidePanel extends TabPane implements UiPlugin{
             }
         }
         
+    }
+    
+    
+    
+    public enum Panel {
+        METHODS ("methods"),
+        SERVICES ("services");
+        
+        private String name = "";
+
+        Panel(String name){
+            this.name = name;
+
+        }
+
+        public String toString(){
+            return name;
+
+        }
     }
 }
