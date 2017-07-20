@@ -70,6 +70,9 @@ import org.scijava.ui.console.ConsolePane;
 import org.scijava.ui.viewer.DisplayViewer;
 import ijfx.core.uiplugin.UiCommandService;
 import ijfx.ui.loading.ForegroundTaskSubmitted;
+import javafx.stage.DirectoryChooser;
+import org.scijava.widget.FileWidget;
+import org.scijava.widget.WidgetService;
 
 /**
  *
@@ -115,7 +118,7 @@ public class FXUserInterface extends Application implements UserInterface {
 
     @Parameter
     private static UiCommandService uiCommandService;
-    
+
     public static Stage STAGE;
 
     JavaFXClipboard clipboard;
@@ -143,7 +146,7 @@ public class FXUserInterface extends Application implements UserInterface {
 
         SCENE = new Scene(new BorderPane());
         SCENE.getStylesheets().add(getStylesheet());
-        
+
         SCENE.setRoot(getMainWindow().getUiComponent());
 
         // scene.getStylesheets().add("http://fonts.googleapis.com/css?family=Open+Sans");
@@ -259,7 +262,9 @@ public class FXUserInterface extends Application implements UserInterface {
 
         // starting a file chooser
         final FileChooser chooser = new FileChooser();
+
         chooser.setTitle(title);
+
         if (file != null && file.isDirectory()) {
             chooser.setInitialDirectory(file);
         }
@@ -268,9 +273,21 @@ public class FXUserInterface extends Application implements UserInterface {
         try {
             return FXUtilities.runAndWait(() -> {
 
-                if (style != null && style.toLowerCase().contains("save")) {
+                if (file != null) {
+                    chooser.setInitialDirectory(file.getParentFile());
+                    chooser.setInitialFileName(file.getName());
+                }
+
+                if (FileWidget.DIRECTORY_STYLE.equals(style)) {
+                    final DirectoryChooser dChooser = new DirectoryChooser();
+
+                    dChooser.setInitialDirectory(file);
+
+                    return dChooser.showDialog(null);
+                } else if (FileWidget.SAVE_STYLE.equals(style)) {
 
                     return chooser.showSaveDialog(null);
+
                 } else {
                     return chooser.showOpenDialog(null);
                 }
@@ -308,7 +325,7 @@ public class FXUserInterface extends Application implements UserInterface {
                 // get the first MainWindow plugin
                 mainWindow = (MainWindow) pluginService.createInstancesOfType(MainWindow.class).get(0);
                 mainWindow.init();
-                
+
                 uiCommandService
                         .getAssociatedAction(MainWindow.class)
                         .forEach(mainWindow::displaySideMenuAction);
@@ -321,11 +338,11 @@ public class FXUserInterface extends Application implements UserInterface {
 
     @Override
     public boolean isVisible() {
-        
-        if(mainWindow == null) {
+
+        if (mainWindow == null) {
             return false;
         }
-        
+
         try {
             return getMainWindow().getUiComponent().isVisible();
         } catch (Exception e) {
@@ -463,20 +480,17 @@ public class FXUserInterface extends Application implements UserInterface {
     public void onActivityChanged(ActivityChangedEvent event) {
         getMainWindow().displayActivity(event.getActivity());
     }
-    
+
     @EventHandler
     public void onForegroundTaskSubmittedEvent(ForegroundTaskSubmitted event) {
-        
+
         getMainWindow().addForegroundTask(event.getObject());
-        
+
     }
 
     public void reloadCss() {
         SCENE.getStylesheets().remove(getStylesheet());
         SCENE.getStylesheets().add(getStylesheet());
     }
-    
-    
-    
-    
+
 }

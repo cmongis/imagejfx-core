@@ -19,20 +19,22 @@
  */
 package ijfx.ui.display.code;
 
+import ijfx.core.uiplugin.UiCommandService;
 import ijfx.ui.display.image.AbstractFXDisplayPanel;
 import ijfx.ui.display.image.FXDisplayPanel;
+import ijfx.ui.main.ImageJFX;
 import java.lang.reflect.Field;
+import java.util.logging.Level;
 import javafx.application.Platform;
+import javafx.beans.Observable;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.MenuButton;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 import org.scijava.command.CommandService;
 import org.scijava.event.EventHandler;
 import org.scijava.plugin.Parameter;
@@ -43,100 +45,114 @@ import org.scijava.ui.viewer.DisplayWindow;
 
 /**
  * TODO : Change to ScriptDisplayPanelFX
- * @author florian
+ *
+ * @author Florian Lassale
+ * @author Cyril MONGIS (contribution)
  */
 @Plugin(type = FXDisplayPanel.class)
 public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay> {
+
     @Parameter
-    Scene scene;
+    private ScriptService scriptService;
+
     @Parameter
-    ScriptService scriptService;
+    private CommandService commandService;
+
     @Parameter
-    CommandService commandService;
+    private ScriptEditorPreferencies scriptEditorPreferenciesService;
+
     @Parameter
-    ScriptEditorPreferencies scriptEditorPreferenciesService;
-    
-    BorderPane root;
+    private UiCommandService uiCommandSrv;
+
     ScriptDisplay display;
-    DefaultTextArea textArea;
-    MenuButton languageButton;
-    Button runButton;
-        
+    private DefaultTextArea textArea;
+
+    @FXML
+    private BorderPane root;
+
+    @FXML
+    private ComboBox<ScriptLanguage> languageComboBox;
+
+    @FXML
+    private Button runButton;
+
     public TextEditorDisplayPanel() {
         super(ScriptDisplay.class);
     }
 
     @Override
     public void pack() {
+        try {
+
+            if (root != null) {
+                return;
+            }
+
+            FXMLLoader loader = new FXMLLoader(this.getClass().getResource("TextEditorDisplayPanel.fxml"));
+
+            loader.setController(this);
+
+            loader.load();
+
+            root = loader.getRoot();
+
+            textArea = new DefaultTextArea(commandService.getCommands(), (TextEditorPreferencies) scriptEditorPreferenciesService.getPreferencies());
+
+            root.setCenter(textArea);
+
         
-        this.root = new BorderPane();
-        this.textArea = new DefaultTextArea(commandService.getCommands(), (TextEditorPreferencies) scriptEditorPreferenciesService.getPreferencies());
-        this.root.setCenter(this.textArea);
-        textArea.setBottomAnchor(this.textArea.getCodeArea(), 15d);
-        textArea.setTopAnchor(this.textArea.getCodeArea(), 0d);
-        textArea.setLeftAnchor(this.textArea.getCodeArea(), 0d);
-        textArea.setRightAnchor(this.textArea.getCodeArea(), 0d);
-        
-        this.root.setPadding(Insets.EMPTY);
-        this.languageButton = createLanguageButton(display.getLanguage().toString());
-        this.runButton = createRunButton();
-        
-        this.root.setBottom(new HBox(this.runButton,this.languageButton));
-        this.languageButton.setFont(new Font(12));
-                
-        
-        changeLanguage(display.getLanguage());
-        initCode();        
-        
-    }
-    
-    public MenuButton createLanguageButton(String name){
-        
-        MenuButton mb = new MenuButton(name);
-        Field[] languages = ScriptLanguage.class.getDeclaredFields();
-        
-        for (ScriptLanguage language : scriptService.getInstances()){
-            MenuItem mi = new MenuItem(language.toString());
-            mi.setOnAction((event) -> {
-                changeLanguage(language);
-                initCode();
-                this.languageButton.setText(language.toString());
-            });
-            mb.getItems().add(mi);
+            textArea.setBottomAnchor(this.textArea.getCodeArea(), 15d);
+            textArea.setTopAnchor(this.textArea.getCodeArea(), 0d);
+            textArea.setLeftAnchor(this.textArea.getCodeArea(), 0d);
+            textArea.setRightAnchor(this.textArea.getCodeArea(), 0d);
+
+            initLanugageComboBox();
+
+            initCode();
+        } catch (Exception e) {
+            ImageJFX.getLogger().log(Level.SEVERE, "Error when creating Code panel", e);
+            throw new IllegalArgumentException("Damn it Ted !");
         }
-        return mb;
     }
-    
-    public Button createRunButton(){
-        Button rb = new Button("Run script");
-        rb.setOnAction((event) -> {
-                display.runScript();
-            });
-        return rb;
+
+    protected void initLanugageComboBox() {
+        languageComboBox.getItems().addAll(scriptService.getLanguages());
+        languageComboBox.valueProperty().addListener(this::onLanguageChanged);
+        languageComboBox.setValue(display.getLanguage());
     }
-    
-   
-    public void initCode(){
-        Platform.runLater( () ->{
+
+    protected void onLanguageChanged(Observable obs, ScriptLanguage oldValue, ScriptLanguage newValue) {
+
+        display.setLanguage(newValue);
+        textArea.initLanguage(newValue);
+
+    }
+
+    @FXML
+    public void runScript() {
+        display.runScript();
+    }
+
+    public void initCode() {
+        Platform.runLater(() -> {
             this.textArea.setText(display.get(0).getCode());
             display.textProperty().bind(this.textArea.textProperty());
             display.selectedTextProperty().bind(this.textArea.selectedTextProperty());
             display.selectionProperty().bind(this.textArea.selectionProperty());
         });
-        
+
     }
-    
+
     public void setCode(String code) {
         display.get(0).setCode(code);
     }
 
     public String getCode() {
         return display.get(0).getCode();
-    } 
-    
-    
+    }
+
     @Override
-    public void view(DisplayWindow window, ScriptDisplay display){
+    public void view(DisplayWindow window, ScriptDisplay display) {
         this.display = display;
 
     }
@@ -156,23 +172,24 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
 
     @Override
     public void redraw() {
-        initCode();
+        //initCode();
         this.textArea.setPreferencies((TextEditorPreferencies) scriptEditorPreferenciesService.getPreferencies());
     }
-    
-    public void changeLanguage(ScriptLanguage language){
+
+    public void changeLanguage(ScriptLanguage language) {
         this.textArea.initLanguage(language);
     }
 
     @EventHandler
-    public void onUndoEvent(UndoEvent event){
+    public void onUndoEvent(UndoEvent event) {
         this.textArea.undo();
 
     }
+
     @EventHandler
-    public void onRedoEvent(RedoEvent event){
+    public void onRedoEvent(RedoEvent event) {
         this.textArea.redo();
 
     }
-    
+
 }

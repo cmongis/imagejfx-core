@@ -41,7 +41,7 @@ public class SaveScript extends ContextCommand implements ScriptCommand {
     @Parameter
     ScriptDisplay scriptDisplay;
 
-    @Parameter(style = FileWidget.SAVE_STYLE)
+    @Parameter
     File outputFile;
 
     @Parameter
@@ -49,7 +49,12 @@ public class SaveScript extends ContextCommand implements ScriptCommand {
 
     @Override
     public void run() {
-
+        
+        if(outputFile == null) {
+            outputFile = uiService.chooseFile(new File("./",scriptDisplay.getName()+scriptDisplay.getLanguage().getExtensions().get(0)), FileWidget.SAVE_STYLE);
+        }
+        
+        
         try {
             FileUtils.writeFile(outputFile, scriptDisplay.get(0).getCode().getBytes());
         } catch (Exception e) {
