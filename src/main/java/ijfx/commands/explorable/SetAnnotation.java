@@ -27,7 +27,6 @@ import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.datamodel.Mapper;
 import ijfx.ui.display.annotation.AnnotationDialog;
 import ijfx.ui.display.annotation.DefaultAnnotationDialog;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import mongis.utils.FXUtilities;
@@ -51,9 +50,8 @@ public class SetAnnotation extends AbstractExplorableDisplayCommand{
         
             
         annot = FXUtilities.runAndWait(DefaultAnnotationDialog::new);
-        System.out.println("WOUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
         
-        mapper = FXUtilities.runAndWait(annot::showAndWait).orElse(null);
+        this.mapper = FXUtilities.runAndWait(annot::showAndWait).orElse(null);
         
        if(mapper == null) {
            cancel("The user canceled");
@@ -71,26 +69,13 @@ public class SetAnnotation extends AbstractExplorableDisplayCommand{
     public void setAnnotation(Explorable exp) {
         MetaDataSet set = exp.getMetaDataSet();
         for(Map.Entry<String, MetaData> entry : set.entrySet()) {
-            System.out.println("name "+ entry.getValue().getName());
-            System.out.println("oldkey "+ mapper.getOldKey());
+            
             if(entry.getValue().getName().equals(mapper.getOldKey())) {
-                System.out.println("WAAZZZAAAAA");
+                
                 MetaData truc = mapper.map(entry.getValue());
                 set.put(truc);
             }
-        
-
-    /*
-        if (!mapper.getMapObject().isEmpty()){
-            System.out.println("Je suis dans le if ! vive le if !!");
-            System.out.println("test 1 "+ exp.getMetaDataSet().get(mapper.getOldKey()));
-
-            
-            MetaData n = mapper.map(set.get(mapper.getOldKey()));
-            
-            set.put(n);
-          */
-            
+           
         
         }
         
