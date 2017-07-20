@@ -22,7 +22,6 @@ package ijfx.explorer.datamodel;
 import ijfx.core.metadata.GenericMetaData;
 import ijfx.core.metadata.MetaData;
 import java.util.HashMap;
-import javafx.application.Platform;
 
 /**
  *
@@ -71,7 +70,6 @@ public final class DefaultMapper implements Mapper {
     @Override
     public void setNewKey (String s){
         this.newKey = s;
-        System.out.println("RECU");
     }
     
     
@@ -108,8 +106,7 @@ public final class DefaultMapper implements Mapper {
     
     /**
      * Looking for the conrresponding value on the mapper
-     * @param key
-     * @param base
+     * @param oldKey
      * @return 
      */
     public Object lookInsideMap (Object oldKey){
