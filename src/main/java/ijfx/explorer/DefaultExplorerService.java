@@ -304,6 +304,7 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
 
     @Override
     public void selectItems(List<? extends Explorable> items) {
+        selectedItems.clear();
         selectedItems.addAll(items);
         publishSelectionEvent();
     }

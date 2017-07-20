@@ -124,10 +124,9 @@ public class ExplorerActivity extends AnchorPane implements Activity {
     @FXML
     private ToggleButton planeModeToggleButton;
 
-    //@FXML
-    //private ToggleButton objectModeToggleButton;
+
     @FXML
-    private Button statisticsButton;
+    private Button selectAllButton;
 
     @FXML
     private MenuButton moreMenuButton;
@@ -189,8 +188,8 @@ public class ExplorerActivity extends AnchorPane implements Activity {
 
     TaggableFilterPanel filterPanel = new TaggableFilterPanel();
 
-    public ExplorerActivity() {
-        try {
+    public ExplorerActivity() throws Exception {
+       
             FXUtilities.injectFXML(this);
 
             // contentBorderPane.setCenter(view.getNode());
@@ -228,10 +227,7 @@ public class ExplorerActivity extends AnchorPane implements Activity {
             EventStreams.valuesOf(filterTextField.textProperty()).successionEnds(Duration.ofSeconds(1))
                     .subscribe(this::updateTextFilter);
 
-        } catch (IOException ex) {
-            Logger.getLogger(ExplorerActivity.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
+       
     }
 
     private void init() {
@@ -248,7 +244,8 @@ public class ExplorerActivity extends AnchorPane implements Activity {
             // add the items to the menu in the background
             new CallableTask<List<MenuItem>>()
                     .setCallable(this::initMoreActionButton)
-                    .then(moreMenuButton.getItems()::addAll)
+                    .then(
+                            items -> moreMenuButton.getItems().addAll(0, items))
                     .start();
         }
     }
@@ -401,6 +398,7 @@ public class ExplorerActivity extends AnchorPane implements Activity {
     @EventHandler
     protected void onExplorerServiceSelectionChanged(ExplorerSelectionChangedEvent event) {
         view.setSelectedItem(explorerService.getSelectedItems());
+        Platform.runLater(this::updateButton);
     }
 
     private class FolderListCell extends ListCell<Folder> {
@@ -480,6 +478,11 @@ public class ExplorerActivity extends AnchorPane implements Activity {
     }
 
     @FXML
+    public void unselectAll() {
+        explorerService.selectItems(new ArrayList<>());
+    }
+
+    @FXML
     public void onSegmentButtonPressed() {
 
         uiContextService.toggleContext("segment", !uiContextService.isCurrent("segment"));
@@ -499,11 +502,6 @@ public class ExplorerActivity extends AnchorPane implements Activity {
 
         explorerService.openSelection();
 
-    }
-
-    @FXML
-    public void computeStatistics() {
-        folderManagerService.completeStatistics();
     }
 
     @FXML
@@ -622,6 +620,23 @@ public class ExplorerActivity extends AnchorPane implements Activity {
     private static boolean shouldHideText(ButtonBase node) {
 
         return node.getWidth() < 40;
+    }
+
+    /*
+        Select button related functions
+     */
+    private String getSelectAllText() {
+        int selectedCount = explorerService.getSelectedItems().size();
+        int total = explorerService.getDisplayedItems().size();
+        if (selectedCount > 0) {
+            return String.format("Select all (%d/%d)", selectedCount, total);
+        } else {
+            return "Select all";
+        }
+    }
+
+    private void updateButton() {
+        selectAllButton.setText(getSelectAllText());
     }
 
     /*

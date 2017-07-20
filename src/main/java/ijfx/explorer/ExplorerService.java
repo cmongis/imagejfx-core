@@ -57,12 +57,12 @@ public interface ExplorerService extends IjfxService {
         
         List<Explorable> items = new ArrayList<>(getDisplayedItems());
         List<Explorable> selected = new ArrayList<>(getSelectedItems());
-        
+        selected.add(item);
         // sorting item by appearance in item list
         selected.sort((i1,i2)->Integer.compare(items.indexOf(i1),items.indexOf(i2)));
         
-        int begin = getItems().indexOf(selected.get(0));
-        int end =  getItems().indexOf(selected.get(selected.size()-1))+1;
+        int begin = items.indexOf(selected.get(0));
+        int end =  items.indexOf(selected.get(selected.size()-1))+1;
         
         selectItems(items.subList(begin, end));
     }
