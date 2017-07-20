@@ -49,9 +49,6 @@ public class LoadingScreenService extends AbstractService implements IjfxService
         frontEndTask(task,false);
     }
     
-    
-    
-    
     public void frontEndTask(Task task, boolean canCancel) {
        eventService.publish(new ForegroundTaskSubmitted().setCancelable(canCancel).setObject(task));
     }
