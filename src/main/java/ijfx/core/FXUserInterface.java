@@ -69,6 +69,7 @@ import org.scijava.ui.UserInterface;
 import org.scijava.ui.console.ConsolePane;
 import org.scijava.ui.viewer.DisplayViewer;
 import ijfx.core.uiplugin.UiCommandService;
+import ijfx.ui.loading.ForegroundTaskSubmitted;
 
 /**
  *
@@ -462,9 +463,20 @@ public class FXUserInterface extends Application implements UserInterface {
     public void onActivityChanged(ActivityChangedEvent event) {
         getMainWindow().displayActivity(event.getActivity());
     }
+    
+    @EventHandler
+    public void onForegroundTaskSubmittedEvent(ForegroundTaskSubmitted event) {
+        
+        getMainWindow().addForegroundTask(event.getObject());
+        
+    }
 
     public void reloadCss() {
         SCENE.getStylesheets().remove(getStylesheet());
         SCENE.getStylesheets().add(getStylesheet());
     }
+    
+    
+    
+    
 }
