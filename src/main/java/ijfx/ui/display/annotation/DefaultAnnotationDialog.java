@@ -130,8 +130,8 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
 
                 Pane root = loader.getRoot();
                 ///////////////////////////////////CSS PART
-                //root.getStylesheets().add(getClass().getResource("/ijfx/ui/flatterfx.css").toExternalForm());
-                //root.applyCss();
+                root.getStylesheets().add(getClass().getResource("/ijfx/ui/flatterfx.css").toExternalForm());
+                root.applyCss();
                 ///////////////////////////////////
                 getDialogPane().setContent(root);
                 getDialogPane().getButtonTypes().addAll(ButtonType.OK,ButtonType.CANCEL);
@@ -160,11 +160,9 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
      */
     public void bindData (){
         
-        Platform.runLater(()-> {
             mapper.setOldKey(oldKey.getText());
             mapper.setNewKey(newKey.getText());
             System.out.println("new key "+newKey.getText());
-        });
         
     }
     
