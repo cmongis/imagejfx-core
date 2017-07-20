@@ -24,6 +24,7 @@ import ijfx.explorer.datamodel.Explorable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.scijava.ItemVisibility;
 import org.scijava.command.DynamicCommand;
 import org.scijava.command.InteractiveCommand;
 import org.scijava.plugin.Parameter;
@@ -39,7 +40,7 @@ public abstract class AbstractExplorableDisplayCommand extends DynamicCommand im
     @Parameter
     ExplorableDisplay display;
 
-    @Parameter
+    @Parameter(required = false,visibility = ItemVisibility.INVISIBLE)
     boolean warning = true;
 
     @Parameter

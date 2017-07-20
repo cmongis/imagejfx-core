@@ -28,7 +28,7 @@ import ijfx.core.utils.SciJavaUtils;
 import ijfx.explorer.ExplorableDisplay;
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.datamodel.Taggable;
-import ijfx.explorer.views.ExplorerClickEvent;
+import ijfx.explorer.views.DataClickEvent;
 import ijfx.explorer.views.ExplorerView;
 import ijfx.ui.bindings.SideMenuBinding;
 import ijfx.ui.display.image.AbstractFXDisplayPanel;
@@ -230,11 +230,11 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
 
     }
 
-    public void onItemClicked(ExplorerClickEvent event) {
+    public void onItemClicked(DataClickEvent<Explorable> event) {
 
         int selected = getDisplay().getSelected().size();
         
-        Explorable clicked = event.getExplorable();
+        Explorable clicked = event.getData();
         
         boolean isShiftDown = event.getEvent().isShiftDown();
         boolean isAlreadySelected = getDisplay().getSelected().contains(clicked);

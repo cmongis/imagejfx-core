@@ -40,6 +40,7 @@ import ijfx.explorer.events.ExplorerSelectionChangedEvent;
 import ijfx.explorer.events.FolderAddedEvent;
 import ijfx.explorer.events.FolderDeletedEvent;
 import ijfx.explorer.events.FolderUpdatedEvent;
+import ijfx.explorer.views.DataClickEvent;
 import ijfx.ui.filters.metadata.TaggableFilterPanel;
 import ijfx.explorer.views.ExplorerView;
 import ijfx.explorer.views.FolderListCellCtrl;
@@ -123,10 +124,9 @@ public class ExplorerActivity extends AnchorPane implements Activity {
     @FXML
     private ToggleButton planeModeToggleButton;
 
-    //@FXML
-    //private ToggleButton objectModeToggleButton;
+
     @FXML
-    private Button statisticsButton;
+    private Button selectAllButton;
 
     @FXML
     private MenuButton moreMenuButton;
@@ -188,8 +188,8 @@ public class ExplorerActivity extends AnchorPane implements Activity {
 
     TaggableFilterPanel filterPanel = new TaggableFilterPanel();
 
-    public ExplorerActivity() {
-        try {
+    public ExplorerActivity() throws Exception {
+       
             FXUtilities.injectFXML(this);
 
             // contentBorderPane.setCenter(view.getNode());
@@ -227,12 +227,7 @@ public class ExplorerActivity extends AnchorPane implements Activity {
             EventStreams.valuesOf(filterTextField.textProperty()).successionEnds(Duration.ofSeconds(1))
                     .subscribe(this::updateTextFilter);
 
-            
-
-        } catch (IOException ex) {
-            Logger.getLogger(ExplorerActivity.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
+       
     }
 
     private void init() {
@@ -249,7 +244,8 @@ public class ExplorerActivity extends AnchorPane implements Activity {
             // add the items to the menu in the background
             new CallableTask<List<MenuItem>>()
                     .setCallable(this::initMoreActionButton)
-                    .then(moreMenuButton.getItems()::addAll)
+                    .then(
+                            items -> moreMenuButton.getItems().addAll(0, items))
                     .start();
         }
     }
@@ -289,6 +285,24 @@ public class ExplorerActivity extends AnchorPane implements Activity {
         }
     }
 
+    private void onViewClickEvent(DataClickEvent<Explorable> event) {
+
+        if (event.isDoubleClick()) {
+            new CallbackTask<>()
+                    .tryRun(event.getData()::open)
+                    .start();
+        } else {
+
+            if (event.getEvent().isShiftDown()) {
+                explorerService.selectUntil(event.getData());
+            } else {
+                explorerService.toggleSelection(event.getData());
+            }
+
+        }
+
+    }
+
     public void onFolderSelectionChanged(Observable obs, Folder oldValue, Folder newValue) {
         folderManagerService.setCurrentFolder(newValue);
         filterTextField.setText("");
@@ -307,9 +321,7 @@ public class ExplorerActivity extends AnchorPane implements Activity {
         view.setItems(explorerService.getDisplayedItems());
     }
 
-    
-    
-    public void updateUi(List<? extends Explorable> explorable) {
+    public synchronized void updateUi(List<? extends Explorable> explorable) {
 
         updateFolderList();
         init();
@@ -322,6 +334,7 @@ public class ExplorerActivity extends AnchorPane implements Activity {
 
         if (explorable != null) {
             view.setItems(explorable);
+            view.setSelectedItem(explorerService.getSelectedItems());
         }
 
         if (folderListEmpty.getValue()) {
@@ -375,6 +388,17 @@ public class ExplorerActivity extends AnchorPane implements Activity {
     public void onFolderUpdated(FolderUpdatedEvent event) {
         logger.info("Folder updated !");
         folderUpdateHandler.forEach(handler -> handler.run());
+    }
+
+    @EventHandler
+    protected void onExplorationModeChanged(ExplorationModeChangeEvent event) {
+        explorationModeToggleGroup.selectToggle(getToggleButton(event.getObject()));
+    }
+
+    @EventHandler
+    protected void onExplorerServiceSelectionChanged(ExplorerSelectionChangedEvent event) {
+        view.setSelectedItem(explorerService.getSelectedItems());
+        Platform.runLater(this::updateButton);
     }
 
     private class FolderListCell extends ListCell<Folder> {
@@ -432,6 +456,8 @@ public class ExplorerActivity extends AnchorPane implements Activity {
         tab.setGraphic(fxIconService.getIconAsNode(view));
         tab.setUserData(view);
 
+        view.setOnItemClicked(this::onViewClickEvent);
+
         tab.setText(SciJavaUtils.getLabel(view));
 
         return tab;
@@ -449,6 +475,11 @@ public class ExplorerActivity extends AnchorPane implements Activity {
     @FXML
     public void selectAll() {
         explorerService.selectAll();
+    }
+
+    @FXML
+    public void unselectAll() {
+        explorerService.selectItems(new ArrayList<>());
     }
 
     @FXML
@@ -471,11 +502,6 @@ public class ExplorerActivity extends AnchorPane implements Activity {
 
         explorerService.openSelection();
 
-    }
-
-    @FXML
-    public void computeStatistics() {
-        folderManagerService.completeStatistics();
     }
 
     @FXML
@@ -567,16 +593,6 @@ public class ExplorerActivity extends AnchorPane implements Activity {
         folderManagerService.setExplorationMode(getExplorationMode(newValue));
     }
 
-    @EventHandler
-    protected void onExplorationModeChanged(ExplorationModeChangeEvent event) {
-        explorationModeToggleGroup.selectToggle(getToggleButton(event.getObject()));
-    }
-
-    @EventHandler
-    protected void onExplorerServiceSelectionChanged(ExplorerSelectionChangedEvent event) {
-
-    }
-
     private static void fluentIconBinding(ButtonBase... buttons) {
         for (ButtonBase b : buttons) {
             fluenIconBinding(b);
@@ -604,6 +620,23 @@ public class ExplorerActivity extends AnchorPane implements Activity {
     private static boolean shouldHideText(ButtonBase node) {
 
         return node.getWidth() < 40;
+    }
+
+    /*
+        Select button related functions
+     */
+    private String getSelectAllText() {
+        int selectedCount = explorerService.getSelectedItems().size();
+        int total = explorerService.getDisplayedItems().size();
+        if (selectedCount > 0) {
+            return String.format("Select all (%d/%d)", selectedCount, total);
+        } else {
+            return "Select all";
+        }
+    }
+
+    private void updateButton() {
+        selectAllButton.setText(getSelectAllText());
     }
 
     /*

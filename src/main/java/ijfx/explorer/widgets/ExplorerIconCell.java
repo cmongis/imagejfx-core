@@ -49,19 +49,10 @@ public class ExplorerIconCell extends PaneIconCell<Explorable>{
         
         
         if(icon == getItem()) return;
-            
-        /*
-        // we must bind the selected property
-        if(getItem() != null) {
-            getItem().selectedProperty().unbindBidirectional(selectedProperty());
-        }*/
         
         super.setItem(icon);
         
-        /*
-        if(icon != null) {
-            selectedProperty().bindBidirectional(icon.selectedProperty());
-        }*/
+      
     }
     
     public String getTitle(Iconazable iconazable) {
@@ -76,17 +67,6 @@ public class ExplorerIconCell extends PaneIconCell<Explorable>{
         return iconazable.getImage();
     }
     
-    @Override
-    public void onSimpleClick() {
-        super.onSimpleClick();
-        
-        //explorerService.toggleSelection((Explorable)getItem());
-        //getItem().selectedProperty().setValue(!getItem().selectedProperty().getValue());
-    }
-    
-    @Override
-    public void onDoubleClick() {
-        explorerService.open(getItem());
-    }
+   
     
 }

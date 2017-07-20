@@ -17,30 +17,24 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package mongis.utils.panecell;
+package ijfx.explorer.commands;
 
-import ijfx.explorer.views.DataClickEvent;
-import java.util.function.Consumer;
-import javafx.beans.property.BooleanProperty;
-import javafx.scene.Node;
+import ijfx.core.uiplugin.UiCommand;
+import ijfx.explorer.datamodel.Explorable;
+import java.util.List;
+import org.scijava.plugin.Plugin;
 
 /**
- * Interface that dictate the behaviour of object controlled by the PaneCellController.
- * @author Cyril MONGIS, 2016
+ *
+ * @author cyril
  */
-public interface PaneCell<T> {
+@Plugin(type = UiCommand.class, iconPath="fa:bar_chart",label="Compute more statistics")
+public class ComputeMoreStatistics extends ExplorerActivityCommand{
     
     
-    public void setItem(T item);
-    public T getItem();
-    public Node getContent();
-    
-    public BooleanProperty selectedProperty();
-    public BooleanProperty onScreenProperty();
- 
-    
-    void setOnDataClick(Consumer<DataClickEvent<T>> onSimpleClick);
-    
- 
-    
+    @Override
+    protected void process(List<? extends Explorable> selected) {
+        folderManagerService().completeStatistics();
+    }
+
 }

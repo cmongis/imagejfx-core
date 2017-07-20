@@ -26,16 +26,16 @@ import javafx.scene.input.MouseEvent;
  *
  * @author cyril
  */
-public class ExplorerClickEvent {
+public class DataClickEvent<T> {
     
-    private final Explorable explorable;
+    private final T data;
     
     private final MouseEvent event;
     
     private boolean doubleClick;
 
-    public ExplorerClickEvent(Explorable explorable, MouseEvent event, boolean doubleClick) {
-        this.explorable = explorable;
+    public DataClickEvent(T data, MouseEvent event, boolean doubleClick) {
+        this.data = data;
         this.event = event;
         this.doubleClick = doubleClick;
     }
@@ -44,8 +44,8 @@ public class ExplorerClickEvent {
         return doubleClick;
     }
 
-    public Explorable getExplorable() {
-        return explorable;
+    public T getData() {
+        return data;
     }
 
     public MouseEvent getEvent() {

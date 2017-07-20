@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  * @author cyril
  */
 public class CollectionsUtils {
-    public static <T> List<T> toAdd(Collection<T> source, Collection<T> target) {
+    public static <T> List<T> toAdd(Collection<? extends T> source, Collection<? extends T> target) {
         
         return source
                 .stream()
@@ -40,7 +40,7 @@ public class CollectionsUtils {
         
     }
     
-    public static <T> List<T> toRemove(Collection<T> source, Collection<T> target) {
+    public static <T> List<T> toRemove(Collection<? extends T> source, Collection<? extends T> target) {
         
         return target
                 .stream()
