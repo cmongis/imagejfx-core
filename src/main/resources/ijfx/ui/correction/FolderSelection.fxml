@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import de.jensd.fx.glyphs.fontawesome.*?>
+<?import javafx.scene.web.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<fx:root fx:id="borderPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="with-padding" type="BorderPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <bottom>
+      <BorderPane BorderPane.alignment="CENTER">
+        
+         <left>
+            <Button fx:id="folderButton" mnemonicParsing="false" text="Apply saved correction" BorderPane.alignment="CENTER" />
+         </left>
+         <right>
+            <HBox styleClass="hbox" BorderPane.alignment="CENTER">
+               <children>
+                  <Button fx:id="redoButton" mnemonicParsing="false" onAction="#redo" text="Apply saved workflow">
+                     <graphic>
+                        <FontAwesomeIconView glyphName="REPEAT" />
+                     </graphic>
+                  </Button>
+                  <Button fx:id="nextButton" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#next" styleClass="success" text="Create correction workflow">
+                     <graphic>
+                        <FontAwesomeIconView glyphName="PLUS_CIRCLE" styleClass="warning" />
+                     </graphic>
+                  </Button>
+               </children>
+            </HBox>
+         </right>
+      </BorderPane>
+   </bottom>
+</fx:root>
