@@ -35,9 +35,9 @@ public abstract class AbstractActivityLauncher<T extends Activity> extends Abstr
     @Parameter
     private ActivityService activityService;
     
-    private final Class<T> activityType;
+    private final Class<? extends T> activityType;
     
-    public AbstractActivityLauncher(Class<T> type) {
+    public AbstractActivityLauncher(Class<? extends T> type) {
         super(MainWindow.class);
         activityType = type;
     }
