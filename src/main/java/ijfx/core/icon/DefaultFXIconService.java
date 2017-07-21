@@ -128,7 +128,12 @@ public class DefaultFXIconService extends AbstractService implements FXIconServi
 
     @Override
     public FontAwesomeIcon getIcon(String iconPath) {
+        try {
         return FontAwesomeIcon.valueOf(iconPath.substring(3).toUpperCase());
+        }
+        catch(IllegalArgumentException ex) {
+            return FontAwesomeIcon.QUESTION;
+        }
     }
 
 }
