@@ -54,16 +54,16 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
 
     final TableView<T> tableView;
 
-    private Set<String> currentColumns = new HashSet<>();
+    protected Set<String> currentColumns = new HashSet<>();
 
     //LinkedHashSet<String> priority = new LinkedHashSet();
-    private MetaDataKeyPrioritizer priority = new MetaDataKeyPrioritizer(new String[0]);
+    private MetaDataKeyPrioritizer prioritizer = new MetaDataKeyPrioritizer(new String[0]);
 
     private List<TableColumn<T, ?>> additionalColumns = new ArrayList<>();
 
     private List<WeakReference<RefreshableProperty<T>>> propertyList = new ArrayList<>();
 
-    String currentColumn;
+    protected String currentColumn;
 
     public MetaDataOwnerHelper(TableView<T> tableView) {
         this.tableView = tableView;
@@ -84,6 +84,11 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
                         ListChangeListenerBuilder
                                 .<TablePosition>create()
                                 .onChange(event -> {
+                                    
+                                    if(event.getList().isEmpty()) {
+                                        return;
+                                    }
+                                    
                                     if (event.getList().get(0).getTableColumn() == null) {
                                         return;
                                     }
@@ -102,6 +107,13 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
 
     }
 
+    protected MetaDataKeyPrioritizer prioritizer() {
+        return prioritizer;
+    }
+
+    
+    
+    
     public void addAdditionalColumn(TableColumn<T, ?> column) {
         this.additionalColumns.add(column);
         this.tableView.getColumns().add(column);
@@ -132,7 +144,7 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
                 .map(i -> i.getMetaDataSet())
                 .collect(Collectors.toList());
 
-        updateColumns(MetaDataSetUtils.getAllPossibleKeys(mList).stream().filter(MetaData::canDisplay).sorted(priority).collect(Collectors.toList()));
+        updateColumns(MetaDataSetUtils.getAllPossibleKeys(mList).stream().filter(MetaData::canDisplay).sorted(prioritizer).collect(Collectors.toList()));
     }
     
     protected void updateColumns() {
@@ -144,7 +156,7 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
     }
 
     protected void updateColumns(List<String> columnList) {
-        columnList.sort(priority);
+        columnList.sort(prioritizer);
 
         if (!columnList.equals(currentColumns)) {
             System.out.println("The columns are not the same, updating");
@@ -197,12 +209,12 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
 
     public void setPriority(String... keyName) {
         // if(priority.isSame(keyName) == false) {
-        priority = new MetaDataKeyPrioritizer(keyName);
+        prioritizer = new MetaDataKeyPrioritizer(keyName);
         //}
     }
 
     public String[] getPriority() {
-        return priority.getPriority();
+        return prioritizer.getPriority();
     }
 
     public int priorityIndex(Set<String> set, String element) {
