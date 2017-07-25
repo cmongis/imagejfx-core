@@ -36,7 +36,7 @@ public interface AnnotationDialog<T> {
     void bindData ();
     Mapper convert(ButtonType button);
     Mapper getMapper();
-    void fillComboBox (List<MetaDataSet> setList);
+    String fillComboBox ( List items, List<MetaDataSet> setList);
     Optional<T> showAndWait();
     
 }
