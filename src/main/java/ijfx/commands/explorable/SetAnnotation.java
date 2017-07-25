@@ -23,12 +23,14 @@ import ijfx.commands.explorable.AbstractExplorableDisplayCommand;
 import ijfx.commands.explorable.ExplorableDisplayCommand;
 import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataSet;
+import ijfx.core.metadata.MetaDataSetUtils;
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.datamodel.Mapper;
 import ijfx.ui.display.annotation.AnnotationDialog;
 import ijfx.ui.display.annotation.DefaultAnnotationDialog;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import mongis.utils.FXUtilities;
 import org.scijava.plugin.Plugin;
@@ -49,7 +51,7 @@ public class SetAnnotation extends AbstractExplorableDisplayCommand{
     @Override
     public void run(List<? extends Explorable> items) {
         
-            System.out.println("CA COMMMENCE A TAAAAABLE");
+        System.out.println("CA COMMMENCE A TAAAAABLE");
         annot = FXUtilities.runAndWait(DefaultAnnotationDialog::new);
         
         List <MetaDataSet> setList = items
@@ -57,9 +59,8 @@ public class SetAnnotation extends AbstractExplorableDisplayCommand{
                 .map(n -> n.getMetaDataSet())
                 .collect(Collectors.toList());
         
-        //System.out.println("setlist"+setList);
         
-        annot.fillComboBox(setList);
+        annot.fillComboBox(items, setList);
         
         this.mapper = FXUtilities.runAndWait(annot::showAndWait).orElse(null);
         
@@ -67,8 +68,6 @@ public class SetAnnotation extends AbstractExplorableDisplayCommand{
            cancel("The user canceled");
            return;
         }
-        
-        
         
         items
                .stream()
