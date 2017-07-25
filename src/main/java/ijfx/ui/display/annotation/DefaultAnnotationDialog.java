@@ -29,6 +29,7 @@ import ijfx.ui.service.AnnotationService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,6 +45,8 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
@@ -93,16 +96,20 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
     
     public DefaultAnnotationDialog()  {
         
+        
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation Dialog");
+        alert.setHeaderText("There is more than 10 values, continue ? ");
+
+        
+        
       
                 
                 loadFXML();
                 
-                
-
                 initiazeListeners();
                 
                 firstUse();
-                
                 
                 cBox.setOnAction((event) -> {
                     ctrlList.clear();
@@ -112,22 +119,28 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
                     
                     Set<MetaData> setM = MetaDataSetUtils.getValues(items, temp);
                     
-                    for (MetaData m : setM){
-                        if (m.getName().equals(temp)){
-                            it++;
-                            DataAnnotationController z = new DataAnnotationController();
-                            z.setValue(m.getValue().toString());
-                            
-                            ctrlList.add(z);
-                            updatedList.add(z);
-                            if (it == 10){
-                                
-                        }
-                        
+                    if (setM.size() > 10){
+                        Optional<ButtonType> result = alert.showAndWait();
+                                if (result.get() == ButtonType.OK){
+                                    // ... user chose OK
+                                    for (MetaData m : setM){
+                                        if (m.getName().equals(temp)){
+
+                                            DataAnnotationController z = new DataAnnotationController();
+                                            z.setValue(m.getValue().toString());
+
+                                            ctrlList.add(z);
+                                            updatedList.add(z);
                             
                         }
                         
                     }
+                                } else {
+                                    // ... user chose not OK
+                                    firstUse();
+                                }
+                    }
+                    
                     
                 });
                 
@@ -183,8 +196,8 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
 
                 Pane root = loader.getRoot();
                 ///////////////////////////////////CSS PART
-                root.getStylesheets().add(getClass().getResource("/ijfx/ui/flatterfx.css").toExternalForm());
-                root.applyCss();
+                //root.getStylesheets().add(getClass().getResource("/ijfx/ui/flatterfx.css").toExternalForm());
+                //root.applyCss();
                 ///////////////////////////////////
                 getDialogPane().setContent(root);
                 getDialogPane().getButtonTypes().addAll(ButtonType.OK,ButtonType.CANCEL);
