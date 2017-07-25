@@ -51,7 +51,6 @@ public class SetAnnotation extends AbstractExplorableDisplayCommand{
     @Override
     public void run(List<? extends Explorable> items) {
         
-        System.out.println("CA COMMMENCE A TAAAAABLE");
         annot = FXUtilities.runAndWait(DefaultAnnotationDialog::new);
         
         List <MetaDataSet> setList = items
