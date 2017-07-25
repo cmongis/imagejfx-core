@@ -19,14 +19,17 @@
  */
 package ijfx.ui.display.annotation;
 
+import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataSet;
 import ijfx.core.metadata.MetaDataSetUtils;
 import ijfx.explorer.datamodel.DefaultMapper;
+import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.datamodel.Mapper;
 import ijfx.ui.service.AnnotationService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -44,7 +47,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import org.scijava.plugin.Parameter;
@@ -60,7 +65,7 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
     AnnotationService annotationService;
     
     @FXML
-    Pane root, pane;
+    BorderPane root;
     
     @FXML    
     TextField newKey;
@@ -72,15 +77,14 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
     VBox vBox;
 
     Dialog<Mapper> dialog;
-    String FXMLWAY = "/ijfx/ui/widgets/AnnotationDialog.fxml";
-    
+    String FXMLWAY = "/ijfx/ui/widgets/AnnotationDialog2.fxml";
+    List<MetaDataSet> setList;
+    List<? extends Explorable> items;
     
     //Main List. This observableList observe this tow objects properties in each controller. If theses properties change, a notification is sended.
     private ObservableList <DataAnnotationController> ctrlList = FXCollections.observableArrayList(c -> new ObservableValue[]{c.getValueTextProperty(), c.getNewValueTextProperty()});
     //Secondary list. Purpose : stock temporaly controller to know which controller can create new controller or not.
     private List <DataAnnotationController> updatedList = new ArrayList<>();
-    
-    private ObjectProperty<String> valueSelected = new SimpleObjectProperty<>();
     
 
     Mapper mapper = new DefaultMapper();
@@ -88,43 +92,45 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
     
     
     public DefaultAnnotationDialog()  {
+        
       
                 
                 loadFXML();
                 
-                firstUse();
+                
 
                 initiazeListeners();
                 
-                //cBox.promptTextProperty().bind(valueSelected);
-                cBox.valueProperty().bind(valueSelected);
-                //cBox.
+                firstUse();
+                
+                
                 cBox.setOnAction((event) -> {
-                    DataAnnotationController x = new DataAnnotationController();
+                    ctrlList.clear();
+                    int it = 0;
 
                     String temp = cBox.getSelectionModel().getSelectedItem();
                     
+                    Set<MetaData> setM = MetaDataSetUtils.getValues(items, temp);
                     
-                    
-                    
-                    
-                    
-                    
-                    
-                    
+                    for (MetaData m : setM){
+                        if (m.getName().equals(temp)){
+                            it++;
+                            DataAnnotationController z = new DataAnnotationController();
+                            z.setValue(m.getValue().toString());
+                            
+                            ctrlList.add(z);
+                            updatedList.add(z);
+                            if (it == 10){
+                                
+                        }
+                        
+                            
+                        }
+                        
+                    }
                     
                 });
-                /*
-                cBox.getSelectionModel()
-                        .selectedItemProperty()
-                        .addListener(new ChangeListener<String>() {
-                                public void changed(ObservableValue<? extends String> observable,String oldValue, String newValue) {
-                                    System.out.println("Value is: "+newValue);
-                                }
-                        });
-                        //bind(valueSelected);
                 
-                */
               
   
     }
@@ -137,7 +143,10 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
         while (change.next()) { 
                         
                         if(change.wasAdded()) {
-                            vBox.getChildren().addAll(change.getAddedSubList());
+                            if (!vBox.getChildren().contains(change.getList().get(change.getFrom()))){
+                                vBox.getChildren().addAll(change.getAddedSubList());
+
+                            }
                         }
                         if(change.wasRemoved()){
                             vBox.getChildren().removeAll(change.getRemoved());
@@ -152,14 +161,12 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
                                 ctrlList.remove(change.getList().get(change.getFrom()));
                             }
                             
+                            
                             }
                             
                     }
                 });
         
-        valueSelected.addListener((ObservableValue<? extends String> observable, String oldValue, String vValue) -> {
-            System.out.println("listener nouvelle valeur "+vValue);
-                }); 
     }
 
     private void loadFXML(){
@@ -176,8 +183,8 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
 
                 Pane root = loader.getRoot();
                 ///////////////////////////////////CSS PART
-                //root.getStylesheets().add(getClass().getResource("/ijfx/ui/flatterfx.css").toExternalForm());
-                //root.applyCss();
+                root.getStylesheets().add(getClass().getResource("/ijfx/ui/flatterfx.css").toExternalForm());
+                root.applyCss();
                 ///////////////////////////////////
                 getDialogPane().setContent(root);
                 getDialogPane().getButtonTypes().addAll(ButtonType.OK,ButtonType.CANCEL);
@@ -194,7 +201,6 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
     public ObservableList firstUse(){ //création du premier controlleur et mise dans la liste
         DataAnnotationController x = new DataAnnotationController();
         ctrlList.add(x);
-        vBox.getChildren().add(x);
         cBox.setPromptText("Key");
         
         return ctrlList;
@@ -208,7 +214,6 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
         
             mapper.setOldKey(cBox.getValue().toString());
             mapper.setNewKey(newKey.getText());
-            //mapper.setOldKey(valueSelected.toString());
         
     }
     
@@ -252,11 +257,20 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
         return this.mapper;
     }
 
+    /**
+     * Using in SetAnnotation : add all explorables need.
+     * @param items
+     * @param setList
+     * @return 
+     */
     @Override
-    public void fillComboBox(List setList) {
-        
+    public String fillComboBox(List items, List setList) {
+        this.items = items;
+        this.setList = setList;
         cBox.getItems().addAll(MetaDataSetUtils.getAllPossibleKeys(setList));
         cBox.setEditable(true);
+        
+        return cBox.getSelectionModel().getSelectedItem();
 
     }
     
