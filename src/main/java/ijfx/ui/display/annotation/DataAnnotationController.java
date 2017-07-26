@@ -28,21 +28,20 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 
-
 /**
  * FXML Controller class
  *
  * @author sapho
  */
-public class DataAnnotationController extends GridPane  { 
-    
+public class DataAnnotationController extends GridPane {
+
     Boolean wasModify = false;
 
     private final GridPane pane = new GridPane();
 
     TextField oldValue = new TextField();
     TextField newValue = new TextField();
-    
+
     private final double HEIGHT = 40.0; //hauteur
     private final double WIDTH = 244.0; //largeur
     private final double PADDING = 4.0;
@@ -50,11 +49,11 @@ public class DataAnnotationController extends GridPane  {
     private final double TEXT_WIDTH = 40.0;
     private final double TEXT_HEIGTH = 30.0;
     private final int HGAP = 28;
-   
+
     public final ObservableValue<Boolean> modifyState = Bindings.createObjectBinding(this::getState, oldValue.textProperty(), newValue.textProperty());
-    
+
     public DataAnnotationController() {
-        
+
         pane.setPrefSize(WIDTH, HEIGHT);
         pane.setHgap(HGAP);
         oldValue.setPromptText("value");
@@ -65,58 +64,61 @@ public class DataAnnotationController extends GridPane  {
         GridPane.setConstraints(oldValue, 0, 0);
         //
         newValue.setPrefSize(TEXT_WIDTH, TEXT_HEIGTH);
-        newValue.setPadding(new Insets (5,15,5,0)); //top right bot left
+        newValue.setPadding(new Insets(5, 15, 5, 0)); //top right bot left
         newValue.setAlignment(Pos.CENTER);
         GridPane.setConstraints(newValue, 1, 0);
-        
+
         pane.setPadding(new Insets(5, 5, 5, 6));
-        pane.getColumnConstraints().add(new ColumnConstraints(COLUMN_WIDTH+5));
+        pane.getColumnConstraints().add(new ColumnConstraints(COLUMN_WIDTH + 5));
         pane.getColumnConstraints().add(new ColumnConstraints(COLUMN_WIDTH));
         pane.getChildren().setAll(oldValue, newValue);
-        
+
         this.getChildren().add(pane); //Don't forget this line overwise the class is not a node !
-              
+
     }
+
     /**
-     *If textfields are empty again, return true : this controller can be delete.
-     * @return 
+     * If textfields are empty again, return true : this controller can be
+     * delete.
+     *
+     * @return
      */
-    public Boolean getState (){
-        if (oldValue.getText().equals("") && newValue.getText().equals("")){
+    public Boolean getState() {
+        if (oldValue.getText().equals("") && newValue.getText().equals("")) {
             return true;
         }
         return false;
     }
-   
+
     //Property retriever
-    public StringProperty getValueTextProperty(){        
+    public StringProperty getValueTextProperty() {
         return oldValue.textProperty();
     }
-    
-    public StringProperty getNewValueTextProperty(){
+
+    public StringProperty getNewValueTextProperty() {
         return newValue.textProperty();
     }
-    
+
     //Getters and setters
-    public String getValue(){
+    public String getValue() {
         return oldValue.getText();
     }
-    
-    public String getNewValue(){
+
+    public String getNewValue() {
         return newValue.getText();
     }
-    
-    public void setValue(String value){
+
+    public void setValue(String value) {
         oldValue.setText(value);
     }
-    
-    public void setNewValue(String value){
+
+    public void setNewValue(String value) {
         newValue.setText(value);
     }
-    
+
     //Boolean Observer to state retriever
-    public ObservableValue<Boolean> getWasModifyState (){
-       return modifyState;
-       
-   }
+    public ObservableValue<Boolean> getWasModifyState() {
+        return modifyState;
+
+    }
 }
