@@ -33,16 +33,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
@@ -50,7 +45,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -61,220 +55,212 @@ import org.scijava.plugin.Parameter;
  *
  * @author sapho
  */
+public class DefaultAnnotationDialog extends Dialog<Mapper> implements AnnotationDialog {
 
-public class DefaultAnnotationDialog extends Dialog<Mapper> implements AnnotationDialog{
-    
     @Parameter
-    AnnotationService annotationService;
-    
-    @FXML
-    BorderPane root;
-    
-    @FXML    
-    TextField newKey;
-    
-    @FXML
-    ComboBox<String> cBox;
-    
-    @FXML
-    VBox vBox;
+    private AnnotationService annotationService;
 
-    Dialog<Mapper> dialog;
-    String FXMLWAY = "/ijfx/ui/widgets/AnnotationDialog2.fxml";
-    List<MetaDataSet> setList;
-    List<? extends Explorable> items;
-    
+    @FXML
+    private TextField newKey;
+
+    @FXML
+    private ComboBox<String> cBox;
+
+    @FXML
+    private VBox vBox;
+
+    private static String FXMLWAY = "/ijfx/ui/widgets/AnnotationDialog2.fxml";
+    private List<? extends Explorable> items;
+    private List<MetaDataSet> setList;
+
     //Main List. This observableList observe this tow objects properties in each controller. If theses properties change, a notification is sended.
-    private ObservableList <DataAnnotationController> ctrlList = FXCollections.observableArrayList(c -> new ObservableValue[]{c.getValueTextProperty(), c.getNewValueTextProperty()});
+    private final ObservableList<DataAnnotationController> ctrlList = FXCollections.observableArrayList(c -> new ObservableValue[]{c.getValueTextProperty(), c.getNewValueTextProperty()});
     //Secondary list. Purpose : stock temporaly controller to know which controller can create new controller or not.
-    private List <DataAnnotationController> updatedList = new ArrayList<>();
-    
+    private final List<DataAnnotationController> updatedList = new ArrayList<>();
 
     Mapper mapper = new DefaultMapper();
-    
-    
-    
-    public DefaultAnnotationDialog()  {
-        
-        
+
+    public DefaultAnnotationDialog() {
+
+        loadFXML();
+
+        initiazeListeners();
+
+        firstUse();
+
+        cBox.setOnAction(this::onComboBoxClicked);
+
+    }
+
+    /**
+     * Traitment according properties state and kind of notification.
+     */
+    private void initiazeListeners() {
+        ctrlList.addListener((ListChangeListener.Change<? extends DataAnnotationController> change) -> {
+            while (change.next()) {
+
+                if (change.wasAdded()) {
+                    if (!vBox.getChildren().contains(change.getList().get(change.getFrom()))) {
+                        vBox.getChildren().addAll(change.getAddedSubList());
+
+                    }
+                }
+                if (change.wasRemoved()) {
+                    vBox.getChildren().removeAll(change.getRemoved());
+                }
+                if (change.wasUpdated()) {
+                    if (!updatedList.contains(change.getList().get(change.getFrom()))) {
+                        updatedList.add(change.getList().get(change.getFrom()));
+                        DataAnnotationController y = new DataAnnotationController();
+                        ctrlList.add(y);
+                    }
+                    if (change.getList().get(change.getFrom()).getState()) {
+                        ctrlList.remove(change.getList().get(change.getFrom()));
+                    }
+
+                }
+
+            }
+        });
+
+    }
+
+    private void loadFXML() {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource(FXMLWAY));
+        loader.setController(DefaultAnnotationDialog.this);
+
+        try {
+            loader.load();
+
+        } catch (IOException ex) {
+            Logger.getLogger(DefaultAnnotationDialog.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        Pane root = loader.getRoot();
+        ///////////////////////////////////CSS PART
+        //root.getStylesheets().add(getClass().getResource("/ijfx/ui/flatterfx.css").toExternalForm());
+        //root.applyCss();
+        ///////////////////////////////////
+        getDialogPane().setContent(root);
+        getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        setResultConverter(DefaultAnnotationDialog.this::convert);
+
+        newKey.setPromptText("new key");
+    }
+
+    /**
+     * First controller creation and put in the Observable List
+     *
+     * @return
+     */
+    @Override
+    public ObservableList firstUse() { //création du premier controlleur et mise dans la liste
+        DataAnnotationController x = new DataAnnotationController();
+        ctrlList.add(x);
+        cBox.setPromptText("Key");
+
+        return ctrlList;
+    }
+
+    /**
+     * Combobox Choice action.
+     *
+     * @param event
+     */
+    private void onComboBoxClicked(ActionEvent event) {
+
         Alert alert = new Alert(AlertType.CONFIRMATION);
         alert.setTitle("Confirmation Dialog");
         alert.setHeaderText("There is more than 10 values, continue ? ");
 
-        
-        
-      
-                
-                loadFXML();
-                
-                initiazeListeners();
-                
-                firstUse();
-                
-                cBox.setOnAction((event) -> {
-                    ctrlList.clear();
-                    int it = 0;
+        ctrlList.clear();
+        int it = 0;
 
-                    String temp = cBox.getSelectionModel().getSelectedItem();
-                    
-                    Set<MetaData> setM = MetaDataSetUtils.getValues(items, temp);
-                    
-                    if (setM.size() > 10){
-                        Optional<ButtonType> result = alert.showAndWait();
-                                if (result.get() == ButtonType.OK){
-                                    // ... user chose OK
-                                    for (MetaData m : setM){
-                                        if (m.getName().equals(temp)){
+        String temp = cBox.getSelectionModel().getSelectedItem();
 
-                                            DataAnnotationController z = new DataAnnotationController();
-                                            z.setValue(m.getValue().toString());
+        Set<MetaData> setM = MetaDataSetUtils.getValues(items, temp);
 
-                                            ctrlList.add(z);
-                                            updatedList.add(z);
-                            
-                        }
-                        
+        if (setM.size() > 10) {
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK) {
+                // ... user chose OK
+                for (MetaData m : setM) {
+                    if (m.getName().equals(temp)) {
+
+                        DataAnnotationController z = new DataAnnotationController();
+                        z.setValue(m.getValue().toString());
+
+                        ctrlList.add(z);
+                        updatedList.add(z);
+
                     }
-                                } else {
-                                    // ... user chose not OK
-                                    firstUse();
-                                }
-                    }
-                    
-                    
-                });
-                
-              
-  
-    }
-    
-    /**
-     * Traitment according properties state and kind of notification.
-     */
-    private void initiazeListeners (){
-        ctrlList.addListener((ListChangeListener.Change<? extends DataAnnotationController> change) -> { 
-        while (change.next()) { 
-                        
-                        if(change.wasAdded()) {
-                            if (!vBox.getChildren().contains(change.getList().get(change.getFrom()))){
-                                vBox.getChildren().addAll(change.getAddedSubList());
 
-                            }
-                        }
-                        if(change.wasRemoved()){
-                            vBox.getChildren().removeAll(change.getRemoved());
-                        }
-                        if (change.wasUpdated()) {
-                            if (!updatedList.contains(change.getList().get(change.getFrom()))){
-                                updatedList.add(change.getList().get(change.getFrom()));
-                                DataAnnotationController y = new DataAnnotationController();
-                                ctrlList.add(y);
-                            }
-                            if (change.getList().get(change.getFrom()).getState()){
-                                ctrlList.remove(change.getList().get(change.getFrom()));
-                            }
-                            
-                            
-                            }
-                            
-                    }
-                });
-        
-    }
-
-    private void loadFXML(){
-        FXMLLoader loader = new FXMLLoader();
-                loader.setLocation(getClass().getResource(FXMLWAY));
-                loader.setController(DefaultAnnotationDialog.this);
-                
-                try {
-                    loader.load();
-                    
-                } catch (IOException ex) {
-                    Logger.getLogger(DefaultAnnotationDialog.class.getName()).log(Level.SEVERE, null, ex);
                 }
-
-                Pane root = loader.getRoot();
-                ///////////////////////////////////CSS PART
-                //root.getStylesheets().add(getClass().getResource("/ijfx/ui/flatterfx.css").toExternalForm());
-                //root.applyCss();
-                ///////////////////////////////////
-                getDialogPane().setContent(root);
-                getDialogPane().getButtonTypes().addAll(ButtonType.OK,ButtonType.CANCEL);
-                setResultConverter(DefaultAnnotationDialog.this::convert);
-                
-                newKey.setPromptText("new key");
-    }
-       
-    /**
-     * First controller creation and put in the Observable List
-     * @return 
-     */
-    @Override
-    public ObservableList firstUse(){ //création du premier controlleur et mise dans la liste
-        DataAnnotationController x = new DataAnnotationController();
-        ctrlList.add(x);
-        cBox.setPromptText("Key");
-        
-        return ctrlList;
-    }
-    
-    
-    /**
-     * Keys retriever to mapper 
-     */
-    public void bindData (){
-        
-            mapper.setOldKey(cBox.getValue().toString());
-            mapper.setNewKey(newKey.getText());
-        
-    }
-    
-    /**
-     * Dialog need : methode run when the button is cliqued
-     * @param button
-     * @return 
-     */
-    public Mapper convert(ButtonType button) { //CA CA MARCHE
-        
-        if(button == ButtonType.OK) {
-             return mapperAction();
-         }
-        else {
-             return null;
-         }
-
-     }
-    
-    /**
-     * Add new data in the mapper hasmap. 
-     * @return 
-     */
-    public Mapper mapperAction(){ 
-        
-        bindData();
-        
-        for (DataAnnotationController item : ctrlList){
-            if (item.getNewValue() != " "){
-                mapper.associatedValues(item.getValue(),item.getNewValue());
+            } else {
+                // ... user chose not OK
+                firstUse();
             }
         }
-        System.out.println("mapper"+ mapper.getMapObject());
-            
+    }
+
+    /**
+     * Keys retriever to mapper
+     */
+    @Override
+    public void bindData() {
+
+        mapper.setOldKey(cBox.getValue().toString());
+        mapper.setNewKey(newKey.getText());
+
+    }
+
+    /**
+     * Dialog need : methode run when the button is cliqued
+     *
+     * @param button
+     * @return
+     */
+    public Mapper convert(ButtonType button) { //CA CA MARCHE
+
+        if (button == ButtonType.OK) {
+            return mapperAction();
+        } else {
+            return null;
+        }
+
+    }
+
+    /**
+     * Add new data in the mapper hasmap.
+     *
+     * @return
+     */
+    public Mapper mapperAction() {
+
+        bindData();
+
+        for (DataAnnotationController item : ctrlList) {
+            if (item.getNewValue() != " ") {
+                mapper.associatedValues(item.getValue(), item.getNewValue());
+            }
+        }
+        System.out.println("mapper" + mapper.getMapObject());
 
         return mapper;
-        
+
     }
-    
-    public Mapper getMapper(){
+
+    public Mapper getMapper() {
         return this.mapper;
     }
 
     /**
      * Using in SetAnnotation : add all explorables need.
+     *
      * @param items
      * @param setList
-     * @return 
+     * @return
      */
     @Override
     public String fillComboBox(List items, List setList) {
@@ -282,9 +268,9 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
         this.setList = setList;
         cBox.getItems().addAll(MetaDataSetUtils.getAllPossibleKeys(setList));
         cBox.setEditable(true);
-        
+
         return cBox.getSelectionModel().getSelectedItem();
 
     }
-    
+
 }
