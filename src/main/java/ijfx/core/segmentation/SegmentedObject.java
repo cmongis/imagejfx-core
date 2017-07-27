@@ -19,13 +19,13 @@
  */
 package ijfx.core.segmentation;
 
-import ijfx.core.metadata.MetaDataOwner;
+import ijfx.explorer.datamodel.Taggable;
 import net.imagej.overlay.Overlay;
 
 /**
  *
  * @author Cyril MONGIS, 2016
  */
-public interface SegmentedObject extends MetaDataOwner {
+public interface SegmentedObject extends Taggable {
     Overlay getOverlay();
 }

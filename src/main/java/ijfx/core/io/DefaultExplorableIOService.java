@@ -17,34 +17,12 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.ui.display.code;
-
-import java.util.List;
-import javafx.scene.Node;
-import org.scijava.widget.WidgetModel;
+package ijfx.core.io;
 
 /**
  *
- * @author florian
+ * @author cyril
  */
-public interface PreferencePanelGenerator {
-
-    void addCategory(String name);
-
-    
-   
-    //void addWidget(WidgetModel widgetModel, String name);
-
-    void addWidget(String category, WidgetModel widgetModel);
-
-    default void addCategory(List<WidgetModel> models, String category) {
-        for(WidgetModel model : models) {
-            addWidget(category, model);
-        }
-    }
-    
-    //Node createWidget(WidgetModel widgetModel, String name);
-
-    Node getPanel();
+public class DefaultExplorableIOService {
     
 }

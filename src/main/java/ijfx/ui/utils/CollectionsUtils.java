@@ -49,7 +49,7 @@ public class CollectionsUtils {
         
     }
     
-    public static <T> void synchronize(Collection<T> source, Collection<T> target) {
+    public static <T> void synchronize(Collection<? extends T> source, Collection<T> target) {
         
         List<T> toAdd = toAdd(source,target);
         List<T> toRemove = toRemove(source, target);

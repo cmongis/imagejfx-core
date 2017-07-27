@@ -33,6 +33,7 @@ import ijfx.explorer.datamodel.Explorable;
 import ijfx.ui.RichMessageDisplayer;
 import ijfx.ui.main.ImageJFX;
 import ijfx.ui.save.SaveOptions;
+import ijfx.ui.utils.CollectionsUtils;
 import ijfx.ui.widgets.ExplorableSelector;
 import ijfx.ui.widgets.SaveOptionDialog;
 import java.io.IOException;
@@ -43,12 +44,14 @@ import javafx.beans.Observable;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javax.annotation.PreDestroy;
 import mongis.utils.FXUtilities;
 import mongis.utils.FileButtonBinding;
+import mongis.utils.properties.ListChangeListenerBuilder;
 import mongis.utils.transition.OpacityTransitionBinding;
 import org.scijava.Context;
 import org.scijava.plugin.Parameter;
@@ -133,7 +136,14 @@ public class FolderSelection extends BorderPane implements Activity {
         nextButton.disableProperty().bind(selectionValid);
         redoButton.disableProperty().bind(selectionValid);
 
-      
+        explorerSelector
+                .markedItemProperty()
+                .addListener(
+                        ListChangeListenerBuilder
+                        .create(Explorable.class)
+                        .onChange(change->CollectionsUtils.synchronize(change.getList(), correctionUiService.getSelectedFiles()))
+                        .build());
+        
         opacityBinding = new OpacityTransitionBinding(explorerSelector, correctionUiService.fileListProperty().isNotNull());
 
         // listening for change of the list

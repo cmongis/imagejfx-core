@@ -75,13 +75,13 @@ public class DefaultFXIconService extends AbstractService implements FXIconServi
 
         String menuPath = SciJavaUtils.getIconPath(plugin);
 
-        if(menuPath == null) return null;
-        
-         if (fontawesomeIconEquivalent.containsKey(plugin.getClass().getName())) {
-            return getIconAsNode(fontawesomeIconEquivalent.get(plugin.getClass().getName()));
+        if (menuPath == null) {
+            return null;
         }
-        
-         else if (menuPath.startsWith("fa:") == false) {
+
+        if (fontawesomeIconEquivalent.containsKey(plugin.getClass().getName())) {
+            return getIconAsNode(fontawesomeIconEquivalent.get(plugin.getClass().getName()));
+        } else if (menuPath.startsWith("fa:") == false) {
             return getIconAsNode(plugin.getClass().getResource(menuPath).toExternalForm());
         } else {
             return getIconAsNode(menuPath);
@@ -91,15 +91,16 @@ public class DefaultFXIconService extends AbstractService implements FXIconServi
     @Override
     public Node getIconAsNode(String iconPath) {
 
-        
-        if(iconPath == null) return null;
-        if("".equals(iconPath)) return null;
-        
-         if (fontawesomeIconEquivalent.containsKey(iconPath)) {
-            return getIconAsNode(fontawesomeIconEquivalent.get(iconPath));
+        if (iconPath == null) {
+            return null;
         }
-        
-         else if (iconPath.startsWith("fa:")) {
+        if ("".equals(iconPath)) {
+            return null;
+        }
+
+        if (fontawesomeIconEquivalent.containsKey(iconPath)) {
+            return getIconAsNode(fontawesomeIconEquivalent.get(iconPath));
+        } else if (iconPath.startsWith("fa:")) {
             try {
                 return new FontAwesomeIconView(getIcon(iconPath));
             } catch (Exception e) {
@@ -107,9 +108,9 @@ public class DefaultFXIconService extends AbstractService implements FXIconServi
                 return new FontAwesomeIconView(FontAwesomeIcon.REMOVE);
             }
         } else {
-             
-            
+
             ImageView imageView = new ImageView(iconPath);
+            imageView.getStyleClass().add("image-icon");
             return imageView;
         }
 
@@ -129,9 +130,8 @@ public class DefaultFXIconService extends AbstractService implements FXIconServi
     @Override
     public FontAwesomeIcon getIcon(String iconPath) {
         try {
-        return FontAwesomeIcon.valueOf(iconPath.substring(3).toUpperCase());
-        }
-        catch(IllegalArgumentException ex) {
+            return FontAwesomeIcon.valueOf(iconPath.substring(3).toUpperCase());
+        } catch (IllegalArgumentException ex) {
             return FontAwesomeIcon.QUESTION;
         }
     }

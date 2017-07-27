@@ -49,6 +49,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import org.controlsfx.control.PopOver;
+import org.scijava.console.ConsoleService;
 import org.scijava.console.OutputEvent;
 import org.scijava.event.EventHandler;
 import org.scijava.plugin.Parameter;
@@ -96,6 +97,9 @@ public class ConsoleUIPlugin implements UiPlugin, ConsolePane<Node> {
     @Parameter
             FXUiCommandService commandService;
     
+    @Parameter
+    ConsoleService consoleService;
+    
     Set<String> lastContextList;
 
     @Override
@@ -134,7 +138,7 @@ public class ConsoleUIPlugin implements UiPlugin, ConsolePane<Node> {
                 .map(commandService::createMenuItem)
                 .collect(Collectors.toList()));
         
-        
+        consoleService.addOutputListener(this);
         
         return this;
 
@@ -162,8 +166,10 @@ public class ConsoleUIPlugin implements UiPlugin, ConsolePane<Node> {
 
     @Override
     public void append(OutputEvent event) {
+        Platform.runLater(()->{
         consoleTextArea.appendText("\n");
         consoleTextArea.appendText(event.getOutput());
+        });
     }
 
     @Override

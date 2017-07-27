@@ -17,34 +17,34 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.ui.display.code;
+package ijfx.explorer.views;
 
-import java.util.List;
-import javafx.scene.Node;
-import org.scijava.widget.WidgetModel;
+import ijfx.explorer.datamodel.Explorable;
+import java.util.function.Consumer;
+import javafx.scene.input.MouseEvent;
 
 /**
  *
- * @author florian
+ * @author cyril
  */
-public interface PreferencePanelGenerator {
-
-    void addCategory(String name);
-
+public abstract class AbstractExplorerView implements ExplorerView{
     
-   
-    //void addWidget(WidgetModel widgetModel, String name);
+    Consumer<DataClickEvent<Explorable>> onItemClicked;
 
-    void addWidget(String category, WidgetModel widgetModel);
-
-    default void addCategory(List<WidgetModel> models, String category) {
-        for(WidgetModel model : models) {
-            addWidget(category, model);
-        }
+    @Override
+    public void setOnItemClicked(Consumer<DataClickEvent<Explorable>> onItemClicked) {
+        this.onItemClicked = onItemClicked;
     }
     
-    //Node createWidget(WidgetModel widgetModel, String name);
-
-    Node getPanel();
+    
+    protected void emitEvent(Explorable expl, MouseEvent event, boolean isDoubleClick) {
+        
+        if(onItemClicked != null) {
+            onItemClicked.accept(new DataClickEvent<>(expl,event,isDoubleClick));
+        }
+        
+    }
+    
+    
     
 }

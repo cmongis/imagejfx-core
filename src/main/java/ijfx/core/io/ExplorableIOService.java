@@ -17,34 +17,28 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.ui.display.code;
+package ijfx.core.io;
 
+import ijfx.core.IjfxService;
+import ijfx.explorer.datamodel.Explorable;
+import ijfx.explorer.datamodel.Taggable;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
-import javafx.scene.Node;
-import org.scijava.widget.WidgetModel;
 
 /**
  *
- * @author florian
+ * @author cyril
  */
-public interface PreferencePanelGenerator {
-
-    void addCategory(String name);
-
+public interface ExplorableIOService extends IjfxService{
     
-   
-    //void addWidget(WidgetModel widgetModel, String name);
-
-    void addWidget(String category, WidgetModel widgetModel);
-
-    default void addCategory(List<WidgetModel> models, String category) {
-        for(WidgetModel model : models) {
-            addWidget(category, model);
-        }
-    }
     
-    //Node createWidget(WidgetModel widgetModel, String name);
-
-    Node getPanel();
+    List<? extends Taggable> load(File file) throws IOException;
+    
+    void save(List<? extends Taggable> explorableList);
+    
+   // List<? extends Taggable> loadTaggables(File file) throws IOException;
+    
+    //void saveTaggables(List<? extends Taggable> taggables);
     
 }

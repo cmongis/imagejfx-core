@@ -21,7 +21,6 @@ package ijfx.ui.mainwindow;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import ijfx.core.utils.SciJavaUtils;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -31,7 +30,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 import mongis.utils.transition.TransitionBinding;
-import ijfx.core.mainwindow.SideMenuCommand;
+import javafx.scene.Node;
+import javafx.scene.layout.StackPane;
 
 /**
  *
@@ -42,8 +42,8 @@ public class SideMenuButton extends HBox {
         String appToOpen;
 
         Label label = new Label();
-        FontAwesomeIconView iconNode;
-
+        Node iconNode;
+        FontAwesomeIconView iconView;
         
         private BooleanProperty extendedProperty = new SimpleBooleanProperty();
         
@@ -55,7 +55,8 @@ public class SideMenuButton extends HBox {
            
             getStyleClass().add("side-menu-button");
             setMaxWidth(Double.MAX_VALUE);
-            iconNode = new FontAwesomeIconView(FontAwesomeIcon.QUESTION);
+            iconView = new FontAwesomeIconView(FontAwesomeIcon.QUESTION);
+            iconNode = new StackPane(iconView);
             iconNode.getStyleClass().add("side-menu-icon");
 
             getChildren().addAll(iconNode, label);
@@ -93,7 +94,7 @@ public class SideMenuButton extends HBox {
         public SideMenuButton setIcon(FontAwesomeIcon icon) {
             //GlyphsDude.createIcon(icon);
 
-            iconNode.setIcon(icon);
+            iconView.setIcon(icon);
             return this;
         }
         

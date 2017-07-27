@@ -95,7 +95,7 @@ public class FxMenuCreator extends AbstractMenuCreator<MenuBar, Menu> {
     @Override
     protected void addLeafToTop(ShadowMenu sm, MenuBar t) {
 
-        t.getMenus().add(new Menu(sm.getName()));
+        t.getMenus().add(new Menu(sm.getName().toUpperCase()));
     }
 
     @Override

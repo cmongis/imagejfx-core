@@ -22,7 +22,9 @@ package ijfx.core.segmentation;
 import ijfx.core.metadata.MetaDataSet;
 import ijfx.core.overlay.OverlaySelectionService;
 import ijfx.core.overlay.OverlayStatService;
+import ijfx.explorer.datamodel.Tag;
 import java.lang.ref.WeakReference;
+import java.util.Set;
 import net.imagej.display.ImageDisplay;
 import net.imagej.overlay.Overlay;
 import org.scijava.plugin.Parameter;
@@ -67,6 +69,26 @@ public class DisplayedSegmentedObject implements SegmentedObject{
     
     public Double[] getPixelsValues() {
         return ijfxStatsService.getValueListFromImageDisplay(imageDisplay.get(), object.getOverlay());
+    }
+
+    @Override
+    public void addTag(Tag tag) {
+        object.addTag(tag);
+    }
+
+    @Override
+    public void deleteTag(Tag tag) {
+        object.deleteTag(tag);
+    }
+
+    @Override
+    public Set<Tag> getTagList() {
+        return object.getTagList();
+    }
+
+    @Override
+    public boolean has(Tag tag) {
+        return object.has(tag);
     }
     
     
