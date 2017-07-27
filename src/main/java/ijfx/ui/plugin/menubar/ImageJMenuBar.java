@@ -140,7 +140,7 @@ public class ImageJMenuBar extends MenuBar implements UiPlugin {
         final String topFolder = folders[depth];
         Menu parentMenu = getMenus().stream().filter(m -> m.getText().equals(topFolder)).findFirst().get();
         Menu childMenu = parentMenu;
-
+        
         if (parentMenu == null) {
             parentMenu = new Menu(topFolder);
             this.getMenus().add(parentMenu);

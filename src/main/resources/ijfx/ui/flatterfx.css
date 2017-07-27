@@ -1,3 +1,17 @@
+
+@font-face {
+    font-familly: 'fontAwesome';
+    /*src: url('ijfx/ui/res/fontawesome-webfont.ttf');*/
+}
+@font-face {
+    font-family: 'Roboto';
+    src:url('/ijfx/ui/fonts/Roboto-Regular.ttf');  
+}
+@font-face {
+    font-family: 'Roboto-Light';
+    src:url('/ijfx/ui/fonts/Roboto-light.ttf');
+}
+
 .root {
     -fx-text-base-color: #ffffff;
     -fx-text-fill: -fx-text-base-color;
@@ -131,7 +145,8 @@
 
 }
 .text {
-    -fx-font-family:'Open Sans';
+    -fx-font-family:'Roboto';
+    -fx-font-weight:200;
     /*-fx-effect:dropshadow(gaussian, rgb(0.0, 0.0, 0.0, 0.2), 0.0, 0.0, 0.0, 1.0); */
 }
 
@@ -139,6 +154,10 @@
 
     -fx-padding:0.5em;
 
+}
+h1,h2,h3,h4 {
+    -fx-font-family:'Roboto Light';
+    -fx-font-weight:lighter;
 }
 .h1 {
     -fx-font-size:2.5em;
@@ -533,6 +552,7 @@
 }
 .menu-bar .menu-button {
     -fx-background-color:transparent;
+    
 }
 .menu-bar .menu-button > .arrow-button .arrow{
     -fx-border-color:transparent;
@@ -566,6 +586,7 @@
     -fx-background-color:transparent;
     -fx-padding: 0em 0.5em 0.5em 2em;
     -fx-text-fill:-txt-normal;
+   
 }
 .menu-button .arrow {
     -fx-background-color:-txt-normal;
@@ -877,10 +898,7 @@
 .tab-label {
     -fx-text-fill:-flatter-warning;
 }
-@font-face {
-    font-familly: 'fontAwesome';
-    /*src: url('ijfx/ui/res/fontawesome-webfont.ttf');*/
-}
+
 
 .table-view {
     -fx-background-color:transparent;
@@ -1411,10 +1429,20 @@ list-cell:filled:selected:focused, .list-cell:filled:selected{
 #imagej-toolbar .toggle-button {
     -fx-background-color:-flatter-primary;
     -fx-pref-width:42px;
+    -fx-padding:0;
+}
+#imagej-toolbar .toggle-button:hover {
+    -fx-background-color:derive(-flatter-success,110%);
 }
 #imagej-toolbar .toggle-button:selected {
     -fx-background-color:-flatter-success;
 }
+#imagej-toolbar .toggle-button .icon-pane{
+    -fx-pref-width:30px;
+    -fx-min-height:40px;
+    -fx-min-width:30px;
+}
+
 
 .module-search-textfield:focus {
     -fx-effect:dropshadow(gaussian, rgb(0.0, 0.0, 0.0, 0.2), 0.0, 0.0, 0.0, 1.0); 
@@ -2085,8 +2113,9 @@ list-cell:filled:selected:focused, .list-cell:filled:selected{
     -fx-background:red;
 }
 .side-menu-icon {
-    -fx-font-size:20px;
-    -fx-background-color:red;
+    -fx-font-size:22px;
+    -fx-background:red;
+    -fx-min-width:22px;
 
 }
 
@@ -2163,10 +2192,18 @@ list-cell:filled:selected:focused, .list-cell:filled:selected{
     -fx-fill:-dark;
 }
 
-.button.square,.toggle-button.square {
+.button.square,.toggle-button.square,.menu-button.square {
     -fx-base:coral;
     -fx-pref-width:125px;
     -fx-pref-height:125px;
+    -fx-background-color:red;
+}
+
+.menu-button.square {
+    -fx-content-display:top;
+}
+.menu-button.square .arrow {
+    -fx-background-color:white;
 }
 .square .big-icon {
     -fx-font-size:2em;
@@ -2356,7 +2393,9 @@ Label.chart-legend-item{
     -fx-alignment:center-left;
 
 }
-
+#correctionSelector #centerBorderPane {
+    -fx-padding: 0px 20 0 0;
+}
 
 .simple-pane-cell:hover {
     -fx-background-color:-flatter-primary;
@@ -2442,7 +2481,25 @@ Label.chart-legend-item{
 .metadata-bar {
 
 }
+
+/*
+    Preference UI
+*/
 .metadata-bar > .label{
     -fx-font-size:14px;
     -fx-padding:4px 4px 4px 10px;
+}
+
+.widget-container {
+    -fx-padding:10px 10px 10 0px;
+}
+.pref-pane {
+    -fx-hgap:30px;
+    -fx-vgap:20px;
+}
+.pref-category {
+    -fx-font-family:"Roboto-Light";
+    -fx-font-size:30px;
+    -fx-font-weight:100;
+    -fx-padding:20px 0 5px 0;
 }

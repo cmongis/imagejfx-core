@@ -19,13 +19,15 @@
  */
 package ijfx.ui.display.code;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import javafx.geometry.Insets;
+import java.util.Map;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import org.scijava.plugin.Parameter;
 import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
 import org.scijava.widget.WidgetService;
@@ -35,56 +37,87 @@ import org.scijava.widget.WidgetService;
  * @author florian
  */
 public class PreferencesChoserGenerator implements PreferencePanelGenerator {
-    WidgetService widgetService;
-    private VBox widgetBox;
+
+    private final WidgetService widgetService;
+    private final GridPane gridPane;
+
+    Map<String, List<WidgetModel>> widgetMap = new HashMap<>();
+    List<String> categories = new ArrayList<>();
+    boolean hasChanged = false;
 
     public PreferencesChoserGenerator(WidgetService widgetService) {
         this.widgetService = widgetService;
-        this.widgetBox = new VBox();
+        gridPane = new GridPane();
+        gridPane.getStyleClass().add("pref-pane");
     }
-    
-    
-    @Override
-    public Node getPanel(){
-        return this.widgetBox;
+
+    private List<WidgetModel> getCategory(String category) {
+        if (widgetMap.containsKey(category) == false) {
+            widgetMap.put(category, new ArrayList<>());
+            categories.add(category);
+            hasChanged = true;
+        }
+
+        return widgetMap.get(category);
     }
-    
+
     @Override
-    public void addCategory( List<Node> widgets, String name){
+    public void addCategory(String category) {
+        getCategory(category);
+    }
+
+    @Override
+    public void addWidget(String category, WidgetModel model) {
+        getCategory(category).add(model);
+        hasChanged = true;
+    }
+
+    @Override
+    public Node getPanel() {
+        if (hasChanged) {
+            gridPane.getChildren().clear();
+
+            int rowCount = 0;
+
+            for (String cat : categories) {
+
+                Node categoryNode = createCategoryNode(cat);
+
+                gridPane.add(categoryNode, 0, rowCount++, 2, 1);
+
+                for (WidgetModel model : getCategory(cat)) {
+                    gridPane.add(createWidgetLabel(model), 0, rowCount);
+                    gridPane.add(createWidget(model), 1, rowCount);
+                    rowCount++;
+                }
+
+            }
+        }
+        return gridPane;
+
+    }
+
+    private Node createCategoryNode(String name) {
         /*
         The good way to use this function is that the nodes in the list are the nodes returned by the method createWidget()
         But you can put what you want.
-        */
-        VBox category = new VBox();
-        category.getChildren().add(new Label(name));
-        for (Node widget : widgets){
-            category.getChildren().add(widget);
-        }
-        this.widgetBox.getChildren().add(category);
-    }
-    
-    @Override
-    public void addWidget(WidgetModel widgetModel, String name){
-        this.widgetBox.getChildren().add(createWidget(widgetModel, name));
-    }
-    
-    @Override
-    public void addWidget(WidgetModel widgetModel){
-        InputWidget<?,Node> newWidget =(InputWidget<?, Node>) widgetService.create(widgetModel);
-        newWidget.refreshWidget();
-        this.widgetBox.getChildren().add(newWidget.getComponent());
-    }
-    
-    @Override
-    public Node createWidget(WidgetModel widgetModel, String name){
-         HBox newBox = new HBox();
-        newBox.setPadding(new Insets(20));
+         */
+        //VBox category = new VBox();
         Label label = new Label(name);
-        label.setPadding(new Insets(20));
-        newBox.getChildren().add(label);
-        InputWidget<?,Node> newWidget =(InputWidget<?, Node>) this.widgetService.create(widgetModel);
+        label.getStyleClass().add("pref-category");
+        return label;
+    }
+
+    public Node createWidgetLabel(WidgetModel model) {
+        Label label = new Label(model.getWidgetLabel());
+        label.getStyleClass().add("widget-label");
+        return label;
+    }
+
+    public Node createWidget(WidgetModel widgetModel) {
+
+        InputWidget<?, Node> newWidget = (InputWidget<?, Node>) this.widgetService.create(widgetModel);
         newWidget.refreshWidget();
-        newBox.getChildren().add(newWidget.getComponent());
-        return newBox;
+        return newWidget.getComponent();
     }
 }

@@ -38,12 +38,11 @@ import ijfx.ui.inputharvesting.ContextMenuInputPanel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
 import jfxtras.scene.control.ToggleGroupValue;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
@@ -121,13 +120,19 @@ public class ImageJToolBar extends VBox implements UiPlugin {
     }
 
     public ToggleButton createButton(Tool tool) {
-        ToggleButton button = new ToggleButton("", fxIconService.getIconAsNode(tool));
+        
+        StackPane iconPane = new StackPane();
+        iconPane.getStyleClass().add("icon-pane");
+        iconPane.getChildren().add(fxIconService.getIconAsNode(tool));
+        ToggleButton button = new ToggleButton("", iconPane);
         button.setTooltip(new Tooltip(
                 tool.getClass().getSimpleName()
                 + " ("
                 + tool.getDescription()
                 + " )"
         ));
+        
+        
 
         button.setContextMenu(createContextMenu(tool));
 

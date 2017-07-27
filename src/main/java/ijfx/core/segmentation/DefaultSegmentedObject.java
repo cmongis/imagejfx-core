@@ -24,22 +24,21 @@ import ijfx.core.metadata.MetaDataSet;
 import ijfx.core.metadata.MetaDataSetType;
 import ijfx.core.overlay.OverlayStatService;
 import ijfx.core.overlay.OverlayStatistics;
+import ijfx.explorer.datamodel.AbstractTaggable;
+import jdk.nashorn.internal.objects.annotations.Getter;
+import jdk.nashorn.internal.objects.annotations.Setter;
 import net.imagej.overlay.Overlay;
 import org.scijava.plugin.Parameter;
 /**
  *
  * @author Cyril MONGIS, 2016
  */
-public class DefaultSegmentedObject implements SegmentedObject {
+public class DefaultSegmentedObject extends AbstractTaggable implements SegmentedObject {
 
     
     
     private Overlay overlay;
-
-    
     private MetaDataSet set = new MetaDataSet();
-    
-    
     @Parameter
     private OverlayStatService overlayStatsService;
     
@@ -48,6 +47,7 @@ public class DefaultSegmentedObject implements SegmentedObject {
         set.setType(MetaDataSetType.OBJECT);
     }
 
+    @Setter(name = "overlay")
     public void setOverlay(Overlay overlay) {
         this.overlay = overlay;
         set.putGeneric(MetaData.NAME, overlay.getName());
@@ -67,9 +67,12 @@ public class DefaultSegmentedObject implements SegmentedObject {
     }
 
     @Override
+    @Getter(name = "overlay")
     public Overlay getOverlay() {
         return overlay;
     }
+    
+   
 
     @Override
     public MetaDataSet getMetaDataSet() {

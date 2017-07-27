@@ -27,7 +27,7 @@ import org.scijava.plugin.Plugin;
  *
  * @author florian
  */
-@Plugin(type = UiCommand.class,label = "Preferences", priority= 100,iconPath = "fa:picture_alt")
+@Plugin(type = UiCommand.class,label = "Preferences", priority= -100,iconPath = "fa:gears")
 public class PreferenciesActivityLauncher extends AbstractActivityLauncher{
     
     public PreferenciesActivityLauncher() {
