@@ -38,11 +38,11 @@ import org.scijava.plugin.Plugin;
  *
  * @author sapho
  */
-@Plugin(type = ExplorerView.class, priority = 0.7, label = "Summary")
-public class SummaryExplorerView implements ExplorerView {
-    
+@Plugin(type = ExplorerView.class, priority = 0.7, label = "Summary", iconPath = "fa:table")
+public abstract class SummaryExplorerView implements ExplorerView {
+
     private final BorderPane borderPane = new BorderPane();
-    private  VBox vBox = new VBox();
+    private VBox vBox = new VBox();
     private HBox hBox1 = new HBox();
     private HBox hBox2 = new HBox();
     private Button last = new Button("last");
@@ -57,17 +57,17 @@ public class SummaryExplorerView implements ExplorerView {
         vBox.getChildren().addAll(hBox1, hBox2);
         hBox1.getChildren().addAll(tilePane, tableView);
         hBox2.getChildren().addAll(last, label, next);
-        
+
     }
 
     @Override
     public Node getUIComponent() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return borderPane;
     }
 
     @Override
     public void setItems(List<? extends Explorable> items) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     @Override
@@ -80,10 +80,11 @@ public class SummaryExplorerView implements ExplorerView {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
+    /*
     public void setOnItemClicked(Consumer<DataClickEvent> eventHandler) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+     */
 
     @Override
     public SelectionModel getSelectionModel() {
@@ -94,5 +95,5 @@ public class SummaryExplorerView implements ExplorerView {
     public void refresh() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 }
