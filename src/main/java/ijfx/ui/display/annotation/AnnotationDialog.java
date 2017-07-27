@@ -20,6 +20,7 @@
 package ijfx.ui.display.annotation;
 
 import ijfx.core.metadata.MetaDataSet;
+import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.datamodel.Mapper;
 import java.util.List;
 import java.util.Optional;
@@ -36,7 +37,7 @@ public interface AnnotationDialog<T> {
     void bindData ();
     Mapper convert(ButtonType button);
     Mapper getMapper();
-    String fillComboBox ( List<? extends MetaDataSet> items, List<? extends MetaDataSet> setList);
+    String fillComboBox ( List<? extends Explorable> items, List<? extends MetaDataSet> setList);
     Optional<T> showAndWait();
     
 }
