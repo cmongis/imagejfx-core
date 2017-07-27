@@ -69,8 +69,16 @@ public class DefaultTextArea extends AnchorPane{
     public DefaultTextArea(List<CommandInfo> entriesList, TextEditorPreferencies preferencies) {
         
         initCodeArea();
-        setAutocompletion(entriesList);
+        setAutocompletion(entriesList, null);
         setPreferencies(preferencies);
+    }
+    
+    public DefaultTextArea(List<CommandInfo> entriesList, ScriptLanguage language, TextEditorPreferencies preferencies) {
+        
+        initCodeArea();
+        setAutocompletion(entriesList, language);
+        setPreferencies(preferencies);
+        
     }
     
     public void initCodeArea(){
@@ -84,12 +92,14 @@ public class DefaultTextArea extends AnchorPane{
                      if ("".equals(this.codeArea.getText().trim()) == false) {
                         this.codeArea.setStyleSpans(0, this.scriptHighlight.computeHighlighting(this.codeArea.getText()));
                         if (this.autocomplete) lauchAutocompletion();
-                        addVariableAutocompletion();                        
+                        addVariableAutocompletion();   
+                        /*
                         if (change.getInserted().getText().equals("\n")) {
                             autoIndent();
                             change.getInserted().getText().replace("\n", "\n" + indent);
                             
                         }
+                        */
                     }
                     
                 });
@@ -108,13 +118,22 @@ public class DefaultTextArea extends AnchorPane{
         this.autocompletion = new DefaultAutocompletion(this);
     }
     
-    public void setAutocompletion(List<CommandInfo> entriesList){
-        this.listProvider = new PythonAtocompletionListProvider(entriesList);
+    public void setAutocompletion(List<CommandInfo> entriesList, ScriptLanguage language){
+        System.out.println(language.getLanguageName());
+        if (language.getLanguageName().equals("Python")){
+            this.listProvider = new PythonAtocompletionListProvider(entriesList);
+        }
+        else {
+            this.listProvider = new DefaultAutocompletionListProvider(entriesList);
+        }
+        
         this.autocompletion.setListProvider(listProvider);
+        
     }
     
     public void initLanguage(ScriptLanguage language){
         this.scriptHighlight = new DefaultScriptHighlighting(language);
+        
     }
     
     /**

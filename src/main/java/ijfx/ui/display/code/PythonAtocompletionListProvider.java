@@ -49,24 +49,53 @@ public class PythonAtocompletionListProvider extends DefaultAutocompletionListPr
             if (splittedLine.length >= 2) {
                 if (splittedLine[0].equals("import") && splittedLine.length >= 2) {
                     String importWord = splittedLine[1];
-                    
+
+                    /*
                     Set newEntries = this.entries
                             .stream()
                             .filter(e -> e.contains(importWord))
+                            
                             .collect(Collectors.toSet());
                     this.entries = new TreeSet<>(newEntries);
+                     */
+                    String[] splittedImport = importWord.split(".");
+                    if (splittedImport.length >= 1) {
+                        this.entries.add(splittedImport[splittedImport.length - 1]);
+                    } else {
+                        this.entries.add(importWord);
+                    }
+                    this.entries.forEach((e) -> {
+                        if (splittedImport.length >= 1) {
+                            e = e.replace(importWord, splittedImport[splittedImport.length - 1]);
+                        }
 
-                    this.entries.add(importWord.split(".")[importWord.split(".").length]);
+                    });
                 }
                 if (splittedLine[0].equals("from")) {
                     String importWord = splittedLine[1];
-                   
+
+                    
                     Set newEntries = this.entries
                             .stream()
-                            .filter(e -> !e.contains(importWord))
+                            
+                            .map((String e) -> {
+                                if (splittedLine.length <=4 ){
+                                    e = e.replace(importWord , splittedLine[3]);
+                                }
+                                else if (splittedLine.length > 4 ){
+                                    e = e.replace(importWord , splittedLine[5]);
+                                }
+                                return e;
+                            })
                             .collect(Collectors.toSet());
                     this.entries = new TreeSet<>(newEntries);
+                     /*
                     this.entries.add(line.split(" ")[3]);
+                    this.entries.forEach((e) -> {
+                        e = e.replace(importWord, "");
+                        this.entries.add(e);
+                    });
+                    */
                 }
             }
         }
