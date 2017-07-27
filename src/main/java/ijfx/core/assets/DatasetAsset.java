@@ -17,42 +17,34 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.ui.mainwindow;
+package ijfx.core.assets;
 
-import ijfx.core.activity.Activity;
-import ijfx.core.activity.ActivityService;
-import ijfx.core.mainwindow.MainWindow;
-import ijfx.core.uiplugin.AbstractUiCommand;
-import org.scijava.plugin.Parameter;
+import java.io.File;
+import net.imagej.Dataset;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS, 2016
  */
-public abstract class AbstractActivityLauncher<T extends Activity> extends AbstractUiCommand<MainWindow>{
-
+public class DatasetAsset extends AbstractAsset<Dataset>{
+    public DatasetAsset() {
+        super(Dataset.class);
+    }
     
-    @Parameter
-    private ActivityService activityService;
-    
-    private final Class<? extends T> activityType;
-    
-    public AbstractActivityLauncher(Class<? extends T> type) {
-        super(MainWindow.class);
-        activityType = type;
+    public DatasetAsset(File file) {
+        this();
+        setFile(file);
     }
 
-    
-    
-    
-    
     @Override
-    public void run(MainWindow t) {
+    protected String getIdString() {
         
-        activityService.open(activityType);
+        return new StringBuilder()
+                .append("DatasetAsset")
+                .append(getFile().getAbsolutePath())
+                .toString();
         
     }
-
     
     
     

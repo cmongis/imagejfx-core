@@ -17,43 +17,22 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.ui.mainwindow;
+package ijfx.ui.correction;
 
 import ijfx.core.activity.Activity;
-import ijfx.core.activity.ActivityService;
-import ijfx.core.mainwindow.MainWindow;
-import ijfx.core.uiplugin.AbstractUiCommand;
-import org.scijava.plugin.Parameter;
+import ijfx.core.uiplugin.UiCommand;
+import ijfx.ui.mainwindow.AbstractActivityLauncher;
+import org.scijava.plugin.Plugin;
 
 /**
  *
  * @author cyril
  */
-public abstract class AbstractActivityLauncher<T extends Activity> extends AbstractUiCommand<MainWindow>{
-
+@Plugin(type = UiCommand.class,label = "Correction", iconPath= "fa:fire_instinguisher")
+public class CorrectionLauncher extends AbstractActivityLauncher<Activity>{
     
-    @Parameter
-    private ActivityService activityService;
-    
-    private final Class<? extends T> activityType;
-    
-    public AbstractActivityLauncher(Class<? extends T> type) {
-        super(MainWindow.class);
-        activityType = type;
+    public CorrectionLauncher() {
+        super(FolderSelection.class);
     }
-
-    
-    
-    
-    
-    @Override
-    public void run(MainWindow t) {
-        
-        activityService.open(activityType);
-        
-    }
-
-    
-    
     
 }

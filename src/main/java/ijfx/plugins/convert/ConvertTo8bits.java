@@ -17,43 +17,20 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.ui.mainwindow;
-
-import ijfx.core.activity.Activity;
-import ijfx.core.activity.ActivityService;
-import ijfx.core.mainwindow.MainWindow;
-import ijfx.core.uiplugin.AbstractUiCommand;
-import org.scijava.plugin.Parameter;
+package ijfx.plugins.convert;
 
 /**
  *
- * @author cyril
+ * @author Tuan anh TRINH
  */
-public abstract class AbstractActivityLauncher<T extends Activity> extends AbstractUiCommand<MainWindow>{
-
-    
-    @Parameter
-    private ActivityService activityService;
-    
-    private final Class<? extends T> activityType;
-    
-    public AbstractActivityLauncher(Class<? extends T> type) {
-        super(MainWindow.class);
-        activityType = type;
+public class ConvertTo8bits  extends TypeChangerIJFX{
+    public ConvertTo8bits()
+    {
+        super();
     }
-
-    
-    
-    
-    
     @Override
-    public void run(MainWindow t) {
-        
-        activityService.open(activityType);
-        
+    public void run(){
+        typeName = "8-bit signed integer";
+        super.run();
     }
-
-    
-    
-    
 }
