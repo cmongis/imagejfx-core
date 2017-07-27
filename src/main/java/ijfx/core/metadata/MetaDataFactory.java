@@ -39,6 +39,11 @@ public class MetaDataFactory {
     
     private final static ArrayList<String> createdKeys = new ArrayList<String>();
     public synchronized static String createKey(String string) {
+        
+        if(string == null) {
+            throw new IllegalArgumentException("Cannot create a MetaData with a null key");
+        }
+        
         for(String key : createdKeys) {
             
             if(key.equals(string)) {
