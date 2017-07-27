@@ -31,6 +31,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
+import org.scijava.script.ScriptLanguage;
 
 /**
  *
@@ -154,6 +155,11 @@ public class DefaultAutocompletion implements Autocompletion{
 
     public DefaultTextArea getTextArea() {
         return textArea;
+    }
+
+    @Override
+    public void setLanguage(ScriptLanguage language) {
+        
     }
     
 }

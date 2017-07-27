@@ -34,6 +34,7 @@ import javafx.scene.layout.AnchorPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.Paragraph;
+import org.fxmisc.richtext.model.StyledDocument;
 import org.fxmisc.richtext.model.StyledText;
 import org.reactfx.collection.LiveList;
 import org.scijava.command.CommandInfo;
@@ -56,6 +57,7 @@ public class DefaultTextArea extends AnchorPane{
     private ObjectProperty<IndexRange> selectionProperty;
     
     private int needIndent = 0;
+    private String indent = "";
     
     private Autocompletion autocompletion;
     
@@ -83,9 +85,12 @@ public class DefaultTextArea extends AnchorPane{
                         this.codeArea.setStyleSpans(0, this.scriptHighlight.computeHighlighting(this.codeArea.getText()));
                         if (this.autocomplete) lauchAutocompletion();
                         addVariableAutocompletion();                        
-                        if (change.getInserted().getText().equals("\n")) autoIndent();
-                        System.out.println(change.getInserted().getText().equals("\n"));
-                        processIndent();
+                        if (change.getInserted().getText().equals("\n")) {
+                            autoIndent();
+                            change.getInserted().getText().replace("\n", "\n" + indent);
+                            
+                        }
+                        System.out.println(change.getInserted().getText());
                     }
                     
                 });
@@ -175,7 +180,10 @@ public class DefaultTextArea extends AnchorPane{
                     numberOfTab+=1;
                 }
             }
-            this.needIndent = numberOfTab;
+            for (int i = 0; i < numberOfTab; i++) {
+                this.indent.concat("\t");
+                //this.codeArea.insertText(this.codeArea.getCaretPosition()-1, "\t");
+            }
         }
         
         
