@@ -42,14 +42,16 @@ import org.scijava.plugin.Plugin;
 public abstract class SummaryExplorerView implements ExplorerView {
 
     private final BorderPane borderPane = new BorderPane();
-    private VBox vBox = new VBox();
-    private HBox hBox1 = new HBox();
-    private HBox hBox2 = new HBox();
+    private VBox vBox = new VBox(10);
+    private HBox hBox1 = new HBox(10);
+    private HBox hBox2 = new HBox(10);
     private Button last = new Button("last");
     private Button next = new Button("next");
-    private Label label = new Label();
+    private Label label = new Label("Nothing selected");
     private TableView<Explorable> tableView = new TableView<>();
     private TilePane tilePane = new TilePane();
+    
+    private List<? extends Explorable> itemsList;
 
     public SummaryExplorerView() {
         borderPane.setCenter(vBox);
@@ -67,7 +69,7 @@ public abstract class SummaryExplorerView implements ExplorerView {
 
     @Override
     public void setItems(List<? extends Explorable> items) {
-        
+        this.itemsList = items;
     }
 
     @Override
