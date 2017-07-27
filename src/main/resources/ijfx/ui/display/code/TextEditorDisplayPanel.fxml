@@ -13,7 +13,7 @@
             <ComboBox fx:id="languageComboBox" prefWidth="150.0" promptText="Language" styleClass="smaller" BorderPane.alignment="CENTER" />
          </left>
          <right>
-            <Button fx:id="runButton" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#runScript" styleClass="smaller" text="Run script" BorderPane.alignment="CENTER">
+            <Button fx:id="runButton" contentDisplay="RIGHT" mnemonicParsing="false" styleClass="smaller" text="Run" BorderPane.alignment="CENTER">
                <graphic>
                   <FontAwesomeIconView glyphName="PLAY" styleClass="success" />
                </graphic>

@@ -25,6 +25,7 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import ijfx.core.FXUserInterface;
 import ijfx.core.uicontext.UiContextService;
 import ijfx.core.uicontext.UiContextUpdatedEvent;
+import ijfx.core.uiplugin.FXUiCommandService;
 import ijfx.core.uiplugin.Localization;
 import ijfx.ui.UiConfiguration;
 import ijfx.ui.UiPlugin;
@@ -92,6 +93,9 @@ public class ConsoleUIPlugin implements UiPlugin, ConsolePane<Node> {
     @Parameter
     UiContextService uiContextService;
 
+    @Parameter
+            FXUiCommandService commandService;
+    
     Set<String> lastContextList;
 
     @Override
@@ -123,6 +127,14 @@ public class ConsoleUIPlugin implements UiPlugin, ConsolePane<Node> {
         toggleButton.addEventFilter(MouseEvent.MOUSE_PRESSED, this::onMousePressed);
         
         hbox.getChildren().addAll(cssButton,toggleButton);
+        
+        debugButton.getItems().addAll(commandService
+                .getAssociatedAction(this.getClass())
+                .stream()
+                .map(commandService::createMenuItem)
+                .collect(Collectors.toList()));
+        
+        
         
         return this;
 

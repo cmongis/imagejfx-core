@@ -36,47 +36,47 @@ import org.scijava.service.Service;
  *
  * @author cyril
  */
-@Plugin(type = Service.class,priority=Priority.NORMAL_PRIORITY)
-public class FXUiCommandService extends DefaultUiCommandService implements IjfxService{
-    
+@Plugin(type = Service.class, priority = Priority.NORMAL_PRIORITY)
+public class FXUiCommandService extends DefaultUiCommandService implements IjfxService {
+
     @Parameter
     FXIconService fxIconService;
-    
-    
-    
+
+    public <T> MenuItem createMenuItem(UiCommand<T> action) {
+        return createMenuItem(action, null);
+    }
+
     public <T> MenuItem createMenuItem(UiCommand<T> action, T object) {
-        MenuItem item = new MenuItem(SciJavaUtils.getLabel(action),fxIconService.getIconAsNode(action));
-        
-        item.setOnAction(event->{
+        MenuItem item = new MenuItem(SciJavaUtils.getLabel(action), fxIconService.getIconAsNode(action));
+
+        item.setOnAction(event -> {
             action.run(object);
         });
-        
+
         return item;
-        
+
     }
-    
+
     public Button createButton(SciJavaPlugin plugin) {
-         Button button = new Button(SciJavaUtils.getLabel(plugin),fxIconService.getIconAsNode(plugin));
-         button.setTooltip(new Tooltip(SciJavaUtils.getDescription(plugin)));
-         return button;
+        Button button = new Button(SciJavaUtils.getLabel(plugin), fxIconService.getIconAsNode(plugin));
+        button.setTooltip(new Tooltip(SciJavaUtils.getDescription(plugin)));
+        return button;
     }
-    
+
     public Button createButton(PluginInfo<?> infos) {
-        Button button = new Button(infos.getLabel(),fxIconService.getIconAsNode(infos.getIconPath()));
+        Button button = new Button(infos.getLabel(), fxIconService.getIconAsNode(infos.getIconPath()));
         button.setTooltip(new Tooltip(infos.getDescription()));
         return button;
     }
-    
+
     public <T> Button createButton(UiCommand<T> action, T object) {
-       Button button = createButton(action);
-        
-        button.setOnAction(event->{
-           action.run(object);
+        Button button = createButton(action);
+
+        button.setOnAction(event -> {
+            action.run(object);
         });
-        
+
         return button;
     }
-    
-    
-    
+
 }

@@ -58,7 +58,7 @@ public interface ExplorerView extends SciJavaPlugin {
      */
     public void setSelectedItem(List<? extends Explorable> items);
     
-    public void setOnItemClicked(Consumer<DataClickEvent> eventHandler);
+    public void setOnItemClicked(Consumer<DataClickEvent<Explorable>> eventHandler);
     
     
     public SelectionModel getSelectionModel();

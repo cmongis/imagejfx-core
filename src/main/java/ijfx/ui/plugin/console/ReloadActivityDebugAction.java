@@ -17,43 +17,25 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.ui.mainwindow;
+package ijfx.ui.plugin.console;
 
-import ijfx.core.activity.Activity;
 import ijfx.core.activity.ActivityService;
-import ijfx.core.mainwindow.MainWindow;
-import ijfx.core.uiplugin.AbstractUiCommand;
 import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  *
  * @author cyril
  */
-public abstract class AbstractActivityLauncher<T extends Activity> extends AbstractUiCommand<MainWindow>{
+@Plugin(type = DebugAction.class, label = "Reload current activity")
+public class ReloadActivityDebugAction extends DebugActionBase{
+    
+   @Parameter
+   ActivityService activityService;
 
-    
-    @Parameter
-    private ActivityService activityService;
-    
-    private final Class<? extends T> activityType;
-    
-    public AbstractActivityLauncher(Class<? extends T> type) {
-        super(MainWindow.class);
-        activityType = type;
-    }
-
-    
-    
-    
-    
     @Override
-    public void run(MainWindow t) {
-        
-        activityService.open(activityType);
-        
+    void call() {
+        activityService.reloadCurrentActivity();
     }
-
-    
-    
     
 }

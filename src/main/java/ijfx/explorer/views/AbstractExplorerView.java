@@ -17,42 +17,33 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.ui.mainwindow;
+package ijfx.explorer.views;
 
-import ijfx.core.activity.Activity;
-import ijfx.core.activity.ActivityService;
-import ijfx.core.mainwindow.MainWindow;
-import ijfx.core.uiplugin.AbstractUiCommand;
-import org.scijava.plugin.Parameter;
+import ijfx.explorer.datamodel.Explorable;
+import java.util.function.Consumer;
+import javafx.scene.input.MouseEvent;
 
 /**
  *
  * @author cyril
  */
-public abstract class AbstractActivityLauncher<T extends Activity> extends AbstractUiCommand<MainWindow>{
+public abstract class AbstractExplorerView implements ExplorerView{
+    
+    Consumer<DataClickEvent<Explorable>> onItemClicked;
 
-    
-    @Parameter
-    private ActivityService activityService;
-    
-    private final Class<? extends T> activityType;
-    
-    public AbstractActivityLauncher(Class<? extends T> type) {
-        super(MainWindow.class);
-        activityType = type;
-    }
-
-    
-    
-    
-    
     @Override
-    public void run(MainWindow t) {
+    public void setOnItemClicked(Consumer<DataClickEvent<Explorable>> onItemClicked) {
+        this.onItemClicked = onItemClicked;
+    }
+    
+    
+    protected void emitEvent(Explorable expl, MouseEvent event, boolean isDoubleClick) {
         
-        activityService.open(activityType);
+        if(onItemClicked != null) {
+            onItemClicked.accept(new DataClickEvent<>(expl,event,isDoubleClick));
+        }
         
     }
-
     
     
     
