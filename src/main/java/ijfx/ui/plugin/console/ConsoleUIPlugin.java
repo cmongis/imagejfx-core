@@ -167,7 +167,6 @@ public class ConsoleUIPlugin implements UiPlugin, ConsolePane<Node> {
     @Override
     public void append(OutputEvent event) {
         Platform.runLater(()->{
-        consoleTextArea.appendText("\n");
         consoleTextArea.appendText(event.getOutput());
         });
     }

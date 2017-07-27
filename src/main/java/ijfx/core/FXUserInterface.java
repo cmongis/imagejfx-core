@@ -489,8 +489,12 @@ public class FXUserInterface extends Application implements UserInterface {
     }
 
     public void reloadCss() {
+        
         SCENE.getStylesheets().remove(getStylesheet());
         SCENE.getStylesheets().add(getStylesheet());
+        
+        logger.info("CSS reloaded.");
+        
     }
 
 }
