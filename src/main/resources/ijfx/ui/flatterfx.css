@@ -4,6 +4,7 @@
     src: url('ijfx/ui/res/fontawesome-webfont.ttf');
 }
 */
+/*
 @font-face {
     font-family: 'Roboto';
     src:url('/ijfx/ui/fonts/Roboto-Regular.ttf');  
@@ -11,7 +12,7 @@
 @font-face {
     font-family: 'Roboto-Light';
     src:url('/ijfx/ui/fonts/Roboto-light.ttf');
-}
+}*/
 
 .root {
     -fx-text-base-color: #ffffff;
