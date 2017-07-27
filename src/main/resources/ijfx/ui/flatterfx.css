@@ -1,8 +1,9 @@
-
+/*
 @font-face {
     font-family: 'fontAwesome';
-    /*src: url('ijfx/ui/res/fontawesome-webfont.ttf');*/
+    src: url('ijfx/ui/res/fontawesome-webfont.ttf');
 }
+*/
 @font-face {
     font-family: 'Roboto';
     src:url('/ijfx/ui/fonts/Roboto-Regular.ttf');  
