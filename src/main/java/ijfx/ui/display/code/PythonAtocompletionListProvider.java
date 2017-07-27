@@ -19,35 +19,57 @@
  */
 package ijfx.ui.display.code;
 
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+import org.scijava.command.CommandInfo;
+
 /**
  *
  * @author florian
  */
-public class PythonAtocompletionListProvider extends DefaultAutocompletionListProvider{
-    
-    
-    public void addImport(String text, String word){
-        String[] lines = text.split("\t");
-        for (String line : lines){
-            if (line.startsWith("import")){
-                String importWord = line.split(" ")[1];
-                for (String entry : this.entries){
-                    if (entry.contains(importWord)){
-                        this.entries.remove(entry);
-                    }
+public class PythonAtocompletionListProvider extends DefaultAutocompletionListProvider {
+
+    public PythonAtocompletionListProvider(List<CommandInfo> entriesList) {
+        super(entriesList);
+    }
+
+    @Override
+    public void computeAutocompletion(String text, String word) {
+        super.computeAutocompletion(text, word);
+        addImport(text, word);
+    }
+
+    public void addImport(String text, String word) {
+        String[] lines = text.split("\n");
+        for (String line : lines) {
+            String[] splittedLine = line.split(" ");
+            if (splittedLine.length >= 2) {
+                if (splittedLine[0].equals("import") && splittedLine.length >= 2) {
+                    String importWord = splittedLine[1];
+                    
+                    Set newEntries = this.entries
+                            .stream()
+                            .filter(e -> e.contains(importWord))
+                            .collect(Collectors.toSet());
+                    this.entries = new TreeSet<>(newEntries);
+
+                    this.entries.add(importWord.split(".")[importWord.split(".").length]);
                 }
-                this.entries.add(importWord.split(".")[-1]);
-            }
-             if (line.startsWith("from")){
-                String importWord = line.split(" ")[1];
-                for (String entry : this.entries){
-                    if (entry.contains(importWord)){
-                        this.entries.remove(entry);
-                    }
+                if (splittedLine[0].equals("from")) {
+                    String importWord = splittedLine[1];
+                   
+                    Set newEntries = this.entries
+                            .stream()
+                            .filter(e -> !e.contains(importWord))
+                            .collect(Collectors.toSet());
+                    this.entries = new TreeSet<>(newEntries);
+                    this.entries.add(line.split(" ")[3]);
                 }
-                this.entries.add(line.split(" ")[3]);
             }
         }
-            
+
     }
 }

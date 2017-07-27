@@ -90,7 +90,6 @@ public class DefaultTextArea extends AnchorPane{
                             change.getInserted().getText().replace("\n", "\n" + indent);
                             
                         }
-                        System.out.println(change.getInserted().getText());
                     }
                     
                 });
@@ -110,8 +109,8 @@ public class DefaultTextArea extends AnchorPane{
     }
     
     public void setAutocompletion(List<CommandInfo> entriesList){
-        this.listProvider = new DefaultAutocompletionListProvider(entriesList);
-        this.autocompletion.setEntries(listProvider.getEntries());
+        this.listProvider = new PythonAtocompletionListProvider(entriesList);
+        this.autocompletion.setListProvider(listProvider);
     }
     
     public void initLanguage(ScriptLanguage language){

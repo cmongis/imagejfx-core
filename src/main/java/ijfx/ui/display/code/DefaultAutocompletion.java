@@ -18,6 +18,7 @@
 	
  */
 package ijfx.ui.display.code;
+
 import java.util.LinkedList;
 import java.util.SortedSet;
 import javafx.geometry.Side;
@@ -37,120 +38,128 @@ import org.scijava.script.ScriptLanguage;
  *
  * @author florian
  */
-public class DefaultAutocompletion implements Autocompletion{
-    /** The existing autocomplete entries. */
-  private SortedSet<String> entries;
-  /** The popup used to select an entry. */
-  private ContextMenu entriesPopup;
-  //private StringProperty textProperty;
-  private Node codeArea;
-  private DefaultTextArea textArea;
+public class DefaultAutocompletion implements Autocompletion {
 
-  /** Construct a new AutoCompleteTextField. */
-  public DefaultAutocompletion(DefaultTextArea textArea, SortedSet<String> entries) {
-    super();
-    this.entries = entries;
-    //this.textProperty = textProperty;
-    this.textArea = textArea;
-    this.codeArea = textArea.getCodeArea();
-    this.entriesPopup = new ContextMenu();
-  }
+    /**
+     * The existing autocomplete entries.
+     */
+    private SortedSet<String> entries;
+    /**
+     * The popup used to select an entry.
+     */
+    private ContextMenu entriesPopup;
+    //private StringProperty textProperty;
+    //private Node codeArea;
+    private DefaultTextArea textArea;
+    private ScriptLanguage language;
+    private AutocompletionList listProvider;
+
+    /**
+     * Construct a new AutoCompleteTextField.
+     */
+    public DefaultAutocompletion(DefaultTextArea textArea, SortedSet<String> entries) {
+        super();
+        this.entries = entries;
+        //this.textProperty = textProperty;
+        this.textArea = textArea;
+        //this.codeArea = textArea.getCodeArea();
+        this.entriesPopup = new ContextMenu();
+    }
+
+    public DefaultAutocompletion(DefaultTextArea textArea, AutocompletionList listProvider) {
+        this.textArea = textArea;
+        this.listProvider = listProvider;
+
+    }
 
     public DefaultAutocompletion(DefaultTextArea textArea) {
         this.textArea = textArea;
-        this.codeArea = textArea.getCodeArea();
+        //this.codeArea = textArea.getCodeArea();
         this.entriesPopup = new ContextMenu();
         this.entries = new TreeSet<>();
     }
-    
-  
-  
-   /**
-    * Compute the autocompletion on the given word, the context menu entriesPopup is shown from  here
-    * @param word a string representing the word on wich the autocompletion will be computed
-    */
-  @Override
-   public ContextMenu computeAutocompletion(String word){
-      
-    if (word.length() == 0)
-    {
-      //this.entriesPopup.hide();
-        return null;
-    } else
-    {
-      LinkedList<String> searchResult = new LinkedList<>();
-      final List<String> filteredEntries = entries
-              .stream()
-              .filter(e -> e.toLowerCase().contains(word.toLowerCase())).collect(Collectors.toList()); 
-      searchResult.addAll(filteredEntries);
-      if (entries.size() > 0)
-      {
-        populatePopup(searchResult);
-        if (!this.entriesPopup.isShowing())
-        {
-          //this.entriesPopup.show(this.codeArea, Side.BOTTOM, 0, 0);
-            return this.entriesPopup;
+
+    /**
+     * Compute the autocompletion on the given word, the context menu
+     * entriesPopup is shown from here
+     *
+     * @param word a string representing the word on wich the autocompletion
+     * will be computed
+     */
+    @Override
+    public ContextMenu computeAutocompletion(String word) {
+        
+        this.listProvider.computeAutocompletion(this.textArea.getCodeArea().getText(), word);
+        this.entries = this.listProvider.getEntries();
+
+        if (word.length() == 0) {
+            //this.entriesPopup.hide();
+            return null;
+        } else {
+            LinkedList<String> searchResult = new LinkedList<>();
+            final List<String> filteredEntries = entries
+                    .stream()
+                    .filter(e -> e.toLowerCase().contains(word.toLowerCase())).collect(Collectors.toList());
+            searchResult.addAll(filteredEntries);
+            if (entries.size() > 0) {
+                populatePopup(searchResult);
+                if (!this.entriesPopup.isShowing()) {
+                    //this.entriesPopup.show(this.codeArea, Side.BOTTOM, 0, 0);
+                    return this.entriesPopup;
+                }
+            } else {
+                return null;
+            }
         }
-      } else
-      {
         return null;
-      }
     }
-     return null;
-  }
-  /**
-   * Get the existing set of autocomplete entries.
-   * @return The existing autocomplete entries.
-   */
-  public SortedSet<String> getEntries() { return entries; }
-  
-  /**
-   * Populate the entry set with the given search results.  Display is limited to 10 entries, for performance.
-   * @param searchResult The set of matching strings.
-   */
+
+    /**
+     * Get the existing set of autocomplete entries.
+     *
+     * @return The existing autocomplete entries.
+     */
+    public SortedSet<String> getEntries() {
+        return entries;
+    }
+
+    /**
+     * Populate the entry set with the given search results. Display is limited
+     * to 10 entries, for performance.
+     *
+     * @param searchResult The set of matching strings.
+     */
     private void populatePopup(List<String> searchResult) {
         List<CustomMenuItem> menuItems = new LinkedList<>();
         // If you'd like more entries, modify this line.
         // I would like to put it at max value, but i dont't know how to resize the contextMenu and make it scrollable
         int maxEntries = 10;
         int count = Math.min(searchResult.size(), maxEntries);
-        for (int i = 0; i < count; i++)
-        {
-          final String result = searchResult.get(i);
-          Label entryLabel = new Label(result);
-          CustomMenuItem item = new CustomMenuItem(entryLabel, true);
-          item.setOnAction(new EventHandler<ActionEvent>()
-          {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-              textArea.replaceWord(result);
-              entriesPopup.hide();
-            }
-          });
-          menuItems.add(item);
+        for (int i = 0; i < count; i++) {
+            final String result = searchResult.get(i);
+            Label entryLabel = new Label(result);
+            CustomMenuItem item = new CustomMenuItem(entryLabel, true);
+            item.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    textArea.replaceWord(result);
+                    entriesPopup.hide();
+                }
+            });
+            menuItems.add(item);
         }
         entriesPopup.getItems().clear();
         entriesPopup.getItems().addAll(menuItems);
 
     }
 
-  @Override
+    @Override
     public void setEntries(SortedSet<String> entries) {
         this.entries = entries;
     }
 
-  @Override
-    public void setCodeArea(Node codeArea) {
-        this.codeArea = codeArea;
-    }
-
     public void setTextArea(DefaultTextArea textArea) {
         this.textArea = textArea;
-    }
-
-  @Override
-    public Node getCodeArea() {
-        return codeArea;
     }
 
     public DefaultTextArea getTextArea() {
@@ -158,8 +167,13 @@ public class DefaultAutocompletion implements Autocompletion{
     }
 
     @Override
-    public void setLanguage(ScriptLanguage language) {
-        
+    public void setListProvider(AutocompletionList listProvider) {
+        this.listProvider = listProvider;
     }
-    
+
+    @Override
+    public AutocompletionList getListProvider() {
+        return this.listProvider;
+    }
+
 }

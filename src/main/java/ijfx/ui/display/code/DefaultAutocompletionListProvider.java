@@ -48,7 +48,12 @@ public class DefaultAutocompletionListProvider implements AutocompletionList {
     public DefaultAutocompletionListProvider() {
         this.entries = new TreeSet<>();
     }
-
+    
+    @Override
+    public void computeAutocompletion(String text, String word){
+        
+    }
+    
     @Override
     public SortedSet<String> getEntries() {
         return entries;

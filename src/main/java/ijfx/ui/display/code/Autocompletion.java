@@ -32,8 +32,7 @@ import org.scijava.script.ScriptLanguage;
 public interface Autocompletion {
     ContextMenu computeAutocompletion(String word);
     void setEntries(SortedSet<String> entries);
-    void setCodeArea(Node codeArea);
-    Node getCodeArea();
-    void setLanguage(ScriptLanguage language);
+    void setListProvider(AutocompletionList listProvider);
+    AutocompletionList getListProvider();
     
 }
