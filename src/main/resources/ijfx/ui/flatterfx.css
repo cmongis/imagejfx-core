@@ -2425,7 +2425,7 @@ Label.chart-legend-item{
     -fx-padding:10px;
 }
 .choice-cell, .choice-cell:even {
-    -fx-border-bottom:2px solid black;
+   /* -fx-border-bottom:2px solid black;*/
     -fx-background-color:transparent;
 }
 .choice-cell:selected {
