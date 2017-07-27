@@ -2503,3 +2503,20 @@ Label.chart-legend-item{
     -fx-font-weight:100;
     -fx-padding:20px 0 5px 0;
 }
+/*
+    Console UI Plugin
+*/
+
+#consoleTextArea, #consoleTextArea .content, #consoleTextArea:focused .content {
+    -fx-background-color:black;
+    -fx-padding:0px;
+    -fx-border:0;
+    -fx-stroke:0;
+}
+#consoleTextArea .content,#consoleTextArea:focused .content {
+    -fx-padding:10px;
+    -fx-color:white;
+}
+#consoleTextArea:focused .text, #consoleTextArea .text {
+    -fx-text-color:white;
+}
