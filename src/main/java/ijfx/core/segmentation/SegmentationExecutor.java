@@ -30,6 +30,6 @@ public interface SegmentationExecutor<T> {
     
     
     
-    public List<T> execute(ProgressHandler handler, List<SegmentationTask<T>> tasks);
+    public List<T> execute(ProgressHandler handler, List<SegmentationOp<T>> tasks);
     
 }

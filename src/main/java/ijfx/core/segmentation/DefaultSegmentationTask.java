@@ -30,7 +30,7 @@ import net.imglib2.type.logic.BitType;
  *
  * @author cyril
  */
-public class DefaultSegmentationTask<T> implements SegmentationTask<T> {
+public class DefaultSegmentationTask<T> implements SegmentationOp<T> {
     
     private BatchSingleInput input;
     

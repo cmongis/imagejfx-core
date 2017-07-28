@@ -58,7 +58,7 @@ public class LinearSegmentationExecutor<T> implements SegmentationExecutor<T> {
     private ProgressHandler handler;
 
     @Override
-    public List<T> execute(ProgressHandler handler, List<SegmentationTask<T>> tasks) {
+    public List<T> execute(ProgressHandler handler, List<SegmentationOp<T>> tasks) {
 
         this.handler = ProgressHandler.check(handler);
 
@@ -78,7 +78,7 @@ public class LinearSegmentationExecutor<T> implements SegmentationExecutor<T> {
 
     }
 
-    public Callable<T> execute(SegmentationTask<T> task) {
+    public Callable<T> execute(SegmentationOp<T> task) {
 
         // we need to monitor the progress of each task
         final ObservableProgressHandler segmentationHandler = new ObservableProgressHandler();

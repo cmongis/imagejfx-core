@@ -19,23 +19,18 @@
  */
 package ijfx.core.segmentation;
 
-import ijfx.core.batch.BatchSingleInput;
-import ijfx.core.workflow.Workflow;
-import java.util.function.BiConsumer;
-import mongis.utils.ProgressHandler;
-import net.imglib2.img.Img;
-import net.imglib2.type.logic.BitType;
+import java.util.List;
+import net.imagej.overlay.Overlay;
 
 /**
  *
  * @author cyril
  */
-public interface SegmentationTask<T> {
+
+public interface SegmentationService {
     
-    BatchSingleInput getInput();
     
-    Workflow getWorkflow();
     
-    SegmentationHandler<T> getHandler();
+   
     
 }

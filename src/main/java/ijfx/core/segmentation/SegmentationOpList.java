@@ -19,22 +19,34 @@
  */
 package ijfx.core.segmentation;
 
-import ijfx.commands.binary.BinaryToOverlay;
-import ijfx.core.metadata.MetaDataSet;
+import java.util.ArrayList;
 import java.util.List;
+import mongis.utils.CallbackTask;
 import mongis.utils.ProgressHandler;
-import net.imagej.Dataset;
-import net.imagej.overlay.Overlay;
-import net.imglib2.img.Img;
-import net.imglib2.type.logic.BitType;
+import org.scijava.Context;
+import org.scijava.plugin.Parameter;
 
 /**
  *
  * @author cyril
  */
-@FunctionalInterface
-public interface SegmentationHandler<T> { 
-   T handle(ProgressHandler handler, MetaDataSet metadata, Dataset original,Img<BitType> result);
-   
-   
+public class SegmentationOpList<T> extends ArrayList<SegmentationOp<T>> {
+
+    public SegmentationOpList() {
+    }
+
+    public List<T> execute(ProgressHandler handler) {
+
+        return new LinearSegmentationExecutor<T>().execute(handler, this);
+
+    }
+
+    public CallbackTask<?, List<T>> executeAsync() {
+
+        return new CallbackTask<Void, List<T>>()
+                .call(this::execute)
+                .start();
+
+    }
+
 }

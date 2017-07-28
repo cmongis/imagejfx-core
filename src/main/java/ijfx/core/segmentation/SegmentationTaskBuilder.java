@@ -23,20 +23,26 @@ import com.google.common.collect.Lists;
 import ijfx.commands.binary.BinaryToOverlay;
 import ijfx.core.batch.item.BatchItemBuilder;
 import ijfx.core.batch.item.DatasetPlaneWrapper;
+import ijfx.core.image.ImagePlaneService;
+import ijfx.core.metadata.MetaDataService;
 import ijfx.core.metadata.MetaDataSet;
+import ijfx.core.metadata.MetaDataSetType;
 import ijfx.core.overlay.MeasurementService;
+import ijfx.core.utils.AxisUtils;
 import ijfx.core.utils.DimensionUtils;
 import ijfx.core.workflow.Workflow;
 import ijfx.ui.main.ImageJFX;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import mongis.utils.ProgressHandler;
 import net.imagej.Dataset;
+import net.imagej.axis.CalibratedAxis;
 import net.imagej.overlay.Overlay;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.type.logic.BitType;
 import org.scijava.Context;
@@ -52,56 +58,38 @@ public class SegmentationTaskBuilder {
 
     final BatchItemBuilder itemBuilder;
 
-    @Parameter
-    Context context;
-
-    @Parameter
-    MeasurementService measurementService;
-    
-   // @Parameter
-    //        Seg segmentationService;
     
     Workflow workflow;
     
     Logger logger = ImageJFX.getLogger();
     
-    BiConsumer<ProgressHandler, Img<BitType>> handler = (progress,img)->{
-        logger.info("Nothing is done with");
-    };
+    @Parameter
+    Context context;
     
+    @Parameter
+    MeasurementService measurementService;
+    
+    @Parameter
+    ImagePlaneService imagePlaneService;
+    
+    @Parameter
+    MetaDataService metaDataService;
     
     private SegmentationTaskBuilder(Context context) {
         context.inject(this);
         itemBuilder = new BatchItemBuilder(context);
 
-    }
-
+    } 
+    
     public SegmentationTaskBuilder setWorkflow(Workflow workflow) {
         this.workflow = workflow;
         return this;
     }
-
     
-    private List<SegmentedObject> measure(ProgressHandler handler, MetaDataSet set, Dataset original, Img<BitType> mask) {
-        
-        
-        
-        Overlay[] transform = BinaryToOverlay.transform(context, mask, true);
-        
-        //measurementService.measureOverlays(overlays, mask)
-        
-        return null;
+    private SegmentationTaskBuilder separatePlanes() {
+        separatePlane = true;
+        return this;
     }
-    
-    
-    
-    private  SegmentationTaskBuilder measure(Consumer<List<SegmentedObject>> onFinished) {
-        
-        
-return this;
-    }
-
-    
     
     private SegmentationTaskBuilder useMask(Consumer<Img<BitType>> onFinished) {
         
@@ -109,10 +97,10 @@ return this;
         
         return this;
     }
-    /*
-    private List<? extends SegmentationTask> build() {
+    
+    private <T> SegmentationOpList<T> build(SegmentationHandler<T> handler) {
 
-        List<DefaultSegmentationTask> inputList;
+        List<DefaultSegmentationTask<T>> inputList;
         
         // if separatePlane
         if (separatePlane) {
@@ -122,25 +110,74 @@ return this;
             inputList = Stream
                     .of(DimensionUtils.allPossibilities(dataset))
                     .map(position -> new DatasetPlaneWrapper(context, dataset, position))
-                    .map(input->new DefaultSegmentationTask(input,workflow))
+                    .map(input->new DefaultSegmentationTask<T>(input,workflow))
                     
                     .collect(Collectors.toList());
-            
-            
-            
-            
+  
         }
         else {
             inputList = Lists.newArrayList(new DefaultSegmentationTask(itemBuilder.getInput(),workflow));
         }
         
         inputList
-                .forEach(task->task.setHandler(getHandler()));
-        // take input dataset
+                .forEach(task->task.setHandler(handler));
+        
+        SegmentationOpList<T> segmentationOpList = new SegmentationOpList<>();
+        
+        segmentationOpList.addAll(inputList);
+        
+        return segmentationOpList;
+        // take input dataset   
+    }
+    
+    
+    public SegmentationOpList<List<? extends SegmentedObject>> measure() {
+        return build(this::measure);
+    }
+    
+     
+    
+    
+    private List<? extends SegmentedObject> measure(ProgressHandler handler, MetaDataSet set, Dataset original, Img<BitType> mask) {
+        
+        
+        
+        
+        List<Overlay> overlays = Lists.newArrayList(BinaryToOverlay.transform(context, mask, true));
+        
+        handler.setTotal(overlays.size());
+        
+        List<SegmentedObject> objects = new ArrayList<SegmentedObject>();
+        
+        if(original.numDimensions() > 2) {
+            
+            CalibratedAxis[] axes = AxisUtils.getAxes(original);
+            
+            for(long[] position : DimensionUtils.allPossibilities(original)) {
+                MetaDataSet planeMetaDataSet = new MetaDataSet(MetaDataSetType.PLANE);
+                planeMetaDataSet.merge(set);
+                
+                metaDataService.fillPositionMetaData(planeMetaDataSet, axes, position);
+                
+                List<? extends SegmentedObject> measureOverlays = measurementService.measureOverlays(overlays, original,position);
+                
+                measureOverlays.forEach(obj->obj.getMetaDataSet().merge(planeMetaDataSet));
+                
+                handler.increment(1);
+                objects.addAll(measureOverlays);
+                
+            }
+        }
+        else {
+            List<SegmentedObject> measureOverlays = measurementService.measureOverlays(overlays, (RandomAccessibleInterval) original);
+            measureOverlays
+                    .forEach(obj->obj.getMetaDataSet().merge(set));
+            
+            measureOverlays.addAll(objects);
+        }
+        
 
-        // separate into individual batch input
-        // and map it into individual SegmentationTask with each plane as a task
-        // just take the input as input 
-    }*/
-
+        
+        return objects;
+    }
 }
