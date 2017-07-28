@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Future;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,6 +53,7 @@ import net.imagej.overlay.BinaryMaskOverlay;
 import net.imagej.overlay.Overlay;
 import net.imagej.overlay.PolygonOverlay;
 import net.imagej.overlay.ThresholdOverlay;
+import net.imagej.plugins.commands.imglib.GaussianBlur;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
@@ -65,6 +67,8 @@ import net.imglib2.roi.PolygonRegionOfInterest;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.IntervalView;
+import org.scijava.command.CommandModule;
+import org.scijava.command.CommandService;
 import org.scijava.display.Display;
 import org.scijava.display.DisplayService;
 import org.scijava.plugin.Parameter;
@@ -104,6 +108,8 @@ public class MeasurementService extends AbstractService implements IjfxService {
     @Parameter
     MetaDataSetDisplayService metaDataDisplaySrv;
     
+    @Parameter
+    CommandService commandService;
     
 
     Logger logger = ImageJFX.getLogger();
@@ -145,7 +151,7 @@ public class MeasurementService extends AbstractService implements IjfxService {
         BinaryMaskRegionOfInterest roi = (BinaryMaskRegionOfInterest) maskOverlay.getRegionOfInterest();
 
         return Arrays.asList(BinaryToOverlay.transform(getContext(), roi.getImg(), true));
-
+  
     }
 
     private Img<BitType> createBinaryMask(ThresholdOverlay overlay, long width, long height) {
