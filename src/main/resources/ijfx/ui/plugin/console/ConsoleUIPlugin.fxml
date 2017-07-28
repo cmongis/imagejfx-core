@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 
-<BorderPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
    <top>
       <HBox alignment="CENTER_RIGHT" BorderPane.alignment="CENTER">
          <children>
@@ -23,7 +23,7 @@
       </HBox>
    </top>
    <center>
-      <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+      <TabPane minWidth="300.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
         <tabs>
           <Tab text="Console">
                <content>
@@ -31,7 +31,7 @@
                      <children>
                         <BorderPane AnchorPane.bottomAnchor="135.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <center>
-                              <TextArea fx:id="consoleTextArea" styleClass="non-editable" text="The console is empty" wrapText="true" BorderPane.alignment="CENTER" />
+                              <TextArea fx:id="consoleTextArea" prefHeight="350.0" styleClass="non-editable" text="The console is empty" wrapText="true" BorderPane.alignment="CENTER" />
                            </center>
                            <bottom>
                               <HBox BorderPane.alignment="CENTER">
@@ -45,6 +45,9 @@
                                  <opaqueInsets>
                                     <Insets top="10.0" />
                                  </opaqueInsets>
+                                 <padding>
+                                    <Insets bottom="10.0" />
+                                 </padding>
                               </HBox>
                            </bottom>
                         </BorderPane>

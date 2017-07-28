@@ -38,10 +38,12 @@ public interface ListChangeListenerBuilder<T> {
     ListChangeListener<T> build();
     
     
-    static <T> ListChangeListenerBuilder<T> create() {
+    static <T> ListChangeListenerBuilder<T> create(Class<T> clazz) {
         return new DefaultListChangeListenerBuilder<T>();
     }
-    
+     static <T> ListChangeListenerBuilder<T> create() {
+        return new DefaultListChangeListenerBuilder<T>();
+    }
     
     
     

@@ -29,13 +29,21 @@ import org.scijava.widget.WidgetModel;
  */
 public interface PreferencePanelGenerator {
 
-    void addCategory(List<Node> widgets, String name);
+    void addCategory(String name);
 
-    void addWidget(WidgetModel widgetModel, String name);
+    
+   
+    //void addWidget(WidgetModel widgetModel, String name);
 
-    void addWidget(WidgetModel widgetModel);
+    void addWidget(String category, WidgetModel widgetModel);
 
-    Node createWidget(WidgetModel widgetModel, String name);
+    default void addCategory(List<WidgetModel> models, String category) {
+        for(WidgetModel model : models) {
+            addWidget(category, model);
+        }
+    }
+    
+    //Node createWidget(WidgetModel widgetModel, String name);
 
     Node getPanel();
     

@@ -19,6 +19,8 @@
  */
 package ijfx.ui.display.code;
 
+import de.jensd.fx.glyphs.GlyphsDude;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import ijfx.core.activity.Activity;
 import ijfx.core.activity.ActivityService;
 import ijfx.core.prefs.JsonPreferenceService;
@@ -34,19 +36,16 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import org.scijava.Context;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.ui.viewer.DisplayPanel;
 import org.scijava.widget.ChoiceWidget;
 import org.scijava.widget.FileWidget;
-import org.scijava.widget.InputWidget;
+import org.scijava.widget.WidgetModel;
 import org.scijava.widget.WidgetService;
 
 /**
@@ -82,41 +81,44 @@ public class DefaultParametersChoser extends BorderPane implements Activity{
         mainBox.setPadding(new Insets(20, 20, 20, 20));
         this.setPadding(Insets.EMPTY);
         this.setCenter(mainBox);
-        Button saveButton = new Button("Save preferencies");
+        Button saveButton = GlyphsDude.createIconButton(FontAwesomeIcon.SAVE, "Save and back");
         saveButton.setAlignment(Pos.CENTER_RIGHT);
-        saveButton.setText("Save preferencies");
+        saveButton.getStyleClass().add("success");
         saveButton.setOnAction(this::savePreferencies);
-        Button closeButton = new Button("close");
+        Button closeButton = GlyphsDude.createIconButton(FontAwesomeIcon.REMOVE,"Cancel changes");
         closeButton.setAlignment(Pos.CENTER_RIGHT);
         closeButton.setText("Close");
+        closeButton.getStyleClass().add("danger");
         closeButton.setOnAction(this::close);
-        
-        this.setBottom(saveButton);
-        this.setTop(closeButton);
-        this.setPadding(new Insets(20, 20, 20, 20));
+        HBox hbox = new HBox();
+        hbox.getStyleClass().addAll("hbox","with-padding");
+        hbox.getChildren().addAll(closeButton,saveButton);
+        this.setBottom(hbox);
+        //this.setTop(closeButton);
+        //this.setPadding(new Insets(20, 20, 20, 20));
         
     }
     
      public Node generatepreferenciesWidget(){
         choserGenerator = new PreferencesChoserGenerator(widgetService);
-        List<Node> themeCategory = new ArrayList<>();
-        List<Node> autocompletionCategory = new ArrayList<>();
-        autocompletionCategory.add(this.choserGenerator.createWidget(
+        List<WidgetModel> themeCategory = new ArrayList<>();
+        List<WidgetModel> autocompletionCategory = new ArrayList<>();
+        autocompletionCategory.add(
                 new SuppliedWidgetModel<>(Boolean.class)
                 .setGetter(preferencies::isAutocompletion)
                 .setSetter(preferencies::setAutocompletion)
                        
                 .setWidgetLabel("Enable autocompletion")
                 
-        ,"Enable autocompletion" ));
+        );
         
-        autocompletionCategory.add(this.choserGenerator.createWidget(
+        autocompletionCategory.add(
                 new SuppliedWidgetModel<>(Boolean.class)
                 .setGetter(preferencies::isSidePanel)
                 .setSetter(preferencies::setSidePanel)
                 .setWidgetLabel("Enable side panel")
                 
-        ,"Enable side panel"));
+        );
         AbstractWidgetModel styleWidget = 
         
                 new SuppliedWidgetModel<>(String.class)
@@ -125,19 +127,19 @@ public class DefaultParametersChoser extends BorderPane implements Activity{
                 .setStyle(ChoiceWidget.LIST_BOX_STYLE)
                 .setWidgetLabel("Choose style");
         
-        themeCategory.add(this.choserGenerator.createWidget(
+        themeCategory.add(
                 new SuppliedWidgetModel<>(File.class)
                 .setGetter(preferencies::getCustomCSS)
                 .setSetter(preferencies::setCustomCSS)
                 .setStyle(FileWidget.DIRECTORY_STYLE)
                 .setWidgetLabel("Choose style")
-        , "Select an other css file"));
+        );
         
         
         for (String theme : preferencies.getListOfTheme()){
             styleWidget.addChoice(theme);
         }
-        themeCategory.add(choserGenerator.createWidget(styleWidget, "Select a default theme"));
+        themeCategory.add(styleWidget);
         
         choserGenerator.addCategory(autocompletionCategory, "Autocompletion");
         choserGenerator.addCategory(themeCategory, "Apperence");
@@ -163,7 +165,7 @@ public class DefaultParametersChoser extends BorderPane implements Activity{
 
     @Override
     public Task updateOnShow() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return null;
     }
     
     public void close(ActionEvent event){

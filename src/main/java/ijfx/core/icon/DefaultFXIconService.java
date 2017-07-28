@@ -110,6 +110,7 @@ public class DefaultFXIconService extends AbstractService implements FXIconServi
         } else {
 
             ImageView imageView = new ImageView(iconPath);
+            imageView.getStyleClass().add("image-icon");
             return imageView;
         }
 
