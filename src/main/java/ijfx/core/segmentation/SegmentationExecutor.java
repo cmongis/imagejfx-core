@@ -17,57 +17,19 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package mongis.utils;
+package ijfx.core.segmentation;
+
+import java.util.List;
+import mongis.utils.ProgressHandler;
 
 /**
  *
- * @author Cyril MONGIS, 2016
+ * @author cyril
  */
-public class SilentProgressHandler implements ProgressHandler{
-
+public interface SegmentationExecutor<T> {
     
     
     
-    @Override
-    public void setProgress(double progress) {
-    }
-
-    @Override
-    public void setProgress(double workDone, double total) {
-    }
-
-    @Override
-    public void setProgress(long workDone, long total) {
-    }
-
-    @Override
-    public void setStatus(String message) {
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return false;
-    }
-
-    @Override
-    public void setTotal(double total) {
-        
-    }
-
-    @Override
-    public void increment(double inc) {
-    }
-
-    @Override
-    public double getProgress() {
-        return 0;
-    }
-
-    @Override
-    public String getMessage() {
-        return "";
-    }
-    
-    
+    public List<T> execute(ProgressHandler handler, List<SegmentationTask<T>> tasks);
     
 }
