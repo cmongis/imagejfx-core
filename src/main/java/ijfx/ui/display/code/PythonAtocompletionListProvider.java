@@ -71,7 +71,7 @@ public class PythonAtocompletionListProvider extends DefaultAutocompletionListPr
 
                     });
                 }
-                if (splittedLine[0].equals("from")) {
+                if (splittedLine[0].equals("from") && splittedLine.length >= 4) {
                     String importWord = splittedLine[1];
 
                     
