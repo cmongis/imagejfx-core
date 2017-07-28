@@ -34,7 +34,9 @@ import javafx.scene.layout.AnchorPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.Paragraph;
+import org.fxmisc.richtext.model.StyledDocument;
 import org.fxmisc.richtext.model.StyledText;
+import org.reactfx.collection.LiveList;
 import org.scijava.command.CommandInfo;
 import org.scijava.script.ScriptLanguage;
 
@@ -54,6 +56,8 @@ public class DefaultTextArea extends AnchorPane{
     private StringProperty textProperty;
     private ObjectProperty<IndexRange> selectionProperty;
     
+    private int needIndent = 0;
+    private String indent = "";
     
     private Autocompletion autocompletion;
     
@@ -65,8 +69,16 @@ public class DefaultTextArea extends AnchorPane{
     public DefaultTextArea(List<CommandInfo> entriesList, TextEditorPreferencies preferencies) {
         
         initCodeArea();
-        setAutocompletion(entriesList);
+        setAutocompletion(entriesList, null);
         setPreferencies(preferencies);
+    }
+    
+    public DefaultTextArea(List<CommandInfo> entriesList, ScriptLanguage language, TextEditorPreferencies preferencies) {
+        
+        initCodeArea();
+        setAutocompletion(entriesList, language);
+        setPreferencies(preferencies);
+        
     }
     
     public void initCodeArea(){
@@ -80,8 +92,14 @@ public class DefaultTextArea extends AnchorPane{
                      if ("".equals(this.codeArea.getText().trim()) == false) {
                         this.codeArea.setStyleSpans(0, this.scriptHighlight.computeHighlighting(this.codeArea.getText()));
                         if (this.autocomplete) lauchAutocompletion();
-                        addVariableAutocompletion();
-                        
+                        addVariableAutocompletion();   
+                        /*
+                        if (change.getInserted().getText().equals("\n")) {
+                            autoIndent();
+                            change.getInserted().getText().replace("\n", "\n" + indent);
+                            
+                        }
+                        */
                     }
                     
                 });
@@ -100,13 +118,22 @@ public class DefaultTextArea extends AnchorPane{
         this.autocompletion = new DefaultAutocompletion(this);
     }
     
-    public void setAutocompletion(List<CommandInfo> entriesList){
-        this.listProvider = new DefaultAutocompletionListProvider(entriesList);
-        this.autocompletion.setEntries(listProvider.getEntries());
+    public void setAutocompletion(List<CommandInfo> entriesList, ScriptLanguage language){
+        System.out.println(language.getLanguageName());
+        if (language.getLanguageName().equals("Python")){
+            this.listProvider = new PythonAtocompletionListProvider(entriesList);
+        }
+        else {
+            this.listProvider = new DefaultAutocompletionListProvider(entriesList);
+        }
+        
+        this.autocompletion.setListProvider(listProvider);
+        
     }
     
     public void initLanguage(ScriptLanguage language){
         this.scriptHighlight = new DefaultScriptHighlighting(language);
+        
     }
     
     /**
@@ -122,6 +149,7 @@ public class DefaultTextArea extends AnchorPane{
         Collection style = (Collection) paragraph.getStyleAtPosition(selection.getStart());
         if (!style.isEmpty()){
             if (style.toArray()[0].equals("null")){
+                word = word.replace("\t", "");
                 this.autocompleteMenu = this.autocompletion.computeAutocompletion(word);
                 if (autocompleteMenu != null) {
                     autocompleteMenu.setMaxHeight(5);
@@ -145,6 +173,7 @@ public class DefaultTextArea extends AnchorPane{
                     if (word.getStyle().toArray()[0].equals("null")){
                         String[] newEntries = word.getText().split(" ");
                         for (String newEntry : newEntries){
+                            newEntry = newEntry.replace("\t", ""); // removing tabulations from keywords
                             if (!this.listProvider.getEntries().contains(newEntry) && !newEntry.equals(currentWord)){
                                 this.listProvider.getEntries().add(newEntry);
                             }
@@ -155,6 +184,41 @@ public class DefaultTextArea extends AnchorPane{
             }
             
         }
+    }
+    
+    public void autoIndent(){
+        int numberOfTab = 0;
+        LiveList<Paragraph<Collection<String>, StyledText<Collection<String>>, Collection<String>>> paragraphs = this.codeArea.getParagraphs();
+        Paragraph<Collection<String>, StyledText<Collection<String>>, Collection<String>> prevParagraph = paragraphs.get(this.codeArea.getCurrentParagraph());
+        
+        if (prevParagraph.getText().startsWith("\t")){
+            
+            for (char letter : prevParagraph.getText().toCharArray()){
+                if (letter == '\t'){
+                    numberOfTab+=1;
+                }
+            }
+            for (int i = 0; i < numberOfTab; i++) {
+                this.indent.concat("\t");
+                //this.codeArea.insertText(this.codeArea.getCaretPosition()-1, "\t");
+            }
+        }
+        
+        
+        
+    }
+    
+    public void processIndent(){
+        /*
+        marche pas, parceque on ajoute un charactere, du coup ca declanche le listeneur qui reviens dans cette fonction, etc ...
+        et de toute facon ca marche pas et c'est moche
+        */
+        int indent = this.needIndent;
+        this.needIndent = 0;
+        for (int i = 0; i < indent; i++) {
+            this.codeArea.insertText(this.codeArea.getCaretPosition()-1, "\t");
+        }
+        
     }
     
     public CodeArea getCodeArea() {

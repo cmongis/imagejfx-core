@@ -96,7 +96,7 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
 
             root = loader.getRoot();
 
-            textArea = new DefaultTextArea(commandService.getCommands(), (TextEditorPreferencies) scriptEditorPreferenciesService.getPreferencies());
+            textArea = new DefaultTextArea(commandService.getCommands(), display.getLanguage(), (TextEditorPreferencies) scriptEditorPreferenciesService.getPreferencies());
 
             root.setCenter(textArea);
 
@@ -106,7 +106,7 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
             textArea.setLeftAnchor(this.textArea.getCodeArea(), 0d);
             textArea.setRightAnchor(this.textArea.getCodeArea(), 0d);
 
-            initLanugageComboBox();
+            initLanguageComboBox();
 
             initCode();
         } catch (Exception e) {
@@ -115,7 +115,7 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
         }
     }
 
-    protected void initLanugageComboBox() {
+    protected void initLanguageComboBox() {
         languageComboBox.getItems().addAll(scriptService.getLanguages());
         languageComboBox.valueProperty().addListener(this::onLanguageChanged);
         languageComboBox.setValue(display.getLanguage());

@@ -23,6 +23,7 @@ import java.util.SortedSet;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import org.fxmisc.richtext.CodeArea;
+import org.scijava.script.ScriptLanguage;
 
 /**
  *
@@ -31,7 +32,7 @@ import org.fxmisc.richtext.CodeArea;
 public interface Autocompletion {
     ContextMenu computeAutocompletion(String word);
     void setEntries(SortedSet<String> entries);
-    void setCodeArea(Node codeArea);
-    Node getCodeArea();
+    void setListProvider(AutocompletionList listProvider);
+    AutocompletionList getListProvider();
     
 }
