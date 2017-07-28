@@ -39,6 +39,6 @@ public interface ImageLoaderService extends ImageJService {
 
     Collection<File> getAllImagesFromDirectory(File file);
     
-    Collection<File> getAllImagesFromDirecoty(File file, boolean recursive);
+    Collection<File> getAllImagesFromDirectory(File file, boolean recursive);
     
 }

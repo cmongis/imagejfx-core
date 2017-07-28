@@ -117,7 +117,7 @@ public class DefaultImageLoaderService extends AbstractService implements ImageL
     }
 
     @Override
-    public Collection<File> getAllImagesFromDirecoty(File file, boolean recursive) {
+    public Collection<File> getAllImagesFromDirectory(File file, boolean recursive) {
         if(recursive) return getAllImagesFromDirectory(file);
         else {
             final IOFileFilter filter = getIOFileFilter();
