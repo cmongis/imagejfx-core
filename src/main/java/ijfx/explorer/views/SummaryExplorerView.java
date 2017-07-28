@@ -20,17 +20,21 @@
 package ijfx.explorer.views;
 
 import ijfx.explorer.datamodel.Explorable;
+import ijfx.ui.main.ImageJFX;
 import java.util.List;
 import java.util.function.Consumer;
+import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionModel;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
+import net.imagej.Dataset;
 
 import org.scijava.plugin.Plugin;
 
@@ -39,7 +43,7 @@ import org.scijava.plugin.Plugin;
  * @author sapho
  */
 @Plugin(type = ExplorerView.class, priority = 0.7, label = "Summary", iconPath = "fa:table")
-public abstract class SummaryExplorerView implements ExplorerView {
+public class SummaryExplorerView extends BorderPane implements ExplorerView {
 
     private final BorderPane borderPane = new BorderPane();
     private VBox vBox = new VBox(10);
@@ -50,52 +54,89 @@ public abstract class SummaryExplorerView implements ExplorerView {
     private Label label = new Label("Nothing selected");
     private TableView<Explorable> tableView = new TableView<>();
     private TilePane tilePane = new TilePane();
-    
+
     private List<? extends Explorable> itemsList;
 
+    private Consumer<DataClickEvent<Explorable>> onItemClicked;
+
+    private Explorable currentItems;
+    
+    private static double WIDHT = 1070;
+    private static double HEIGTH = 970;
+
     public SummaryExplorerView() {
+        System.out.println("CA COMMENCE");
         borderPane.setCenter(vBox);
+        borderPane.setMinSize(WIDHT, HEIGTH);
         vBox.setSpacing(10);
         vBox.getChildren().addAll(hBox1, hBox2);
         hBox1.getChildren().addAll(tilePane, tableView);
         hBox2.getChildren().addAll(last, label, next);
+        this.getChildren().add(borderPane);
+        
+        TableColumn key = new TableColumn("Table");
+        TableColumn value = new TableColumn("Value");
+        
+        tableView.getColumns().addAll(key, value);
+        
+        last.setOnAction(this::onDisplayLastExplorable);
+        next.setOnAction(this::onDisplayNextExplorable);
 
     }
 
     @Override
     public Node getUIComponent() {
-        return borderPane;
+        return this;
     }
 
     @Override
     public void setItems(List<? extends Explorable> items) {
         this.itemsList = items;
+
     }
 
     @Override
     public List<? extends Explorable> getSelectedItems() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return itemsList;
     }
 
     @Override
     public void setSelectedItem(List<? extends Explorable> items) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+        
+        List<Explorable> selected = tableView.getSelectionModel().getSelectedItems();
+        selected.stream().forEach(this::tableDisplay);
+        
 
-    /*
-    public void setOnItemClicked(Consumer<DataClickEvent> eventHandler) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-     */
 
     @Override
     public SelectionModel getSelectionModel() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return tableView.selectionModelProperty().getValue();
+
     }
 
     @Override
     public void refresh() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+    }
+
+    @Override
+    public void setOnItemClicked(Consumer<DataClickEvent<Explorable>> eventHandler) {
+    }
+    
+    public void onDisplayLastExplorable(ActionEvent event){
+        
+    }
+    
+    public void onDisplayNextExplorable(ActionEvent event){
+        
+    }
+    
+    public void tableDisplay(Explorable exp){
+        Dataset set = exp.getDataset();
+        label.setText(exp.getTitle());
+        //tableView.setItems(set);
+        
     }
 
 }
