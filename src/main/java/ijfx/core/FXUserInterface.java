@@ -145,8 +145,9 @@ public class FXUserInterface extends Application implements UserInterface {
     public void start(Stage primaryStage) throws Exception {
 
         SCENE = new Scene(new BorderPane());
+        SCENE.getStylesheets().add(getClass().getResource("/ijfx/ui/fonts.css").toExternalForm());
         SCENE.getStylesheets().add(getStylesheet());
-
+        
         SCENE.setRoot(getMainWindow().getUiComponent());
 
         // scene.getStylesheets().add("http://fonts.googleapis.com/css?family=Open+Sans");
@@ -315,7 +316,6 @@ public class FXUserInterface extends Application implements UserInterface {
 
     @Override
     public void dispose() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public static MainWindow getMainWindow() {
@@ -421,12 +421,13 @@ public class FXUserInterface extends Application implements UserInterface {
 
     @Override
     public void saveLocation() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        logger.warning("saveLocation() not supported");
     }
 
     @Override
     public void restoreLocation() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        logger.warning("restoreLocation() not supported");
+
     }
 
     /*

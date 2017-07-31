@@ -17,57 +17,34 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package mongis.utils;
+package ijfx.core.preprocessors;
+
+import ijfx.core.batch.CommandRunner;
+import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.ui.UIService;
+import static ucar.unidata.util.Format.s;
 
 /**
  *
- * @author Cyril MONGIS, 2016
+ * @author cyril
  */
-public class SilentProgressHandler implements ProgressHandler{
+@Plugin(type = Command.class, menuPath =  "Plugins > Test > CommandRunner")
+public class TestCommandRunnerInjection extends ContextCommand{
 
+    @Parameter(required = false)
+    CommandRunner runner;
     
+    @Parameter
+    UIService uiService;
     
-    
     @Override
-    public void setProgress(double progress) {
+    public void run() {
+        if(runner!= null) {
+            uiService.showDialog("It works !!!");
+        }
     }
-
-    @Override
-    public void setProgress(double workDone, double total) {
-    }
-
-    @Override
-    public void setProgress(long workDone, long total) {
-    }
-
-    @Override
-    public void setStatus(String message) {
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return false;
-    }
-
-    @Override
-    public void setTotal(double total) {
-        
-    }
-
-    @Override
-    public void increment(double inc) {
-    }
-
-    @Override
-    public double getProgress() {
-        return 0;
-    }
-
-    @Override
-    public String getMessage() {
-        return "";
-    }
-    
-    
     
 }

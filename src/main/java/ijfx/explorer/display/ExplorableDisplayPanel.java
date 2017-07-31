@@ -176,7 +176,8 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
 
     private void updateView(ExplorerView view) {
 
-        if (displayed != getDisplay().getDisplayedItems()
+        if (    displayed != view.getItems() 
+                || displayed != getDisplay().getDisplayedItems()
                 || displayed.size() != getDisplay().getDisplayedItems().size()) {
             displayed = getDisplay().getDisplayedItems();
             view.setItems(getDisplay().getDisplayedItems());

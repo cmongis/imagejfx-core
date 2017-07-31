@@ -46,6 +46,8 @@ public interface ExplorerView extends SciJavaPlugin {
     public void setItems(List<? extends Explorable> items);
      
     
+    public List<? extends Explorable> getItems();
+    
     /**
      * Get the items selected by the view
      * @return 

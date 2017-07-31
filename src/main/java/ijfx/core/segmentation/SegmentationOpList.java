@@ -17,57 +17,36 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package mongis.utils;
+package ijfx.core.segmentation;
+
+import java.util.ArrayList;
+import java.util.List;
+import mongis.utils.CallbackTask;
+import mongis.utils.ProgressHandler;
+import org.scijava.Context;
+import org.scijava.plugin.Parameter;
 
 /**
  *
- * @author Cyril MONGIS, 2016
+ * @author cyril
  */
-public class SilentProgressHandler implements ProgressHandler{
+public class SegmentationOpList<T> extends ArrayList<SegmentationOp<T>> {
 
-    
-    
-    
-    @Override
-    public void setProgress(double progress) {
+    public SegmentationOpList() {
     }
 
-    @Override
-    public void setProgress(double workDone, double total) {
+    public List<T> execute(ProgressHandler handler) {
+
+        return new LinearSegmentationExecutor<T>().execute(handler, this);
+
     }
 
-    @Override
-    public void setProgress(long workDone, long total) {
+    public CallbackTask<?, List<T>> executeAsync() {
+
+        return new CallbackTask<Void, List<T>>()
+                .call(this::execute)
+                .start();
+
     }
 
-    @Override
-    public void setStatus(String message) {
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return false;
-    }
-
-    @Override
-    public void setTotal(double total) {
-        
-    }
-
-    @Override
-    public void increment(double inc) {
-    }
-
-    @Override
-    public double getProgress() {
-        return 0;
-    }
-
-    @Override
-    public String getMessage() {
-        return "";
-    }
-    
-    
-    
 }

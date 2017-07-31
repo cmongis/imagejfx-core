@@ -39,7 +39,13 @@ import org.scijava.module.process.InitPreprocessor;
 import org.scijava.plugin.Parameter;
 
 /**
- *
+ * Dataset output = new CommandRunner(context)
+ *              .setInput("dataset",input)
+ *              .setInput("sigma",3)
+ *              .runSync()
+ *              .getOutput("dataset");
+ * 
+ * 
  * @author Cyril MONGIS, 2016
  */
 public class CommandRunner {
@@ -83,6 +89,9 @@ public class CommandRunner {
         return this;
     }
 
+    
+   
+    
     public CommandRunner runSync(Class<? extends Command> command) {
 
         Module module = batchService.createModule(command);

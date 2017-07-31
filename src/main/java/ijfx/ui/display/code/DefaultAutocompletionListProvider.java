@@ -28,25 +28,30 @@ import org.scijava.command.CommandInfo;
  *
  * @author florian
  */
-public class DefaultAutocompletionListProvider implements AutocompletionList{
+public class DefaultAutocompletionListProvider implements AutocompletionList {
+
     SortedSet<String> entries;
 
     public DefaultAutocompletionListProvider(SortedSet<String> entries) {
         this.entries = entries;
     }
-    
-    
+
     public DefaultAutocompletionListProvider(List<CommandInfo> entriesList) {
         this.entries = new TreeSet<>();
         entriesList
                 .stream()
                 .forEach((command) -> {
-            this.entries.add(command.getClassName());
-        });
+                    this.entries.add(command.getClassName());
+                });
     }
 
     public DefaultAutocompletionListProvider() {
         this.entries = new TreeSet<>();
+    }
+    
+    @Override
+    public void computeAutocompletion(String text, String word){
+        
     }
     
     @Override
@@ -58,6 +63,5 @@ public class DefaultAutocompletionListProvider implements AutocompletionList{
     public void setEntries(SortedSet<String> entries) {
         this.entries = entries;
     }
-    
-    
+
 }

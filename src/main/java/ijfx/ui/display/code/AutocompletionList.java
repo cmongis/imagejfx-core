@@ -28,4 +28,5 @@ import java.util.SortedSet;
 public interface AutocompletionList {
     SortedSet<String> getEntries();
     void setEntries(SortedSet<String> entries);
+    void computeAutocompletion(String text, String word);
 }

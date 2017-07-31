@@ -26,6 +26,9 @@ package mongis.utils;
 public interface ProgressHandler {
     
     
+    
+    public double getProgress();
+    public String getMessage();
     public void setProgress(double progress);
     public void setProgress(double workDone,double total);
     public void setProgress(long workDone,long total);

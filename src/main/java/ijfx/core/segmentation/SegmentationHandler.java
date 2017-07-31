@@ -17,22 +17,24 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.ui.display.code;
+package ijfx.core.segmentation;
 
-import java.util.SortedSet;
-import javafx.scene.Node;
-import javafx.scene.control.ContextMenu;
-import org.fxmisc.richtext.CodeArea;
-import org.scijava.script.ScriptLanguage;
+import ijfx.commands.binary.BinaryToOverlay;
+import ijfx.core.metadata.MetaDataSet;
+import java.util.List;
+import mongis.utils.ProgressHandler;
+import net.imagej.Dataset;
+import net.imagej.overlay.Overlay;
+import net.imglib2.img.Img;
+import net.imglib2.type.logic.BitType;
 
 /**
  *
- * @author florian
+ * @author cyril
  */
-public interface Autocompletion {
-    ContextMenu computeAutocompletion(String word);
-    void setEntries(SortedSet<String> entries);
-    void setListProvider(AutocompletionList listProvider);
-    AutocompletionList getListProvider();
-    
+@FunctionalInterface
+public interface SegmentationHandler<T> { 
+   T handle(ProgressHandler handler, MetaDataSet metadata, Dataset original,Img<BitType> result);
+   
+   
 }
