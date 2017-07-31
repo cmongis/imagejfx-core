@@ -109,6 +109,12 @@ public class TableExplorerView implements ExplorerView {
 
     String[] priority = new String[0];
 
+    public List<? extends Explorable> getItems() {
+        return currentItems;
+    }
+
+    
+    
     @Override
     public void setItems(List<? extends Explorable> items) {
 
