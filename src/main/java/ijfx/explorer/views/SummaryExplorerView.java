@@ -145,4 +145,9 @@ public class SummaryExplorerView extends BorderPane implements ExplorerView {
 
     }
 
+    @Override
+    public List<? extends Explorable> getItems() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }
