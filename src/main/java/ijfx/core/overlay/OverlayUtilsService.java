@@ -252,7 +252,7 @@ public class OverlayUtilsService extends AbstractService implements IjfxService 
     }
 
     public void updateOverlayView(ImageDisplay display, Overlay overlay) {
-
+        
         display
                 .stream()
                 .filter(view -> view.getData() == overlay)
