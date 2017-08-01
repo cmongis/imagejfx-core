@@ -33,6 +33,8 @@ import java.util.logging.Logger;
 import net.imagej.Dataset;
 import net.imagej.DatasetService;
 import net.imagej.axis.AxisType;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
@@ -59,6 +61,9 @@ public class DefaultImagePlaneService extends AbstractService implements ImagePl
 
     @Parameter
     TimerService timerService;
+
+    @Parameter
+    ImageDisplayService imageDisplayService;
 
     Logger logger = ImageJFX.getLogger();
 
@@ -134,7 +139,6 @@ public class DefaultImagePlaneService extends AbstractService implements ImagePl
     public Dataset createEmptyPlaneDataset(Dataset input) {
         AxisType[] axisTypeList = new AxisType[2];
 
-
         long width = input.dimension(0);
         long height = input.dimension(1);
         long[] dims = new long[]{width, height};
@@ -165,11 +169,11 @@ public class DefaultImagePlaneService extends AbstractService implements ImagePl
 
         Timer t = timerService.getTimer(this.getClass());
         t.start();
-        
-        if(position.length < dataset.numDimensions()) {
+
+        if (position.length < dataset.numDimensions()) {
             position = DimensionUtils.planarToAbsolute(position);
         }
-        
+
         Dataset emptyDataset = createEmptyPlaneDataset(dataset);
 
         RandomAccess<T> randomAccessOrigin = (RandomAccess<T>) dataset.randomAccess();
@@ -227,7 +231,7 @@ public class DefaultImagePlaneService extends AbstractService implements ImagePl
     public <T extends RealType<T>> IntervalView<T> planeView(Dataset source, long[] position) {
 
         int srcNumDimension = source.numDimensions();
-
+        
         if (position.length + 2 < srcNumDimension) {
             if (logger != null) {
                 logger.warning("position incompatible with source. Correcting.");
@@ -238,6 +242,12 @@ public class DefaultImagePlaneService extends AbstractService implements ImagePl
             position = correctedPosition;
 
         }
+        
+        if (srcNumDimension == position.length) {
+            logger.warning(String.format("An absolute dimension (%d-d) was given instead of a planar dimension (%d-d)", srcNumDimension, srcNumDimension - 2));
+            position = DimensionUtils.absoluteToPlanar(position);
+        }
+        
 
         if (position.length <= 0) {
             return (IntervalView<T>) Views.translate(source, 0, 0);
@@ -248,7 +258,7 @@ public class DefaultImagePlaneService extends AbstractService implements ImagePl
         }
         for (int d = 1; d != position.length; d++) {
             hyperSlice = Views.hyperSlice(hyperSlice, 2, position[d]);
-            if(d > 10) {
+            if (d > 10) {
                 throw new IllegalArgumentException("Wierd loop detected !");
             }
         }
@@ -259,19 +269,18 @@ public class DefaultImagePlaneService extends AbstractService implements ImagePl
     public <T extends RealType<T>> RandomAccessibleInterval<T> openVirtualPlane(File file, long[] nonSpacialPosition) throws IOException {
 
         Dataset dataset = openVirtualDataset(file);
-        return planeView(dataset, nonSpacialPosition);
+        return DefaultImagePlaneService.this.planeView(dataset, nonSpacialPosition);
 
     }
 
-
     @Override
     public <T extends RealType<T>> IntervalView<T> plane(RandomAccessibleInterval<T> source, long[] position) {
-        
+
         int srcNumDimension = source.numDimensions();
         int positionLength = position.length;
-        
-        if(srcNumDimension == positionLength) {
-            logger.warning(String.format("An absolute dimension (%d-d) was given instead of a planar dimension (%d-d)",srcNumDimension,srcNumDimension-2));
+
+        if (srcNumDimension == positionLength) {
+            logger.warning(String.format("An absolute dimension (%d-d) was given instead of a planar dimension (%d-d)", srcNumDimension, srcNumDimension - 2));
             position = DimensionUtils.absoluteToPlanar(position);
         }
 
@@ -284,15 +293,23 @@ public class DefaultImagePlaneService extends AbstractService implements ImagePl
         }
         for (int d = 1; d != position.length; d++) {
             hyperSlice = Views.hyperSlice(hyperSlice, 2, position[d]);
-            if(d > 10) {
+            if (d > 10) {
                 throw new IllegalArgumentException("Wierd loop detected !");
             }
         }
         return hyperSlice;
-        
-        
+
     }
 
-  
+    @Override
+    public <T extends RealType<T>> IntervalView<T> planeView(ImageDisplay imageDisplay) {
+
+        long[] position = new long[imageDisplay.numDimensions()];
+
+        imageDisplay.localize(position);
+
+        return planeView(imageDisplayService.getActiveDataset(imageDisplay),position);
+        
+    }
 
 }
