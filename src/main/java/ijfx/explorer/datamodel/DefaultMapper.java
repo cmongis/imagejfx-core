@@ -91,14 +91,16 @@ public final class DefaultMapper implements Mapper {
     
     
     /**
-     * Create the mapper associated Value:value for
-     * the creation of new Metadata
-     * @param base
-     * @param associated 
+     * Create the mapper newValue Value:value for
+ the creation of new Metadata
+     * @param oldValue
+     * @param newValue 
      */
-    public void associatedValues (Object base, Object associated){
-        if (base != null && associated != null){
-            mapValue.put(base, associated);
+    public void associatedValues (Object oldValue, Object newValue){
+        if (oldValue != null && newValue != null){
+            System.out.println("oldvalue "+oldValue);
+            System.out.println("newvalue "+newValue);
+            mapValue.put(oldValue.toString(), newValue);
         }
     }
     
@@ -106,14 +108,14 @@ public final class DefaultMapper implements Mapper {
     
     /**
      * Looking for the conrresponding value on the mapper
-     * @param oldKey
+     * @param oldValue
      * @return 
      */
-    public Object lookInsideMap (Object oldKey){
+    public Object lookInsideMap (Object oldValue){
         if (oldKey != null) {
             
-            if (mapValue.containsKey(oldKey)){
-                return mapValue.get(oldKey);
+            if (mapValue.containsKey(oldValue.toString())){
+                return mapValue.get(oldValue.toString());
             
             }
             System.out.println("Value not match");
