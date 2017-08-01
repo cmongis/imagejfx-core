@@ -72,12 +72,20 @@ public class SetAnnotation extends AbstractExplorableDisplayCommand {
     public void setAnnotation(Explorable exp) {
         MetaDataSet set = exp.getMetaDataSet();
         MetaDataSet set1 = new MetaDataSet();
-        set.entrySet().stream().filter((entry) -> (entry.getValue().getName().equals(mapper.getOldKey()))).map((entry) -> mapper.map(entry.getValue())).forEach((newM) -> {
+        set.entrySet()
+                .stream()
+                .filter((entry)
+                        -> (entry.getValue()
+                        .getName()
+                        .equals(mapper.getOldKey()))).map((entry)
+                -> mapper.map(entry.getValue())).forEach((newM) -> {
             set1.put(newM);
         });
-        set1.entrySet().stream().forEach((entry) -> {
-            set.put(entry.getValue());
-        });
+        set1.entrySet()
+                .stream()
+                .forEach((entry) -> {
+                    set.put(entry.getValue());
+                });
 
     }
 
