@@ -184,21 +184,27 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK) {
                 // ... user chose OK
-                for (MetaData m : setM) {
-                    if (m.getName().equals(temp)) {
+                controlDisplay(setM, temp);
 
-                        DataAnnotationController z = new DataAnnotationController();
-                        z.setValue(m.getValue().toString());
-
-                        ctrlList.add(z);
-                        updatedList.add(z);
-
-                    }
-
-                }
             } else {
                 // ... user chose not OK
                 firstUse();
+            }
+        } else {
+            controlDisplay(setM, temp);
+        }
+
+    }
+
+    private void controlDisplay(Set<MetaData> setM, String temp) {
+        for (MetaData m : setM) {
+            if (m.getName().equals(temp)) {
+
+                DataAnnotationController z = new DataAnnotationController();
+                z.setValue(m.getValue().toString());
+
+                ctrlList.add(z);
+                updatedList.add(z);
             }
         }
     }
