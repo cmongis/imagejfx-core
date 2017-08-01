@@ -19,18 +19,14 @@
  */
 package ijfx.commands.explorable;
 
-import ijfx.commands.explorable.AbstractExplorableDisplayCommand;
-import ijfx.commands.explorable.ExplorableDisplayCommand;
 import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataSet;
-import ijfx.core.metadata.MetaDataSetUtils;
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.datamodel.Mapper;
 import ijfx.ui.display.annotation.AnnotationDialog;
 import ijfx.ui.display.annotation.DefaultAnnotationDialog;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import mongis.utils.FXUtilities;
 import org.scijava.plugin.Plugin;
@@ -88,10 +84,6 @@ public class SetAnnotation extends AbstractExplorableDisplayCommand{
            
         
         }
-        
-   
-        
-        
         
     }
 
