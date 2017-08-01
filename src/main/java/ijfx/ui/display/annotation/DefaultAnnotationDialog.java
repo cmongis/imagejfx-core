@@ -171,14 +171,15 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
 
         Alert alert = new Alert(AlertType.CONFIRMATION);
         alert.setTitle("Confirmation Dialog");
-        alert.setHeaderText("There is more than 10 values, continue ? ");
 
         ctrlList.clear();
-        int it = 0;
 
         String temp = cBox.getSelectionModel().getSelectedItem();
 
         Set<MetaData> setM = MetaDataSetUtils.getValues(items, temp);
+        int setSize = setM.size();
+        
+        alert.setHeaderText("There are "+ setSize +" values to display, do you want to continue ? ");
 
         if (setM.size() > 10) {
             Optional<ButtonType> result = alert.showAndWait();
