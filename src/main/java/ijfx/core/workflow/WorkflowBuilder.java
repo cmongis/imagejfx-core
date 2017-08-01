@@ -35,6 +35,9 @@ import mongis.utils.CallbackTask;
 import mongis.utils.ProgressHandler;
 import net.imagej.Dataset;
 import net.imagej.display.ImageDisplay;
+import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.type.numeric.RealType;
+import static net.imglib2.view.Views.interval;
 import org.scijava.Context;
 import org.scijava.plugin.Parameter;
 
@@ -92,6 +95,11 @@ public class WorkflowBuilder {
     
     public WorkflowBuilder addInput(Dataset dataset) {
         inputs.add(new BatchItemBuilder(context).from(dataset));
+        return this;
+    }
+    
+    public WorkflowBuilder addInput(RandomAccessibleInterval<?> interval) {
+        inputs.add(new BatchItemBuilder(context).from(interval));
         return this;
     }
     
