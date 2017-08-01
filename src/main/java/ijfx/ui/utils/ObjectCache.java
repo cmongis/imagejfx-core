@@ -91,7 +91,7 @@ public class ObjectCache<T> {
         return object;
     }
     
-    public List<T> get(final ProgressHandler handler, final int start, final  Integer size) {
+    public synchronized List<T> get(final ProgressHandler handler, final int start, final  Integer size) {
         int missing = start + size - cache.size();
         
         if(missing > 0) {
