@@ -30,11 +30,12 @@ import ijfx.core.metadata.MetaDataSetType;
 import ijfx.core.overlay.MeasurementService;
 import ijfx.core.utils.AxisUtils;
 import ijfx.core.utils.DimensionUtils;
+import ijfx.core.workflow.DefaultWorkflow;
 import ijfx.core.workflow.Workflow;
+import ijfx.core.workflow.WorkflowStep;
 import ijfx.ui.main.ImageJFX;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -75,11 +76,25 @@ public class SegmentationTaskBuilder {
     @Parameter
     MetaDataService metaDataService;
     
-    private SegmentationTaskBuilder(Context context) {
+    public SegmentationTaskBuilder(Context context) {
         context.inject(this);
         itemBuilder = new BatchItemBuilder(context);
 
     } 
+    
+    public SegmentationTaskBuilder addDataset(Dataset dataset) {
+        itemBuilder.from(dataset);
+        return this;
+    }
+    
+    public SegmentationTaskBuilder addInterval(RandomAccessibleInterval<?> interval) {
+        itemBuilder.from(interval);
+        return this;
+    }
+    
+    public SegmentationTaskBuilder setWorkflow(List<WorkflowStep> steps) {
+        return setWorkflow(new DefaultWorkflow(steps));
+    }
     
     public SegmentationTaskBuilder setWorkflow(Workflow workflow) {
         this.workflow = workflow;
@@ -91,13 +106,7 @@ public class SegmentationTaskBuilder {
         return this;
     }
     
-    private SegmentationTaskBuilder useMask(Consumer<Img<BitType>> onFinished) {
-        
-        
-        
-        return this;
-    }
-    
+  
     private <T> SegmentationOpList<T> build(SegmentationHandler<T> handler) {
 
         List<DefaultSegmentationTask<T>> inputList;
@@ -135,8 +144,13 @@ public class SegmentationTaskBuilder {
         return build(this::measure);
     }
     
-     
+    public SegmentationOpList<Img<BitType>> getAsMask() {
+        return build(this::getAsMask);
+    } 
     
+    private Img<BitType> getAsMask(ProgressHandler handler, MetaDataSet set, Dataset original, Img<BitType> mask) {
+        return mask;
+    }
     
     private List<? extends SegmentedObject> measure(ProgressHandler handler, MetaDataSet set, Dataset original, Img<BitType> mask) {
         

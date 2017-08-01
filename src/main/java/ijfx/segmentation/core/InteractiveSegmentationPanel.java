@@ -17,18 +17,14 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.segmentation;
-
-import ijfx.core.IjfxService;
+package ijfx.segmentation.core;
 
 /**
  *
  * @author cyril
  */
-
-public interface SegmentationService extends IjfxService {
+public interface InteractiveSegmentationPanel {
     
-    
-     SegmentationTaskBuilder createSegmentation();
+    void refresh();
     
 }

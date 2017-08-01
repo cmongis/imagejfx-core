@@ -122,8 +122,6 @@ public class OverlayUtilsService extends AbstractService implements IjfxService 
                 overlaySelectionSrv.selectOnlyOneOverlay(display, selected);
             }
             uiContextService.enter(UiContexts.VISUALIZE);
-            //activityService.openByType(ImageJContainer.class);
-
         } else {
             logger.severe("Couldn't find open file nor overlay");
 

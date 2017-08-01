@@ -17,18 +17,28 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.segmentation;
+package ijfx.segmentation.core;
 
-import ijfx.core.IjfxService;
+import ijfx.core.workflow.Workflow;
+import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.type.numeric.RealType;
 
 /**
  *
  * @author cyril
  */
+public class NoInteractiveSegmentation extends AbstractSegmentation{
 
-public interface SegmentationService extends IjfxService {
-    
-    
-     SegmentationTaskBuilder createSegmentation();
+   
+
+    @Override
+    public Workflow getWorkflow() {
+       return null;
+    }
+
+    @Override
+    public <T extends RealType<?>> void preview(RandomAccessibleInterval<T> preview) {
+
+    }
     
 }

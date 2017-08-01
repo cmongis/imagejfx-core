@@ -19,16 +19,22 @@
  */
 package ijfx.core.segmentation;
 
-import ijfx.core.IjfxService;
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 /**
  *
  * @author cyril
  */
+@Plugin(type = Service.class)
+public class DefaultSegmentationService extends AbstractService implements SegmentationService {
 
-public interface SegmentationService extends IjfxService {
-    
-    
-     SegmentationTaskBuilder createSegmentation();
+    @Override
+    public SegmentationTaskBuilder createSegmentation() {
+        return new SegmentationTaskBuilder(getContext());
+    }
+
+   
     
 }

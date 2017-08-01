@@ -19,15 +19,14 @@
  */
 package mongis.utils.panecell;
 
+import com.google.common.collect.Lists;
 import ijfx.ui.main.ImageJFX;
 import ijfx.ui.utils.CollectionsUtils;
 import ijfx.ui.utils.ObjectCache;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
@@ -35,12 +34,10 @@ import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import javafx.css.PseudoClass;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import mongis.utils.CallbackTask;
 import mongis.utils.ProgressHandler;
-import mongis.utils.properties.ListChangeListenerBuilder;
 import mongis.utils.properties.ServiceProperty;
 
 /**
@@ -120,7 +117,9 @@ public class PaneCellController<T extends Object> {
      * @param list
      */
     private synchronized void onFragmentRetrieved(List<PaneCell<T>> list) {
-                    List<Node> cells = list
+        
+        synchronized(nodeList) {
+                    List<Node> cells = Lists.newArrayList(list)
                     .stream()
                     .map(PaneCell<T>::getContent)
                     .collect(Collectors.toList());
@@ -135,6 +134,7 @@ public class PaneCellController<T extends Object> {
                 list.get(i).setItem(currentItems.get(start + i));
                 updateSelection(list.get(i));
             }
+        }
         
     }
 

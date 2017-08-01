@@ -26,10 +26,14 @@ import ijfx.ui.save.SaveOptions;
 import ijfx.ui.save.SaveType;
 import ijfx.ui.utils.NamingUtils;
 import java.io.File;
+import static java.time.LocalDateTime.from;
 import java.util.function.Consumer;
 import net.imagej.Dataset;
+import net.imagej.DatasetService;
 import net.imagej.display.ImageDisplay;
+import net.imglib2.RandomAccessibleInterval;
 import org.scijava.Context;
+import org.scijava.plugin.Parameter;
 
 /**
  * Work in progress, allow to build any BatchSingleInput from any situation. Uses the Builder and Decorator Pattern.
@@ -38,17 +42,20 @@ import org.scijava.Context;
  */
 public class BatchItemBuilder {
 
-    //@Parameter
+    @Parameter
     Context context;
 
     BatchSingleInput input;
 
     private static String suffixSeparator = "_";
     
+    @Parameter
+    DatasetService datasetService;
     
     
     public BatchItemBuilder(Context context) {
-        this.context = context;
+        
+        context.inject(this);
     }
     
     public BatchItemBuilder wrap(BatchSingleInput input) {
@@ -69,6 +76,10 @@ public class BatchItemBuilder {
         input = new FileBatchInputLoader(file);
         context.inject(input);
         return this;
+    }
+    
+    public BatchItemBuilder from(RandomAccessibleInterval interval) {
+        return from(datasetService.create(interval));
     }
     
     public BatchItemBuilder from(ImageDisplay imageDisplay) {

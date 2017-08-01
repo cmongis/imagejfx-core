@@ -33,7 +33,9 @@ import net.imagej.display.DatasetView;
 import net.imagej.display.ImageDisplay;
 import net.imagej.display.ImageDisplayService;
 import net.imagej.lut.LUTService;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.display.ColorTable;
+import net.imglib2.type.numeric.RealType;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
@@ -193,6 +195,10 @@ public class DisplayRangeService extends AbstractService implements IjfxService 
         
         saveDatasetMinimum(dataset, channel, minMax[0]);
         saveDatasetMaximum(dataset, channel, minMax[1]);
+        
+    }
+
+    public <T extends RealType<?>> void getMinMax(RandomAccessibleInterval<T> input) {
         
     }
 

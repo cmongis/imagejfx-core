@@ -17,18 +17,39 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.segmentation;
+package ijfx.segmentation.core;
 
-import ijfx.core.IjfxService;
+import ijfx.core.workflow.Workflow;
+import javafx.beans.property.Property;
+import static javafx.scene.input.KeyCode.T;
+import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.img.Img;
+import net.imglib2.type.logic.BitType;
+import net.imglib2.type.numeric.RealType;
 
 /**
  *
  * @author cyril
  */
+public interface InteractiveSegmentation {
+    
+    
+    Property<Img<BitType>> maskProperty();
+   
+    
+    public <T extends RealType<?>> void preview(RandomAccessibleInterval<T> input);
+    
+    
+    public Workflow getWorkflow();
 
-public interface SegmentationService extends IjfxService {
+    default void refresh() {
+        
+    }
     
+    default void dispose() {
+        
+    }
     
-     SegmentationTaskBuilder createSegmentation();
+    public static InteractiveSegmentation NONE = new NoInteractiveSegmentation();
     
 }
