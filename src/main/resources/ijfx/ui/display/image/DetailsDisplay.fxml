@@ -9,28 +9,31 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.TilePane?>
 
-<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="386.0" prefWidth="528.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" type="BorderPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <center>
       <TilePane fx:id="tilePane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
    </center>
    <bottom>
-      <HBox fx:id="hBox" prefHeight="100.0" prefWidth="200.0" spacing="50.0" BorderPane.alignment="CENTER">
+      <HBox fx:id="hBox" spacing="50.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="last" mnemonicParsing="false" text="Button" />
+            <Button fx:id="last" mnemonicParsing="false" text="&lt;-" />
             <Label fx:id="label" text="Label" />
-            <Button fx:id="next" mnemonicParsing="false" text="Button" />
+            <Button fx:id="next" mnemonicParsing="false" text="-&gt;" />
          </children>
          <opaqueInsets>
-            <Insets />
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
          </opaqueInsets>
+         <BorderPane.margin>
+            <Insets bottom="20.0" left="40.0" right="20.0" top="20.0" />
+         </BorderPane.margin>
       </HBox>
    </bottom>
    <right>
-      <TableView fx:id="tableView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <TableView fx:id="tableView" BorderPane.alignment="CENTER">
         <columns>
-          <TableColumn prefWidth="75.0" text="C1" />
-          <TableColumn prefWidth="75.0" text="C2" />
+          <TableColumn prefWidth="75.0" text="Key" />
+          <TableColumn prefWidth="75.0" text="Value" />
         </columns>
       </TableView>
    </right>
-</BorderPane>
+</fx:root>
