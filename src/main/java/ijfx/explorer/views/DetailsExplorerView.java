@@ -21,6 +21,7 @@ package ijfx.explorer.views;
 
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.ui.display.annotation.DefaultAnnotationDialog;
+import ijfx.ui.main.ImageJFX;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,7 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -54,58 +56,43 @@ import org.scijava.plugin.Plugin;
 public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
     @FXML
-    private  BorderPane borderPane;
-    
+    private BorderPane borderPane;
+
     @FXML
-    private  HBox hBox;
-    
+    private HBox hBox;
+
     @FXML
-    private  Button last;
-    
+    private Button last;
+
     @FXML
-    private  Button next;
-    
+    private Button next;
+
     @FXML
-    private  Label label;
-    
+    private Label label;
+
     @FXML
-    private  TableView<Explorable> tableView;
+    private TableView<Explorable> tableView;
 
     private List<? extends Explorable> itemsList;
 
+    private List<? extends Explorable> currentItems;
+
     private Consumer<DataClickEvent<Explorable>> onItemClicked;
 
-    private Explorable currentItems;
+    private Explorable currentItemsOne;
 
-    
     private static String FXMLWAY = "/ijfx/ui/display/image/DetailsDisplay.fxml";
 
-   //private final PaneCellController<Explorable> cellPaneCtrl= new PaneCellController<>(borderPane);
-
     public DetailsExplorerView() {
-        
+
         loadFXML();
-        
-        /*
-        System.out.println("CA COMMENCE");
-        borderPane.setRight(tableView);
-        borderPane.setBottom(hBox);
-        //borderPane.setMinSize(WIDHT, HEIGTH);
-        hBox.getChildren().addAll(last, label, next);
-        this.getChildren().add(borderPane);
-
-        TableColumn key = new TableColumn("Key");
-        TableColumn value = new TableColumn("Value");
-
-        tableView.getColumns().addAll(key, value);
 
         last.setOnAction(this::onDisplayLastExplorable);
         next.setOnAction(this::onDisplayNextExplorable);
-*/
-
+         
     }
-    
-    private void loadFXML(){
+
+    private void loadFXML() {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource(FXMLWAY));
         loader.setRoot(this);
@@ -117,13 +104,7 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
             Logger.getLogger(DefaultAnnotationDialog.class.getName()).log(Level.SEVERE, null, ex);
         }
         System.out.println("prout");
-        Pane root = loader.getRoot();
-        
-        ///////////////////////////////////CSS PART
-        //root.getStylesheets().add(getClass().getResource("/ijfx/ui/flatterfx.css").toExternalForm());
-        //root.applyCss();
-        ///////////////////////////////////
-        
+
     }
 
     @Override
@@ -133,37 +114,43 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
     @Override
     public void setItems(List<? extends Explorable> items) {
-        this.itemsList = items;
-        //cellPaneCtrl.update(new ArrayList<Explorable>(items));
+        if (items.size() == 1) {
+            this.itemsList = items;
+            System.out.println("itemlist "+itemsList);
+            currentItems = items;
+           
+                
+           
+            
+            
+        }
 
     }
 
     @Override
     public List<? extends Explorable> getSelectedItems() {
-        List<Explorable> selected = tableView.getSelectionModel().getSelectedItems();
-        
+        //List<Explorable> selected = tableView.getSelectionModel().getSelectedItems();
 
-        //return new ArrayList<>(cellPaneCtrl.getSelectedItems());
         return itemsList;
     }
 
     @Override
     public void setSelectedItem(List<? extends Explorable> items) {
-        //cellPaneCtrl.setSelected(new ArrayList<>(items));
-        //cellPaneCtrl.getSelectedItems().stream().forEach(this::labelDisplay);
+        ImageJFX.getLogger().info(String.format("MEEEEEEEEEEEEEEEEEEEEEEEEEEEEEERDE"));
+        itemsList.stream().forEach(this::labelDisplay);
         System.out.println("Allo ? ici setselectedItem");
 
     }
 
     @Override
     public SelectionModel getSelectionModel() {
-        return tableView.selectionModelProperty().getValue();
+        return null;
 
     }
 
     @Override
     public void refresh() {
-        //cellPaneCtrl.updateSelection();
+        
 
     }
 
@@ -180,19 +167,33 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
     }
 
     public void labelDisplay(Explorable exp) {
+        ImageJFX.getLogger().info(String.format("Label display nous y passons enfin "));
         Platform.runLater(() -> {
             System.out.println("TableDisplay ? ");
             Dataset set = exp.getDataset();
             label.setText(exp.getTitle());
-            //tableView.setItems((ObservableList<Explorable>) cellPaneCtrl.getSelectedItems());
-            //tableView.setItems(set);
         });
 
     }
 
     @Override
     public List<? extends Explorable> getItems() {
-        return itemsList;
+        return currentItems;
+    }
+
+    public Explorable getDisplayedItem() {
+        return currentItemsOne;
+    }
+    
+    private class truc<T extends Object> {
+        
+        private List<T> currentItems;
+        
+        private ObservableList<T> selectedItems = FXCollections.observableArrayList();
+
+        public truc() {
+        }
+        
     }
 
 }
