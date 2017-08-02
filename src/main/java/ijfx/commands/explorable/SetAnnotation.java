@@ -19,15 +19,12 @@
  */
 package ijfx.commands.explorable;
 
-import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataSet;
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.datamodel.Mapper;
 import ijfx.ui.display.annotation.AnnotationDialog;
 import ijfx.ui.display.annotation.DefaultAnnotationDialog;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import mongis.utils.FXUtilities;
 import org.scijava.plugin.Plugin;
@@ -70,6 +67,7 @@ public class SetAnnotation extends AbstractExplorableDisplayCommand {
     }
 
     public void setAnnotation(Explorable exp) {
+        //two lists to escape a current modification exception;
         MetaDataSet set = exp.getMetaDataSet();
         MetaDataSet set1 = new MetaDataSet();
         set.entrySet()
@@ -81,6 +79,7 @@ public class SetAnnotation extends AbstractExplorableDisplayCommand {
                 -> mapper.map(entry.getValue())).forEach((newM) -> {
             set1.put(newM);
         });
+        
         set1.entrySet()
                 .stream()
                 .forEach((entry) -> {
