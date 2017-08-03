@@ -29,11 +29,14 @@
       </HBox>
    </bottom>
    <right>
-      <TableView fx:id="tableView" BorderPane.alignment="CENTER">
+      <TableView fx:id="tableView" BorderPane.alignment="TOP_CENTER">
         <columns>
-          <TableColumn prefWidth="75.0" text="Key" />
-          <TableColumn prefWidth="75.0" text="Value" />
+          <TableColumn fx:id="keyColumn" prefWidth="75.0" text="Key" />
+          <TableColumn fx:id="valueColumn" prefWidth="75.0" text="Value" />
         </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
       </TableView>
    </right>
 </fx:root>
