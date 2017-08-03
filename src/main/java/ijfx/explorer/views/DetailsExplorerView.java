@@ -19,6 +19,7 @@
  */
 package ijfx.explorer.views;
 
+import ijfx.core.metadata.MetaDataSet;
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.ui.display.annotation.DefaultAnnotationDialog;
 import ijfx.ui.main.ImageJFX;
@@ -40,6 +41,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.SelectionModel;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -72,14 +74,19 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
     @FXML
     private TableView<Explorable> tableView;
+    
+    @FXML
+    private TableColumn<Explorable, String> keyColumn;
+    @FXML
+    private TableColumn<Explorable, String> valueColumn;
 
     private List<? extends Explorable> itemsList;
 
-    private List<? extends Explorable> currentItems;
+    private Explorable currentItem;
 
     private Consumer<DataClickEvent<Explorable>> onItemClicked;
-
-    private Explorable currentItemsOne;
+    
+    private List<Explorable> currentItemList = new ArrayList<>();
 
     private static String FXMLWAY = "/ijfx/ui/display/image/DetailsDisplay.fxml";
 
@@ -89,7 +96,7 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
         last.setOnAction(this::onDisplayLastExplorable);
         next.setOnAction(this::onDisplayNextExplorable);
-         
+
     }
 
     private void loadFXML() {
@@ -114,31 +121,53 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
     @Override
     public void setItems(List<? extends Explorable> items) {
-        if (items.size() == 1) {
-            this.itemsList = items;
-            System.out.println("itemlist "+itemsList);
-            currentItems = items;
-           
-                
-           
-            
-            
-        }
+        this.itemsList = items;
 
+        System.out.println("itemlist " + itemsList);
+
+        //labelDisplay(currentItem);
+
+        /*
+        for (Explorable exp : items){
+            if (getSelectedItems().contains(exp)){
+                this.currentItem= exp;
+                labelDisplay(exp);
+            }
+        }
+        /*
+        items.stream().forEach(this::labelDisplay);
+
+        this.itemsList = items;
+
+        currentItem = items;.
+         */
     }
 
     @Override
     public List<? extends Explorable> getSelectedItems() {
-        //List<Explorable> selected = tableView.getSelectionModel().getSelectedItems();
+        if (!currentItemList.contains(currentItem)){
+            currentItemList.add(currentItem);
+        }
+        
+        labelDisplay(currentItem);
+        
 
-        return itemsList;
+        return currentItemList;
     }
 
     @Override
     public void setSelectedItem(List<? extends Explorable> items) {
-        ImageJFX.getLogger().info(String.format("MEEEEEEEEEEEEEEEEEEEEEEEEEEEEEERDE"));
-        itemsList.stream().forEach(this::labelDisplay);
-        System.out.println("Allo ? ici setselectedItem");
+        System.out.println("itemlist current" + itemsList);
+        for (Explorable exp : items) {
+            this.currentItem = exp;
+        }
+        labelDisplay(currentItem);
+        tableView.getItems().add(currentItem);
+        MetaDataSet truc = currentItem.getMetaDataSet();
+        truc.
+        keyColumn.setCellValueFactory();
+        //tableView.
+        
 
     }
 
@@ -150,7 +179,6 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
     @Override
     public void refresh() {
-        
 
     }
 
@@ -170,7 +198,7 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
         ImageJFX.getLogger().info(String.format("Label display nous y passons enfin "));
         Platform.runLater(() -> {
             System.out.println("TableDisplay ? ");
-            Dataset set = exp.getDataset();
+            //Dataset set = exp.getDataset();
             label.setText(exp.getTitle());
         });
 
@@ -178,22 +206,25 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
     @Override
     public List<? extends Explorable> getItems() {
-        return currentItems;
+        if (!currentItemList.contains(currentItem)){
+            currentItemList.add(currentItem);
+        }
+        return currentItemList;
     }
 
     public Explorable getDisplayedItem() {
-        return currentItemsOne;
+        return currentItem;
     }
-    
+
     private class truc<T extends Object> {
-        
+
         private List<T> currentItems;
-        
+
         private ObservableList<T> selectedItems = FXCollections.observableArrayList();
 
         public truc() {
         }
-        
+
     }
 
 }
