@@ -25,17 +25,24 @@ import ijfx.core.image.ImagePlaneService;
 import ijfx.ui.main.ImageJFX;
 import java.util.logging.Logger;
 import net.imagej.Dataset;
+import net.imagej.DatasetService;
 import net.imagej.ImageJService;
+import net.imagej.axis.Axes;
+import net.imagej.axis.AxisType;
+import net.imagej.axis.CalibratedAxis;
+import net.imagej.axis.DefaultLinearAxis;
 
 import net.imagej.overlay.Overlay;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccess;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealInterval;
 import net.imglib2.RealRandomAccess;
 import net.imglib2.RealRandomAccessibleRealInterval;
 import net.imglib2.algorithm.neighborhood.RectangleShape;
 import net.imglib2.roi.RegionOfInterest;
+import net.imglib2.type.NativeType;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.IntervalView;
@@ -60,6 +67,9 @@ public class OverlayDrawingService extends AbstractService implements ImageJServ
     
     @Parameter
     private ImagePlaneService imagePlaneService;
+    
+    @Parameter
+    private DatasetService datasetService;
     
     private Logger logger = ImageJFX.getLogger();
     
@@ -97,6 +107,29 @@ public class OverlayDrawingService extends AbstractService implements ImageJServ
          //drawOverlay(o,new RandomAccessCopier<>(source, overlayDataset, -minX, -minY),FILLER);
          return overlayDataset;
      }
+
+    public <T extends RealType<T> & NativeType<T>> Dataset extractObject(Overlay overlay, RandomAccessibleInterval<?> source) {
+         long minX = Math.round(overlay.getRegionOfInterest().realMin(0));
+         long minY = Math.round(overlay.getRegionOfInterest().realMin(1));
+         
+         long maxX = Math.round(overlay.getRegionOfInterest().realMax(0));
+         long maxY = Math.round(overlay.getRegionOfInterest().realMax(1));
+         
+         long width = maxX-minX+1;
+         long height = maxY-minY+1;
+        
+        Dataset overlayDataset = datasetService.create(
+                (T)source.randomAccess().get()
+                ,new long[]{width,height}
+                , ""
+                , new AxisType[] {Axes.X,Axes.Y}
+        );//imagePlaneService.createEmptyPlaneDataset(source,width+1,height+1);
+        
+        FILLER.draw(overlay, new RandomAccessCopier(source.randomAccess(), overlayDataset.randomAccess(), -minX, -minY));
+        
+         //drawOverlay(o,new RandomAccessCopier<>(source, overlayDataset, -minX, -minY),FILLER);
+         return overlayDataset;
+    }
     
      
      

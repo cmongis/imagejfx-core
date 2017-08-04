@@ -266,7 +266,7 @@ public class MeasurementService extends AbstractService implements IjfxService {
 
     public <T extends RealType<T>> SegmentedObject measure(RandomAccessibleInterval<T> rai, Overlay overlay) {
         try {
-            return new DefaultSegmentedObject(overlay, overlayStatsSrv.getOverlayStatistics(rai, overlay));
+            return new DefaultSegmentedObject(overlay, overlayStatsSrv.getOverlayStatistics(rai, overlay)).setSource(rai);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error when creating SegmentedObject", e);
         }
