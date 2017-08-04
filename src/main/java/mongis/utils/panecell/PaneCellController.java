@@ -116,7 +116,7 @@ public class PaneCellController<T extends Object> {
      *
      * @param list
      */
-    private synchronized void onFragmentRetrieved(List<PaneCell<T>> list) {
+    private void onFragmentRetrieved(List<PaneCell<T>> list) {
 
         List<Node> cells = Lists.newArrayList(list)
                 .stream()
