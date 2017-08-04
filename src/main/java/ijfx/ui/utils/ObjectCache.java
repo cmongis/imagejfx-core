@@ -21,6 +21,7 @@ package ijfx.ui.utils;
 
 import ijfx.ui.main.ImageJFX;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -41,17 +42,14 @@ import mongis.utils.ProgressHandler;
  */
 public class ObjectCache<T> {
 
-    final private List<T> cache = new ArrayList<>();
+    final private List<T> cache = Collections.synchronizedList(new ArrayList<>());
 
     private Callable<T> factory;
 
     Logger logger = ImageJFX.getLogger();
-    
+
     private int position = -1;
-    
-    
-    
-    
+
     public ObjectCache() {
         reset();
     }
@@ -59,7 +57,7 @@ public class ObjectCache<T> {
     public int size() {
         return cache.size();
     }
-    
+
     public ObjectCache(Callable<T> factory) {
         this.factory = factory;
     }
@@ -70,116 +68,117 @@ public class ObjectCache<T> {
     }
 
     public List<T> get(ProgressHandler handler, Integer size) {
-        return get(handler,0,size);
+        return get(handler, 0, size);
     }
-    
+
     public void reset() {
         position = -1;
     }
-    
-    
+
     public synchronized T getNext() {
-        
+
         position++;
-        
-        if(position >= cache.size()) {
+
+        if (position >= cache.size()) {
             // safe way to make sure there will be no missing object in the cache
             // in cache the cache has been cleared
-           get(null, position,1);
+            get(null, position, 1);
         }
         T object = cache.get(position);
         return object;
     }
-    
-    public synchronized List<T> get(final ProgressHandler handler, final int start, final  Integer size) {
-        int missing = start + size - cache.size();
-        
-        if(missing > 0) {
-            if(handler != null) handler.setTotal(missing);
-            
-            List<T> collect = IntStream
-                    .range(0, missing)
-                    .parallel()
-                    .mapToObj(i->{
-                        if(handler != null) handler.increment(1);
-                        try {
-                            return factory.call();
-                        }
-                        catch(Exception e) {
-                            logger.log(Level.SEVERE, "Error when filling cache",e);
-                        }
-                        return null;
-                    })
-                    .collect(Collectors.toList());
-            
-            cache.addAll(collect); 
+
+    public List<T> get(final ProgressHandler handler, final int start, final Integer size) {
+
+        List<T> result = new ArrayList<>(size);
+        synchronized (cache) {
+            int missing = start + size - cache.size();
+
+            if (missing > 0) {
+                if (handler != null) {
+                    handler.setTotal(missing);
+                }
+
+                List<T> collect = IntStream
+                        .range(0, missing)
+                        .parallel()
+                        .mapToObj(i -> {
+                            if (handler != null) {
+                                handler.increment(1);
+                            }
+                            try {
+                                return factory.call();
+                            } catch (Exception e) {
+                                logger.log(Level.SEVERE, "Error when filling cache", e);
+                            }
+                            return null;
+                        })
+                        .collect(Collectors.toList());
+
+                cache.addAll(collect);
+            }
+            result.addAll(cache.subList(start, start + size));
         }
-        return cache.subList(start, start+size);
+        return result;
     }
-    
+
     public int indexOf(List<T> items) {
         return cache.indexOf(items.get(0));
     }
-    
-    public CallbackTask<Integer,List<T>> getAsync(Integer size, Consumer<List<T>> onFinshed) {
-        return new CallbackTask<Integer,List<T>>()
+
+    public CallbackTask<Integer, List<T>> getAsync(Integer size, Consumer<List<T>> onFinshed) {
+        return new CallbackTask<Integer, List<T>>()
                 .setInput(size)
                 .callback(this::get)
                 .then(onFinshed);
     }
-    
+
     public List<T> getFragmented(final ProgressHandler handler, Integer totalSize, int fragment, Consumer<List<T>> onFinished) {
-        
-        
+
         List<T> finished = new ArrayList<>();
-         for(int i = 0; i < totalSize; i+= fragment) {
-            
-             
-             if(handler.isCancelled()) return null;
+        for (int i = 0; i < totalSize; i += fragment) {
+
+            if (handler.isCancelled()) {
+                return null;
+            }
             // defining the number of object required for this fragment
-            final int required = i+fragment < totalSize ? fragment : totalSize - i;
-            
+            final int required = i + fragment < totalSize ? fragment : totalSize - i;
+
             // christalizing the start index
             final int start = i;
-            
-            
-            final List<T> items = get(handler,start,required);
-        
-            
+
+            final List<T> items = get(handler, start, required);
+
             finished.addAll(items);
-            Platform.runLater(()->onFinished.accept(items));
-         }
-         
-         return finished;
-         
+            Platform.runLater(() -> onFinished.accept(items));
+        }
+
+        return finished;
+
     }
-    
-    
+
     public void getAsyncFragmented(final ProgressHandler handler, Integer totalSize, int fragment, Consumer<List<T>> onFinshed) {
-        
+
         // creating a thread that will hold the creation task
         ExecutorService thread = Executors.newFixedThreadPool(1);
-        
-        
-        for(int i = 0; i < totalSize; i+= fragment) {
-            
+
+        for (int i = 0; i < totalSize; i += fragment) {
+
             // defining the number of object required for this fragment
-            final int required = i+fragment < totalSize ? fragment : totalSize - i;
-            
+            final int required = i + fragment < totalSize ? fragment : totalSize - i;
+
             // christalizing the start index
             final int start = i;
-            
-            
-            CallableTask<List<T>> task = new CallableTask<List<T>>(()->get(handler,start,required))
+
+            CallableTask<List<T>> task = new CallableTask<List<T>>(() -> get(handler, start, required))
                     .then(onFinshed);
-            
+
             logger.info("Adding task to fragmentation thread");
             // add the
-            thread.execute(task); 
+            thread.execute(task);
         }
-        
+
         thread.shutdown();
     }
-    
-    
+
 }
