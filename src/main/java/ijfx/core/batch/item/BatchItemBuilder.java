@@ -83,10 +83,10 @@ public class BatchItemBuilder {
     }
     
     public BatchItemBuilder from(ImageDisplay imageDisplay) {
-        throw new IllegalStateException("Not yet implemented !");
-        //input = new ImageDisplayBatchInput(imageDisplay, false);
+        //throw new IllegalStateException("Not yet implemented !");
+        input = new ImageDisplayBatchInput(imageDisplay, false);
         
-        //return this;
+        return this;
     }
 
     public BatchItemBuilder from(Dataset dataset) {

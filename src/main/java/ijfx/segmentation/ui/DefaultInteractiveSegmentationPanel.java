@@ -21,8 +21,14 @@ package ijfx.segmentation.ui;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import ijfx.core.segmentation.DisplayedSegmentedObject;
+import ijfx.core.segmentation.SegmentationService;
+import ijfx.core.segmentation.SegmentedObject;
+import ijfx.core.segmentation.SegmentedObjectExplorerWrapper;
 import ijfx.core.uicontext.UiContextService;
 import ijfx.core.uiplugin.Localization;
+import ijfx.explorer.ExplorableList;
+import ijfx.explorer.datamodel.Explorable;
 import ijfx.segmentation.core.InteractiveSegmentation;
 import ijfx.segmentation.core.InteractiveSegmentationPanel;
 import ijfx.segmentation.core.InteractiveSegmentationService;
@@ -34,6 +40,7 @@ import ijfx.ui.UiPlugin;
 import ijfx.ui.loading.LoadingScreenService;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -51,16 +58,17 @@ import javafx.scene.layout.VBox;
 import mongis.utils.CallbackTask;
 import mongis.utils.FXUtilities;
 import mongis.utils.ProgressHandler;
+import net.imagej.display.ImageDisplayService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-
+import org.scijava.ui.UIService;
 
 /**
  *
  * @author cyril
  */
 @Plugin(type = UiPlugin.class)
-@UiConfiguration(id = "segmentation-panel-2", localization = Localization.RIGHT, context = "any-display-open+segment explore+segment -overlay-selected")
+@UiConfiguration(id = "segmentation-panel", localization = Localization.RIGHT, context = "any-display-open+segment explore+segment -overlay-selected")
 public class DefaultInteractiveSegmentationPanel extends BorderPane implements UiPlugin, InteractiveSegmentationPanel {
 
     /*
@@ -80,6 +88,15 @@ public class DefaultInteractiveSegmentationPanel extends BorderPane implements U
 
     @FXML
     private Button segmentMoreButton;
+
+    @Parameter
+    private SegmentationService segmentationService;
+
+    @Parameter
+    private ImageDisplayService imageDisplayService;
+
+    @Parameter
+    private UIService uiService;
 
     private Runnable onRefresh;
 
@@ -219,7 +236,26 @@ public class DefaultInteractiveSegmentationPanel extends BorderPane implements U
 
     @FXML
     public void analyseParticles() {
+        segmentationService
+                .createSegmentation()
+                .addImageDisplay(imageDisplayService.getActiveImageDisplay())
+                .measure()
+                .executeAsync()
+                .submit(loadingScreenService)
+                .then(this::displayObject);
+                         
+    }
 
+    private void displayObject(List<List<? extends SegmentedObject>> result) {
+        List<? extends Explorable> objectList
+                = result.stream()
+                        .flatMap(objects -> objects.stream())
+                        .map(object->new DisplayedSegmentedObject(imageDisplayService.getActiveImageDisplay(), object))
+                        .map(object->new SegmentedObjectExplorerWrapper(object))
+                        .collect(Collectors.toList());
+                        
+        
+       uiService.show(new ExplorableList(objectList));
     }
 
     @FXML

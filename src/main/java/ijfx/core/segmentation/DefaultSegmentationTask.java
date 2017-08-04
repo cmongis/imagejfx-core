@@ -20,9 +20,10 @@
 package ijfx.core.segmentation;
 
 import ijfx.core.batch.BatchSingleInput;
+import ijfx.core.metadata.MetaDataSet;
 import ijfx.core.workflow.Workflow;
-import java.util.function.BiConsumer;
-import mongis.utils.ProgressHandler;
+import static jdk.nashorn.tools.ShellFunctions.input;
+import net.imagej.Dataset;
 import net.imglib2.img.Img;
 import net.imglib2.type.logic.BitType;
 
@@ -30,45 +31,56 @@ import net.imglib2.type.logic.BitType;
  *
  * @author cyril
  */
-public class DefaultSegmentationTask<T> implements SegmentationOp<T> {
+public class DefaultSegmentationTask implements SegmentationOp {
     
-    private BatchSingleInput input;
+    private Dataset input;
+    
+    private Dataset measuredDataset;
+    
+    private Img<BitType> output;
     
     private Workflow workflow;
     
-    private SegmentationHandler<T> handler;
-
-     public DefaultSegmentationTask() {
+    MetaDataSet set;
+    
+    public DefaultSegmentationTask() {
+         
     }
     
-    public DefaultSegmentationTask(BatchSingleInput input, Workflow workflow, SegmentationHandler<T> handler) {
+    public void load() {
+       
+    }
+    
+    
+     
+    public DefaultSegmentationTask(Dataset input, Workflow workflow, MetaDataSet set) {
+        this.measuredDataset = input;
         this.input = input;
         this.workflow = workflow;
-        this.handler = handler;
-    }
-
-   
-
-    public DefaultSegmentationTask(BatchSingleInput input, Workflow workflow) {
-        this(input, workflow, null);
+        this.set = set;
     }
     
     
-    
-    public SegmentationHandler<T> getHandler() {
-        return handler;
-    }
-
-    public void setHandler(SegmentationHandler<T> handler) {
-        this.handler = handler;
-    }
-
-    public BatchSingleInput getInput() {
-        return input;
-    }
-
-    public void setInput(BatchSingleInput input) {
+    public DefaultSegmentationTask(Dataset input, Dataset measured, Workflow workflow, MetaDataSet set) {
+        this.measuredDataset = measured;
         this.input = input;
+        this.workflow = workflow;
+        this.set = set;
+    }
+
+    public DefaultSegmentationTask(Dataset measured, Img<BitType> mask, Workflow workflow, MetaDataSet set) {
+        this.measuredDataset = measured;
+        this.output = mask;
+        this.workflow = workflow;
+        this.set = set;
+    }
+    
+    public Dataset getMeasuredDataset() {
+        return measuredDataset;
+    }
+
+    public Img<BitType> getOutput() {
+        return output;
     }
 
     public Workflow getWorkflow() {
@@ -78,8 +90,22 @@ public class DefaultSegmentationTask<T> implements SegmentationOp<T> {
     public void setWorkflow(Workflow workflow) {
         this.workflow = workflow;
     }
-    
-    
-    
-    
+
+    @Override
+    public Dataset getInput() {
+        return measuredDataset;
+    }
+
+    @Override
+    public void setOutput(Img<BitType> mask) {
+        this.output = mask;
+    }
+
+    @Override
+    public MetaDataSet getMetaDataSet() {
+        if(set == null) {
+            set = new MetaDataSet();
+        }
+        return set;
+    }
 }

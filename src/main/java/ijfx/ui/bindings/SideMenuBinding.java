@@ -45,7 +45,6 @@ public class SideMenuBinding {
         this.node = node;
         
         show.addListener(this::onShowChanged);
-        node.translateXProperty().addListener(this::onTranslatePropertyChanged);
         
          
         
@@ -69,7 +68,6 @@ public class SideMenuBinding {
     private void onShowChanged(Observable obs, Boolean oldValue, Boolean newValue) {
 
         final Timeline timeline = new Timeline();
-        double origin, end;
 
         if (newValue) {
             KeyValue kv = new KeyValue(node.translateXProperty(), 0, Interpolator.LINEAR);
@@ -84,8 +82,6 @@ public class SideMenuBinding {
         }
     }
     
-    private void onTranslatePropertyChanged(Observable obs, Number oldValue, Number newValue) {
-        System.out.println("Translate property : "+newValue);
-    }
+    
 
 }

@@ -217,6 +217,10 @@ public class DefaultMetaDataService extends AbstractService implements MetaDataS
 
     public void fillPositionMetaData(MetaDataSet set, CalibratedAxis[] axes, long[] absoluteCoordinate) {
 
+        if(absoluteCoordinate.length == axes.length-2) {
+            absoluteCoordinate = DimensionUtils.planarToAbsolute(absoluteCoordinate);
+        }
+        
         String[] dimensionLabelArray = Stream
                 .of(axes)
                 .map(axe -> axe.type().getLabel())

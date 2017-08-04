@@ -82,6 +82,7 @@ public abstract class ReactiveTool extends AbstractRichPlugin implements Tool{
     
     protected void stopStream() {
         log("Stoping stream");
+        if(eventStream != null) 
         eventStream.onCompleted();
         eventStream = null;
     }

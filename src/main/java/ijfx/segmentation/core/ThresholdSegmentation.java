@@ -23,10 +23,11 @@ import ijfx.commands.binary.SimpleThreshold;
 import ijfx.core.image.DisplayRangeService;
 import ijfx.core.image.ImagePlaneService;
 import ijfx.core.stats.ImageStatisticsService;
+import ijfx.core.timer.Timer;
+import ijfx.core.timer.TimerService;
 import ijfx.core.workflow.Workflow;
 import ijfx.core.workflow.WorkflowBuilder;
 import ijfx.ui.main.ImageJFX;
-import ijfx.ui.display.image.FXImageDisplay;
 import java.util.Map;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -57,7 +58,6 @@ import net.imglib2.img.ImgFactory;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.view.Views;
 import org.scijava.Context;
 import org.scijava.plugin.Parameter;
@@ -121,6 +121,10 @@ public class ThresholdSegmentation extends AbstractSegmentation {
     
     private boolean initiated = false;
     
+    @Parameter
+    TimerService timerService;
+    
+    private static Timer timer;
     
     public ThresholdSegmentation() {
       
@@ -129,6 +133,20 @@ public class ThresholdSegmentation extends AbstractSegmentation {
      
        
         
+    }
+    
+    private Timer getTimer() {
+        if(timer == null) {
+            timer = timerService.getTimer(this.getClass());
+        }
+        return timer;
+    }
+    
+    private void restartTimer() {
+        getTimer().start();
+    }
+    private void elapsed(String msg) {
+        getTimer().elapsed(msg);
     }
     
      public <T extends RealType<?>> void preview(RandomAccessibleInterval<T> input) {
@@ -151,7 +169,7 @@ public class ThresholdSegmentation extends AbstractSegmentation {
              
              minValue.setValue(min);
              maxValue.setValue(max);
-             
+             hasChanged = true;
          }
          
          this.plane = input;
@@ -311,7 +329,7 @@ public class ThresholdSegmentation extends AbstractSegmentation {
     private  <T extends RealType<T>> Img<BitType> generateMask() {
 
       
-
+        restartTimer();
         if(hasChanged == false) return maskProperty.getValue();
         
         logger.info("Generating mask !");
@@ -322,13 +340,15 @@ public class ThresholdSegmentation extends AbstractSegmentation {
 
         Img<BitType> img = factory.create(dimension, new BitType());
 
+        elapsed("creating new image");
         
         final double min, max;
 
         if (isAutothreshold()) {
-
+            
+            
             final double[] minMax  = calculateThresholdValues((RandomAccessibleInterval) plane);
-
+            elapsed("autothreshold");
             min = minMax[0];
             max = minMax[1];
         } else {
@@ -346,7 +366,7 @@ public class ThresholdSegmentation extends AbstractSegmentation {
             randomAccess.setPosition(cursor);
             randomAccess.get().set(value >= min && value <= max);
         }
-        
+        elapsed("setting pixels");
         if(lowValue.get() != min)lowValue.setValue(min);
         if(highValue.get() != max) highValue.setValue(max);
 

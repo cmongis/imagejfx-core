@@ -73,7 +73,7 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
     // handlers
     private Consumer<Throwable> onError = e -> logger.log(Level.SEVERE, null, e);
 
-    private Consumer<OUTPUT> onSuccess = e->logger.info("Callback is a success.");
+    private Consumer<OUTPUT> onSuccess = e->{};
     
     private ExecutorService executor = ImageJFX.getThreadPool();
 
@@ -81,11 +81,18 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
 
     private final static Logger logger = Logger.getLogger(CallbackTask.class.getName());
 
-    double total = 1.0;
-    double progress = 0;
+    private double total = 1.0;
+    private double progress = 0;
 
+        private long elapsed = 0;
+
+    
     public CallbackTask() {
         super();
+        
+        
+        setName(getCallerClassName());
+        
     }
 
     public CallbackTask(INPUT input) {
@@ -125,7 +132,7 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
     }
     
     public CallbackTask<INPUT,OUTPUT> run(LongRunnable longRunnable) {
-        this.longRunnable = this.longRunnable;
+        this.longRunnable = longRunnable;
         return this;
     }
     
@@ -162,6 +169,8 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
     @Override
     public OUTPUT call() throws Exception {
 
+        elapsed = System.currentTimeMillis();
+        
         // first we check if the task was cancelled BEFORE RUNNING IT
         if (isCancelled()) {
             return null;
@@ -199,7 +208,9 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
         else if(runnable != null) {
             runnable.run();
         }
-         
+        
+        elapsed = System.currentTimeMillis() - elapsed;
+        
         if(isCancelled()) {
             return null;
         }
@@ -250,6 +261,9 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
 
     @Override
     public void succeeded() {
+        
+        logger.info(String.format("%s '%s' executed in %d",getClass().getSimpleName(),getTitle(),elapsed));
+        
         if (onSuccess != null) {
             onSuccess.accept(getValue());
         }
@@ -364,6 +378,16 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
     }
 
     
-    
+    public static String getCallerClassName() { 
+        StackTraceElement[] stElements = Thread.currentThread().getStackTrace();
+        for (int i=2; i<stElements.length; i++) {
+            StackTraceElement ste = stElements[i];
+            
+            if (ste.getClassName().contains(CallbackTask.class.getSimpleName()) == false) {
+                return stElements[i].getClassName()+"."+ste.getMethodName();
+            }
+        }
+        return null;
+     }
 
 }

@@ -340,7 +340,11 @@ public class DefaultMainWindow implements MainWindow {
 
     @Override
     public void addForegroundTask(Task task) {
-        taskList.submitTask(task);
+        Platform.runLater(()->{
+             taskList.submitTask(task);
+        });
+                
+             
     }
 
     @Override

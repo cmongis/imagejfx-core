@@ -30,6 +30,5 @@ import ijfx.core.metadata.MetaDataOwner;
  */
 public interface Explorable extends Iconazable,MetaDataOwner,DatasetHolder,Taggable{
      
-   
- 
+    
 }

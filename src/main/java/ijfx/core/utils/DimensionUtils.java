@@ -130,7 +130,7 @@ public class DimensionUtils {
     }
 
     public static long[][] allPossibilities(Dataset dataset) {
-        return allPossibilities(getDimensions(dataset));
+        return allPossibilities(absoluteToPlanar(getDimensions(dataset)));
     }
     
     public static long[][] allPossibilities(ImageDisplay imageDisplay) {

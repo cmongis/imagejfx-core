@@ -30,14 +30,20 @@ import org.scijava.plugin.Parameter;
  *
  * @author cyril
  */
-public class SegmentationOpList<T> extends ArrayList<SegmentationOp<T>> {
+public class SegmentationOpList<T> extends ArrayList<SegmentationOp> {
 
-    public SegmentationOpList() {
+    @Parameter
+    Context context;
+    
+    private final SegmentationHandler<T> segmentationHandler;
+
+    public SegmentationOpList(SegmentationHandler<T> segmentationHandler) {
+        this.segmentationHandler = segmentationHandler;
     }
+    
+    public List<T> execute(ProgressHandler progressHandler) {
 
-    public List<T> execute(ProgressHandler handler) {
-
-        return new LinearSegmentationExecutor<T>().execute(handler, this);
+         return new LinearSegmentationExecutor<T>(context,segmentationHandler).execute(progressHandler, this);
 
     }
 

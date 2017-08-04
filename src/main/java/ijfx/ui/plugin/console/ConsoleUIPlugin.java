@@ -32,6 +32,7 @@ import ijfx.ui.UiPlugin;
 import ijfx.ui.main.ImageJFX;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -56,6 +57,8 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.UIService;
 import org.scijava.ui.console.ConsolePane;
+import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 
 /**
  *
@@ -102,6 +105,10 @@ public class ConsoleUIPlugin implements UiPlugin, ConsolePane<Node> {
     
     Set<String> lastContextList;
 
+    StringBuffer consoleBuffer = new StringBuffer(20000);
+    
+    PublishSubject<String> consoleDispatcher = PublishSubject.create();
+    
     @Override
     public Node getUiElement() {
         return hbox;
@@ -140,6 +147,14 @@ public class ConsoleUIPlugin implements UiPlugin, ConsolePane<Node> {
         
         consoleService.addOutputListener(this);
         
+        consoleDispatcher
+                .observeOn(Schedulers.from(ImageJFX.getThreadPool()))
+                .buffer(1000, TimeUnit.MILLISECONDS)
+                
+                .filter(strList->!strList.isEmpty())
+                .map(strList->strList.stream().collect(Collectors.joining()))
+                .subscribe(str->Platform.runLater(()->consoleTextArea.appendText(str)));
+        
         return this;
 
     }
@@ -166,9 +181,9 @@ public class ConsoleUIPlugin implements UiPlugin, ConsolePane<Node> {
 
     @Override
     public void append(OutputEvent event) {
-        Platform.runLater(()->{
-        consoleTextArea.appendText(event.getOutput());
-        });
+        
+        consoleDispatcher.onNext(event.getOutput());  
+         
     }
 
     @Override

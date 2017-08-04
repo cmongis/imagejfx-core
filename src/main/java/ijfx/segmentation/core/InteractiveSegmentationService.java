@@ -35,6 +35,7 @@ import ijfx.explorer.ExplorerService;
 import ijfx.ui.UiContexts;
 import ijfx.ui.display.image.FXImageDisplay;
 import ijfx.ui.loading.LoadingScreenService;
+import ijfx.ui.main.ImageJFX;
 import io.scif.services.DatasetIOService;
 import java.util.List;
 import java.util.Map;
@@ -74,7 +75,6 @@ import org.scijava.service.Service;
 @Plugin(type = Service.class)
 public class InteractiveSegmentationService extends AbstractService implements IjfxService {
 
-    
     InteractiveSegmentation currentSegmentation;
 
     @Parameter
@@ -98,7 +98,6 @@ public class InteractiveSegmentationService extends AbstractService implements I
     @Parameter
     UiContextService uiContextService;
 
-    
     @Parameter
     ExplorerService explorerService;
 
@@ -110,13 +109,14 @@ public class InteractiveSegmentationService extends AbstractService implements I
 
     @Parameter
     DatasetIOService datasetIoService;
-    
+
     @Parameter
     MetaDataSetDisplayService metaDataDisplayService;
 
     private boolean multiPlaneInput = false;
-    
-    
+
+    private Boolean updateLock = Boolean.TRUE;
+
     private final UUIDMap segmentationMap = new DefaultUUIDMap<InteractiveSegmentation>();
 
     private final Map<FXImageDisplay, Class<? extends InteractiveSegmentation>> segmentationChoice = new WeakHashMap<>();
@@ -171,24 +171,23 @@ public class InteractiveSegmentationService extends AbstractService implements I
     public Workflow getWorkflow() {
         return currentSegmentation.getWorkflow();
     }
-    
+
     private FXImageDisplay getCurrentImageDisplay() {
         return (FXImageDisplay) imageDisplayService.getActiveImageDisplay();
     }
-    
+
     private <T> IntervalView<? extends RealType<?>> getCurrentExample() {
-        
+
         FXImageDisplay display = getCurrentImageDisplay();
-        
-        if(multiPlaneInput) {
+
+        if (multiPlaneInput) {
             return (IntervalView<? extends RealType<?>>) (RandomAccessibleInterval<T>) imageDisplayService.getActiveDataset(display);
-        }
-        else {
+        } else {
             return imagePlaneService.planeView(display);
         }
     }
 
-    private void setSegmentation(FXImageDisplay display, Class<? extends InteractiveSegmentation> segType) {
+    private void setSegmentation(FXImageDisplay display, final Class<? extends InteractiveSegmentation> segType) {
 
         segmentationChoice.put(display, segType);
 
@@ -234,7 +233,7 @@ public class InteractiveSegmentationService extends AbstractService implements I
 
     protected void updateViews() {
         // first refresh the widget
-        uiWidgetList
+        getUiWidgets()
                 .stream()
                 .filter(widget -> widget.supports(currentSegmentation))
                 .filter(widget -> widget.getCurrentSegmentation() != currentSegmentation)
@@ -248,14 +247,27 @@ public class InteractiveSegmentationService extends AbstractService implements I
     }
 
     public void onMaskChanged(Observable obs, Img<BitType> oldValue, Img<BitType> mask) {
-        BinaryMaskOverlay overlay = overlayUtilsService.findOverlayOfType(getImageDisplay(), BinaryMaskOverlay.class);
-        if (mask == null && overlay != null) {
-            overlayUtilsService.removeAllOverlay(getImageDisplay());
-        } else {
-            BinaryMaskOverlay updateBinaryMask = overlayUtilsService.updateBinaryMask(getImageDisplay(), mask);
-            getImageDisplay().update();
-            //overlayUtilsService.updateOverlayView(getImageDisplay(), updateBinaryMask);
+        
+        ImageJFX
+                .getThreadQueue()
+                .submit(()->updateMask(mask));
+    }
+
+    private void updateMask(Img<BitType> mask) {
+
+        synchronized (updateLock) {
+            BinaryMaskOverlay overlay = overlayUtilsService.findOverlayOfType(getImageDisplay(), BinaryMaskOverlay.class);
+
+            if (mask == null && overlay != null) {
+                overlayUtilsService.removeAllOverlay(getImageDisplay());
+            } else {
+
+                overlayUtilsService.updateBinaryMask(getImageDisplay(), mask);
+                getImageDisplay().update();
+                //overlayUtilsService.updateOverlayView(getImageDisplay(), updateBinaryMask);
+            }
         }
+
     }
 
     @EventHandler
@@ -266,7 +278,7 @@ public class InteractiveSegmentationService extends AbstractService implements I
         }
         if (event.getDisplay() instanceof FXImageDisplay) {
             FXImageDisplay imageDisplay = (FXImageDisplay) event.getDisplay();
-            setSegmentation(imageDisplay, segmentationChoice.get(imageDisplay));
+            setSegmentation(imageDisplay, segmentationChoice.getOrDefault(imageDisplay, NoInteractiveSegmentation.class));
         }
     }
 
@@ -298,7 +310,7 @@ public class InteractiveSegmentationService extends AbstractService implements I
     private boolean isExplorer() {
         return uiContextService.isCurrent(UiContexts.EXPLORE);
     }
-    
+
     /*
     public void analyseParticles() {
 
@@ -321,7 +333,6 @@ public class InteractiveSegmentationService extends AbstractService implements I
                     .start();
         }
     }*/
-
     public class SegmentationWorkflowBuilder {
 
         private Workflow workflow;
@@ -546,6 +557,6 @@ public class InteractiveSegmentationService extends AbstractService implements I
         metaDataDisplayService.findDisplay(String.format("Measure per plane for %s", displayName)).addAll(result);
 
     };
-    */
+     */
 
 }

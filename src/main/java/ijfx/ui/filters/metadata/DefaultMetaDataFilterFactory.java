@@ -126,7 +126,7 @@ public class DefaultMetaDataFilterFactory<T extends MetaDataOwner> implements Me
                 .collect(Collectors.toList());
 
         StringFilterWrapper wrapper = stringFilterCache.getNext();
-        wrapper.setKeyName(keyName);
+        wrapper.setName(keyName);
         
         new CallbackTask<Collection<String>,Void>()
                 .consume(wrapper.getFilter()::setAllPossibleValues)
@@ -147,7 +147,7 @@ public class DefaultMetaDataFilterFactory<T extends MetaDataOwner> implements Me
                 .collect(Collectors.toList());
 
         NumberFilterWrapper wrapper = numberFilterCache.getNext();
-        wrapper.setKeyName(keyName);
+        wrapper.setName(keyName);
         wrapper.getFilter().setAllPossibleValue(possibleNumberValues);
         return wrapper;
     }

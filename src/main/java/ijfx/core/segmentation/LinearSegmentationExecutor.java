@@ -20,8 +20,6 @@
 package ijfx.core.segmentation;
 
 import ijfx.core.batch.BatchService;
-import ijfx.core.batch.BatchSingleInput;
-import ijfx.core.batch.item.DuplicatedBatchInputWrapper;
 import ijfx.core.metadata.MetaDataSet;
 import ijfx.ui.main.ImageJFX;
 import java.util.ArrayList;
@@ -32,9 +30,10 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import mongis.utils.ObservableProgressHandler;
 import mongis.utils.ProgressHandler;
+import net.imagej.Dataset;
 import net.imglib2.img.Img;
 import net.imglib2.type.logic.BitType;
-import org.scijava.ItemIO;
+import org.scijava.Context;
 import org.scijava.plugin.Parameter;
 
 /**
@@ -53,18 +52,27 @@ public class LinearSegmentationExecutor<T> implements SegmentationExecutor<T> {
     /**
      * List of all handlers currently executed
      */
-    private List<ProgressHandler> subHandlerList = new ArrayList<>();
+    private final List<ProgressHandler> subHandlerList = new ArrayList<>();
 
-    private ProgressHandler handler;
+    private ProgressHandler progressHandler;
 
+    private final SegmentationHandler<T> resultHandler;
+    
+    public LinearSegmentationExecutor(Context context, SegmentationHandler<T> segmentationHandler) {
+        context.inject(this);
+        resultHandler = segmentationHandler;
+    }
+
+    
+    
     @Override
-    public List<T> execute(ProgressHandler handler, List<SegmentationOp<T>> tasks) {
+    public List<T> execute(ProgressHandler handler, List<SegmentationOp> tasks) {
 
-        this.handler = ProgressHandler.check(handler);
+        this.progressHandler = ProgressHandler.check(handler);
 
         return tasks
                 .stream()
-                .map(this::execute)
+                .map(this::createTask)
                 .map(callable->{
                     try {
                        return  callable.call();
@@ -78,7 +86,7 @@ public class LinearSegmentationExecutor<T> implements SegmentationExecutor<T> {
 
     }
 
-    public Callable<T> execute(SegmentationOp<T> task) {
+    private Callable<T> createTask(SegmentationOp op) {
 
         // we need to monitor the progress of each task
         final ObservableProgressHandler segmentationHandler = new ObservableProgressHandler();
@@ -93,15 +101,14 @@ public class LinearSegmentationExecutor<T> implements SegmentationExecutor<T> {
             // when one handler changes, all handlers are queried
             // the big handler is updated
             segmentationHandler.setOnChange(this::updateHandler);
-            MetaDataSet set = task.getInput().getMetaDataSet();
+            MetaDataSet set = op.getMetaDataSet();
             
-            
-            BatchSingleInput input = new DuplicatedBatchInputWrapper(task.getInput());
-            input.load();
-            
-            batchService.applyWorkflow(segmentationHandler, task.getInput(), task.getWorkflow());
-
-            return task.getHandler().handle(completionHandler,input.getMetaDataSet(),task.getInput().getDataset(), (Img<BitType>) input.getDataset().getImgPlus().getImg());
+            if(op.getOutput() == null) {
+                op.load();
+                Dataset applyWorkflow = batchService.applyWorkflow(segmentationHandler, op.getInput().duplicate(), op.getWorkflow());
+                op.setOutput((Img<BitType>) applyWorkflow.getImgPlus().getImg());
+            }
+            return this.resultHandler.handle(completionHandler,op.getMetaDataSet(),op.getMeasuredDataset(),op.getOutput());
         };
         
     }
@@ -113,7 +120,7 @@ public class LinearSegmentationExecutor<T> implements SegmentationExecutor<T> {
                     .mapToDouble(ProgressHandler::getProgress)
                     .sum() / subHandlerList.size();
 
-            handler.setProgress(globalProgress);
+            progressHandler.setProgress(globalProgress);
 
             ProgressHandler get = subHandlerList
                     .stream()
