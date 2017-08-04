@@ -80,6 +80,7 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
     @FXML
     private TableColumn<Explorable, String> keyColumn;
+    
     @FXML
     private TableColumn<Explorable, String> valueColumn;
 
@@ -119,7 +120,6 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
         } catch (IOException ex) {
             Logger.getLogger(DefaultAnnotationDialog.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println("prout");
 
     }
 
@@ -132,37 +132,19 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
     public void setItems(List<? extends Explorable> items) {
         this.itemsList = items;
 
-        System.out.println("itemlist " + itemsList);
+        ImageJFX.getLogger().info(String.format("Items List   "+itemsList));
 
-        //labelDisplay(currentItem);
-
-        /*
-        for (Explorable exp : items){
-            if (getSelectedItems().contains(exp)){
-                this.currentItem= exp;
-                labelDisplay(exp);
-            }
-        }
-        /*
-        items.stream().forEach(this::labelDisplay);
-
-        this.itemsList = items;
-
-        currentItem = items;.
-         */
+        
     }
 
     private void setColumnsData(MetaDataSet map) {
-        if (!tableView.getColumns().isEmpty()) {
-            //tableView.getColumns().clear();
-        }
-        tableView.refresh();
+        
+        tableView.getItems().clear();
 
         map.entrySet().stream().forEach((entry) -> {
             tableView.getItems().add(entry.getValue());
         });
         
-        tableView.refresh();
     }
 
     @Override
@@ -179,13 +161,14 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
     @Override
     public void setSelectedItem(List<? extends Explorable> items) {
-        System.out.println("itemlist current" + itemsList);
+        
         items.stream().forEach((exp) -> {
             this.currentItem = exp;
+            
         });
-        //labelDisplay(currentItem);
 
         setColumnsData(currentItem.getMetaDataSet());
+        ImageJFX.getLogger().info(String.format("Current item  "+currentItem));
 
     }
 
@@ -213,7 +196,7 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
     }
 
     public void labelDisplay(Explorable exp) {
-        ImageJFX.getLogger().info(String.format("Label display nous y passons enfin "));
+        
         label.setText(exp.getTitle());
 
     }
