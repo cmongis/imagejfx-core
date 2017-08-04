@@ -63,19 +63,19 @@ public class DefaultMapperTest {
     @Before
     public void setUp() {
         
-        mapValue.put(5.0, gfp);
-        mapValue.put(0.0, "ncherry");
-        mapValue.put(1.0, "bright");
+        mapValue.put("5.0", gfp);
+        mapValue.put("0.0", "ncherry");
+        mapValue.put("1.0", "bright");
         
         oldKey = "key";
-        value = 5.0;
+        value = "5.0";
         newKey = "newKey";
         m = MetaData.create(oldKey, value);
         n = MetaData.create(newKey, gfp);
         
-        instance.associatedValues(5.0, gfp);
-        instance.associatedValues(0.0, "ncherry");
-        instance.associatedValues(1.0, "bright");
+        instance.associatedValues("5.0", gfp);
+        instance.associatedValues("0.0", "ncherry");
+        instance.associatedValues("1.0", "bright");
         instance.setNewKey(newKey);
         instance.setOldKey(oldKey);
         
@@ -137,7 +137,7 @@ public class DefaultMapperTest {
     @Test
     public void testAssociatedValues() {
         System.out.println("associatedValues");
-        Object basisValue = 6.0;
+        Object basisValue = "6.0";
         Object newValue = "light";
         instance.associatedValues(basisValue, newValue);
         mapValue.put(basisValue, newValue);
@@ -165,7 +165,7 @@ public class DefaultMapperTest {
     @Test
     public void testLookInsideMap() {
         System.out.println("lookInsideMap");
-        Object result = instance.lookInsideMap(5.0);
+        Object result = instance.lookInsideMap("5.0");
         Object expectResult = gfp;
         assertEquals("bad research", expectResult, result);
         
