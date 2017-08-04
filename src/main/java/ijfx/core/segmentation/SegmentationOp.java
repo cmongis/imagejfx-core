@@ -19,10 +19,10 @@
  */
 package ijfx.core.segmentation;
 
-import ijfx.core.batch.BatchSingleInput;
+import ijfx.core.metadata.MetaDataOwner;
+import ijfx.core.metadata.MetaDataSet;
 import ijfx.core.workflow.Workflow;
-import java.util.function.BiConsumer;
-import mongis.utils.ProgressHandler;
+import net.imagej.Dataset;
 import net.imglib2.img.Img;
 import net.imglib2.type.logic.BitType;
 
@@ -30,12 +30,18 @@ import net.imglib2.type.logic.BitType;
  *
  * @author cyril
  */
-public interface SegmentationOp<T> {
+public interface SegmentationOp extends MetaDataOwner {
     
-    BatchSingleInput getInput();
+    void load();
     
-    Workflow getWorkflow();
     
-    SegmentationHandler<T> getHandler();
+    Dataset getMeasuredDataset();
     
+    Dataset getInput();
+    
+    Img<BitType> getOutput();
+    
+    void setOutput(Img<BitType> mask);
+    
+    Workflow getWorkflow();    
 }

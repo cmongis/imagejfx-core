@@ -27,6 +27,8 @@ import java.lang.ref.WeakReference;
 import java.util.Set;
 import net.imagej.display.ImageDisplay;
 import net.imagej.overlay.Overlay;
+import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.type.numeric.RealType;
 import org.scijava.plugin.Parameter;
 
 /**
@@ -89,6 +91,11 @@ public class DisplayedSegmentedObject implements SegmentedObject{
     @Override
     public boolean has(Tag tag) {
         return object.has(tag);
+    }
+
+    @Override
+    public <T extends RealType<T>> RandomAccessibleInterval<T> getPixelSource() {
+        return object.getPixelSource();
     }
     
     

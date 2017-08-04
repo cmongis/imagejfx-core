@@ -21,6 +21,8 @@ package ijfx.core.segmentation;
 
 import ijfx.explorer.datamodel.Taggable;
 import net.imagej.overlay.Overlay;
+import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.type.numeric.RealType;
 
 /**
  *
@@ -28,4 +30,10 @@ import net.imagej.overlay.Overlay;
  */
 public interface SegmentedObject extends Taggable {
     Overlay getOverlay();
+    
+    public <T extends RealType<T>> RandomAccessibleInterval<T> getPixelSource();
+    
+   
+    
 }
+
