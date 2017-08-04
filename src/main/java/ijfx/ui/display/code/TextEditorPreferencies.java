@@ -37,9 +37,9 @@ public class TextEditorPreferencies implements Preferencies {
     
     private StringProperty themeProperty = new SimpleStringProperty("darkTheme");
     private List<String> listOfTheme = new ArrayList<>();
-    @org.scijava.plugin.Parameter(label = "enable autocompletion")
+    //@org.scijava.plugin.Parameter(label = "enable autocompletion")
     private boolean autocompletion = true;
-    @org.scijava.plugin.Parameter(label = "enable side panel")
+    //@org.scijava.plugin.Parameter(label = "enable side panel")
     private boolean sidePanel = true;
     
     private ObjectProperty<File> customCssProperty = new SimpleObjectProperty<>();
@@ -47,19 +47,11 @@ public class TextEditorPreferencies implements Preferencies {
     public TextEditorPreferencies() {
         this.listOfTheme.add("darkTheme");
         this.listOfTheme.add("lightTheme");
-        
-        this.customCssProperty.addListener(new ChangeListener<File>() {
-            @Override
-            public void changed(ObservableValue<? extends File> observable, File oldValue, File newValue) {
-                if (newValue != null) {
-                    listOfTheme.add(newValue.getAbsolutePath());
-                    themeProperty.set(newValue.getAbsolutePath());
-                }
-            }
-        });
+       
     }
 
     public String getTheme() {
+        System.out.println(themeProperty.get());
         return themeProperty.get();
     }
 
@@ -97,6 +89,10 @@ public class TextEditorPreferencies implements Preferencies {
 
     public void setCustomCSS(File customCSS) {
         this.customCssProperty.set(customCSS);
+        if (!listOfTheme.contains(customCSS.getAbsolutePath())){
+            listOfTheme.add(customCSS.getAbsolutePath());
+        }
+        //themeProperty.set(customCSS.getAbsolutePath());
     }
     
     
