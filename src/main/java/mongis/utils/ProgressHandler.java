@@ -33,6 +33,13 @@ public interface ProgressHandler {
     public void setProgress(double workDone,double total);
     public void setProgress(long workDone,long total);
     public void setStatus(String message);
+    
+    public default void setProgress(double progress, String format, Object... params) {
+        setProgress(progress);
+        setStatus(format, params);
+    }
+    
+    
     public default void setStatus(String format, Object... params) {
         setStatus(String.format(format,params));
     }
