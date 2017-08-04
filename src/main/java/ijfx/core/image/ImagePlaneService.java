@@ -48,6 +48,7 @@ public interface ImagePlaneService extends IjfxService {
     
     Dataset createEmptyPlaneDataset(Dataset input);
     Dataset createEmptyPlaneDataset(Dataset input, long with, long height);
+    
     Dataset openVirtualDataset(File file) throws IOException;
     
     
@@ -82,5 +83,5 @@ public interface ImagePlaneService extends IjfxService {
     
     public <T extends RealType<T>> RandomAccessibleInterval<T> openVirtualPlane(File file, long[] nonSpacialPosition) throws IOException;
     
-    
+       
 }
