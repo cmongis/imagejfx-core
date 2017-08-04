@@ -41,6 +41,13 @@ public class DefaultTaggableFilter implements TaggableFilter {
     ObservableValue<Predicate<Taggable>> predicateProperty = Bindings.createObjectBinding(this::getPredicate, filter.predicateProperty());
 
     @Override
+    public void setName(String name) {
+
+    }
+
+    
+    
+    @Override
     public ObservableValue<Predicate<Taggable>> predicateProperty() {
 
         return predicateProperty;
