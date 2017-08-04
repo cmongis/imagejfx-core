@@ -30,6 +30,7 @@ import ijfx.explorer.datamodel.AbstractExplorable;
 import ijfx.ui.loading.LoadingScreenService;
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.logging.Level;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
@@ -37,8 +38,10 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import mongis.utils.CallbackTask;
 import net.imagej.Dataset;
+import net.imagej.display.ImageDisplay;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.display.ColorTable8;
+import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 import org.scijava.plugin.Parameter;
 
@@ -65,8 +68,13 @@ public class SegmentedObjectExplorerWrapper extends AbstractExplorable {
     @Parameter
     private LoadingScreenService loadingScreenService;
 
+    private Dataset source;
+
+    private WeakReference<ImageDisplay> imageDisplay = new WeakReference<>(null);
+
     public SegmentedObjectExplorerWrapper(SegmentedObject object) {
         this.object = object;
+        object.getOverlay().context().inject(this);
     }
 
     @Override
@@ -84,12 +92,44 @@ public class SegmentedObjectExplorerWrapper extends AbstractExplorable {
         return "";
     }
 
+    public void setSource(Dataset source) {
+        this.source = source;
+    }
+
+    public void setImageDisplay(ImageDisplay imageDisplay) {
+        this.imageDisplay = new WeakReference<>(imageDisplay);
+    }
+
+    public ImageDisplay getImageDisplay() {
+        return this.imageDisplay.get();
+    }
+
+    private void load() {
+
+    }
+
     @Override
     public Image getImage() {
         try {
-            long[] nonPlanarPosition = MetaDataSetUtils.getNonPlanarPosition(getMetaDataSet());
-            Dataset dataset = imagePlaneService.openVirtualDataset(getFile());
-            Dataset extractedObject = overlayDrawingService.extractObject(object.getOverlay(), dataset, nonPlanarPosition);
+
+            RandomAccessibleInterval<? extends RealType> extractedObject;
+            if (object.getPixelSource() != null) {
+
+                extractedObject = overlayDrawingService.extractObject(object.getOverlay(),object.getPixelSource());
+
+            } else {
+
+                // we get the position the overlay was extracted from
+                long[] nonPlanarPosition = MetaDataSetUtils.getNonPlanarPosition(getMetaDataSet());
+
+                // we open the image virtually just in case
+                File imageFile = new File(object.getMetaDataSet().get(MetaData.ABSOLUTE_PATH).getStringValue());
+
+                Dataset dataset = imagePlaneService.openVirtualDataset(imageFile);
+                // the pixels are extracted
+                extractedObject = overlayDrawingService.extractObject(object.getOverlay(), dataset, nonPlanarPosition);
+
+            }
             double min = object.getMetaDataSet().get(MetaData.STATS_PIXEL_MIN).getDoubleValue();
             double max = object.getMetaDataSet().get(MetaData.STATS_PIXEL_MAX).getDoubleValue();
             Image image = previewService.datasetToImage((RandomAccessibleInterval<? extends RealType>) extractedObject, new ColorTable8(), min, max);
@@ -135,7 +175,6 @@ public class SegmentedObjectExplorerWrapper extends AbstractExplorable {
         return output;
     }
 
-   
     @Override
     public void open() throws Exception {
         new CallbackTask<File, Void>()
@@ -163,8 +202,8 @@ public class SegmentedObjectExplorerWrapper extends AbstractExplorable {
     public SegmentedObject getObject() {
         return object;
     }
-    
+
     public void dispose() {
-        
+
     }
 }

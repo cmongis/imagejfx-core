@@ -34,9 +34,9 @@ public interface DataFilter<T> {
     
     void setAllPossibleValues(Collection<? extends T> values);
 
-    default String getName() {
-        return DEFAULT_NAME;
-    }
+    void setName(String name);
+    
+    String getName();
     
     public default Predicate<T> getPredicate() {
         return predicateProperty().getValue();

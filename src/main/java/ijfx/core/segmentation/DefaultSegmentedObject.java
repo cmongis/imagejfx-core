@@ -28,6 +28,8 @@ import ijfx.explorer.datamodel.AbstractTaggable;
 import jdk.nashorn.internal.objects.annotations.Getter;
 import jdk.nashorn.internal.objects.annotations.Setter;
 import net.imagej.overlay.Overlay;
+import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.type.numeric.RealType;
 import org.scijava.plugin.Parameter;
 /**
  *
@@ -36,7 +38,7 @@ import org.scijava.plugin.Parameter;
 public class DefaultSegmentedObject extends AbstractTaggable implements SegmentedObject {
 
     
-    
+    RandomAccessibleInterval<? extends RealType> source;
     private Overlay overlay;
     private MetaDataSet set = new MetaDataSet();
     @Parameter
@@ -46,6 +48,8 @@ public class DefaultSegmentedObject extends AbstractTaggable implements Segmente
     public DefaultSegmentedObject() {
         set.setType(MetaDataSetType.OBJECT);
     }
+    
+    
 
     @Setter(name = "overlay")
     public void setOverlay(Overlay overlay) {
@@ -64,6 +68,17 @@ public class DefaultSegmentedObject extends AbstractTaggable implements Segmente
         
         set.merge(overlayStatsService.getStatisticsAsMap(overlayStatistics));
         
+    }
+
+    public RandomAccessibleInterval<? extends RealType> getPixelSource() {
+        return source;
+    }
+    
+    
+    
+    public <T extends RealType<T>> DefaultSegmentedObject setSource(RandomAccessibleInterval<T> interval) {
+        this.source = interval;
+        return this;
     }
 
     @Override

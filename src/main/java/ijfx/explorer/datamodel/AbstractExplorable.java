@@ -30,6 +30,21 @@ public abstract class AbstractExplorable extends AbstractTaggable implements Exp
 
 
   
+    @Override
+    public int hashCode() {
+        
+        
+        return getTitle().hashCode()
+                +
+                getSubtitle().hashCode()
+                +
+        getMetaDataSet()
+                .values()
+                .stream()
+                .parallel()
+                .mapToInt(m->m.hashCode())
+                .sum();
+    }
 
     protected File getFile() {
         return new File(getMetaDataSet().get(MetaData.ABSOLUTE_PATH).getStringValue());

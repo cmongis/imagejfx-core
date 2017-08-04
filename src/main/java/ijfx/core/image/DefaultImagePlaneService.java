@@ -19,6 +19,7 @@
  */
 package ijfx.core.image;
 
+import com.google.common.collect.MapMaker;
 import ijfx.core.metadata.MetaDataSet;
 import ijfx.core.timer.Timer;
 import ijfx.core.timer.TimerService;
@@ -29,10 +30,14 @@ import io.scif.config.SCIFIOConfig;
 import io.scif.services.DatasetIOService;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.ConcurrentMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.imagej.Dataset;
 import net.imagej.DatasetService;
 import net.imagej.axis.AxisType;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
@@ -60,26 +65,41 @@ public class DefaultImagePlaneService extends AbstractService implements ImagePl
     @Parameter
     TimerService timerService;
 
+    @Parameter
+    ImageDisplayService imageDisplayService;
+
     Logger logger = ImageJFX.getLogger();
+
+    ConcurrentMap<File, Dataset> graphs = new MapMaker()
+            .weakValues()
+            .makeMap();
 
     public Dataset extractPlane(MetaDataSet set) {
         return null;
     }
 
+    private Dataset computeVirtualDataset(File file) {
+        try {
+            Timer timer = timerService.getTimer(this.getClass());
+            SCIFIOConfig config = new SCIFIOConfig();
+            config.imgOpenerSetComputeMinMax(false);
+            config.imgOpenerSetOpenAllImages(false);
+            //config.imgOpenerSetImgModes(SCIFIOConfig.ImgMode.CELL,SCIFIOConfig.ImgMode.PLANAR);
+            config.imgOpenerSetImgFactoryHeuristic(new CellImgFactoryHeuristic());
+            config.parserSetLevel(MetadataLevel.MINIMUM);
+            timer.start();
+            Dataset open = datasetIoService.open(file.getAbsolutePath(), config);
+            timer.elapsed("Virtual dataset opening");
+            return open;
+        } catch (IOException ex) {
+            Logger.getLogger(DefaultImagePlaneService.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
     @Override
     public Dataset openVirtualDataset(File file) throws IOException {
-
-        Timer timer = timerService.getTimer(this.getClass());
-        SCIFIOConfig config = new SCIFIOConfig();
-        config.imgOpenerSetComputeMinMax(false);
-        config.imgOpenerSetOpenAllImages(false);
-        //config.imgOpenerSetImgModes(SCIFIOConfig.ImgMode.CELL,SCIFIOConfig.ImgMode.PLANAR);
-        config.imgOpenerSetImgFactoryHeuristic(new CellImgFactoryHeuristic());
-        config.parserSetLevel(MetadataLevel.MINIMUM);
-        timer.start();
-        Dataset open = datasetIoService.open(file.getAbsolutePath(), config);
-        timer.elapsed("Virtual dataset opening");
-        return open;
+        return graphs.computeIfAbsent(file, this::computeVirtualDataset);
     }
 
     @Override
@@ -134,7 +154,6 @@ public class DefaultImagePlaneService extends AbstractService implements ImagePl
     public Dataset createEmptyPlaneDataset(Dataset input) {
         AxisType[] axisTypeList = new AxisType[2];
 
-
         long width = input.dimension(0);
         long height = input.dimension(1);
         long[] dims = new long[]{width, height};
@@ -165,11 +184,11 @@ public class DefaultImagePlaneService extends AbstractService implements ImagePl
 
         Timer t = timerService.getTimer(this.getClass());
         t.start();
-        
-        if(position.length < dataset.numDimensions()) {
+
+        if (position.length < dataset.numDimensions()) {
             position = DimensionUtils.planarToAbsolute(position);
         }
-        
+
         Dataset emptyDataset = createEmptyPlaneDataset(dataset);
 
         RandomAccess<T> randomAccessOrigin = (RandomAccess<T>) dataset.randomAccess();
@@ -239,39 +258,8 @@ public class DefaultImagePlaneService extends AbstractService implements ImagePl
 
         }
 
-        if (position.length <= 0) {
-            return (IntervalView<T>) Views.translate(source, 0, 0);
-        }
-        IntervalView<T> hyperSlice = (IntervalView<T>) Views.hyperSlice(source, 2, position[0]);
-        if (position.length == 1) {
-            return hyperSlice;
-        }
-        for (int d = 1; d != position.length; d++) {
-            hyperSlice = Views.hyperSlice(hyperSlice, 2, position[d]);
-            if(d > 10) {
-                throw new IllegalArgumentException("Wierd loop detected !");
-            }
-        }
-        return hyperSlice;
-    }
-
-    @Override
-    public <T extends RealType<T>> RandomAccessibleInterval<T> openVirtualPlane(File file, long[] nonSpacialPosition) throws IOException {
-
-        Dataset dataset = openVirtualDataset(file);
-        return planeView(dataset, nonSpacialPosition);
-
-    }
-
-
-    @Override
-    public <T extends RealType<T>> IntervalView<T> plane(RandomAccessibleInterval<T> source, long[] position) {
-        
-        int srcNumDimension = source.numDimensions();
-        int positionLength = position.length;
-        
-        if(srcNumDimension == positionLength) {
-            logger.warning(String.format("An absolute dimension (%d-d) was given instead of a planar dimension (%d-d)",srcNumDimension,srcNumDimension-2));
+        if (srcNumDimension == position.length) {
+            logger.warning(String.format("An absolute dimension (%d-d) was given instead of a planar dimension (%d-d)", srcNumDimension, srcNumDimension - 2));
             position = DimensionUtils.absoluteToPlanar(position);
         }
 
@@ -284,15 +272,58 @@ public class DefaultImagePlaneService extends AbstractService implements ImagePl
         }
         for (int d = 1; d != position.length; d++) {
             hyperSlice = Views.hyperSlice(hyperSlice, 2, position[d]);
-            if(d > 10) {
+            if (d > 10) {
                 throw new IllegalArgumentException("Wierd loop detected !");
             }
         }
         return hyperSlice;
-        
-        
     }
 
-  
+    @Override
+    public <T extends RealType<T>> RandomAccessibleInterval<T> openVirtualPlane(File file, long[] nonSpacialPosition) throws IOException {
+
+        Dataset dataset = openVirtualDataset(file);
+        return DefaultImagePlaneService.this.planeView(dataset, nonSpacialPosition);
+
+    }
+
+    @Override
+    public <T extends RealType<T>> IntervalView<T> plane(RandomAccessibleInterval<T> source, long[] position) {
+
+        int srcNumDimension = source.numDimensions();
+        int positionLength = position.length;
+
+        if (srcNumDimension == positionLength) {
+            logger.warning(String.format("An absolute dimension (%d-d) was given instead of a planar dimension (%d-d)", srcNumDimension, srcNumDimension - 2));
+            position = DimensionUtils.absoluteToPlanar(position);
+        }
+
+        if (position.length <= 0) {
+            return (IntervalView<T>) Views.translate(source, 0, 0);
+        }
+        IntervalView<T> hyperSlice = (IntervalView<T>) Views.hyperSlice(source, 2, position[0]);
+        if (position.length == 1) {
+            return hyperSlice;
+        }
+        for (int d = 1; d != position.length; d++) {
+            hyperSlice = Views.hyperSlice(hyperSlice, 2, position[d]);
+            if (d > 10) {
+                throw new IllegalArgumentException("Weird loop detected !");
+            }
+        }
+        return hyperSlice;
+
+    }
+
+    @Override
+    public <T extends RealType<T>> IntervalView<T> planeView(ImageDisplay imageDisplay) {
+
+        long[] position = new long[imageDisplay.numDimensions()];
+
+        //imageDisplayService.getActiveDatasetView(imageDisplay).localize(position);
+        imageDisplay.localize(position);
+        return planeView(imageDisplayService.getActiveDataset(imageDisplay), position);
+
+    }
 
 }

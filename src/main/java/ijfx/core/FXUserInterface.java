@@ -70,9 +70,9 @@ import org.scijava.ui.console.ConsolePane;
 import org.scijava.ui.viewer.DisplayViewer;
 import ijfx.core.uiplugin.UiCommandService;
 import ijfx.ui.loading.ForegroundTaskSubmitted;
+import ijfx.ui.loading.LoadingScreenService;
 import javafx.stage.DirectoryChooser;
 import org.scijava.widget.FileWidget;
-import org.scijava.widget.WidgetService;
 
 /**
  *
@@ -117,6 +117,9 @@ public class FXUserInterface extends Application implements UserInterface {
     private static UIService uiService;
 
     @Parameter
+    LoadingScreenService loadingScreenService;
+
+    @Parameter
     private static UiCommandService uiCommandService;
 
     public static Stage STAGE;
@@ -147,7 +150,7 @@ public class FXUserInterface extends Application implements UserInterface {
         SCENE = new Scene(new BorderPane());
         SCENE.getStylesheets().add(getClass().getResource("/ijfx/ui/fonts.css").toExternalForm());
         SCENE.getStylesheets().add(getStylesheet());
-        
+
         SCENE.setRoot(getMainWindow().getUiComponent());
 
         // scene.getStylesheets().add("http://fonts.googleapis.com/css?family=Open+Sans");
@@ -401,22 +404,35 @@ public class FXUserInterface extends Application implements UserInterface {
         }
 
         final DisplayViewer<?> finalViewer = displayViewer;
-        threadService.queue(new Runnable() {
-            @Override
-            public void run() {
-                final DisplayWindowFX displayWindow = createDisplayWindow(display);
-                finalViewer.view(displayWindow, display);
-                finalViewer.setPanel(displayWindow.getDisplayPanel());
-                displayWindow.setTitle(display.getName());
-                uiService.addDisplayViewer(finalViewer);
-                displayWindow.showDisplay(true);
-                display.update();
-                displayService.setActiveDisplay(display);
 
-                activityService.getActivity(DisplayContainer.class).addWindow(displayWindow);
-                activityService.open(DisplayContainer.class);
-            }
-        });
+        new CallbackTask<Void, Void>()
+                .run(progress -> {
+                    progress.setProgress(0.5);
+                    progress.setStatus("Creating window...");
+                     activityService.open(DisplayContainer.class);
+                    
+                   
+                    
+                    final DisplayWindowFX displayWindow = createDisplayWindow(display);
+                    finalViewer.view(displayWindow, display);
+                    finalViewer.setPanel(displayWindow.getDisplayPanel());
+                    
+                    
+                    displayWindow.setTitle(display.getName());
+                    uiService.addDisplayViewer(finalViewer);
+                    displayWindow.showDisplay(true);
+                    progress.setProgress(0.7,"Updating display...");
+                  
+                    displayService.setActiveDisplay(display);
+                    activityService.getActivity(DisplayContainer.class).addWindow(displayWindow);
+                     display.update();
+                    progress.setProgress(1.0);
+                })
+                .error(thr->System.out.println(thr))
+                .start()
+                .submit(loadingScreenService);
+              
+
     }
 
     @Override
@@ -490,12 +506,12 @@ public class FXUserInterface extends Application implements UserInterface {
     }
 
     public void reloadCss() {
-        
+
         SCENE.getStylesheets().remove(getStylesheet());
         SCENE.getStylesheets().add(getStylesheet());
-        
+
         logger.info("CSS reloaded.");
-        
+
     }
 
 }

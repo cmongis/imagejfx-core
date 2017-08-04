@@ -19,18 +19,12 @@
  */
 package ijfx.commands.explorable;
 
-import ijfx.commands.explorable.AbstractExplorableDisplayCommand;
-import ijfx.commands.explorable.ExplorableDisplayCommand;
-import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataSet;
-import ijfx.core.metadata.MetaDataSetUtils;
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.datamodel.Mapper;
 import ijfx.ui.display.annotation.AnnotationDialog;
 import ijfx.ui.display.annotation.DefaultAnnotationDialog;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import mongis.utils.FXUtilities;
 import org.scijava.plugin.Plugin;
@@ -39,63 +33,59 @@ import org.scijava.plugin.Plugin;
  *
  * @author sapho
  */
+@Plugin(type = ExplorableDisplayCommand.class, label = "Set to annotation...", iconPath = "fa:edit")
+public class SetAnnotation extends AbstractExplorableDisplayCommand {
 
-@Plugin(type = ExplorableDisplayCommand.class, label="Set to annotation...",iconPath="fa:edit")
-public class SetAnnotation extends AbstractExplorableDisplayCommand{
-    
-   
-   private AnnotationDialog<Mapper> annot ;
-   
-   private Mapper mapper;
+    private AnnotationDialog<Mapper> annot;
+
+    private Mapper mapper;
 
     @Override
     public void run(List<? extends Explorable> items) {
-        
+
         annot = FXUtilities.runAndWait(DefaultAnnotationDialog::new);
-        
-        List <MetaDataSet> setList = items
+
+        List<MetaDataSet> setList = items
                 .stream()
                 .map(n -> n.getMetaDataSet())
                 .collect(Collectors.toList());
-        
-        
+
         annot.fillComboBox(items, setList);
-        
+
         this.mapper = FXUtilities.runAndWait(annot::showAndWait).orElse(null);
-        
-        if(mapper == null) {
-           cancel("The user canceled");
-           return;
+
+        if (mapper == null) {
+            cancel("The user canceled");
+            return;
         }
-        
+
         items
-               .stream()
-               .forEach(this::setAnnotation);
-        
-         display.update();
+                .stream()
+                .forEach(this::setAnnotation);
+
+        display.update();
     }
-    
-    
+
     public void setAnnotation(Explorable exp) {
+        //two lists to escape a current modification exception;
         MetaDataSet set = exp.getMetaDataSet();
-        for(Map.Entry<String, MetaData> entry : set.entrySet()) {
-            
-            if(entry.getValue().getName().equals(mapper.getOldKey())) {
-                
-                MetaData truc = mapper.map(entry.getValue());
-                set.put(truc);
-            }
-           
+        MetaDataSet set1 = new MetaDataSet();
+        set.entrySet()
+                .stream()
+                .filter((entry)
+                        -> (entry.getValue()
+                        .getName()
+                        .equals(mapper.getOldKey()))).map((entry)
+                -> mapper.map(entry.getValue())).forEach((newM) -> {
+            set1.put(newM);
+        });
         
-        }
-        
-   
-        
-        
-        
+        set1.entrySet()
+                .stream()
+                .forEach((entry) -> {
+                    set.put(entry.getValue());
+                });
+
     }
 
-
-    
-    
 }

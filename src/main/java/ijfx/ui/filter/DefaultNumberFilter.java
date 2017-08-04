@@ -20,6 +20,7 @@
 package ijfx.ui.filter;
 
 
+import ijfx.ui.main.ImageJFX;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,7 +55,6 @@ import mongis.utils.FXUtilities;
 import mongis.utils.SmartNumberStringConverter;
 import mongis.utils.bindings.TextToNumberBinding;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.random.EmpiricalDistribution;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.controlsfx.control.RangeSlider;
@@ -94,6 +94,12 @@ public class DefaultNumberFilter extends BorderPane implements NumberFilter {
     @FXML
     Label valueCountLabel;
 
+    Logger logger = ImageJFX.getLogger();
+    
+    private long elapsed = 0;
+    
+    private String name;
+    
     SmartNumberStringConverter converter = new SmartNumberStringConverter();
 
     public DefaultNumberFilter() {
@@ -165,6 +171,7 @@ public class DefaultNumberFilter extends BorderPane implements NumberFilter {
         return rangeSlider.highValueProperty();
     }
 
+    
     @Override
     public DoubleProperty minProperty() {
         return rangeSlider.lowValueProperty();
@@ -175,6 +182,7 @@ public class DefaultNumberFilter extends BorderPane implements NumberFilter {
         possibleValues = values;
 
         new CallbackTask()
+              
                 .run(this::updateChart)
                 .start();
         //updateChart();
@@ -212,21 +220,18 @@ public class DefaultNumberFilter extends BorderPane implements NumberFilter {
 
         EmpiricalDistribution distribution = new EmpiricalDistribution(finalBinNumber);
 
-        Double[] values = possibleValues
+        double[] values = possibleValues
                 .parallelStream()
                 .filter(n -> Double.isFinite(n.doubleValue()))
-                .map(v -> v.doubleValue())
+                .mapToDouble(v -> v.doubleValue())
                 .sorted()
-                //.toArray();
-                .toArray(size -> new Double[size]);
-        distribution.load(ArrayUtils.toPrimitive(values));
+                .toArray();
+        distribution.load(values);
 
         min = values[0];
         max = values[values.length - 1];
         range = max - min;
         binSize = range / (finalBinNumber - 1);
-
-        System.out.println(String.format("min = %.0f, max = %.0f, range = %.0f, bin size = %.0f, bin number = %d", min, max, range, binSize, finalBinNumber));
 
         XYChart.Series<Double, Double> serie = new XYChart.Series<>();
         ArrayList<Data<Double, Double>> data = new ArrayList<>();
@@ -297,8 +302,6 @@ public class DefaultNumberFilter extends BorderPane implements NumberFilter {
 
     private void onLowHighValueChanged(Observable value, Boolean oldValue, Boolean newValue) {
 
-        System.out.println("changing predicate !");
-
         // if it's currently changing we don't want to update the predicate
         if (newValue) {
             return;
@@ -311,7 +314,9 @@ public class DefaultNumberFilter extends BorderPane implements NumberFilter {
     private void updatePredicate(Event event) {
         final double min = minProperty().getValue();
         final double max = maxProperty().getValue();
-        System.out.printf("Min : %.3f, Max : %.3f\n", min, max);
+        
+        logger.info(String.format("Updating predicate for %s (%.3f,%.3f)",getName(),min,max));
+        
         // no predicate is necessary if there the range is full
         if (min == rangeSlider.getMin() && max == rangeSlider.getMax()) {
 
@@ -365,5 +370,16 @@ public class DefaultNumberFilter extends BorderPane implements NumberFilter {
             valueCountLabel.setText(String.format("%d elements (%.0f%%)", count, 1.0 * count / possibleValues.size() * 100));
         }
     }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    
+    
 
 }

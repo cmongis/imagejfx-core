@@ -218,15 +218,11 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
 
         installCanvas();
         
-        //anchorPane.setFocusTraversable(true);
-        //topBorderPane.setFocusTraversable(true);
-        
+     
         toolService.setActiveTool(toolService.getTool(HandTool.class));
         anchorPane.addEventHandler(KeyEvent.ANY, System.out::println);
         setFocusTraversable(false);
-        /*
        
-        */
         
         showBottomPanel
                 .bind(
@@ -321,9 +317,18 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
 
     private void installCanvas() {
         if (display != null && canvas == null && canvasListener == null) {
+            
+            // creates a FX Canvas to draw things inside
             canvas = new Canvas();
+            
+            // the canvas listener
+            // listen for input events modify the display
+            // in consequence
             new CanvasListener(display, canvas);
-            // adding the canvas
+            
+
+            // adding the canvas to an anchorpane
+            // so it can be fluid
             modifiersAnchorPane = new AnchorPane();
             modifiersAnchorPane.prefWidthProperty().bind(canvas.widthProperty());
             modifiersAnchorPane.prefHeightProperty().bind(canvas.heightProperty());
@@ -332,12 +337,7 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
             modifiersAnchorPane.maxHeightProperty().bind(canvas.heightProperty());
             stackPane.getChildren().addAll(canvas,modifiersAnchorPane);
             
-            /*
-             * Makes sure the key events are transmitted to the cavnas
-             */
-            //stackPane.setFocusTraversable(true);
-            //modifiersAnchorPane.setFocusTraversable(true);
-            
+         
         }
     }
 
@@ -457,7 +457,7 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
 
         ImageCanvasUtils.checkPosition(getDisplay().getCanvas());
 
-        System.out.println("rendering again");
+     
         final Timer t = timerService.getTimer(this.getClass());
         t.start();
         t.elapsed("since last time");
@@ -469,9 +469,7 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
         final ARGBScreenImage screenImage = view.getScreenImage();
 
         WritableImage buffer = getBuffer(screenImage);
-        System.out.println("screenImage Width");
-        System.out.println(screenImage.dimension(0));
-
+    
         t.elapsed("getting screen image");
 
         final int[] pixels = screenImage.getData();
@@ -493,8 +491,7 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
         final double sw = 1.0 * viewport.getViewportWidth() / zoomFactor;
         final double sh = 1.0 * viewport.getViewportHeight() / zoomFactor;
 
-        System.out.println(String.format("sx = %.0f, sy = %.0f, sw = %.0f, sh =%.0f", sx, sy, sw, sh));
-
+       
         // the target image (which is the canvas itself
         final double tx = 0;
         final double ty = 0;

@@ -108,6 +108,12 @@ public class IconExplorerView extends ScrollPane implements ExplorerView {
         
     }
 
+    public List<? extends Explorable> getItems() {
+        return itemsList;
+    }
+
+    
+    
     private PaneCell<Explorable> createIcon() {
         ExplorerIconCell cell = new ExplorerIconCell();
         cell.setOnDataClick(event->{

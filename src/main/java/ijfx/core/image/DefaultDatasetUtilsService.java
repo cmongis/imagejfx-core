@@ -444,5 +444,4 @@ public class DefaultDatasetUtilsService extends AbstractService implements Datas
 
         return image;
     }
-
 }

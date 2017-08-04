@@ -17,25 +17,14 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.segmentation;
-
-import ijfx.core.batch.BatchSingleInput;
-import ijfx.core.workflow.Workflow;
-import java.util.function.BiConsumer;
-import mongis.utils.ProgressHandler;
-import net.imglib2.img.Img;
-import net.imglib2.type.logic.BitType;
+package ijfx.segmentation.core;
 
 /**
  *
  * @author cyril
  */
-public interface SegmentationTask<T> {
+public interface InteractiveSegmentationPanel {
     
-    BatchSingleInput getInput();
-    
-    Workflow getWorkflow();
-    
-    SegmentationHandler<T> getHandler();
+    void refresh();
     
 }

@@ -49,7 +49,16 @@ class TitledPaneFilterWrapper<T> implements DataFilter<T> {
             pane = null;
         }
     }
+    
+    
+    public String getName() {
+        return filter.getName();
+    }
 
+    public void setName(String name) {
+        filter.setName(name);
+    }
+    
     @Override
     public TitledPane getContent() {
         return pane;

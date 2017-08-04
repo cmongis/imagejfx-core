@@ -21,7 +21,6 @@ package ijfx.ui.service;
 
 import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataOwner;
-import ijfx.explorer.datamodel.DefaultMapper;
 import ijfx.explorer.datamodel.Mapper;
 import ijfx.explorer.datamodel.Taggable;
 import ijfx.explorer.datamodel.Tag;
@@ -39,24 +38,21 @@ import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 
-
 /**
  *
  * @author sapho
  */
 @Plugin(type = Service.class)
 public class DefaultAnnotationService extends AbstractService implements AnnotationService {
-    
+
     @Parameter
     EventService eventService;
-        
 
     @Override
     public void addTag(Taggable taggable, Tag tag) {
         taggable.addTag(tag);
         eventService.publish(new AddTagEvent(tag));
-        
-        
+
     }
 
     @Override
@@ -72,45 +68,42 @@ public class DefaultAnnotationService extends AbstractService implements Annotat
             eventService.publish(new AddMetaDataEvent(owner, m));
         }
 
-        
     }
 
     @Override
     public void removeMetaData(MetaDataOwner owner, MetaData m, boolean matchValue) {
         if (matchValue) {
-            if (owner.getMetaDataSet().containMetaData(m)){
+            if (owner.getMetaDataSet().containMetaData(m)) {
                 owner.getMetaDataSet().remove(m.getName());
                 eventService.publish(new RemoveMetaDataEvent(owner));
-            }
-            else {
+            } else {
                 System.out.println("Message");
             }
-            
+
         }
-        
+
     }
 
     @Override
     public void addMetaData(List<? extends MetaDataOwner> list, MetaData m) {
-        if (m !=null){
-            list.stream().map(c->c.getMetaDataSet().put(m));
+        if (m != null) {
+            list.stream().map(c -> c.getMetaDataSet().put(m));
             eventService.publish(new AddMetaDataListEvent(list, m));
         }
     }
 
     @Override
     public void removeMetaData(List<? extends MetaDataOwner> list, MetaData m) {
-        if (m!=null){
-            list.stream().filter(c -> c.getMetaDataSet().containMetaData(m)).forEach((c)-> removeMetaData(c, m, true));
+        if (m != null) {
+            list.stream().filter(c -> c.getMetaDataSet().containMetaData(m)).forEach((c) -> removeMetaData(c, m, true));
             eventService.publish(new RemoveMetaDataListEvent(list));
         }
-        
+
     }
-    
+
     @Override
-    public void addMapper(MetaData m, Mapper mapper){
-        
+    public void addMapper(MetaData m, Mapper mapper) {
         eventService.publish(new AddMapperEvent(m, mapper.map(m)));
     }
-    
+
 }

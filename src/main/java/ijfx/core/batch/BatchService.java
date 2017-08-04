@@ -155,6 +155,12 @@ public class BatchService extends AbstractService implements ImageJService {
         }
 
         Boolean lock = new Boolean(true);
+
+        if (workflow == null) {
+            logger.warning("No workflow was provided");
+            return true;
+        }
+
         int totalOps = inputs.size() * (2 + workflow.getStepList().size());
 
         progress.setStatus("Starting batch processing...");
@@ -346,6 +352,88 @@ public class BatchService extends AbstractService implements ImageJService {
 
         return true;
 
+    }
+
+    
+    
+    public Dataset applyWorkflow(ProgressHandler handler, Dataset dataset, Workflow workflow) {
+
+        for (WorkflowStep step : workflow.getStepList()) {
+            
+            handler.increment(1.0);
+            
+            Module module = step.getModule();
+            String moduleName = module.getInfo().getName();
+            
+            // injecting main input
+            injectInput(dataset, module);
+            
+            // injecting parameters
+            step.getParameters().forEach((key, value) -> {
+                module.setInput(key, value);
+                module.setResolved(key, true);
+            });
+
+            logger.info("Running module");
+            Future<Module> run;
+            
+            // initializing the module
+            try {
+                getContext().inject(module);
+                module.initialize();
+            } catch (Exception e) {
+                logger.info("Context already injected.");
+            }
+            
+            // running
+            run = moduleService.run(module, getPreProcessors(), getPostprocessors(), step.getParameters());
+            
+            logger.info(String.format("[%s] module started", moduleName));
+
+            // waiting and extracting
+            try {
+                run.get();
+                logger.info(String.format("[%s] module finished", moduleName));
+                dataset = extractOutput(module);
+            } catch (Exception ex) {
+                logger.log(Level.SEVERE, "Error when extracting ouput from module module " + moduleName, ex);;
+                return dataset;
+
+            }
+
+        }
+        return dataset;
+
+    }
+
+    private boolean injectInput(Dataset dataset, Module module) {
+        ModuleItem item;
+        logger.info("Injecting inputs into module : " + module.getDelegateObject().getClass().getSimpleName());
+        item = moduleService.getSingleInput(module, Dataset.class);
+
+        if (item != null) {
+            logger.info("Dataset input field found : " + item.getName());
+
+            if (dataset == null) {
+                logger.warning("The Dataset for was null for ");
+                return false;
+            } else {
+                module.setInput(item.getName(), dataset);
+                logger.info("Injection done for " + item.getName() + " with " + dataset.toString());
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    private Dataset extractOutput(Module module) {
+        ModuleItem<Dataset> singleOutput = moduleService.getSingleOutput(module, Dataset.class);
+        if (singleOutput == null) {
+            return null;
+        } else {
+            return (Dataset) module.getOutput(singleOutput.getName());
+        }
     }
 
     // inject the dataset or display depending on the requirements of the module

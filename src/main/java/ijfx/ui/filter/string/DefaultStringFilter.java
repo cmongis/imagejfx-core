@@ -88,6 +88,8 @@ public class DefaultStringFilter extends BorderPane implements Initializable, St
 
     private final DoubleBinding prefHeight = Bindings.createDoubleBinding(this::calculateHeight, lotOfItems);
     
+    private String name;
+    
     public DefaultStringFilter() {
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/ijfx/ui/filter/string/DefaultStringFilter.fxml"));
@@ -271,6 +273,16 @@ public class DefaultStringFilter extends BorderPane implements Initializable, St
 
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    
+    
     
     private Double calculateHeight() {
         if(lotOfItems.getValue()) return 200d;

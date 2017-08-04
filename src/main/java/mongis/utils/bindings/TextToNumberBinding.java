@@ -73,7 +73,6 @@ public class TextToNumberBinding {
 
     private void updateText() {
         String text = textField.getText();
-        System.out.println("new value = "+text.trim());
         if (text.trim().equals("")) {
              text = "0";
         }

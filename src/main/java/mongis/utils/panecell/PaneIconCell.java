@@ -116,6 +116,8 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
 
     Image currentImage = null;
 
+    private static Image ERROR_IMAGE = null;
+    
     // private final static FXMLLoader LOADER = new FXMLLoader(PaneIconCell.class.getResource("/ijfx/ui/explorer/ImageIconItem.fxml"));
     private final BooleanProperty isSelectedProperty = new SimpleBooleanProperty(false);
 
@@ -231,6 +233,7 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
     public void setImage(Image image) {
         logger.info("Setting image : " + image);
         loadingIcon.stop();
+        currentImage = image;
 
         if (image == null) {
             setCenter(new FontAwesomeIconView(FontAwesomeIcon.ANGELLIST));
@@ -275,20 +278,20 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
                 .setInput(newItem)
                 .callback(titleFactory)
                 .then(this::setTitle)
-                .start();
+                .startIn(refreshThreadPool);
 
         new CallbackTask<T, String>()
                 .setInput(newItem)
                 .callback(subtitleFactory)
                 .then(this::setSubtitle)
-                .start();
+                .startIn(refreshThreadPool);
 
         new CallbackTask<T, FontAwesomeIconView>()
                 .setInput(newItem)
                 .callback(iconFactory)
                 .then(this::setIcon)
-                .start();
-
+                .startIn(refreshThreadPool);
+        
         /*
         
          */
@@ -296,7 +299,7 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
                 .setInput(newItem)
                 .callback(additionalInfoFactory)
                 .then(this::setAdditionalData)
-                .start();
+                .startIn(refreshThreadPool);
 
         if (currentImageSearch != null) {
             currentImageSearch.cancel();
@@ -317,12 +320,30 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
 
         setCenter(loadingIcon);
         loadingIcon.play();
-
+        
+        if(currentImage == null) {
+        
         currentImageSearch = new CallbackTask<T, Image>()
                 .setInput(newItem)
-                .callback(imageFactory)
+                .call(this::loadImage)
                 .then(this::setImage)
                 .startIn(refreshThreadPool);
+        }
+    }
+    
+    private Image loadImage() {
+        
+            
+            if(currentImage == null) {
+                try {
+                currentImage = imageFactory.call(getItem());
+                }
+                catch(Exception e) {
+                    return getErrorImage();
+                }
+            }
+            return currentImage;  
+        
     }
 
     public PaneIconCell<T> setAdditionalInfoFactory(FailableCallback<T, String> additionalInfoFactory) {
@@ -414,6 +435,13 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
         if (newValue) {
             updateImageAsync(getItem());
         }
+    }
+    
+    protected Image getErrorImage() {
+        if(ERROR_IMAGE == null) {
+            ERROR_IMAGE = new Image("https://p.memecdn.com/avatars/s_379922_50ea1479b33de.png");
+        }
+        return ERROR_IMAGE;
     }
 
 }

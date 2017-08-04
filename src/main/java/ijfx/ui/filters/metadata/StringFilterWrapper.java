@@ -39,17 +39,19 @@ public class StringFilterWrapper<T extends MetaDataOwner> implements MetaDataOwn
 
     private StringFilter filter;
     private final Property<Predicate<T>> metaDataOwnerProperty;
-    private String keyName;
 
     public StringFilterWrapper() {
         this(new DefaultStringFilter());
     }
 
-    public void setKeyName(String keyName) {
-        this.keyName = keyName;
+  
+    public void setName(String name) {
+        filter.setName(name);
     }
     
-    
+    public String getName() {
+        return filter.getName();
+    }
     
     public StringFilterWrapper(StringFilter filter) {
 
@@ -57,7 +59,7 @@ public class StringFilterWrapper<T extends MetaDataOwner> implements MetaDataOwn
         
         metaDataOwnerProperty = new SimpleObjectProperty<>(null);
         if (filter.predicateProperty().getValue() != null) {
-            metaDataOwnerProperty.setValue(new StringOwnerPredicate(keyName, filter.predicateProperty().getValue()));
+            metaDataOwnerProperty.setValue(new StringOwnerPredicate(getName(), filter.predicateProperty().getValue()));
         }
 
         filter.predicateProperty().addListener(new ChangeListener<Predicate<String>>() {
@@ -68,7 +70,7 @@ public class StringFilterWrapper<T extends MetaDataOwner> implements MetaDataOwn
                 if (t1 == null) {
                     metaDataOwnerProperty.setValue(null);
                 } else {
-                    metaDataOwnerProperty.setValue(new StringOwnerPredicate(keyName, t1));
+                    metaDataOwnerProperty.setValue(new StringOwnerPredicate(getName(), t1));
                 }
             }
         });
@@ -92,13 +94,7 @@ public class StringFilterWrapper<T extends MetaDataOwner> implements MetaDataOwn
 
     }
 
-    @Override
-    public String getName() {
-        if(keyName == null) {
-            return "No key yet";
-        }
-        return keyName;
-    }
+   
 
     @Override
     public void setAllPossibleValues(Collection<? extends T> values) {

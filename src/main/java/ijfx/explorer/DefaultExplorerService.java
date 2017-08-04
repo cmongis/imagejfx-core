@@ -24,7 +24,6 @@ import ijfx.core.datamodel.Iconazable;
 import ijfx.core.imagedb.ImageRecord;
 import ijfx.core.imagedb.ImageRecordService;
 import ijfx.core.metadata.MetaData;
-import ijfx.core.metadata.MetaDataOwner;
 import ijfx.core.timer.Timer;
 import ijfx.core.timer.TimerService;
 import ijfx.explorer.datamodel.Explorable;
@@ -34,7 +33,6 @@ import ijfx.explorer.events.ExploredListChanged;
 import ijfx.explorer.events.ExplorerSelectionChangedEvent;
 import ijfx.ui.loading.LoadingScreenService;
 import ijfx.ui.main.ImageJFX;
-import ijfx.ui.utils.SelectableManager;
 import ijfx.ui.utils.SelectionChange;
 import java.io.File;
 import java.util.ArrayList;
@@ -42,7 +40,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -95,7 +92,7 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
 
     //private SelectableManager<Explorable> selectionManager = new SelectableManager<>();
    
-
+   
     @Override
     public void initialize() {
        

@@ -300,6 +300,7 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
     public JavaBeanProperty<int[]> compositeChannelsProperty() {
         if (compositeChannelsProperty == null) {
             compositeChannelsProperty = generateBean("compositeChannels");
+            localize(new long[2]);
         }
         return compositeChannelsProperty;
     }
@@ -359,10 +360,12 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
     @Override
     public void update() {
 
-        super.update();
+       
 
         publishSubject.onNext(1);
         checkLUProperties();
+        
+         super.update();
     }
 
     public void checkProperties() {

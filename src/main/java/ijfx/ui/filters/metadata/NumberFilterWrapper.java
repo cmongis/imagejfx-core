@@ -48,7 +48,11 @@ public class NumberFilterWrapper<T extends MetaDataOwner> implements MetaDataOwn
         this(new DefaultNumberFilter());
     }
 
-    public void setKeyName(String keyName) {
+   
+    
+    
+
+    public void setName(String keyName) {
         this.keyName = keyName;
     }
     
@@ -57,7 +61,6 @@ public class NumberFilterWrapper<T extends MetaDataOwner> implements MetaDataOwn
     
     public NumberFilterWrapper(NumberFilter filter) {
         this.filter = filter;
-        this.keyName = keyName;
         this.metaDataOwnerProperty = new SimpleObjectProperty<>(null);
 
         if (filter.predicateProperty().getValue() != null) {

@@ -42,7 +42,7 @@ public interface DatasetUtilsService extends IjfxService {
     public ImageDisplay getImageDisplay(Dataset dataset);
 
     public < T extends RealType< T>> Dataset divideDatasetByDataset(Dataset numerator, Dataset denominator);
-
+        
     public Dataset divideDatasetByValue(Dataset dataset, double value);
 
     public Dataset divideActivePlaneByValue(Dataset dataset, long[] position, double value);

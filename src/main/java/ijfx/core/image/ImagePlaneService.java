@@ -23,6 +23,7 @@ import ijfx.core.IjfxService;
 import java.io.File;
 import java.io.IOException;
 import net.imagej.Dataset;
+import net.imagej.display.ImageDisplay;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.IntervalView;
@@ -47,9 +48,19 @@ public interface ImagePlaneService extends IjfxService {
     
     Dataset createEmptyPlaneDataset(Dataset input);
     Dataset createEmptyPlaneDataset(Dataset input, long with, long height);
+    
     Dataset openVirtualDataset(File file) throws IOException;
     
     
+    /**
+     * Returns the the current plane of the given dataset as an isolated Random accessible
+     * @param <T>
+     * @param ra
+     * @param position
+     * @return 
+     */
+    
+   
     
     public <T extends RealType<T>> IntervalView<T> planeView(Dataset ra,long[] position);
     /**
@@ -60,7 +71,17 @@ public interface ImagePlaneService extends IjfxService {
      * @return an interval corresponding to the dataset
      */
     public <T extends RealType<T>> IntervalView<T> plane(RandomAccessibleInterval<T> rai, long[] planePosition);
+   
+    
+    /**
+     * Returns the the current plane of the given dataset as an isolated Random accessible
+     * @param <T>
+     * @param imageDisplay
+     * @return an Interval of the current plane only
+     */
+    public <T extends RealType<T>> IntervalView<T> planeView(ImageDisplay imageDisplay);
+    
     public <T extends RealType<T>> RandomAccessibleInterval<T> openVirtualPlane(File file, long[] nonSpacialPosition) throws IOException;
     
-    
+       
 }
