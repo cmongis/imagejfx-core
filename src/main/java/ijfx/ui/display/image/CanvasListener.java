@@ -23,11 +23,11 @@ import ijfx.core.overlay.OverlaySelectionService;
 import ijfx.core.overlay.OverlayUtilsService;
 import ijfx.ui.display.overlay.OverlayDisplayService;
 import ijfx.ui.display.overlay.OverlayDrawer;
+import ijfx.ui.main.ImageJFX;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
-import javafx.application.Platform;
-import javafx.event.EventType;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.InputEvent;
 import javafx.scene.input.KeyEvent;
@@ -86,6 +86,8 @@ public class CanvasListener {
     @Parameter
     OverlaySelectionService overlaySelectionService;
 
+    ExecutorService executor = ImageJFX.getThreadQueue();
+
     final ImageCanvas viewport;
 
     public CanvasListener(ImageDisplay display, Canvas canvas) {
@@ -93,7 +95,7 @@ public class CanvasListener {
         this.display = display;
 
         viewport = display.getCanvas();
-        
+
         display.getContext().inject(this);
         canvas.setFocusTraversable(true);
         canvas.addEventFilter(MouseEvent.ANY, (e) -> canvas.requestFocus());
@@ -103,10 +105,11 @@ public class CanvasListener {
         canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, this::onMouseReleased);
         canvas.addEventHandler(MouseEvent.MOUSE_MOVED, this::onMouseMoved);
         canvas.addEventHandler(KeyEvent.KEY_PRESSED, this::onKeyPressed);
-        canvas.addEventHandler(KeyEvent.KEY_RELEASED,this::onKeyReleased);
+        canvas.addEventHandler(KeyEvent.KEY_RELEASED, this::onKeyReleased);
         canvas.setOnScroll(this::onScrollEvent);
-    
+
     }
+
     private Tool getActiveTool() {
         return toolService.getActiveTool();
     }
@@ -131,11 +134,7 @@ public class CanvasListener {
             percent += 5;
         }
 
-        double eventX = event.getX();
-        double eventY = event.getY();
-
-        IntCoords center = new IntCoords(toInt(event.getX()), toInt(event.getY()));
-
+      
         RealCoords centerReal = display.getCanvas().getPanCenter();//display.getCanvas().panelToDataCoords(center);
 
         zoomService.zoomSet(display, percent, centerReal.x, centerReal.y);
@@ -151,34 +150,34 @@ public class CanvasListener {
         KeyCode keyCode = fromEvent(event);
         tool.onKeyDown(new KyPressedEvent(display, extractInputModifiers(event), 0, 0, event.getCharacter().charAt(0), keyCode));
     }
-    
-    
+
     private void onKeyReleased(KeyEvent event) {
-        fireEvent(this::onKeyReleased,event);
+        fireEvent(this::onKeyReleased, event);
     }
-    
+
     private void onKeyReleased(KeyEvent event, Tool tool) {
         KeyCode keyCode = fromEvent(event);
         tool.onKeyUp(new KyReleasedEvent(display, extractInputModifiers(event), 0, 0, event.getCharacter().charAt(0), keyCode));
     }
-    
+
     private KeyCode fromEvent(KeyEvent event) {
         return KeyCode.get(event.getCode().name());
     }
 
     private <T extends InputEvent> void fireEvent(BiConsumer<T, Tool> consumer, T event) {
 
-        consumer.accept(event, getActiveTool());
-        getAlwaysActiveTools()
-                .stream()
-                .peek(tool->System.out.println(tool.getClass()))
-                .forEach(tool -> consumer.accept(event, tool));
+        executor.execute(() -> {
+            consumer.accept(event, getActiveTool());
+            getAlwaysActiveTools()
+                    .stream()
+                    .forEach(tool -> consumer.accept(event, tool));
+
+        });
 
     }
 
     private void onMousePressed(MouseEvent event) {
         canvas.requestFocus();
-        System.out.println("Click !");
         fireEvent(this::onMousePressed, event);
 
     }
@@ -190,7 +189,6 @@ public class CanvasListener {
 
     private void onDragEvent(MouseEvent event) {
 
-        System.out.println(event);
 
         onDragEvent(event, getActiveTool());
 
@@ -246,11 +244,9 @@ public class CanvasListener {
     }
 
     private void onMouseClicked(MouseEvent event) {
-        
-        
-        System.out.println("onMouseClicked !");
-        
-       canvas.requestFocus();
+
+      
+        canvas.requestFocus();
 
         List<Overlay> overlays = overlayService
                 .getOverlays(display);
@@ -279,18 +275,15 @@ public class CanvasListener {
         return new Double(d).intValue();
     }
 
-
-
     private InputModifiers extractInputModifiers(KeyEvent event) {
 
-        
         boolean isMetaDown = event.isMetaDown();
         boolean isCtrlDown = event.isControlDown();
-        
-        if(PlatformUtils.isMac()) {
+
+        if (PlatformUtils.isMac()) {
             isMetaDown = !isMetaDown;
         }
-        
+
         return new InputModifiers(
                 event.isAltDown(),
                 false,
