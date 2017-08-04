@@ -27,14 +27,10 @@ import ijfx.ui.main.ImageJFX;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -47,9 +43,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import mongis.utils.panecell.PaneCellController;
-import net.imagej.Dataset;
 
 import org.scijava.plugin.Plugin;
 
@@ -80,7 +73,7 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
     @FXML
     private TableColumn<Explorable, String> keyColumn;
-    
+
     @FXML
     private TableColumn<Explorable, String> valueColumn;
 
@@ -90,9 +83,9 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
     private Consumer<DataClickEvent<Explorable>> onItemClicked;
 
-    private List<Explorable> currentItemList = new ArrayList<>();
+    private final List<Explorable> currentItemList = new ArrayList<>();
 
-    private static String FXMLWAY = "/ijfx/ui/display/image/DetailsDisplay.fxml";
+    private static final String FXMLWAY = "/ijfx/ui/display/image/DetailsDisplay.fxml";
 
     public DetailsExplorerView() {
 
@@ -132,19 +125,18 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
     public void setItems(List<? extends Explorable> items) {
         this.itemsList = items;
 
-        ImageJFX.getLogger().info(String.format("Items List   "+itemsList));
+        ImageJFX.getLogger().info(String.format("Items List   " + itemsList));
 
-        
     }
 
     private void setColumnsData(MetaDataSet map) {
-        
+
         tableView.getItems().clear();
 
         map.entrySet().stream().forEach((entry) -> {
             tableView.getItems().add(entry.getValue());
         });
-        
+
     }
 
     @Override
@@ -161,14 +153,14 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
     @Override
     public void setSelectedItem(List<? extends Explorable> items) {
-        
+
         items.stream().forEach((exp) -> {
             this.currentItem = exp;
-            
+
         });
 
         setColumnsData(currentItem.getMetaDataSet());
-        ImageJFX.getLogger().info(String.format("Current item  "+currentItem));
+        ImageJFX.getLogger().info(String.format("Current item  " + currentItem));
 
     }
 
@@ -187,16 +179,31 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
     public void setOnItemClicked(Consumer<DataClickEvent<Explorable>> eventHandler) {
     }
 
-    public void onDisplayLastExplorable(ActionEvent event) {
+    private void onDisplayLastExplorable(ActionEvent event) {
+        int index = itemsList.indexOf(currentItem);
+        if (index > 0) {
+            currentItem = itemsList.get(index - 1);
+            currentItemList.clear();
+            currentItemList.add(currentItem);
+
+            setSelectedItem(currentItemList);
+        }
 
     }
 
-    public void onDisplayNextExplorable(ActionEvent event) {
+    private void onDisplayNextExplorable(ActionEvent event) {
+        int index = itemsList.indexOf(currentItem);
+        if (index < (itemsList.size() - 1)) {
+            currentItem = itemsList.get(index + 1);
+            currentItemList.clear();
+            currentItemList.add(currentItem);
+
+            setSelectedItem(currentItemList);
+        }
 
     }
 
-    public void labelDisplay(Explorable exp) {
-        
+    private void labelDisplay(Explorable exp) {
         label.setText(exp.getTitle());
 
     }
@@ -212,7 +219,5 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
     public Explorable getDisplayedItem() {
         return currentItem;
     }
-
-    
 
 }
