@@ -30,106 +30,96 @@ import java.util.HashMap;
 public final class DefaultMapper implements Mapper {
 
     //final MetaData m;
-    public HashMap <Object, Object> mapValue = new HashMap();
+    public HashMap<Object, Object> mapValue = new HashMap();
     public String newKey;
     public String oldKey;
     public MetaData n;
-    
-    public DefaultMapper (String key1, String key2){
+
+    public DefaultMapper(String key1, String key2) {
         setNewKey(key1);
         setOldKey(key2);
-        
+
     }
-    
-    public DefaultMapper (){
+
+    public DefaultMapper() {
         setNewKey(null);
         setOldKey(null);
-        
+
     }
 
     /**
      * Create a new Metadata according to a first metadata.
-     * 
+     *
      * @param m
-     * @return 
+     * @return
      */
-
     @Override
     public MetaData map(MetaData m) {
-            Object newValue = lookInsideMap(m.getValue());
-            n = new GenericMetaData(newKey, newValue);
-            return n;
-        
+        Object newValue = lookInsideMap(m.getValue());
+        n = new GenericMetaData(newKey, newValue);
+        return n;
+
     }
-    
+
     @Override
-    public void setOldKey(String key){
+    public void setOldKey(String key) {
         this.oldKey = key;
     }
-    
+
     @Override
-    public void setNewKey (String s){
+    public void setNewKey(String s) {
         this.newKey = s;
     }
-    
-    
+
     @Override
     public HashMap<Object, Object> getMapObject() {
         return mapValue;
     }
-    
-        
-    public String getNewKey (){
+
+    public String getNewKey() {
         return newKey;
     }
-    
+
     @Override
-    public String getOldKey(){
+    public String getOldKey() {
         return oldKey;
     }
-    
-    
-    
+
     /**
-     * Create the mapper associated Value:value for
-     * the creation of new Metadata
-     * @param base
-     * @param associated 
+     * Create the mapper newValue Value:value for the creation of new Metadata
+     *
+     * @param oldValue
+     * @param newValue
      */
-    public void associatedValues (Object base, Object associated){
-        if (base != null && associated != null){
-            mapValue.put(base, associated);
+    public void associatedValues(Object oldValue, Object newValue) {
+        if (oldValue != null && newValue != null) {
+            System.out.println("oldvalue " + oldValue);
+            System.out.println("newvalue " + newValue);
+            mapValue.put(oldValue.toString(), newValue);
         }
     }
-    
-    
-    
+
     /**
      * Looking for the conrresponding value on the mapper
-     * @param oldKey
-     * @return 
+     *
+     * @param oldValue
+     * @return
      */
-    public Object lookInsideMap (Object oldKey){
+    public Object lookInsideMap(Object oldValue) {
         if (oldKey != null) {
-            
-            if (mapValue.containsKey(oldKey)){
-                return mapValue.get(oldKey);
-            
+
+            if (mapValue.containsKey(oldValue.toString())) {
+                return mapValue.get(oldValue.toString());
+
             }
             System.out.println("Value not match");
             return null;
-            
-            
-         }
-        
+
+        }
+
         System.out.println("Key null");
         return null;
-    
-        
-         
-    }
-    
 
-    
-    
+    }
+
 }
