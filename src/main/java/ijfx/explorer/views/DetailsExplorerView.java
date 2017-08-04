@@ -103,6 +103,7 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
     }
 
     private void loadFXML() {
+        System.out.println("loadFXML");
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource(FXMLWAY));
         loader.setRoot(this);
@@ -118,11 +119,13 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
     @Override
     public Node getUIComponent() {
+        System.out.println("getUIComponent");
         return this;
     }
 
     @Override
     public void setItems(List<? extends Explorable> items) {
+        System.out.println("setItem");
         this.itemsList = items;
 
         ImageJFX.getLogger().info(String.format("Items List   " + itemsList));
@@ -141,18 +144,23 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
     @Override
     public List<? extends Explorable> getSelectedItems() {
-        if (!currentItemList.contains(currentItem)) {
+        System.out.println("getSelectedItem");
+        if (currentItem != null && !currentItemList.contains(currentItem)) {
             currentItemList.add(currentItem);
+            Platform.runLater(() -> {
+                labelDisplay(currentItem);
+            });
+            return currentItemList;
+        } else {
+            ImageJFX.getLogger().info(String.format("Current item is null : nothing selected"));
+            return null;
         }
-        Platform.runLater(() -> {
-            labelDisplay(currentItem);
-        });
 
-        return currentItemList;
     }
 
     @Override
     public void setSelectedItem(List<? extends Explorable> items) {
+        System.out.println("setSelectedItem");
 
         items.stream().forEach((exp) -> {
             this.currentItem = exp;
@@ -210,10 +218,17 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
     @Override
     public List<? extends Explorable> getItems() {
-        if (!currentItemList.contains(currentItem)) {
+        System.out.println("getItem");
+
+        if (currentItem != null && !currentItemList.contains(currentItem)) {
             currentItemList.add(currentItem);
+            return currentItemList;
+            
+        } else {
+            ImageJFX.getLogger().info(String.format("Current item is null : nothing selected"));
+            return null;
         }
-        return currentItemList;
+        //une erreur ici : nullpointerexception
     }
 
     public Explorable getDisplayedItem() {
