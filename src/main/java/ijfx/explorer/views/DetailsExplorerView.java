@@ -230,15 +230,6 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
         return currentItem;
     }
 
-    private class truc<T extends Object> {
-
-        private List<T> currentItems;
-
-        private ObservableList<T> selectedItems = FXCollections.observableArrayList();
-
-        public truc() {
-        }
-
-    }
+    
 
 }
