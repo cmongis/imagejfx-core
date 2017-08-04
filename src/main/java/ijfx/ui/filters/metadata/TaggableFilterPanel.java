@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import mongis.utils.CallbackTask;
 import mongis.utils.ProgressHandler;
 import org.scijava.plugin.Parameter;
 
@@ -48,7 +49,24 @@ public class TaggableFilterPanel extends FilterPanel<Taggable> {
 
     Timer timer;
 
-    public Void generateFilters(ProgressHandler handler, List<? extends Taggable> items) {
+    public void updateFilters(ProgressHandler handler, List<? extends Taggable> items) {
+
+        new CallbackTask<List<? extends Taggable>, List<DataFilter<Taggable>>>()
+                .setInput(items)
+                .callback(this::generateFilters)
+                .then(this::setFilters)
+                .start();
+    }
+
+    /**
+     * This function generates filters from a list of taggables. The filters are
+     * not set inside the panes though.
+     *
+     * @param handler
+     * @param items
+     * @return The list of DataFilters to add to the pane (usually done)
+     */
+    private List<DataFilter<Taggable>> generateFilters(ProgressHandler handler, List<? extends Taggable> items) {
 
         factory.recycleCache();
         handler.setProgress(0.1);
@@ -65,7 +83,6 @@ public class TaggableFilterPanel extends FilterPanel<Taggable> {
         logTimer("getting all possible keys");
         handler.setTotal(1);
 
-        
         // for each key, a filter is generated using the FilterFactory
         List<DataFilter<Taggable>> metadataFilters = keySet
                 .parallelStream()
@@ -75,23 +92,19 @@ public class TaggableFilterPanel extends FilterPanel<Taggable> {
                 .filter(filter -> filter != null)
                 .sorted((k1, k2) -> k1.getName().compareTo(k2.getName()))
                 .collect(Collectors.toList());
-        
+
         logTimer("genereting filters");
         List<DataFilter<Taggable>> filters = new ArrayList<>();
 
         filters.addAll(metadataFilters);
-        
+
         filters.add(taggableFilter);
-        
-        
-        
+
         taggableFilter.setAllPossibleValues(items);
         logTimer("updating taggable filter");
-        
-        
-        setFilters(filters);
-        logTimer("setting the filters");
-        return null;
+
+        return filters;
+
     }
 
     private void logTimer(String message) {
