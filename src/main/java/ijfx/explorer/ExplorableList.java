@@ -22,6 +22,8 @@ package ijfx.explorer;
 import ijfx.explorer.datamodel.Explorable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.IntStream;
 
 /**
  *
@@ -33,9 +35,37 @@ public class ExplorableList extends ArrayList<Explorable>{
         super();
     }
     
-    public ExplorableList(Collection<Explorable> list) {
+   
+    public ExplorableList(List<? extends Explorable> list) {
         super(list.size());
         addAll(list);
     }
+    
+    /**
+     * Return a hash that takes account the content of the metadata owner
+     * @return hash
+     */
+    public static int hash(Collection<? extends Explorable> list) {
+     if(list == null) return 0;
+        return list
+                .stream()
+                .mapToInt(exp->exp.hashCode())
+                
+                .parallel()
+                .sum();
+    
+    }
+    
+    public static int hashWithOrder(List<? extends Explorable> list) {
+        
+        if(list == null) return 0;
+        
+        return IntStream
+                .range(0, list.size())
+                .map(i->list.get(i).hashCode() * i)
+                .sum();
+        
+    }
+    
     
 }
