@@ -19,6 +19,7 @@
  */
 package ijfx.explorer.views;
 
+import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataSet;
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.ui.display.annotation.DefaultAnnotationDialog;
@@ -26,6 +27,8 @@ import ijfx.ui.main.ImageJFX;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -54,7 +57,7 @@ import org.scijava.plugin.Plugin;
  *
  * @author sapho
  */
-@Plugin(type = ExplorerView.class, priority = 0.7, label = "Summary", iconPath = "fa:table")
+@Plugin(type = ExplorerView.class, priority = 0.7, label = "Details", iconPath = "fa:table")
 public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
     @FXML
@@ -73,8 +76,8 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
     private Label label;
 
     @FXML
-    private TableView<Explorable> tableView;
-    
+    private TableView<MetaData> tableView;
+
     @FXML
     private TableColumn<Explorable, String> keyColumn;
     @FXML
@@ -85,7 +88,7 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
     private Explorable currentItem;
 
     private Consumer<DataClickEvent<Explorable>> onItemClicked;
-    
+
     private List<Explorable> currentItemList = new ArrayList<>();
 
     private static String FXMLWAY = "/ijfx/ui/display/image/DetailsDisplay.fxml";
@@ -96,6 +99,12 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
         last.setOnAction(this::onDisplayLastExplorable);
         next.setOnAction(this::onDisplayNextExplorable);
+
+        keyColumn.setCellValueFactory(
+                new PropertyValueFactory<>("name"));
+
+        valueColumn.setCellValueFactory(
+                new PropertyValueFactory<>("value"));
 
     }
 
@@ -143,14 +152,27 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
          */
     }
 
+    private void setColumnsData(MetaDataSet map) {
+        if (!tableView.getColumns().isEmpty()) {
+            //tableView.getColumns().clear();
+        }
+        tableView.refresh();
+
+        map.entrySet().stream().forEach((entry) -> {
+            tableView.getItems().add(entry.getValue());
+        });
+        
+        tableView.refresh();
+    }
+
     @Override
     public List<? extends Explorable> getSelectedItems() {
-        if (!currentItemList.contains(currentItem)){
+        if (!currentItemList.contains(currentItem)) {
             currentItemList.add(currentItem);
         }
-        
-        labelDisplay(currentItem);
-        
+        Platform.runLater(() -> {
+            labelDisplay(currentItem);
+        });
 
         return currentItemList;
     }
@@ -158,16 +180,12 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
     @Override
     public void setSelectedItem(List<? extends Explorable> items) {
         System.out.println("itemlist current" + itemsList);
-        for (Explorable exp : items) {
+        items.stream().forEach((exp) -> {
             this.currentItem = exp;
-        }
-        labelDisplay(currentItem);
-        tableView.getItems().add(currentItem);
-        MetaDataSet truc = currentItem.getMetaDataSet();
-        truc.
-        keyColumn.setCellValueFactory();
-        //tableView.
-        
+        });
+        //labelDisplay(currentItem);
+
+        setColumnsData(currentItem.getMetaDataSet());
 
     }
 
@@ -196,17 +214,13 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
     public void labelDisplay(Explorable exp) {
         ImageJFX.getLogger().info(String.format("Label display nous y passons enfin "));
-        Platform.runLater(() -> {
-            System.out.println("TableDisplay ? ");
-            //Dataset set = exp.getDataset();
-            label.setText(exp.getTitle());
-        });
+        label.setText(exp.getTitle());
 
     }
 
     @Override
     public List<? extends Explorable> getItems() {
-        if (!currentItemList.contains(currentItem)){
+        if (!currentItemList.contains(currentItem)) {
             currentItemList.add(currentItem);
         }
         return currentItemList;
