@@ -436,13 +436,9 @@ public class ExplorerActivity extends AnchorPane implements Activity {
 
     public void updateFilters() {
 
-        Task task = new CallbackTask<List<? extends Explorable>, Void>()
-                .setInput(explorerService.getItems())
-                .setName("Updating filters...")
-                .callback(filterPanel::generateFilters)
-                .start();
-
-        loadingScreenService.frontEndTask(task, true);
+       
+        filterPanel.updateFilters(null,explorerService.getItems());
+      
 
     }
 
