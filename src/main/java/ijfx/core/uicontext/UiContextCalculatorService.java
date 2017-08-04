@@ -45,6 +45,7 @@ import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
 /**
@@ -97,6 +98,7 @@ public class UiContextCalculatorService extends AbstractService implements Image
     public void initialize() {
 
         taskStream
+                .observeOn(Schedulers.from(ImageJFX.getThreadPool()))
                 // buffers request for 100 MS
                 .buffer(500, TimeUnit.MILLISECONDS)
                 .filter(list -> list.isEmpty() == false)
@@ -108,7 +110,7 @@ public class UiContextCalculatorService extends AbstractService implements Image
     }
 
     public void onTask(List<ContextCalculationTask> taskList) {
-
+        
         Set<ContextCalculationTask> taskSet = taskList
                 .stream()
                 // groups by the object they should handle
