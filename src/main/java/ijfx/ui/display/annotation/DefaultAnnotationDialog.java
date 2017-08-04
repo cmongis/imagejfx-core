@@ -172,7 +172,7 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
         Alert alert = new Alert(AlertType.CONFIRMATION);
         alert.setTitle("Confirmation Dialog");
         alert.setHeaderText("There is more than 10 values, continue ? ");
-
+        
         ctrlList.clear();
         int it = 0;
 
