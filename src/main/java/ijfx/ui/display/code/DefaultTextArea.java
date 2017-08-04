@@ -259,9 +259,9 @@ public class DefaultTextArea extends AnchorPane{
         this.codeArea.redo();
     }
     
-   public void changeCss (String path){
+   public void changeCss (String path) throws NullPointerException{
        this.getStylesheets().clear();
-       this.getStylesheets().add(getClass().getResource(path).toExternalForm());
+       this.getStylesheets().add(path);
        
    }
    
@@ -270,15 +270,24 @@ public class DefaultTextArea extends AnchorPane{
        
        
         if (preferencies.getTheme().equals("darkTheme")){
-            changeCss("/ijfx/ui/display/code/TextEditorDarkTheme.css");
+            changeCss(getClass().getResource("/ijfx/ui/display/code/TextEditorDarkTheme.css").toExternalForm());
+            
         }
         else if (preferencies.getTheme().equals("lightTheme")){
-               changeCss("/ijfx/ui/display/code/TextEditorLightTheme.css");
+               changeCss(getClass().getResource("/ijfx/ui/display/code/TextEditorLightTheme.css").toExternalForm());
            }
         else{
-            changeCss((String) preferencies.getTheme());
+            try {
+                String path = preferencies.getTheme();
+                path = "file:"+path;
+                changeCss((String) preferencies.getTheme());
+            } catch (Exception NullPointerException) {
+                changeCss(getClass().getResource("/ijfx/ui/display/code/TextEditorDarkTheme.css").toExternalForm());
+            }
+            
            }
            
        
    }
+    
 }
