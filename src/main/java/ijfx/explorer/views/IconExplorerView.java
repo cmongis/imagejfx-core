@@ -22,6 +22,7 @@ package ijfx.explorer.views;
 
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.widgets.ExplorerIconCell;
+import ijfx.ui.loading.LoadingScreenService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -58,6 +59,8 @@ public class IconExplorerView extends ScrollPane implements ExplorerView {
     
     private Consumer<DataClickEvent<Explorable>> onItemClicked;
     
+    @Parameter
+    LoadingScreenService loadingScreenService;
     
    
     @Parameter
@@ -103,6 +106,7 @@ public class IconExplorerView extends ScrollPane implements ExplorerView {
         //loadingScreenService.frontEndTask(cellPaneCtrl.update(new ArrayList<Iconazable>(items)),false);
         
         this.itemsList = items;
+        cellPaneCtrl.setTaskDisplayer(loadingScreenService);
         cellPaneCtrl.update(new ArrayList<Explorable>(items));
        
         
