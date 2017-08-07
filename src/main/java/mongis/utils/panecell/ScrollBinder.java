@@ -82,8 +82,14 @@ public class ScrollBinder {
 
         double minX = scrollPane.getHvalue() * scrollPane.getContent().getBoundsInLocal().getWidth();
         double minY = scrollPane.getVvalue() * scrollPane.getContent().getBoundsInLocal().getHeight();
-        Bounds scrollWindow = new BoundingBox(minX, minY+10, scrollPane.getWidth(), scrollPane.getHeight());
-
+        
+        double width = scrollPane.getWidth();
+        double height = scrollPane.getHeight();
+        
+        Bounds scrollWindow = new BoundingBox(minX, minY, width,height);
+        
+        
+        
         Parent parentNode = (Parent) scrollPane.getContent();
         
         List<Node> toAdd = new ArrayList<>();

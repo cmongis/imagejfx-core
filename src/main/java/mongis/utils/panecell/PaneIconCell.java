@@ -252,16 +252,7 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
     }
 
     public void onItemChanged(Observable obs, T oldItem, T newItem) {
-
-        // cancelling the possible image search
-        if (currentImageSearch != null) {
-            logger.info("Cancelling image change");
-            currentImageSearch.cancel();
-        }
-
-        // setting the current image to null
-        currentImage = null;
-        currentImageSearch = null;
+        
 
         // avoiding other task to start
         if (newItem == null) {
@@ -317,11 +308,11 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
         if (newItem == null) {
             return;
         }
-
+        if(currentImage == null) {
         setCenter(loadingIcon);
         loadingIcon.play();
         
-        if(currentImage == null) {
+       
         
         currentImageSearch = new CallbackTask<T, Image>()
                 .setInput(newItem)
@@ -336,6 +327,7 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
             
             if(currentImage == null) {
                 try {
+                logger.info("Updating image for "+titleLabel.getText());
                 currentImage = imageFactory.call(getItem());
                 }
                 catch(Exception e) {
