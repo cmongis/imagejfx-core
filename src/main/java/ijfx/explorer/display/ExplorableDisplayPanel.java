@@ -21,6 +21,7 @@ package ijfx.explorer.display;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import ijfx.commands.explorable.ExplorableDisplayCommand;
 import ijfx.core.icon.FXIconService;
 import ijfx.core.timer.TimerService;
 import ijfx.core.utils.SciJavaUtils;
@@ -53,9 +54,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
-import mongis.utils.CallbackTask;
 import mongis.utils.ProgressHandler;
 import org.scijava.Context;
+import org.scijava.command.CommandService;
 import org.scijava.event.EventService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -73,6 +74,9 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
     @Parameter
     PluginService pluginService;
 
+    @Parameter
+    CommandService commandService;
+    
     @Parameter
     FXIconService fxIconService;
 
@@ -320,6 +324,13 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
                                 .map(this::createTab)
                                 .collect(Collectors.toList()));
 
+        metaDataBar
+                .addCommands(commandService.getCommandsOfType(ExplorableDisplayCommand.class));
+        metaDataBar
+                .addUiCommands();
+        
+        metaDataBar.update();
+        
     }
 
     @Override
