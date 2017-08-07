@@ -19,9 +19,11 @@
  */
 package mongis.utils;
 
+import com.google.common.io.Files;
 import java.io.File;
 import java.text.DecimalFormat;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  *
@@ -72,5 +74,18 @@ public class FileUtils {
 
         return new File(changeExtensionTo(file.getAbsolutePath(), extension));
 
+    }
+    
+    public static File ensureExtension(File file, String[] extensions) {
+        
+        
+        if(ArrayUtils.contains(extensions,Files.getFileExtension(file.getName())) == false) {
+            
+            return ensureExtension(file, extensions[0]);
+            
+        }
+        else {
+            return file;
+        }
     }
 }
