@@ -41,6 +41,7 @@ import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.css.Styleable;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -547,7 +548,31 @@ public class FXUtilities {
         }
 
     }
+    
+    public static final String TOGGLE_GROUP = "toggle-group";
+    
+    public static final String TOGGLE_GROUP_FIRST = "fist";
+    
+    public static final String TOGGLE_GROUP_LAST = "last";
 
+    public static void makeToogleGroup(Node parent, List<? extends Node> children) {
+        
+        toggleCssStyle(parent, TOGGLE_GROUP);
+        
+        children
+                .forEach(child->toggleCssStyle(child,TOGGLE_GROUP_FIRST,false));
+        children
+                .forEach(child->toggleCssStyle(child,TOGGLE_GROUP_LAST,false));
+        if(children.size() >= 2) {
+             toggleCssStyle(children.get(0),TOGGLE_GROUP_FIRST,true);
+             toggleCssStyle(children.get(children.size()-1),TOGGLE_GROUP_LAST,true);
+        }
+        
+       
+        
+    }
+    
+    
     public static <T> void bindList(final ObservableList<T> listToUpdate, final ObservableList<? extends T> changingList) {
 
         changingList.addListener((ListChangeListener.Change<? extends T> c) -> {
