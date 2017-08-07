@@ -43,17 +43,41 @@ public abstract class AbstractExplorableDisplayCommand extends DynamicCommand im
     @Parameter
     ExplorableDisplay display;
 
+    /*
     @Parameter(required = false,visibility = ItemVisibility.INVISIBLE,autoFill = true)
-    boolean warning = true;
+    boolean warning = true;*/
 
     @Parameter
     UIService uiService;
 
+    public static final String ALL_ITEMS = "All items";
+    
+    public static final String FILTERED_ITEMS = "Displayed items";
+    
+    public static final String SELECTED_ITEMS = "Selected items";
+    
+    
+    @Parameter(persist = false,label = "Apply to...",choices = {SELECTED_ITEMS,ALL_ITEMS,FILTERED_ITEMS},initializer = "initApplyTo")
+    private String applyTo = ALL_ITEMS;
+    
+    
+    public void initApplyTo() {
+        if(display == null) return;
+        if(display.getSelected().size() > 0) {
+            applyTo = SELECTED_ITEMS;
+        }
+        
+        if(display.getDisplayedItems().size() != display.getItems().size()) {
+            applyTo = ALL_ITEMS;
+        }
+    }
+    
+    
     public void run() {
 
         List<Explorable> items;
-
-        if (display.getSelected().size() == 0 && warning) {
+        /*
+        if (applyTo == SELECTED_ITEMS && display.getSelected().size() == 0) {
 
             DialogPrompt.Result result = uiService.showDialog("No item is selected.\n\nDo you want to apply this action to all items ?", DialogPrompt.MessageType.QUESTION_MESSAGE, DialogPrompt.OptionType.YES_NO_OPTION);
 
@@ -66,7 +90,19 @@ public abstract class AbstractExplorableDisplayCommand extends DynamicCommand im
         } else {
             items = display.getSelected();
         }
-       
+        */
+        
+        if(applyTo == ALL_ITEMS) {
+            items = display.getItems();
+        }
+        else if(applyTo == SELECTED_ITEMS) {
+            items = display.getSelected();
+        }
+        else {
+            items = display.getDisplayedItems();
+        }
+        
+        
         try {
             run(items);
         } catch (Exception ex) {
@@ -79,7 +115,7 @@ public abstract class AbstractExplorableDisplayCommand extends DynamicCommand im
     public abstract void run(List<? extends Explorable> items) throws Exception;
 
     protected void initWithPossibleKeys(String field) {
-
+        if(display == null) return;
         getInfo()
                 .getMutableInput(field, String.class)
                 .setChoices(new ArrayList<>(

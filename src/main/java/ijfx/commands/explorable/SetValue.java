@@ -64,7 +64,10 @@ public class SetValue extends AbstractExplorableDisplayCommand{
     }
     
     public void init() {
+        
+        
         initWithPossibleKeys("key");
+        super.initApplyTo();
     }
     
 }

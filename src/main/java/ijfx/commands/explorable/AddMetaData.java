@@ -41,10 +41,7 @@ public class AddMetaData extends AbstractExplorableDisplayCommand{
     @Parameter(label = "Value")
     String value;
     
-    public void init() {
-        //initWithPossibleKeys("key");
-        //initWithPossibleValues("value");
-    }
+   
     
     @Override
     public void run(List<? extends Explorable> items) {
