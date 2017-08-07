@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import mongis.utils.FXUtilities;
 import org.scijava.Context;
 import org.scijava.command.CommandInfo;
 import org.scijava.command.CommandService;
@@ -66,7 +67,7 @@ public class MetaDataBar extends HBox {
         getChildren().add(label);
         getStyleClass().addAll("hbox", "smaller", "metadata-bar");
 
-        buttonVBox.getStyleClass().add("hbox");
+        //buttonVBox.getStyleClass().add("hbox");
         context.inject(this);
 
         builder = new FXActionBarBuilder(context);
@@ -87,7 +88,9 @@ public class MetaDataBar extends HBox {
 
     public void update() {
 
-        builder.updateAsync(buttonVBox.getChildren());
+        builder
+                .updateAsync(buttonVBox.getChildren())
+                .then(o->FXUtilities.makeToggleGroup(buttonVBox, buttonVBox.getChildren()));
 
     }
 
