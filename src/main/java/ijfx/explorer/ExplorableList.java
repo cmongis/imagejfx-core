@@ -47,6 +47,7 @@ public class ExplorableList extends ArrayList<Explorable>{
      */
     public static int hash(Collection<? extends Explorable> list) {
      if(list == null) return 0;
+        
         return list
                 .stream()
                 .mapToInt(exp->exp.hashCode())
@@ -61,8 +62,9 @@ public class ExplorableList extends ArrayList<Explorable>{
         if(list == null) return 0;
         
         return IntStream
+                
                 .range(0, list.size())
-                .map(i->list.get(i).hashCode() * i)
+                .map(i->list.get(i) == null ? (i+1) * -1 : list.get(i).hashCode() * (i+1))
                 .sum();
         
     }

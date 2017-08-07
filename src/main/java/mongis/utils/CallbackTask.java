@@ -20,6 +20,8 @@
 package mongis.utils;
 
 import ijfx.ui.main.ImageJFX;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
@@ -67,32 +69,27 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
     private FailableRunnable runnable;
     private LongRunnable longRunnable;
     private FailableConsumer<INPUT> consumer;
-    private FailableBiConsumer<ProgressHandler,INPUT> longConsumer;
-    
-    
+    private FailableBiConsumer<ProgressHandler, INPUT> longConsumer;
+
     // handlers
     private Consumer<Throwable> onError = e -> logger.log(Level.SEVERE, null, e);
 
-    private Consumer<OUTPUT> onSuccess = e->{};
-    
-    private ExecutorService executor = ImageJFX.getThreadPool();
+    private List<Consumer<OUTPUT>> onSuccess = new ArrayList<>();
 
-   
+    private ExecutorService executor = ImageJFX.getThreadPool();
 
     private final static Logger logger = Logger.getLogger(CallbackTask.class.getName());
 
     private double total = 1.0;
     private double progress = 0;
 
-        private long elapsed = 0;
+    private long elapsed = 0;
 
-    
     public CallbackTask() {
         super();
-        
-        
+
         setName(getCallerClassName());
-        
+
     }
 
     public CallbackTask(INPUT input) {
@@ -121,22 +118,21 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
         return this;
     }
 
-    
     public CallbackTask<INPUT, OUTPUT> run(Runnable runnable) {
         if (runnable == null) {
             logger.warning("Setting null as runnable");
             return this;
         }
-        this.runnable = ()->runnable.run();
+        this.runnable = () -> runnable.run();
         return this;
     }
-    
-    public CallbackTask<INPUT,OUTPUT> run(LongRunnable longRunnable) {
+
+    public CallbackTask<INPUT, OUTPUT> run(LongRunnable longRunnable) {
         this.longRunnable = longRunnable;
         return this;
     }
-    
-    public CallbackTask<INPUT,OUTPUT> tryRun(FailableRunnable runnable) {
+
+    public CallbackTask<INPUT, OUTPUT> tryRun(FailableRunnable runnable) {
         this.runnable = runnable;
         return this;
     }
@@ -150,8 +146,8 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
         this.longConsumer = biConsumer;
         return this;
     }
-    
-    public CallbackTask<INPUT,OUTPUT> call(FailableCallable<OUTPUT> callable) {
+
+    public CallbackTask<INPUT, OUTPUT> call(FailableCallable<OUTPUT> callable) {
         this.callable = callable;
         return this;
     }
@@ -170,58 +166,50 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
     public OUTPUT call() throws Exception {
 
         elapsed = System.currentTimeMillis();
-        
+
         // first we check if the task was cancelled BEFORE RUNNING IT
         if (isCancelled()) {
             return null;
         }
-        
+
         if (inputGetter != null) {
-                input = inputGetter.call();
+            input = inputGetter.call();
         }
 
         OUTPUT output = null;
-        
-        
-        if(longCallback != null) {
-            output = longCallback.handle(this,input);
-        }
-        else if(callback != null) {
+
+        if (longCallback != null) {
+            output = longCallback.handle(this, input);
+        } else if (callback != null) {
             output = callback.call(input);
-        }
-        else if(longRunnable != null) {
+        } else if (longRunnable != null) {
             longRunnable.run(this);
             output = null;
-        }
-        else if(longCallable != null) {
+        } else if (longCallable != null) {
             output = longCallable.call(this);
-        }
-        else if(callable != null){
+        } else if (callable != null) {
             output = callable.call();
-        }
-        else if(consumer != null) {
+        } else if (consumer != null) {
             consumer.accept(input);
-        }
-        else if(longConsumer != null) {
+        } else if (longConsumer != null) {
             longConsumer.accept(this, input);
-        }
-        else if(runnable != null) {
+        } else if (runnable != null) {
             runnable.run();
         }
-        
+
         elapsed = System.currentTimeMillis() - elapsed;
-        
-        if(isCancelled()) {
+
+        if (isCancelled()) {
             return null;
         }
-        
+
         return output;
     }
 
     @Override
     protected void failed() {
         super.failed();
-        Logger.getLogger(getClass().getName()).log(Level.SEVERE,null,getException());
+        Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, getException());
         if (onError != null) {
             onError.accept(getException());
         }
@@ -240,15 +228,13 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
         executorService.execute(this);
         return this;
     }
-    
-    
 
     public CallbackTask<INPUT, OUTPUT> start() {
         executor.execute(this);
         return this;
     }
-    
-    public CallbackTask<INPUT,OUTPUT> startInFXThread() {
+
+    public CallbackTask<INPUT, OUTPUT> startInFXThread() {
         Platform.runLater(this);
         return this;
     }
@@ -261,12 +247,13 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
 
     @Override
     public void succeeded() {
-        
-        logger.info(String.format("%s '%s' executed in %d",getClass().getSimpleName(),getTitle(),elapsed));
-        
-        if (onSuccess != null) {
-            onSuccess.accept(getValue());
+
+        logger.info(String.format("%s '%s' executed in %d", getClass().getSimpleName(), getTitle(), elapsed));
+
+        for(Consumer<OUTPUT> handler : onSuccess) {
+            handler.accept(getValue());
         }
+        
         super.succeeded();
 
     }
@@ -278,7 +265,7 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
     }
 
     public CallbackTask<INPUT, OUTPUT> then(Consumer<OUTPUT> consumer) {
-        onSuccess = consumer;
+        onSuccess.add(consumer);
         return this;
     }
 
@@ -352,13 +339,20 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
     }
 
     public CallbackTask<INPUT, OUTPUT> submit(Consumer<Task> consumer) {
-        consumer.accept(this);
+        if (consumer == null) {
+            logger.warning("Submitting task to null !");
+        } else {
+            consumer.accept(this);
+        }
         return this;
     }
-    
-    public CallbackTask<INPUT,OUTPUT> submit(Consumer<Task> consumer,boolean condition) {
-        if(condition) return submit(consumer);
-        else return this;
+
+    public CallbackTask<INPUT, OUTPUT> submit(Consumer<Task> consumer, boolean condition) {
+        if (condition) {
+            return submit(consumer);
+        } else {
+            return this;
+        }
     }
 
     @Override
@@ -377,17 +371,16 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
         return this;
     }
 
-    
-    public static String getCallerClassName() { 
+    public static String getCallerClassName() {
         StackTraceElement[] stElements = Thread.currentThread().getStackTrace();
-        for (int i=2; i<stElements.length; i++) {
+        for (int i = 2; i < stElements.length; i++) {
             StackTraceElement ste = stElements[i];
-            
+
             if (ste.getClassName().contains(CallbackTask.class.getSimpleName()) == false) {
-                return stElements[i].getClassName()+"."+ste.getMethodName();
+                return stElements[i].getClassName() + "." + ste.getMethodName();
             }
         }
         return null;
-     }
+    }
 
 }

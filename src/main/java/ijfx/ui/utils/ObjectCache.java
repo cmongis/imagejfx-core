@@ -97,6 +97,7 @@ public class ObjectCache<T> {
             if (missing > 0) {
                 if (handler != null) {
                     handler.setTotal(missing);
+                    handler.setStatus("Loading...");
                 }
 
                 List<T> collect = IntStream
@@ -134,7 +135,7 @@ public class ObjectCache<T> {
     }
 
     public List<T> getFragmented(final ProgressHandler handler, Integer totalSize, int fragment, Consumer<List<T>> onFinished) {
-
+        
         List<T> finished = new ArrayList<>();
         for (int i = 0; i < totalSize; i += fragment) {
 

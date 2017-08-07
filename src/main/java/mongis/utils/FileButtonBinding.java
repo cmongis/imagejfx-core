@@ -22,6 +22,8 @@ package mongis.utils;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import java.io.File;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -57,16 +59,15 @@ public class FileButtonBinding {
 
     private String buttonDefaultText = "Choose a directory ...";
 
-   
+    private String[] extensions;
+    private String extDescription;
 
     private Mode mode;
-    
+
     public enum Mode {
-        SAVE
-        ,OPEN
-        ,FOLDER
+        SAVE, OPEN, FOLDER
     }
-    
+
     public FileButtonBinding(Button button) {
         this(button, null);
     }
@@ -85,27 +86,44 @@ public class FileButtonBinding {
 
     protected void onClick(MouseEvent event) {
 
-        if(event.getButton() != MouseButton.PRIMARY) {
+        if (event.getButton() != MouseButton.PRIMARY) {
             fileProperty.setValue(null);
             return;
         }
-        
-        
+
         if (mode == Mode.OPEN) {
             FileChooser chooser = new FileChooser();
+
+            // configuring chooser
+            if (extensions != null) {
+                chooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter(extDescription, extensions));
+            }
+
             File file = chooser.showOpenDialog(null);
+
             if (file != null) {
+                if (extensions != null) {
+                    file = FileUtils.ensureExtension(file, extensions);
+                }
                 fileProperty.setValue(file);
             }
-        }
-        else if(mode == Mode.SAVE) {
+        } else if (mode == Mode.SAVE) {
+
             FileChooser chooser = new FileChooser();
+
+            if (extensions != null) {
+                chooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter(extDescription, extensions));
+            }
+
             File file = chooser.showSaveDialog(null);
-            if(file != null) {
+
+            if (file != null) {
+                if (extensions != null) {
+                    file = FileUtils.ensureExtension(file, extensions);
+                }
                 fileProperty.setValue(file);
             }
-        }
-            else {
+        } else {
 
             DirectoryChooser chooser = new DirectoryChooser();
 
@@ -144,6 +162,15 @@ public class FileButtonBinding {
     public FileButtonBinding setMode(Mode mode) {
         this.mode = mode;
         return this;
+    }
+
+    public void setExtensions(String[] extensions) {
+
+        if (extensions != null && extensions.length > 0) {
+            this.extensions = extensions;
+            extDescription = Stream.of(extensions).collect(Collectors.joining(" or "));
+        }
+
     }
 
 }

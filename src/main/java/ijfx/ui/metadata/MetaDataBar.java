@@ -19,119 +19,79 @@
  */
 package ijfx.ui.metadata;
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import ijfx.commands.explorable.ExplorableDisplayCommand;
 import ijfx.core.metadata.MetaDataOwner;
+import ijfx.core.uiplugin.FXActionBarBuilder;
 import ijfx.core.uiplugin.FXUiCommandService;
 import ijfx.core.uiplugin.UiCommand;
-import static java.awt.SystemColor.info;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import mongis.utils.FXUtilities;
 import org.scijava.Context;
 import org.scijava.command.CommandInfo;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
-import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
-import org.scijava.plugin.SciJavaPlugin;
 
 /**
  *
  * @author cyril
  */
-public class MetaDataBar extends HBox{
-    
+public class MetaDataBar extends HBox {
+
     private static String FIRST = "first";
-    
+
     private static String LAST = "last";
-    
+
     private Label label = new Label("Edit metadata");
-    
+
     private HBox buttonVBox = new HBox();
-    
+
     @Parameter
-    FXUiCommandService uiCommandService;
-    
+    private FXUiCommandService uiCommandService;
+
     @Parameter
-    CommandService commandService;
-    
+    private CommandService commandService;
+
     @Parameter
-    PluginService pluginService;
-    
+    private PluginService pluginService;
+
+    private final FXActionBarBuilder builder;
+
     public MetaDataBar(Context context) {
         getChildren().add(label);
-        getStyleClass().addAll("hbox","smaller","metadata-bar");
+        getStyleClass().addAll("hbox", "smaller", "metadata-bar");
 
-        buttonVBox.getStyleClass().add("hbox");
+        //buttonVBox.getStyleClass().add("hbox");
         context.inject(this);
-        
-        List<Button> buttons = commandService
-                .getCommandsOfType(ExplorableDisplayCommand.class)
-                
-                .stream()
-                .map(this::createButton)
-                .collect(Collectors.toList());
-        buttonVBox.getChildren().addAll(buttons);
-        
+
+        builder = new FXActionBarBuilder(context);
+
         getChildren().add(buttonVBox);
-        
+
+        addUiCommands();
     }
-    
-    public Button createButton(CommandInfo infos) {
-        
-        Button button = uiCommandService.createButton(infos);
-        
-        button.setOnAction(event->{
-            commandService.run(infos,true);
-        });
-        
-        return button;
-        
+
+    public void addCommands(List<CommandInfo> infos) {
+        builder.addCommands(infos);
     }
-    
-    public void addUiCommands(List<UiCommand<MetaDataBar>> commands) {
-        
-        List<Button> buttons = commands
-                .stream()
-                .map(uiCommand->uiCommandService.createButton(uiCommand,this))
-                .collect(Collectors.toList());
-                
-        buttonVBox.getChildren().addAll(buttons);
-        
-        updateClasses();
-        
+
+    public void addUiCommands() {
+        builder.addUiCommands(uiCommandService
+                .getAssociatedAction(this), this);
     }
-    
-    
-    public void updateClasses() {
-        
-        // deleting the last class
-        buttonVBox.getChildren()
-                .stream()
-                .filter(node->node instanceof Button)
-                .peek(node->node.getStyleClass().remove(LAST))
-                .peek(node->node.getStyleClass().remove(FIRST));
-        
-        
-        buttonVBox.getChildren().get(getChildren().size()).getStyleClass().add(LAST);
-        buttonVBox.getChildren().get(0).getStyleClass().add(FIRST);
-        
-        
+
+    public void update() {
+
+        builder
+                .updateAsync(buttonVBox.getChildren())
+                .then(o->FXUtilities.makeToggleGroup(buttonVBox, buttonVBox.getChildren()));
+
     }
-    
-    
-    public void setItem(List<? extends MetaDataOwner> items) {
-        
-    }
-    
-    public void getItem(List<? extends MetaDataOwner> items){
-        
-    }
-    
-    
-    
-    
-    
+
 }

@@ -19,20 +19,21 @@
  */
 package ijfx.core.uiplugin;
 
-import ijfx.core.IjfxService;
-import java.util.List;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import java.util.function.Consumer;
 
 /**
  *
  * @author cyril
  */
-public interface UiCommandService extends IjfxService{
-    
-    
-    <T> List<UiCommand<T>> getAssociatedAction(T o);
-    <T> List<UiCommand<T>>  getAssociatedAction(Class<? extends T> type);
-   
-    
-    
-    
+public interface LabelledAction<T> {
+        T data();
+        String label();
+        String description();
+        String iconPath();
+        Consumer<T> runner();
+        double priority();
+        
+        
+      
 }

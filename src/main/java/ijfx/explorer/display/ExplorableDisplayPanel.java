@@ -21,6 +21,7 @@ package ijfx.explorer.display;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import ijfx.commands.explorable.ExplorableDisplayCommand;
 import ijfx.core.icon.FXIconService;
 import ijfx.core.timer.TimerService;
 import ijfx.core.utils.SciJavaUtils;
@@ -55,6 +56,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import mongis.utils.ProgressHandler;
 import org.scijava.Context;
+import org.scijava.command.CommandService;
 import org.scijava.event.EventService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -72,6 +74,9 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
     @Parameter
     PluginService pluginService;
 
+    @Parameter
+    CommandService commandService;
+    
     @Parameter
     FXIconService fxIconService;
 
@@ -95,9 +100,9 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
     TaggableFilterPanel filterPanel;
 
     List<Explorable> displayed;
-    
+
     SideMenuBinding sideMenuBinding;
-    
+
     private int itemHash = 0;
 
     private int displayedItemHash = 0;
@@ -115,11 +120,18 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
     @Override
     public void pack() {
 
+        if (root != null) {
+            return;
+        }
+
         root = new AnchorPane();
 
         tabPane = new TabPane();
 
         metaDataBar = new MetaDataBar(context);
+
+        filterPanel = new TaggableFilterPanel();
+
         //root.getChildren().add(metaDataBar);
         AnchorPane.setLeftAnchor(metaDataBar, 0d);
         AnchorPane.setRightAnchor(metaDataBar, 0d);
@@ -130,13 +142,10 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
         AnchorPane.setRightAnchor(tabPane, 0d);
         AnchorPane.setTopAnchor(tabPane, 30d);
 
-        filterPanel = new TaggableFilterPanel();
-
         Rectangle clip = new Rectangle();
         clip.widthProperty().bind(root.widthProperty());
         clip.heightProperty().bind(root.heightProperty().add(-5));
 
-        //getStyleClass().add("image-display-pane");
         root.setClip(clip);
 
         //
@@ -156,8 +165,6 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
 
         // adding the elements
         root.getChildren().addAll(metaDataBar, tabPane, sideBox);
-        redoLayout();
-        redraw();
 
         context.inject(filterPanel);
         // adding style class to the filter pane
@@ -173,9 +180,12 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
         filterPanel
                 .predicateProperty()
                 .addListener(this::onFilterChanged);
-        
-     
+
         root.setOnMouseMoved(this::onMouseMoved);
+
+        redoLayout();
+        redraw();
+
     }
 
     private ExplorerView getCurrentView() {
@@ -192,28 +202,27 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
     }
 
     private void updateCurrentView() {
-        
-        
-        
+
         ExplorableDisplay display = getDisplay();
 
         ExplorerView view = getCurrentView();
 
-        if(view == null || display == null)return;
-        
-        int viewHash = ExplorableList.hashWithOrder(view.getItems());
+        if (view == null || display == null) {
+            return;
+        }
 
+        int viewHash = ExplorableList.hashWithOrder(view.getItems());
         int selectedHash = ExplorableList.hashWithOrder(view.getSelectedItems());
-        
+
         // the hash takes the metadata content into account.
         // if the hash changed, either the list was modified
         // or simply one element was modified
         if (viewHash != displayedItemHash) {
-            
-            if(view.getItems() == null) {
+
+            if (view.getItems() == null) {
                 view.setItems(display.getDisplayedItems());
             }
-            
+
             // if only the content was modified the view is refreshed
             if (view.getItems().size() == display.getDisplayedItems().size()
                     && view.getItems().contains(display.getDisplayedItems())) {
@@ -225,7 +234,7 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
                 view.setItems(display.getDisplayedItems());
             }
         }
-        
+
         // if the list of selected files has changed
         // update follows immediatly
         if (selectedHash != this.selectedHash) {
@@ -315,6 +324,13 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
                                 .map(this::createTab)
                                 .collect(Collectors.toList()));
 
+        metaDataBar
+                .addCommands(commandService.getCommandsOfType(ExplorableDisplayCommand.class));
+        metaDataBar
+                .addUiCommands();
+        
+        metaDataBar.update();
+        
     }
 
     @Override
@@ -323,6 +339,10 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
 
     @Override
     public void redraw() {
+
+        if (tabPane.getTabs().size() == 0) {
+            return;
+        }
         logger.info("Redrawing for " + getDisplay().getName());
         updateHashs();
         Platform.runLater(this::redrawFX);
@@ -334,7 +354,7 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
         }
         return list
                 .stream()
-                .mapToInt(exp -> exp.hashCode())
+                .mapToInt(exp -> exp == null ? -1 : exp.hashCode())
                 .parallel()
                 .sum();
 
@@ -348,7 +368,9 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
     }
 
     public void redrawFX() {
-
+        if (getCurrentView() == null) {
+            return;
+        }
         int hash = hash(getCurrentView().getItems());
         if (hash != itemHash) {
             logger.info("Updating filters");
