@@ -32,6 +32,7 @@ import org.scijava.command.InteractiveCommand;
 import org.scijava.plugin.Parameter;
 import org.scijava.ui.DialogPrompt;
 import org.scijava.ui.UIService;
+import org.scijava.widget.WidgetModel;
 
 /**
  *
@@ -42,7 +43,7 @@ public abstract class AbstractExplorableDisplayCommand extends DynamicCommand im
     @Parameter
     ExplorableDisplay display;
 
-    @Parameter(required = false,visibility = ItemVisibility.INVISIBLE)
+    @Parameter(required = false,visibility = ItemVisibility.INVISIBLE,autoFill = true)
     boolean warning = true;
 
     @Parameter
@@ -54,7 +55,7 @@ public abstract class AbstractExplorableDisplayCommand extends DynamicCommand im
 
         if (display.getSelected().size() == 0 && warning) {
 
-            DialogPrompt.Result result = uiService.showDialog("Do you want to apply this action to all items ?", DialogPrompt.MessageType.QUESTION_MESSAGE, DialogPrompt.OptionType.YES_NO_OPTION);
+            DialogPrompt.Result result = uiService.showDialog("No item is selected.\n\nDo you want to apply this action to all items ?", DialogPrompt.MessageType.QUESTION_MESSAGE, DialogPrompt.OptionType.YES_NO_OPTION);
 
             if (result == DialogPrompt.Result.YES_OPTION) {
                 items = display.getItems();

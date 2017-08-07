@@ -33,7 +33,7 @@ import org.scijava.util.FileUtils;
  *
  * @author cyril
  */
-@Plugin(type= ExplorableDisplayCommand.class, iconPath="fa:save",label = "Export to csv")
+@Plugin(type= ExplorableDisplayCommand.class, iconPath="fa:save",label = "Export to csv",priority = 0.1)
 public class ExportToCsv extends AbstractExplorableDisplayCommand {
 
     @Parameter(label = "Export file", style = "save csv")
