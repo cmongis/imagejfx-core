@@ -76,6 +76,17 @@ public class MetaDataSetUtils {
         return result;
     }
 
+    public static String exportToCSVFromOwner(List< ? extends MetaDataOwner> owners, String separator, boolean includeHeader, String[] priority) {
+        
+        List<MetaDataSet> collect = owners
+                .stream()
+                .map(owner->owner.getMetaDataSet())
+                .collect(Collectors.toList());
+        
+        return exportToCSV(collect, separator, includeHeader, priority);
+        
+    }
+    
     public static String exportToCSV(List<MetaDataSet> mList, String separator, boolean includeHheader, String[] priority) {
 
         // getting all the possible keys of the list of metadataset
@@ -97,6 +108,7 @@ public class MetaDataSetUtils {
         //
         StringBuilder builder = new StringBuilder(mList.size() * 200);
         builder.append(orderedKeys.stream().sequential().collect(Collectors.joining(separator)));
+        builder.append("\n");
         builder.append(
                 IntStream
                 .range(0, mList.size())
