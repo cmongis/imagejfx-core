@@ -20,6 +20,8 @@
 package mongis.utils;
 
 import ijfx.ui.main.ImageJFX;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
@@ -72,8 +74,7 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
     // handlers
     private Consumer<Throwable> onError = e -> logger.log(Level.SEVERE, null, e);
 
-    private Consumer<OUTPUT> onSuccess = e -> {
-    };
+    private List<Consumer<OUTPUT>> onSuccess = new ArrayList<>();
 
     private ExecutorService executor = ImageJFX.getThreadPool();
 
@@ -249,9 +250,10 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
 
         logger.info(String.format("%s '%s' executed in %d", getClass().getSimpleName(), getTitle(), elapsed));
 
-        if (onSuccess != null) {
-            onSuccess.accept(getValue());
+        for(Consumer<OUTPUT> handler : onSuccess) {
+            handler.accept(getValue());
         }
+        
         super.succeeded();
 
     }
@@ -263,7 +265,7 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
     }
 
     public CallbackTask<INPUT, OUTPUT> then(Consumer<OUTPUT> consumer) {
-        onSuccess = consumer;
+        onSuccess.add(consumer);
         return this;
     }
 
