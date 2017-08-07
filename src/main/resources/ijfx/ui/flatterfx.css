@@ -281,7 +281,7 @@ h1,h2,h3,h4 {
 .button.larger {
     -fx-padding:9px;
 }
-.button.smaller, .toggle-button.smaller, .menu-button.smaller, .smaller .button {
+.button.smaller, .toggle-button.smaller, .menu-button.smaller, .smaller .button, .smaller .menu-button {
     -fx-font-size:12px;
 }
 .toggle-group {
@@ -592,6 +592,10 @@ h1,h2,h3,h4 {
 
 .menu-button.normal {
     -fx-padding:0.02em;
+}
+
+.menu-button.smaller,  .smaller .menu-button{
+    -fx-padding:1px 10 1 10;
 }
 
 .menu-item:focused{
