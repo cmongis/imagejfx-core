@@ -54,12 +54,6 @@ import org.scijava.plugin.Plugin;
 public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
     @FXML
-    private BorderPane borderPane;
-
-    @FXML
-    private HBox hBox;
-
-    @FXML
     private Button last;
 
     @FXML
@@ -81,8 +75,6 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
     private Explorable currentItem;
 
-    private Consumer<DataClickEvent<Explorable>> onItemClicked;
-
     private final List<Explorable> currentItemList = new ArrayList<>();
 
     private static final String FXMLWAY = "/ijfx/ui/display/image/DetailsDisplay.fxml";
@@ -102,21 +94,6 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
     }
 
-    private void loadFXML() {
-        System.out.println("loadFXML");
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource(FXMLWAY));
-        loader.setRoot(this);
-        loader.setController(this);
-        try {
-            loader.load();
-
-        } catch (IOException ex) {
-            Logger.getLogger(DefaultAnnotationDialog.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-    }
-
     @Override
     public Node getUIComponent() {
         System.out.println("getUIComponent");
@@ -127,21 +104,12 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
     public void setItems(List<? extends Explorable> items) {
         System.out.println("setItem");
         this.itemsList = items;
-
+        
         ImageJFX.getLogger().info(String.format("Items List   " + itemsList));
 
     }
 
-    private void setColumnsData(MetaDataSet map) {
-
-        tableView.getItems().clear();
-
-        map.entrySet().stream().forEach((entry) -> {
-            tableView.getItems().add(entry.getValue());
-        });
-
-    }
-
+    
     @Override
     public List<? extends Explorable> getSelectedItems() {
         System.out.println("getSelectedItem");
@@ -166,8 +134,9 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
             this.currentItem = exp;
 
         });
-
+        
         setColumnsData(currentItem.getMetaDataSet());
+        //getSelectedItems();
         ImageJFX.getLogger().info(String.format("Current item  " + currentItem));
 
     }
@@ -187,6 +156,52 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
     public void setOnItemClicked(Consumer<DataClickEvent<Explorable>> eventHandler) {
     }
 
+    
+
+    @Override
+    public List<? extends Explorable> getItems() {
+        System.out.println("getItem");
+
+        if (currentItem != null && !currentItemList.contains(currentItem)) {
+            currentItemList.add(currentItem);
+            return currentItemList;
+            
+        } else {
+            ImageJFX.getLogger().info(String.format("Current item is null : nothing selected"));
+            return null;
+        }
+        //une erreur ici : nullpointerexception. plus d'erreur ici (???); une erreur again (??????)
+    }
+    
+    private void loadFXML() {
+        System.out.println("loadFXML");
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource(FXMLWAY));
+        loader.setRoot(this);
+        loader.setController(this);
+        try {
+            loader.load();
+
+        } catch (IOException ex) {
+            Logger.getLogger(DefaultAnnotationDialog.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    public Explorable getDisplayedItem() {
+        return currentItem;
+    }
+    
+    private void setColumnsData(MetaDataSet map) {
+
+        tableView.getItems().clear();
+
+        map.entrySet().stream().forEach((entry) -> {
+            tableView.getItems().add(entry.getValue());
+        });
+
+    }
+    
     private void onDisplayLastExplorable(ActionEvent event) {
         int index = itemsList.indexOf(currentItem);
         if (index > 0) {
@@ -214,25 +229,6 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
     private void labelDisplay(Explorable exp) {
         label.setText(exp.getTitle());
 
-    }
-
-    @Override
-    public List<? extends Explorable> getItems() {
-        System.out.println("getItem");
-
-        if (currentItem != null && !currentItemList.contains(currentItem)) {
-            currentItemList.add(currentItem);
-            return currentItemList;
-            
-        } else {
-            ImageJFX.getLogger().info(String.format("Current item is null : nothing selected"));
-            return null;
-        }
-        //une erreur ici : nullpointerexception
-    }
-
-    public Explorable getDisplayedItem() {
-        return currentItem;
     }
 
 }
