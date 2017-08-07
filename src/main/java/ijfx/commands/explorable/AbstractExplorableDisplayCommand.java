@@ -23,6 +23,8 @@ import ijfx.explorer.ExplorableDisplay;
 import ijfx.explorer.datamodel.Explorable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.scijava.ItemVisibility;
 import org.scijava.command.DynamicCommand;
@@ -63,10 +65,17 @@ public abstract class AbstractExplorableDisplayCommand extends DynamicCommand im
         } else {
             items = display.getSelected();
         }
-        run(items);
+       
+        try {
+            run(items);
+        } catch (Exception ex) {
+            cancel("Error when executing");
+            Logger.getLogger(AbstractExplorableDisplayCommand.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }
 
-    public abstract void run(List<? extends Explorable> items);
+    public abstract void run(List<? extends Explorable> items) throws Exception;
 
     protected void initWithPossibleKeys(String field) {
 
