@@ -76,7 +76,7 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
 
     @Parameter
     CommandService commandService;
-    
+
     @Parameter
     FXIconService fxIconService;
 
@@ -290,17 +290,21 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
 
         Explorable clicked = event.getData();
 
-        boolean isShiftDown = event.getEvent().isShiftDown();
+        if (event.getEvent() == null) {
+            getDisplay().selectOnly(clicked);
+            getDisplay().update();
+            return;
+        }
+
+        boolean isShiftDown = event.getEvent() != null ? event.getEvent().isShiftDown() : false;
         boolean isAlreadySelected = getDisplay().getSelected().contains(clicked);
 
         if (isShiftDown && selected > 0) {
             getDisplay().selectUntil(clicked);
-        } else if (isAlreadySelected && selected > 1) {
-            getDisplay().selectOnly(clicked);
         } else if (isAlreadySelected && selected == 1) {
             getDisplay().getSelected().remove(clicked);
         } else {
-            getDisplay().select(clicked);
+            getDisplay().selectOnly(clicked);
         }
 
         getDisplay().update();
@@ -328,9 +332,9 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
                 .addCommands(commandService.getCommandsOfType(ExplorableDisplayCommand.class));
         metaDataBar
                 .addUiCommands();
-        
+
         metaDataBar.update();
-        
+
     }
 
     @Override
