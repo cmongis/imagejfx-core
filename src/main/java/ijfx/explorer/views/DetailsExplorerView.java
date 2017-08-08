@@ -164,7 +164,6 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
         checkSelection();
 
-        //ImageJFX.getLogger().info(String.format("Current item  " + currentItem));
     }
 
     @Override
@@ -227,18 +226,7 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
     @Override
     public List<? extends Explorable> getItems() {
         return itemList;
-        /*
-        System.out.println("getItem");
-
-        if (currentItem != null && !currentItemList.contains(currentItem)) {
-            currentItemList.add(currentItem);
-            return currentItemList;
-            
-        } else {
-            ImageJFX.getLogger().info(String.format("Current item is null : nothing selected"));
-            return null;
-        }*/
-        //une erreur ici : nullpointerexception
+       
     }
 
     public Explorable getDisplayedItem() {
