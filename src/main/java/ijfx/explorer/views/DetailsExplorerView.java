@@ -227,6 +227,9 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
         if (selectedItems.size() > 1) {
             eventHandler.accept(new DataClickEvent<Explorable>(currentItem, null, true));
         }
+        else {
+            
+        }
     }
 
     private void onDisplayPreviousExplorable(ActionEvent event) {
