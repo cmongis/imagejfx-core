@@ -76,16 +76,13 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
     private Explorable currentItem;
 
-
     private final List<Explorable> currentItemList = new ArrayList<>();
 
-    private Consumer<DataClickEvent<Explorable>> onItemClicked;
+    private Consumer<DataClickEvent<Explorable>> eventHandler;
 
     private List<? extends Explorable> selectedItems = new ArrayList<>();
 
-
     private static final String FXMLWAY = "/ijfx/ui/display/image/DetailsDisplay.fxml";
-    private Consumer<DataClickEvent<Explorable>> eventHandler;
 
     public DetailsExplorerView() {
 
@@ -114,12 +111,11 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
         this.itemList = items;
 
-
         ImageJFX.getLogger().info(String.format("Items List   " + itemList));
+        
         refresh();
     }
 
-    
     @Override
     public List<? extends Explorable> getSelectedItems() {
         if (currentItem == null) {
@@ -134,29 +130,19 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
         selectedItems = itemList;
 
-        setColumnsData(currentItem.getMetaDataSet());
-        //getSelectedItems();
-        ImageJFX.getLogger().info(String.format("Current item  " + currentItem));
+        setData(selectedItems.get(0));
 
         if (selectedItems.size() > 0) {
             setCurrentItem(itemList.get(0));
         }
-
-        checkSelection();
-
+        ImageJFX.getLogger().info(String.format("Current item  " + currentItem));
+        refresh();
 
     }
 
     @Override
     public SelectionModel getSelectionModel() {
         return null;
-
-    }
-
-    public void setCurrentItem(Explorable explorable) {
-
-        currentItem = explorable;
-        setColumnsData(currentItem.getMetaDataSet());
 
     }
 
@@ -172,9 +158,6 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
     }
 
-
-    
-
     @Override
     public List<? extends Explorable> getItems() {
         System.out.println("getItem");
@@ -182,14 +165,13 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
         if (currentItem != null && !currentItemList.contains(currentItem)) {
             currentItemList.add(currentItem);
             return currentItemList;
-            
+
         } else {
             ImageJFX.getLogger().info(String.format("Current item is null : nothing selected"));
             return null;
         }
-        //une erreur ici : nullpointerexception. plus d'erreur ici (???); une erreur again (??????)
     }
-    
+
     private void loadFXML() {
         System.out.println("loadFXML");
         FXMLLoader loader = new FXMLLoader();
@@ -205,20 +187,28 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
     }
 
+    public void setCurrentItem(Explorable explorable) {
+
+        currentItem = explorable;
+
+    }
+
     public Explorable getDisplayedItem() {
         return currentItem;
     }
-    
-    private void setColumnsData(MetaDataSet map) {
+
+    private void setData(Explorable exp) {
+
+        label.setText(exp.getTitle());
 
         tableView.getItems().clear();
 
-        map.entrySet().stream().forEach((entry) -> {
+        exp.getMetaDataSet().entrySet().stream().forEach((entry) -> {
             tableView.getItems().add(entry.getValue());
         });
 
     }
-    
+
     public void onDisplayLastExplorable(ActionEvent event) {
         int index = itemList.indexOf(currentItem);
         if (index > 0) {
@@ -229,7 +219,6 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
     }
 
     private void checkSelection() {
-
 
         if (selectedItems.size() == 0 && itemList.size() > 0) {
             eventHandler.accept(new DataClickEvent<Explorable>(itemList.get(0), null, false));
@@ -255,13 +244,5 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
         }
 
     }
-
-    private void labelDisplay(Explorable exp) {
-        label.setText(exp.getTitle());
-
-    }
-
-
-
 
 }
