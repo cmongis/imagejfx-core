@@ -250,7 +250,7 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
 
     public void onItemClicked(DataClickEvent<Explorable> event) {
 
-        int selected = getDisplay().getSelected().size();
+        int selected = getDisplay().getSelectedItems().size();
 
         Explorable clicked = event.getData();
 
@@ -261,12 +261,12 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
         }
 
         boolean isShiftDown = event.getEvent() != null ? event.getEvent().isShiftDown() : false;
-        boolean isAlreadySelected = getDisplay().getSelected().contains(clicked);
+        boolean isAlreadySelected = getDisplay().getSelectedItems().contains(clicked);
 
         if (isShiftDown && selected > 0) {
             getDisplay().selectUntil(clicked);
         } else if (isAlreadySelected && selected == 1) {
-            getDisplay().getSelected().remove(clicked);
+            getDisplay().getSelectedItems().remove(clicked);
         } else {
             getDisplay().selectOnly(clicked);
         }

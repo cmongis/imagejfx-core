@@ -89,7 +89,7 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     private final IntegerProperty selected = new SimpleIntegerProperty(0);
 
     private List<Explorable> selectedItems = new ArrayList<>();
-
+    
     //private SelectableManager<Explorable> selectionManager = new SelectableManager<>();
    
    
@@ -102,18 +102,17 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     }
 
     @Override
-    public void setItems(List<Explorable> items) {
+    public void setItems(List<? extends Explorable> items) {
 
-        explorableList = items;
-        if(explorableList == null) explorableList = new ArrayList<>();
+        explorableList.clear();
+        explorableList.addAll(items);
         eventService.publish(new ExploredListChanged().setObject(items));
-        applyFilter(lastFilter);
-        //selectionManager.setItem(explorableList);
-        
+        setFilter(lastFilter);
+       
     }
 
     @Override
-    public void applyFilter(Predicate<Explorable> predicate) {
+    public void setFilter(Predicate<Explorable> predicate) {
 
         new CallbackTask<Predicate<Explorable>, List<Explorable>>(predicate)
                 .callback(this::filter)
@@ -154,19 +153,26 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     @Override
     public void setOptionalFilter(Predicate<Explorable> additionalFilter) {
         this.optionalFilter = additionalFilter;
-        applyFilter(lastFilter);
+        setFilter(lastFilter);
     }
 
     @Override
-    public List<? extends Explorable> getSelectedItems() {
+    public List<Explorable> getSelectedItems() {
         return selectedItems;
     }
 
     @Override
-    public void selectItem(Explorable explorable) {
+    public void select(Explorable explorable) {
         selectedItems.add(explorable);
         publishSelectionEvent();
     }
+    @Override
+    public void setSelected(List<Explorable> selectedList) {
+        selectedItems.clear();
+        selectedItems.addAll(selectedList);
+        publishSelectionEvent();
+    }
+    
 
     @Override
     public ArrayList<String> getMetaDataKey(List<? extends Explorable> items) {
@@ -299,10 +305,5 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
         eventService.publish(new ExplorerSelectionChangedEvent());
     }
 
-    @Override
-    public void selectItems(List<? extends Explorable> items) {
-        selectedItems.clear();
-        selectedItems.addAll(items);
-        publishSelectionEvent();
-    }
+    
 }

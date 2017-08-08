@@ -19,7 +19,7 @@
  */
 package ijfx.explorer.views;
 
-import ijfx.explorer.ExplorableDisplay;
+import ijfx.explorer.ExplorableViewModel;
 import ijfx.explorer.ExplorableList;
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.views.ViewStateManager.ViewState;
@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.WeakHashMap;
 
 /**
- * Object responsible of synchronize the ExplorableDisplay state
+ * Object responsible of synchronize the ExplorableViewModel state
  * with view states.
  * @author cyril
  */
@@ -42,13 +42,13 @@ public class ViewStateManager extends WeakHashMap<ExplorerView, ViewState>{
     
     
     
-    public void updateState(ExplorableDisplay display) {
+    public void updateState(ExplorableViewModel display) {
         
         displayState = new ViewState(display);
         
     }
     
-    public void checkView(ExplorerView view, ExplorableDisplay display) {
+    public void checkView(ExplorerView view, ExplorableViewModel display) {
         
         if(containsKey(view) == false) {
             put(view,new ViewState());
@@ -72,7 +72,7 @@ public class ViewStateManager extends WeakHashMap<ExplorerView, ViewState>{
        }
        
        if(displayState.selection != viewState.selection){
-           view.setSelectedItem(display.getSelected());
+           view.setSelectedItem(display.getSelectedItems());
        }
        
        put(view,displayState.clone());
@@ -93,10 +93,10 @@ public class ViewStateManager extends WeakHashMap<ExplorerView, ViewState>{
             
         }
         
-        public ViewState(ExplorableDisplay display) {
+        public ViewState(ExplorableViewModel display) {
             listContent = ExplorableList.listHash(display.getDisplayedItems());
             data = ExplorableList.contentHash(display.getDisplayedItems());
-            selection = ExplorableList.listHashWithOrder(display.getSelected());        
+            selection = ExplorableList.listHashWithOrder(display.getSelectedItems());        
         }
         
         public ViewState clone() {

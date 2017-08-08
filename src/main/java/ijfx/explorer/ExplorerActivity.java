@@ -44,6 +44,7 @@ import ijfx.explorer.views.DataClickEvent;
 import ijfx.ui.filters.metadata.TaggableFilterPanel;
 import ijfx.explorer.views.ExplorerView;
 import ijfx.explorer.views.FolderListCellCtrl;
+import ijfx.explorer.views.ViewStateManager;
 import ijfx.ui.bindings.SideMenuBinding;
 
 import ijfx.ui.loading.LoadingScreenService;
@@ -66,8 +67,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -90,7 +89,6 @@ import mongis.utils.CallableTask;
 import mongis.utils.CallbackTask;
 import mongis.utils.FXUtilities;
 import mongis.utils.TextFileUtils;
-import mongis.utils.properties.ListChangeListenerBuilder;
 import org.reactfx.EventStreams;
 import org.scijava.event.EventHandler;
 import org.scijava.plugin.Parameter;
@@ -188,6 +186,8 @@ public class ExplorerActivity extends AnchorPane implements Activity {
 
     TaggableFilterPanel filterPanel = new TaggableFilterPanel();
 
+    public ViewStateManager viewStateManager = new ViewStateManager();
+    
     public ExplorerActivity() throws Exception {
        
             FXUtilities.injectFXML(this);
@@ -314,12 +314,10 @@ public class ExplorerActivity extends AnchorPane implements Activity {
 
     }
 
-    private void updateExplorerView(ExplorerView view) {
-        this.view = view;
-        //contentBorderPane.setCenter(view.getNode());
-
-        view.setItems(explorerService.getDisplayedItems());
-    }
+    
+    
+    
+   
 
     public synchronized void updateUi(List<? extends Explorable> explorable) {
 
@@ -332,15 +330,22 @@ public class ExplorerActivity extends AnchorPane implements Activity {
             return;
         }
 
-        if (explorable != null) {
-            view.setItems(explorable);
-            view.setSelectedItem(explorerService.getSelectedItems());
-        }
+        updateCurrentView();
 
         if (folderListEmpty.getValue()) {
             hintService.displayHints("/ijfx/ui/explorer/ExplorerActivity-tutorial-1.hints.json", false);
         }
     }
+    
+    private void updateViewState() {
+        viewStateManager.updateState(explorerService);
+    }
+    
+    private void updateCurrentView() {
+        if(view == null || explorerService == null) return;
+        viewStateManager.checkView(view, explorerService);
+    }
+    
 
     // returns true if the folder is not displayed yet
     private boolean isNotDisplayed(Folder folder) {
@@ -374,12 +379,16 @@ public class ExplorerActivity extends AnchorPane implements Activity {
 
     @EventHandler
     public void onExploredItemListChanged(ExploredListChanged event) {
+        updateViewState();
+        updateCurrentView();
         Platform.runLater(this::updateFilters);
         hintService.displayHints("/ijfx/ui/explorer/ExplorerActivity-tutorial-2.hints.json", false);
     }
 
     @EventHandler
     public void onDisplayedItemListChanged(DisplayedListChanged event) {
+        updateViewState();
+        updateCurrentView();
         Platform.runLater(() -> updateUi(event.getObject()));
 
     }
@@ -397,7 +406,8 @@ public class ExplorerActivity extends AnchorPane implements Activity {
 
     @EventHandler
     protected void onExplorerServiceSelectionChanged(ExplorerSelectionChangedEvent event) {
-        view.setSelectedItem(explorerService.getSelectedItems());
+        updateViewState();
+        updateCurrentView();
         Platform.runLater(this::updateButton);
     }
 
@@ -461,7 +471,11 @@ public class ExplorerActivity extends AnchorPane implements Activity {
     }
 
     private void onViewModeChanged(Observable obs, ExplorerView oldValue, ExplorerView newValue) {
-        updateExplorerView(newValue);
+       
+            
+      view = newValue;
+      updateCurrentView();
+
     }
 
 
@@ -475,7 +489,7 @@ public class ExplorerActivity extends AnchorPane implements Activity {
 
     @FXML
     public void unselectAll() {
-        explorerService.selectItems(new ArrayList<>());
+        explorerService.setSelected(new ArrayList<>());
     }
 
     @FXML

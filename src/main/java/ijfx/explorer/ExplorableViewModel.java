@@ -23,16 +23,40 @@ import com.google.common.collect.Lists;
 import ijfx.explorer.datamodel.Explorable;
 import java.util.List;
 import java.util.function.Predicate;
-import org.scijava.display.Display;
 
 /**
  *
  * @author cyril
  */
-public interface ExplorableDisplay extends Display<ExplorableList>, ExplorableViewModel{
+public interface ExplorableViewModel {
+        public List<Explorable> getDisplayedItems();
     
+    public void setFilter(Predicate<Explorable> filter);
     
-
+    public List<Explorable> getSelectedItems();
     
+    public void select(Explorable explorable);
     
+    default void selectUntil(Explorable explorable) {
+        
+        select(explorable);
+        if(getSelectedItems().size() == 0) {
+            
+            return;
+        }
+        int begin = getItems().indexOf(getSelectedItems().get(0));
+        int end =  getItems().indexOf(getSelectedItems().get(getSelectedItems().size()-1))+1;
+        
+        setSelected(getItems().subList(begin, end));
+        
+        
+    }
+    
+    default void selectOnly(Explorable explorable) {
+        setSelected(Lists.newArrayList(explorable));
+    }
+    
+    public void setSelected(List<Explorable> explorable);
+    
+    public List<Explorable> getItems();
 }
