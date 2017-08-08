@@ -28,7 +28,24 @@ import ijfx.core.metadata.MetaDataOwner;
  *
  * @author Cyril MONGIS, 2016
  */
-public interface Explorable extends Iconazable,MetaDataOwner,DatasetHolder,Taggable{
-     
-    
+public interface Explorable extends Iconazable, MetaDataOwner, DatasetHolder, Taggable {
+
+    /**
+     * Hash representing the data state of the object
+     *
+     * @return the state of the data
+     */
+    default int dataHashCode() {
+
+        return getTitle().hashCode()
+                + getSubtitle().hashCode()
+                + getMetaDataSet()
+                        .values()
+                        .stream()
+                        .parallel()
+                        .mapToInt(m -> m.hashCode())
+                        .sum();
+
+    }
+
 }

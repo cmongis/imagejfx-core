@@ -31,6 +31,8 @@ import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.datamodel.Taggable;
 import ijfx.explorer.views.DataClickEvent;
 import ijfx.explorer.views.ExplorerView;
+import ijfx.explorer.views.ViewStateManager;
+import ijfx.explorer.views.ViewStateManager.ViewState;
 import ijfx.ui.bindings.SideMenuBinding;
 import ijfx.ui.display.image.AbstractFXDisplayPanel;
 import ijfx.ui.display.image.FXDisplayPanel;
@@ -76,7 +78,7 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
 
     @Parameter
     CommandService commandService;
-    
+
     @Parameter
     FXIconService fxIconService;
 
@@ -102,13 +104,11 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
     List<Explorable> displayed;
 
     SideMenuBinding sideMenuBinding;
-
-    private int itemHash = 0;
-
-    private int displayedItemHash = 0;
-
-    private int selectedHash = 0;
-
+    
+    ViewStateManager viewStateManager;
+ 
+    int filterDataHash = -10;
+    
     private final double leftBorder = 36;
 
     Logger logger = ImageJFX.getLogger();
@@ -183,6 +183,8 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
 
         root.setOnMouseMoved(this::onMouseMoved);
 
+        viewStateManager = new ViewStateManager();
+        
         redoLayout();
         redraw();
 
@@ -192,14 +194,7 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
         return (ExplorerView) tabPane.getSelectionModel().getSelectedItem().getUserData();
     }
 
-    private void updateHashs() {
-        ExplorableDisplay display = getDisplay();
-
-        itemHash = ExplorableList.hash(display.getItems());
-        selectedHash = ExplorableList.hashWithOrder(display.getSelected());
-        displayedItemHash = ExplorableList.hashWithOrder(display.getDisplayedItems());
-
-    }
+   
 
     private void updateCurrentView() {
 
@@ -211,36 +206,7 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
             return;
         }
 
-        int viewHash = ExplorableList.hashWithOrder(view.getItems());
-        int selectedHash = ExplorableList.hashWithOrder(view.getSelectedItems());
-
-        // the hash takes the metadata content into account.
-        // if the hash changed, either the list was modified
-        // or simply one element was modified
-        if (viewHash != displayedItemHash) {
-
-            if (view.getItems() == null) {
-                view.setItems(display.getDisplayedItems());
-            }
-
-            // if only the content was modified the view is refreshed
-            if (view.getItems().size() == display.getDisplayedItems().size()
-                    && view.getItems().contains(display.getDisplayedItems())) {
-                logger.info("Refreshing the view");
-                view.refresh();
-            } else {
-                logger.info("Reseting the item list");
-                // otherwise, the items are reset
-                view.setItems(display.getDisplayedItems());
-            }
-        }
-
-        // if the list of selected files has changed
-        // update follows immediatly
-        if (selectedHash != this.selectedHash) {
-            logger.info("Updating selection");
-            view.setSelectedItem(display.getSelected());
-        }
+        viewStateManager.checkView(view, display);
 
     }
 
@@ -290,17 +256,21 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
 
         Explorable clicked = event.getData();
 
-        boolean isShiftDown = event.getEvent().isShiftDown();
+        if (event.getEvent() == null) {
+            getDisplay().selectOnly(clicked);
+            getDisplay().update();
+            return;
+        }
+
+        boolean isShiftDown = event.getEvent() != null ? event.getEvent().isShiftDown() : false;
         boolean isAlreadySelected = getDisplay().getSelected().contains(clicked);
 
         if (isShiftDown && selected > 0) {
             getDisplay().selectUntil(clicked);
-        } else if (isAlreadySelected && selected > 1) {
-            getDisplay().selectOnly(clicked);
         } else if (isAlreadySelected && selected == 1) {
             getDisplay().getSelected().remove(clicked);
         } else {
-            getDisplay().select(clicked);
+            getDisplay().selectOnly(clicked);
         }
 
         getDisplay().update();
@@ -328,9 +298,9 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
                 .addCommands(commandService.getCommandsOfType(ExplorableDisplayCommand.class));
         metaDataBar
                 .addUiCommands();
-        
+
         metaDataBar.update();
-        
+
     }
 
     @Override
@@ -344,7 +314,10 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
             return;
         }
         logger.info("Redrawing for " + getDisplay().getName());
-        updateHashs();
+        
+        viewStateManager.updateState(getDisplay());
+        
+        
         Platform.runLater(this::redrawFX);
     }
 
@@ -371,12 +344,16 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
         if (getCurrentView() == null) {
             return;
         }
-        int hash = hash(getCurrentView().getItems());
-        if (hash != itemHash) {
-            logger.info("Updating filters");
-            itemHash = hash;
-            filterPanel.updateFilters(ProgressHandler.check(null), getDisplay().getItems());
-        }
+        
+        int state = ExplorableList.contentHash(getDisplay().getItems());
+        
+        if(state != filterDataHash) {
+             filterPanel.updateFilters(ProgressHandler.check(null), getDisplay().getItems());
+             filterDataHash = state;
+        }   
+        
+       
+        
         updateCurrentView();
 
     }

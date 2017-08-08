@@ -551,12 +551,12 @@ public class FXUtilities {
 
     public static final String TOGGLE_GROUP = "toggle-group";
 
-    public static final String TOGGLE_GROUP_FIRST = "fist";
+    public static final String TOGGLE_GROUP_FIRST = "first";
 
     public static final String TOGGLE_GROUP_LAST = "last";
 
     public static void makeToggleGroup(Node parent, List<? extends Node> childen) {
-        toggleCssStyle(parent, TOGGLE_GROUP);
+        toggleCssStyle(parent, TOGGLE_GROUP,true);
         makeToogleGroup(childen);
     }
 

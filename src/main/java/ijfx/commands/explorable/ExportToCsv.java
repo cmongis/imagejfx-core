@@ -48,7 +48,7 @@ public class ExportToCsv extends AbstractExplorableDisplayCommand {
 
         }
 
-        String exportToCSVFromOwner = MetaDataSetUtils.exportToCSVFromOwner(items, ",", warning, MetaDataKeyPriority.OBJECT);
+        String exportToCSVFromOwner = MetaDataSetUtils.exportToCSVFromOwner(items, ",", true, MetaDataKeyPriority.OBJECT);
 
         FileUtils.writeFile(file, exportToCSVFromOwner.getBytes());
 

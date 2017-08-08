@@ -57,10 +57,7 @@ public class DefaultExplorableDisplay extends AbstractDisplay<ExplorableList> im
      public DefaultExplorableDisplay() {
         super(ExplorableList.class);
 
-        /*
-        selectableManager
-                .getChangeBuffer()
-                .subscribe(this::onItemSelectionChanged);*/
+       
     }
     
     
@@ -76,9 +73,7 @@ public class DefaultExplorableDisplay extends AbstractDisplay<ExplorableList> im
     
     @Override
     public boolean add(ExplorableList list) {
-
         displayedItems.addAll(list);
-        //selectableManager.setItem(list);
         return items.addAll(list);
     }
 
@@ -117,7 +112,7 @@ public class DefaultExplorableDisplay extends AbstractDisplay<ExplorableList> im
     public void setSelected(List<Explorable> explorable) {
 
         clearSelection();
-        
+        System.out.println(explorable.get(0).getMetaDataSet());
         selected.addAll(explorable);
 
     }
@@ -127,9 +122,6 @@ public class DefaultExplorableDisplay extends AbstractDisplay<ExplorableList> im
     }
 
     private void onItemSelectionChanged(List<? extends SelectionChange<Explorable>> list) {
-
-        
-        
         eventService.publishLater(new DisplayUpdatedEvent(this, DisplayUpdatedEvent.DisplayUpdateLevel.UPDATE));
 
     }
@@ -142,9 +134,6 @@ public class DefaultExplorableDisplay extends AbstractDisplay<ExplorableList> im
                return Integer.compare(getItems().indexOf(e1),getItems().indexOf(e2));
             });
         }
-            
-        
-        
     }
 
 }
