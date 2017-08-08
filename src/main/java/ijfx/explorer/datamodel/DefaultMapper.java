@@ -105,7 +105,7 @@ public final class DefaultMapper implements Mapper {
      * @param oldValue
      * @return
      */
-    public Object lookInsideMap(Object oldValue) {
+    private Object lookInsideMap(Object oldValue) {
         if (oldKey != null) {
 
             if (mapValue.containsKey(oldValue.toString())) {
