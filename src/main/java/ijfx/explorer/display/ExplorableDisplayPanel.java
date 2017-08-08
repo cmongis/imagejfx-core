@@ -230,9 +230,7 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
         } else {
             getDisplay().setFilter(exp -> newValue.test(exp));
         }
-        // no need to call for display update
-        // only the displayed item should be changed anyway
-        updateCurrentView();
+        getDisplay().update();
     }
 
     private Tab createTab(ExplorerView view) {

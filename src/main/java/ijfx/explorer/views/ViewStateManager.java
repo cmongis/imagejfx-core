@@ -60,7 +60,7 @@ public class ViewStateManager extends WeakHashMap<ExplorerView, ViewState>{
         // of the display, it has to set the items
        if(viewState.listContent != displayState.listContent) {
            
-           view.setItems(display.getItems());
+           view.setItems(display.getDisplayedItems());
            
        }
        // otherwise, if the content is the same but the elements
@@ -84,7 +84,7 @@ public class ViewStateManager extends WeakHashMap<ExplorerView, ViewState>{
     public class ViewState {
         
         int listContent = NOT_CALCULATED;
-        
+                
         int data = NOT_CALCULATED;
 
         int selection = NOT_CALCULATED;
