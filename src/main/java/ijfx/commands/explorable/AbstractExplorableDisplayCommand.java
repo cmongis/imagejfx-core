@@ -63,7 +63,7 @@ public abstract class AbstractExplorableDisplayCommand extends DynamicCommand im
     
     public void initApplyTo() {
         if(display == null) return;
-        if(display.getSelected().size() > 0) {
+        if(display.getSelectedItems().size() > 0) {
             applyTo = SELECTED_ITEMS;
         }
         
@@ -76,27 +76,13 @@ public abstract class AbstractExplorableDisplayCommand extends DynamicCommand im
     public void run() {
 
         List<Explorable> items;
-        /*
-        if (applyTo == SELECTED_ITEMS && display.getSelected().size() == 0) {
-
-            DialogPrompt.Result result = uiService.showDialog("No item is selected.\n\nDo you want to apply this action to all items ?", DialogPrompt.MessageType.QUESTION_MESSAGE, DialogPrompt.OptionType.YES_NO_OPTION);
-
-            if (result == DialogPrompt.Result.YES_OPTION) {
-                items = display.getItems();
-            } else {
-                items = new ArrayList<>();
-            }
-
-        } else {
-            items = display.getSelected();
-        }
-        */
+       
         
         if(applyTo == ALL_ITEMS) {
             items = display.getItems();
         }
         else if(applyTo == SELECTED_ITEMS) {
-            items = display.getSelected();
+            items = display.getSelectedItems();
         }
         else {
             items = display.getDisplayedItems();
