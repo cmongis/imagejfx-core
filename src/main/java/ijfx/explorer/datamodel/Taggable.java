@@ -35,5 +35,5 @@ public interface Taggable extends MetaDataOwner{
     Set<Tag> getTagList();
     
     boolean has(Tag tag);
-
+  
 }
