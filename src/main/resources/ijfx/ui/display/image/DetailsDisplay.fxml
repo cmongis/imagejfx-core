@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.TilePane?>
+<?import javafx.scene.layout.VBox?>
 
 <fx:root fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" type="BorderPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <center>
@@ -17,7 +18,12 @@
       <HBox fx:id="hBox" spacing="50.0" BorderPane.alignment="CENTER">
          <children>
             <Button fx:id="last" mnemonicParsing="false" text="&lt;-" />
-            <Label fx:id="label" text="Label" />
+            <VBox alignment="TOP_CENTER" prefHeight="0.0" prefWidth="100.0">
+               <children>
+                  <Label fx:id="title" text="Label" />
+                  <Label fx:id="subtitle" text="Label" />
+               </children>
+            </VBox>
             <Button fx:id="next" mnemonicParsing="false" text="-&gt;" />
          </children>
          <opaqueInsets>
