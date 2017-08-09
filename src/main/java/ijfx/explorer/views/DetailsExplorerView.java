@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataSet;
 import ijfx.explorer.datamodel.Explorable;
+import ijfx.explorer.widgets.ExplorerIconCell;
 import ijfx.ui.display.annotation.DefaultAnnotationDialog;
 import ijfx.ui.main.ImageJFX;
 import java.io.IOException;
@@ -70,6 +71,9 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
     
     @FXML
     private TilePane tilePane;
+    
+    @FXML
+    private BorderPane borderPane;
 
     @FXML
     private TableView<MetaData> tableView;
@@ -91,10 +95,20 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
     private List<? extends Explorable> selectedItems = new ArrayList<>();
 
     private static final String FXMLWAY = "/ijfx/ui/display/image/DetailsDisplay2.fxml";
+    
+    private ExplorerIconCell leftCell = new ExplorerIconCell();
+        
+    private ExplorerIconCell rightCell = new ExplorerIconCell();
 
     public DetailsExplorerView() {
 
         loadFXML();
+        
+        borderPane.setLeft(leftCell);
+        borderPane.setRight(rightCell);
+        
+        leftCell.onScreenProperty().setValue(Boolean.TRUE);
+        rightCell.onScreenProperty().setValue(Boolean.TRUE);
 
         last.setOnAction(this::onDisplayPreviousExplorable);
         next.setOnAction(this::onDisplayNextExplorable);
@@ -206,13 +220,27 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
     }
 
     private void setData(Explorable exp) {
+        
+        int index = itemList.indexOf(exp);
 
         title.setText(exp.getTitle());
         subtitle.setText(exp.getSubtitle());
-        tilePane.getChildren().clear();
+        
+        
+        if (index > 0 ){
+            leftCell.setItem(itemList.get(index-1));
+        }
+        
+        if (index< itemList.size()){
+            rightCell.setItem(itemList.get(index+1));
+        }
+        
         
         ImageView mon_imageview = new ImageView(exp.getImage());
+        
+        tilePane.getChildren().clear();
         tilePane.getChildren().add(mon_imageview);
+        //tilePane.
 
         tableView.getItems().clear();
 
