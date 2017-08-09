@@ -61,7 +61,10 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
     private Button next;
 
     @FXML
-    private Label label;
+    private Label title;
+    
+    @FXML
+    private Label subtitle;
 
     @FXML
     private TableView<MetaData> tableView;
@@ -199,7 +202,8 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
     private void setData(Explorable exp) {
 
-        label.setText(exp.getTitle());
+        title.setText(exp.getTitle());
+        subtitle.setText(exp.getSubtitle());
 
         tableView.getItems().clear();
 
