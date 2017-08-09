@@ -42,8 +42,10 @@ import javafx.scene.control.SelectionModel;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.TilePane;
 
 import org.scijava.plugin.Plugin;
 
@@ -65,6 +67,9 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
     
     @FXML
     private Label subtitle;
+    
+    @FXML
+    private TilePane tilePane;
 
     @FXML
     private TableView<MetaData> tableView;
@@ -85,7 +90,7 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
     private List<? extends Explorable> selectedItems = new ArrayList<>();
 
-    private static final String FXMLWAY = "/ijfx/ui/display/image/DetailsDisplay.fxml";
+    private static final String FXMLWAY = "/ijfx/ui/display/image/DetailsDisplay2.fxml";
 
     public DetailsExplorerView() {
 
@@ -204,6 +209,10 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
         title.setText(exp.getTitle());
         subtitle.setText(exp.getSubtitle());
+        tilePane.getChildren().clear();
+        
+        ImageView mon_imageview = new ImageView(exp.getImage());
+        tilePane.getChildren().add(mon_imageview);
 
         tableView.getItems().clear();
 
