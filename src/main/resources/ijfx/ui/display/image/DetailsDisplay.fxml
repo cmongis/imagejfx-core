@@ -12,7 +12,7 @@
 
 <fx:root fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" type="BorderPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <center>
-      <TilePane fx:id="tilePane" BorderPane.alignment="CENTER" />
+      <TilePane fx:id="tilePane" maxHeight="1200.0" maxWidth="1200.0" minHeight="-Infinity" minWidth="-Infinity" BorderPane.alignment="CENTER" />
    </center>
    <bottom>
       <HBox fx:id="hBox" spacing="50.0" BorderPane.alignment="CENTER">
