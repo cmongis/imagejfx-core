@@ -106,7 +106,7 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
 
         explorableList.clear();
         explorableList.addAll(items);
-        eventService.publish(new ExploredListChanged().setObject(items));
+        //eventService.publish(new ExploredListChanged().setObject(items));
         setFilter(lastFilter);
        
     }
@@ -147,7 +147,7 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
 
     protected void setFilteredItems(List<Explorable> filteredItems) {
         this.filteredList = filteredItems;
-        eventService.publishLater(new DisplayedListChanged().setObject(filteredItems));
+        //eventService.publishLater(new DisplayedListChanged().setObject(filteredItems));
     }
 
     @Override
@@ -164,13 +164,13 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     @Override
     public void select(Explorable explorable) {
         selectedItems.add(explorable);
-        publishSelectionEvent();
+       //publishSelectionEvent();
     }
     @Override
     public void setSelected(List<Explorable> selectedList) {
         selectedItems.clear();
         selectedItems.addAll(selectedList);
-        publishSelectionEvent();
+        //publishSelectionEvent();
     }
     
 
@@ -251,7 +251,7 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
             selectedItems.add(explorable);
         }
         
-        publishSelectionEvent();
+        //publishSelectionEvent();
     }
     
     
@@ -303,6 +303,10 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     
     public void publishSelectionEvent() {
         eventService.publish(new ExplorerSelectionChangedEvent());
+    }
+    
+    public void update() {
+       
     }
 
     

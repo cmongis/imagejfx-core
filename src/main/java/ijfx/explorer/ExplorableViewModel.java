@@ -59,4 +59,7 @@ public interface ExplorableViewModel {
     public void setSelected(List<Explorable> explorable);
     
     public List<Explorable> getItems();
+    
+    void update();
+    
 }
