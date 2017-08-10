@@ -47,6 +47,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.TilePane;
+import javafx.scene.layout.VBox;
 
 import org.scijava.plugin.Plugin;
 
@@ -58,31 +59,22 @@ import org.scijava.plugin.Plugin;
 public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
     @FXML
-    private Button last;
+    private Button last, next;
 
     @FXML
-    private Button next;
+    private Label title, subtitle;
 
     @FXML
-    private Label title;
-    
+    private ImageView imageView;
+
     @FXML
-    private Label subtitle;
-    
-    @FXML
-    private TilePane tilePane;
-    
-    @FXML
-    private BorderPane borderPane;
+    private VBox leftVBox, rightVBox;
 
     @FXML
     private TableView<MetaData> tableView;
 
     @FXML
-    private TableColumn<Explorable, String> keyColumn;
-
-    @FXML
-    private TableColumn<Explorable, String> valueColumn;
+    private TableColumn<Explorable, String> keyColumn, valueColumn;
 
     private List<? extends Explorable> itemList;
 
@@ -95,18 +87,22 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
     private List<? extends Explorable> selectedItems = new ArrayList<>();
 
     private static final String FXMLWAY = "/ijfx/ui/display/image/DetailsDisplay2.fxml";
-    
+
     private ExplorerIconCell leftCell = new ExplorerIconCell();
-        
+
     private ExplorerIconCell rightCell = new ExplorerIconCell();
+
+    private final static double WIDTH = 170.0;
+    private final static double HEIGHT = 270.0;
+    private final static double GAP = 5.0;
 
     public DetailsExplorerView() {
 
         loadFXML();
-        
-        borderPane.setLeft(leftCell);
-        borderPane.setRight(rightCell);
-        
+
+        leftVBox.getChildren().add(leftCell);
+        rightVBox.getChildren().add(rightCell);
+
         leftCell.onScreenProperty().setValue(Boolean.TRUE);
         rightCell.onScreenProperty().setValue(Boolean.TRUE);
 
@@ -123,18 +119,14 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
     @Override
     public Node getUIComponent() {
-        System.out.println("getUIComponent");
         return this;
     }
 
     @Override
     public void setItems(List<? extends Explorable> items) {
-        System.out.println("setItem");
 
         this.itemList = items;
 
-        ImageJFX.getLogger().info(String.format("Items List   " + itemList));
-        
         refresh();
     }
 
@@ -182,7 +174,6 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
     @Override
     public List<? extends Explorable> getItems() {
-        System.out.println("getItem");
 
         if (currentItem != null && !currentItemList.contains(currentItem)) {
             currentItemList.add(currentItem);
@@ -195,7 +186,6 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
     }
 
     private void loadFXML() {
-        System.out.println("loadFXML");
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource(FXMLWAY));
         loader.setRoot(this);
@@ -220,27 +210,21 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
     }
 
     private void setData(Explorable exp) {
-        
+
         int index = itemList.indexOf(exp);
 
         title.setText(exp.getTitle());
         subtitle.setText(exp.getSubtitle());
-        
-        
-        if (index > 0 ){
-            leftCell.setItem(itemList.get(index-1));
+
+        if (index > 0) {
+            leftCell.setItem(itemList.get(index - 1));
         }
-        
-        if (index< itemList.size()){
-            rightCell.setItem(itemList.get(index+1));
+
+        if (index < itemList.size()) {
+            rightCell.setItem(itemList.get(index + 1));
         }
-        
-        
-        ImageView mon_imageview = new ImageView(exp.getImage());
-        
-        tilePane.getChildren().clear();
-        tilePane.getChildren().add(mon_imageview);
-        //tilePane.
+
+        imageView.setImage(exp.getImage());
 
         tableView.getItems().clear();
 
@@ -267,9 +251,8 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
         if (selectedItems.size() > 1) {
             eventHandler.accept(new DataClickEvent<Explorable>(currentItem, null, true));
-        }
-        else {
-            
+        } else {
+
         }
     }
 
