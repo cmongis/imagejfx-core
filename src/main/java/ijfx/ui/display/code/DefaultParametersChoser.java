@@ -131,8 +131,8 @@ public class DefaultParametersChoser extends BorderPane implements Activity{
                 new SuppliedWidgetModel<>(File.class)
                 .setGetter(preferencies::getCustomCSS)
                 .setSetter(preferencies::setCustomCSS)
-                .setStyle(FileWidget.DIRECTORY_STYLE)
-                .setWidgetLabel("Choose style")
+                .setStyle(FileWidget.OPEN_STYLE)
+                .setWidgetLabel("Choose custom css")
         );
         
         

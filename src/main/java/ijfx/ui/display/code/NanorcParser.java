@@ -70,7 +70,6 @@ public class NanorcParser implements LanguageKeywords{
             this.nanorcFile = getClass().getResource(findFileLanguage(language)).getFile();
             nanoRcParseV2(this.nanorcFile);
             //computeComment();
-            System.out.println(this.keywordsTable);
         } catch (NullPointerException e) {
             System.out.println("No nanorc file for this language");
             this.keywordsTable = new Hashtable();

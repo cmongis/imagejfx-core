@@ -28,7 +28,6 @@ import javafx.scene.Node;
  */
 public interface ScriptEditorPreferencies extends IjfxService{
 
-    Node generatepreferenciesWidget();
 
     Preferencies getPreferencies();
 
