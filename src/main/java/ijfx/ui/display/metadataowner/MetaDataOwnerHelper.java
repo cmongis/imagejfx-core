@@ -34,8 +34,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectPropertyBase;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -84,11 +84,11 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
                         ListChangeListenerBuilder
                                 .<TablePosition>create()
                                 .onChange(event -> {
-                                    
-                                    if(event.getList().isEmpty()) {
+
+                                    if (event.getList().isEmpty()) {
                                         return;
                                     }
-                                    
+
                                     if (event.getList().get(0).getTableColumn() == null) {
                                         return;
                                     }
@@ -111,9 +111,6 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
         return prioritizer;
     }
 
-    
-    
-    
     public void addAdditionalColumn(TableColumn<T, ?> column) {
         this.additionalColumns.add(column);
         this.tableView.getColumns().add(column);
@@ -143,10 +140,11 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
                 .stream()
                 .map(i -> i.getMetaDataSet())
                 .collect(Collectors.toList());
-
-        updateColumns(MetaDataSetUtils.getAllPossibleKeys(mList).stream().filter(MetaData::canDisplay).sorted(prioritizer).collect(Collectors.toList()));
+        Platform.runLater(() -> {
+            updateColumns(MetaDataSetUtils.getAllPossibleKeys(mList).stream().filter(MetaData::canDisplay).sorted(prioritizer).collect(Collectors.toList()));
+        });
     }
-    
+
     protected void updateColumns() {
         setColumnsFromItems(tableView.getItems());
     }
@@ -235,14 +233,13 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
 
         return new ReadOnlyObjectWrapper<>(value);
     }*/
-
     protected ObservableValue<String> observableWrapper(TableColumn.CellDataFeatures<T, String> cell) {
 
         String key = cell.getTableColumn().getUserData().toString();
         //MetaData value = cell.getValue().getMetaDataSet().get(key)
 
         int hash = key.hashCode() + cell.getValue().hashCode();
-        
+
         WeakReference<RefreshableProperty<T>> property
                 = propertyList
                         .stream()
@@ -275,11 +272,9 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
     }
 
     public synchronized void refresh() {
-        
-        
+
         updateColumns();
-        
-        
+
         propertyList = propertyList
                 .stream()
                 .filter(property -> property.get() != null)
