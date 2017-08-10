@@ -56,8 +56,6 @@ public class DefaultExplorableDisplay extends AbstractDisplay<ExplorableList> im
     
      public DefaultExplorableDisplay() {
         super(ExplorableList.class);
-
-       
     }
     
     
