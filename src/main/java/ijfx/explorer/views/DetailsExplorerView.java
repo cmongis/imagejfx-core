@@ -21,7 +21,6 @@ package ijfx.explorer.views;
 
 import com.google.common.collect.Lists;
 import ijfx.core.metadata.MetaData;
-import ijfx.core.metadata.MetaDataSet;
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.widgets.ExplorerIconCell;
 import ijfx.ui.display.annotation.DefaultAnnotationDialog;
@@ -32,7 +31,6 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -45,8 +43,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 
 import org.scijava.plugin.Plugin;
