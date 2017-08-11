@@ -20,6 +20,7 @@
 package ijfx.core.segmentation;
 
 import ijfx.core.IjfxService;
+import java.util.List;
 
 /**
  *
@@ -31,4 +32,8 @@ public interface SegmentationService extends IjfxService {
     
      SegmentationTaskBuilder createSegmentation();
     
+     
+     void show(List<List<? extends SegmentedObject>> objects);
+     
+     
 }
