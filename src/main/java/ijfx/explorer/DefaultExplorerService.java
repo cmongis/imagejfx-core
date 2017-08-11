@@ -147,6 +147,7 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
 
     protected void setFilteredItems(List<Explorable> filteredItems) {
         this.filteredList = filteredItems;
+        update();
         //eventService.publishLater(new DisplayedListChanged().setObject(filteredItems));
     }
 
@@ -202,7 +203,7 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     private void onExplorableSelected(Explorable explorable, Boolean selected) {
       
        
-       if(selected) selectedItems.add(explorable);
+       if(selected) selecotedItems.add(explorable);
        else selectedItems.remove(explorable);
        
        
@@ -306,7 +307,7 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     }
     
     public void update() {
-       
+       eventService.publishLater(new DisplayedListChanged());
     }
 
     
