@@ -27,6 +27,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import mongis.utils.FXUtilities;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -37,35 +38,29 @@ import org.scijava.plugin.Plugin;
 public class MetaDataOwnerDisplayPanel extends AbstractFXDisplayPanel<MetaDataOwnerDisplay> {
 
     AnchorPane pane;
-    
+
     TableView<MetaDataOwner> tableView;
-    
+
     MetaDataOwnerHelper helper;
 
-    
-    
     public MetaDataOwnerDisplayPanel() {
         super(MetaDataOwnerDisplay.class);
     }
-    
-    
-    
+
     @Override
     public void pack() {
         pane = new AnchorPane();
         tableView = new TableView<>();
         pane.getChildren().add(tableView);
-        
-        
-        
+
+        FXUtilities.setAnchors(tableView, 10);
+
         helper = new MetaDataOwnerHelper(tableView);
-        
-       
+
     }
 
     @Override
     public void redoLayout() {
-        
 
     }
 
@@ -85,6 +80,4 @@ public class MetaDataOwnerDisplayPanel extends AbstractFXDisplayPanel<MetaDataOw
         return pane;
     }
 
-   
-    
 }
