@@ -33,6 +33,7 @@ import ijfx.core.utils.SciJavaUtils;
 import ijfx.explorer.core.Folder;
 import ijfx.explorer.core.FolderManagerService;
 import ijfx.explorer.datamodel.Explorable;
+import ijfx.explorer.datamodel.Taggable;
 import ijfx.explorer.display.DataClickEventListener;
 import ijfx.explorer.events.DisplayedListChanged;
 import ijfx.explorer.events.ExplorationModeChangeEvent;
@@ -57,6 +58,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -71,6 +73,7 @@ import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ListCell;
@@ -232,6 +235,12 @@ public class ExplorerActivity extends AnchorPane implements Activity {
                     .subscribe(this::updateTextFilter);
             
             
+            filterPanel.predicateProperty().addListener(this::onFilterChanged);
+            
+            ((Accordion)filterPanel.getPane())
+                    .prefWidthProperty()
+                    .bind(filterScrollPane.widthProperty().subtract(25));
+            
             viewStateManager.setTaggleFilterPanel(filterPanel);
        
     }
@@ -314,6 +323,10 @@ public class ExplorerActivity extends AnchorPane implements Activity {
         filterTextField.setText("");
     }
 
+    private void onFilterChanged(Observable obs, Predicate<Taggable> oldValue, Predicate<Taggable> newValue) {
+        explorerService.setFilter((Explorable exp)->newValue.test(exp));
+    }
+    
     public void updateFolderList() {
 
         CollectionsUtils.syncronizeContent(folderManagerService.getFolderList(), folderListView.getItems());
@@ -574,6 +587,7 @@ public class ExplorerActivity extends AnchorPane implements Activity {
     }
 
     protected void updateTextFilter(final String query) {
+        if(explorerService == null) return;
         if (filterTextField.getText() != null && !filterTextField.getText().equals("")) {
             explorerService.setOptionalFilter(m -> m.getMetaDataSet().get(MetaData.FILE_NAME).getStringValue().toLowerCase().contains(query.toLowerCase()));
         } else {
