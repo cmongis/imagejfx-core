@@ -22,6 +22,7 @@ package mongis.utils;
 
 import com.github.rjeschke.txtmark.Processor;
 import com.sun.javafx.tk.Toolkit;
+import ijfx.core.metadata.MetaDataOwner;
 import ijfx.ui.main.ImageJFX;
 import ijfx.ui.RichMessageDisplayer;
 import java.io.File;
@@ -49,10 +50,12 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
@@ -189,6 +192,19 @@ public class FXUtilities {
     public static final String BUTTON_PRIMARY_CLASS = "primary";
     public static final String BUTTON_SUCCESS_CLASS = "success";
     public static final String BUTTON_DANGER_CLASS = "danger";
+
+    public static void setAnchors(Node node, double top, double right, double bottom, double left) {
+
+        AnchorPane.setTopAnchor(node, top);
+        AnchorPane.setRightAnchor(node, right);
+        AnchorPane.setBottomAnchor(node, bottom);
+        AnchorPane.setLeftAnchor(node,left);
+        
+    }
+    
+    public static void setAnchors(Node node, double anchors) {
+        setAnchors(node,anchors, anchors, anchors, anchors);
+    }
 
     private static class ThrowableWrapper {
 
