@@ -41,7 +41,7 @@ public class DefaultSegmentationTask implements SegmentationOp {
     
     private Workflow workflow;
     
-    MetaDataSet set;
+    private MetaDataSet set;
     
     public DefaultSegmentationTask() {
          
@@ -74,6 +74,17 @@ public class DefaultSegmentationTask implements SegmentationOp {
         this.workflow = workflow;
         this.set = set;
     }
+
+    protected void setMeasuredDataset(Dataset measuredDataset) {
+        this.measuredDataset = measuredDataset;
+    }
+
+    protected void setInput(Dataset input) {
+        this.input = input;
+    }
+    
+    
+    
     
     public Dataset getMeasuredDataset() {
         return measuredDataset;
@@ -107,5 +118,11 @@ public class DefaultSegmentationTask implements SegmentationOp {
             set = new MetaDataSet();
         }
         return set;
+    }
+
+    @Override
+    public void dispose() {
+        input = null;
+        
     }
 }

@@ -19,9 +19,9 @@
  */
 package ijfx.core.segmentation;
 
-import ijfx.core.metadata.MetaDataOwner;
 import ijfx.core.metadata.MetaDataSet;
 import ijfx.core.workflow.Workflow;
+import ijfx.explorer.datamodel.Explorable;
 import net.imagej.Dataset;
 import net.imglib2.img.Img;
 import net.imglib2.type.logic.BitType;
@@ -30,21 +30,33 @@ import net.imglib2.type.logic.BitType;
  *
  * @author cyril
  */
-public interface SegmentationOp extends MetaDataOwner {
+public class ExplorableSegmentationTask extends DefaultSegmentationTask{
+
+    final Explorable explorable;
+
+    public ExplorableSegmentationTask(Explorable explorable, Workflow workflow) {
+      
+        
+        super(null, workflow, explorable.getMetaDataSet());
+        
+        this.explorable = explorable;
+        
+    }
+
+    public void load() {
+        setMeasuredDataset(explorable.getDataset());
+        setInput(getMeasuredDataset().duplicate());
+    }
     
-    void load();
+    public void dispose() {
+        
+        super.dispose();
+        setInput(null);
+        setMeasuredDataset(null);
+        explorable.dispose();
+        
+    }
     
-    
-    Dataset getMeasuredDataset();
-    
-    Dataset getInput();
-    
-    Img<BitType> getOutput();
-    
-    void setOutput(Img<BitType> mask);
-    
-    Workflow getWorkflow();
-    
-    public void dispose();
+  
     
 }
