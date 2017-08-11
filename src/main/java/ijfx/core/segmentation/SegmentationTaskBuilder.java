@@ -23,6 +23,8 @@ import com.google.common.collect.Lists;
 import ijfx.commands.binary.BinaryToOverlay;
 import ijfx.core.batch.item.BatchItemBuilder;
 import ijfx.core.image.ImagePlaneService;
+import ijfx.core.imagedb.ImageRecordService;
+import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataService;
 import ijfx.core.metadata.MetaDataSet;
 import ijfx.core.metadata.MetaDataSetType;
@@ -33,8 +35,11 @@ import ijfx.core.utils.DimensionUtils;
 import ijfx.core.workflow.DefaultWorkflow;
 import ijfx.core.workflow.Workflow;
 import ijfx.core.workflow.WorkflowStep;
+import ijfx.explorer.datamodel.Explorable;
 import ijfx.ui.main.ImageJFX;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -87,6 +92,9 @@ public class SegmentationTaskBuilder {
     @Parameter
     ImageDisplayService imageDisplayService;
 
+    @Parameter
+    ImageRecordService imageRecordService;
+
     List<SegmentationOp> opList = new ArrayList<>();
 
     public SegmentationTaskBuilder(Context context) {
@@ -106,28 +114,46 @@ public class SegmentationTaskBuilder {
     public SegmentationTaskBuilder addImageDisplay(ImageDisplay display) {
 
         Img<BitType> mask = overlayUtilsService.extractBinaryMask(display);
-        
+
         Dataset dataset = imageDisplayService.getActiveDataset(display);
+        
+        String source = imageDisplayService.getActiveDataset(display).getSource();
+        MetaDataSet set = null;
+                
+        if(source != null && new File(source).exists()) {
+           set = imageRecordService.getRecord(new File(imageDisplayService.getActiveDataset(display).getSource())).getMetaDataSet();
+            
+        }
+        
         
         if (mask == null) {
             Dataset maskDataset = datasetService.create((RandomAccessibleInterval) imagePlaneService.planeView(display));
-            
-            
-            
-            opList.add(new DefaultSegmentationTask(imageDisplayService.getActiveDataset(display), maskDataset, workflow, null));
-            
-            
-        }
-        else {
-            opList.add(new DefaultSegmentationTask(dataset, mask, workflow, null));
+
+            opList.add(new DefaultSegmentationTask(imageDisplayService.getActiveDataset(display), maskDataset, workflow, set));
+
+        } else {
+            opList.add(new DefaultSegmentationTask(dataset, mask, workflow, set));
         }
 
         return this;
     }
 
+    public SegmentationTaskBuilder add(Collection<? extends Explorable> list) {
+        
+       opList.addAll(list
+                .stream()
+                .map(exp->new ExplorableSegmentationTask(exp, workflow))
+                .collect(Collectors.toList()));
+       
+       
+       return this;
+        
+        
+    }
+    
     public SegmentationTaskBuilder addDataset(Dataset dataset, MetaDataSet set, boolean separatePlane) {
 
-        List<SegmentationOp> ops = new ArrayList<>();
+       List<SegmentationOp> ops = new ArrayList<>();
 
         if (separatePlane = false || dataset.numDimensions() == 2) {
             ops = Lists.newArrayList(new DefaultSegmentationTask(dataset, workflow, set));
@@ -175,14 +201,6 @@ public class SegmentationTaskBuilder {
         return build(this::measure);
     }
 
-    public SegmentationOpList<Img<BitType>> getAsMask() {
-        return build(this::getAsMask);
-    }
-
-    private Img<BitType> getAsMask(ProgressHandler handler, MetaDataSet set, Dataset original, Img<BitType> mask) {
-        return mask;
-    }
-
     private List<? extends SegmentedObject> measure(ProgressHandler handler, MetaDataSet set, Dataset original, Img<BitType> mask) {
 
         List<Overlay> overlays = Lists.newArrayList(BinaryToOverlay.transform(context, mask, true));
@@ -218,5 +236,29 @@ public class SegmentationTaskBuilder {
         }
 
         return objects;
+    }
+
+    public SegmentationOpList<Img<BitType>> getAsMask() {
+        return build(this::getAsMask);
+    }
+
+    private Img<BitType> getAsMask(ProgressHandler handler, MetaDataSet set, Dataset original, Img<BitType> mask) {
+        return mask;
+    }
+
+    private MetaDataSet count(ProgressHandler handler, MetaDataSet set, Dataset original, Img<BitType> mask) {
+
+        MetaDataSet finalSet = new MetaDataSet();
+
+        finalSet.merge(set);
+
+        set.put(MetaData.create(MetaData.COUNT, BinaryToOverlay.transform(context, original, true).length));
+
+        return finalSet;
+
+    }
+
+    public SegmentationOpList<MetaDataSet> count() {
+        return build(this::count);
     }
 }
