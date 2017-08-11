@@ -34,13 +34,21 @@ import javafx.scene.layout.AnchorPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.Paragraph;
+import org.fxmisc.richtext.model.PlainTextChange;
+import org.fxmisc.richtext.model.RichTextChange;
+import org.fxmisc.richtext.model.SimpleEditableStyledDocument;
 import org.fxmisc.richtext.model.StyledDocument;
 import org.fxmisc.richtext.model.StyledText;
+import org.fxmisc.richtext.model.TextChange;
 import org.reactfx.collection.LiveList;
 import org.scijava.command.CommandInfo;
 import org.scijava.script.ScriptLanguage;
 
 /**
+ * This class is the main class of the script editor, it's in charge to call all the elements to display code.
+ * Here is how it work: 
+ * The autocompletion is performed by the DefaultAutocompletion class which implement Autocompletion
+ * 
  *
  * @author florian
  */
@@ -89,10 +97,13 @@ public class DefaultTextArea extends AnchorPane{
         this.codeArea.richChanges()
                 .filter(ch -> !ch.getInserted().equals(ch.getRemoved())) // XXX
                 .subscribe(change -> {
+                   
                      if ("".equals(this.codeArea.getText().trim()) == false) {
                         this.codeArea.setStyleSpans(0, this.scriptHighlight.computeHighlighting(this.codeArea.getText()));
                         if (this.autocomplete) lauchAutocompletion();
-                        addVariableAutocompletion();   
+                        addVariableAutocompletion();  
+                        //change = change.mergeWith(autoIndent());
+                        
                         /*
                         if (change.getInserted().getText().equals("\n")) {
                             autoIndent();
@@ -102,7 +113,9 @@ public class DefaultTextArea extends AnchorPane{
                         */
                     }
                     
+                    
                 });
+                
         
         this.selectedTextProperty = new SimpleStringProperty();
         this.selectedTextProperty.bind(this.codeArea.selectedTextProperty());
@@ -115,11 +128,11 @@ public class DefaultTextArea extends AnchorPane{
         this.textProperty.bind(this.codeArea.textProperty());
         
         this.getChildren().add(this.codeArea);
-        this.autocompletion = new DefaultAutocompletion(this);
+        
     }
     
     public void setAutocompletion(List<CommandInfo> entriesList, ScriptLanguage language){
-        System.out.println(language.getLanguageName());
+        this.autocompletion = new DefaultAutocompletion(this);
         if (language.getLanguageName().equals("Python")){
             this.listProvider = new PythonAtocompletionListProvider(entriesList);
         }
@@ -186,7 +199,7 @@ public class DefaultTextArea extends AnchorPane{
         }
     }
     
-    public void autoIndent(){
+    public TextChange autoIndent(){
         int numberOfTab = 0;
         LiveList<Paragraph<Collection<String>, StyledText<Collection<String>>, Collection<String>>> paragraphs = this.codeArea.getParagraphs();
         Paragraph<Collection<String>, StyledText<Collection<String>>, Collection<String>> prevParagraph = paragraphs.get(this.codeArea.getCurrentParagraph());
@@ -204,8 +217,10 @@ public class DefaultTextArea extends AnchorPane{
             }
         }
         
-        
-        
+        StyledDocument newText = new SimpleEditableStyledDocument(this.indent, null);
+
+        TextChange textChange= new PlainTextChange(1,"",this.indent);
+        return textChange;
     }
     
     public void processIndent(){
@@ -219,6 +234,17 @@ public class DefaultTextArea extends AnchorPane{
             this.codeArea.insertText(this.codeArea.getCaretPosition()-1, "\t");
         }
         
+    }
+    
+    /**
+     * When a line start with four spaces, replace it by a tabulation (for python especialy)
+     */
+    public void convertTab (){
+        for (Paragraph<Collection<String>, StyledText<Collection<String>>, Collection<String>> paragraph : this.codeArea.getParagraphs()){
+            if (paragraph.getText().startsWith("    ")){
+                paragraph.getText().replaceFirst("    ", "\t");
+            }
+        }
     }
     
     public CodeArea getCodeArea() {
@@ -259,7 +285,7 @@ public class DefaultTextArea extends AnchorPane{
         this.codeArea.redo();
     }
     
-   public void changeCss (String path) throws NullPointerException{
+    public void changeCss (String path) throws NullPointerException{
        this.getStylesheets().clear();
        this.getStylesheets().add(path);
        
