@@ -81,14 +81,19 @@ public class DefaultTextArea extends AnchorPane{
         
     }
     
-    public void initCodeArea(){
+    private void initCodeArea(){
+        
+        if(codeArea != null) return;
         
         this.codeArea = new CodeArea();
+        this.codeArea.getStyleClass().add("code-area");
         this.codeArea.setParagraphGraphicFactory(LineNumberFactory.get(this.codeArea));
 
         this.codeArea.richChanges()
                 .filter(ch -> !ch.getInserted().equals(ch.getRemoved())) // XXX
                 .subscribe(change -> {
+                    
+                    if(codeArea == null) return;
                      if ("".equals(this.codeArea.getText().trim()) == false) {
                         this.codeArea.setStyleSpans(0, this.scriptHighlight.computeHighlighting(this.codeArea.getText()));
                         if (this.autocomplete) lauchAutocompletion();
