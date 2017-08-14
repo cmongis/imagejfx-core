@@ -24,6 +24,7 @@ import ijfx.core.metadata.MetaDataOwner;
 import ijfx.core.metadata.MetaDataSet;
 import ijfx.explorer.wrappers.MetaDataSetExplorerWrapper;
 import java.util.Collection;
+import java.util.stream.Collectors;
 import org.scijava.display.AbstractDisplay;
 import org.scijava.display.Display;
 import org.scijava.plugin.Plugin;
@@ -50,6 +51,10 @@ public class MetaDataOwnerDisplay extends AbstractDisplay<MetaDataOwnerList>{
     
     public boolean add(MetaDataSet set) {
        return add(new MetaDataSetExplorerWrapper(set));
+    }
+    
+    public boolean addSets(Collection<? extends MetaDataSet> setList) {
+        return add(setList.stream().map(MetaDataSetExplorerWrapper::new).collect(Collectors.toList()));
     }
     
     public boolean add(Collection< ? extends MetaDataOwner> list) {
