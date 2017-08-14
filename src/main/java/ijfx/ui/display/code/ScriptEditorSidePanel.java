@@ -101,10 +101,8 @@ public class ScriptEditorSidePanel extends BorderPane implements UiPlugin{
         currentPanel = new ToggleGroupValue<>();
         currentPanel.add(methodsButton, Panel.METHODS);
         currentPanel.add(servicesButton,Panel.SERVICES);
-        
         //initButtons();
-        currentPanel.valueProperty().addListener((obs,oldValue,newValue)->refresh(newValue));
-        currentPanel.setValue(Panel.METHODS);
+        
         listView.setCellFactory(this::createCell);        
         
     }
@@ -123,13 +121,14 @@ public class ScriptEditorSidePanel extends BorderPane implements UiPlugin{
                 .stream()
                 .filter(info->info.getPluginType().getSimpleName().contains("Service"))
                 .collect(Collectors.toList());// List<PluginInfo<?>>
-        
+        currentPanel.valueProperty().addListener((obs,oldValue,newValue)->refresh(newValue));
+        currentPanel.setValue(Panel.METHODS);
         this.listView.refresh();
         return this;
     }
     public void refresh(Panel panelDisplayed) {
         if (panelDisplayed.equals(Panel.METHODS)){
-            this.listView.getItems().addAll(methodsList);
+            this.listView.getItems().addAll(this.methodsList);
             this.listView.setOnMouseClicked(this::onActionMethod);
             this.searchField.setOnKeyPressed(this::onSearchMethod);
         }
