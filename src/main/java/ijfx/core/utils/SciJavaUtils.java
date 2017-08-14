@@ -47,4 +47,8 @@ public class SciJavaUtils {
     public static String getDescription(SciJavaPlugin plugin) {
         return plugin.getClass().getAnnotation(Plugin.class).description();
     }
+    
+    public static double getPriority(SciJavaPlugin plugin) {
+        return plugin.getClass().getAnnotation(Plugin.class).priority();
+    }
 }

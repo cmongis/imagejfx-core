@@ -111,6 +111,7 @@
     -fx-background-color:transparent;
 
 }
+
 .label.small, .label.smaller {
     -fx-font-size:0.8em;
 }
@@ -281,7 +282,7 @@ h1,h2,h3,h4 {
 .button.larger {
     -fx-padding:9px;
 }
-.button.smaller, .toggle-button.smaller, .menu-button.smaller, .smaller .button {
+.button.smaller, .toggle-button.smaller, .menu-button.smaller, .smaller .button, .smaller .menu-button {
     -fx-font-size:12px;
 }
 .toggle-group {
@@ -289,13 +290,12 @@ h1,h2,h3,h4 {
 }
 .toggle-group .toggle-button, .toggle-group .button, .toggle-group .menu-button {
     -fx-background-radius: 0.0 0 0 0.0;
-
 }
 
-.toggle-group .toggle-button.first, .toggle-group .button.first, .split-menu-button > .label {
+.toggle-group .toggle-button.first, .toggle-group .button.first, .split-menu-button > .label,.toggle-group > .first{
     -fx-background-radius: 1.0 0 0 1.0;
 }
-.toggle-group .toggle-button.last, .toggle-group .button.last, .toggle-group .menu-button.last, .split-menu-button > .arrow-button{
+.toggle-group .toggle-button.last, .toggle-group .button.last, .toggle-group .menu-button.last, .split-menu-button > .arrow-button,  .toggle-group > .last{
     -fx-background-radius: 0.0 1.0 1.0 0.0;
 }
 .toggle-group .toggle-button:hover {
@@ -592,6 +592,10 @@ h1,h2,h3,h4 {
 
 .menu-button.normal {
     -fx-padding:0.02em;
+}
+
+.menu-button.smaller,  .smaller .menu-button{
+    -fx-padding:1px 10 1 10;
 }
 
 .menu-item:focused{
@@ -2518,3 +2522,4 @@ Label.chart-legend-item{
 #consoleTextArea:focused .text, #consoleTextArea .text {
     -fx-text-color:white;
 }
+

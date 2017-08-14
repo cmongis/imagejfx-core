@@ -75,23 +75,26 @@ public class DefaultTextArea extends AnchorPane{
     }
     
     public DefaultTextArea(List<CommandInfo> entriesList, TextEditorPreferencies preferencies) {
-        
-        initCodeArea();
         setAutocompletion(entriesList, null);
         setPreferencies(preferencies);
+        initCodeArea();
+        
     }
     
     public DefaultTextArea(List<CommandInfo> entriesList, ScriptLanguage language, TextEditorPreferencies preferencies) {
-        
-        initCodeArea();
         setAutocompletion(entriesList, language);
         setPreferencies(preferencies);
+        initCodeArea();
+        
         
     }
     
-    public void initCodeArea(){
+    private void initCodeArea(){
+        
+        if(codeArea != null) return;
         
         this.codeArea = new CodeArea();
+        this.codeArea.getStyleClass().add("code-area");
         this.codeArea.setParagraphGraphicFactory(LineNumberFactory.get(this.codeArea));
 
         this.codeArea.richChanges()

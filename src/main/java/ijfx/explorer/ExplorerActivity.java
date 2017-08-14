@@ -33,6 +33,8 @@ import ijfx.core.utils.SciJavaUtils;
 import ijfx.explorer.core.Folder;
 import ijfx.explorer.core.FolderManagerService;
 import ijfx.explorer.datamodel.Explorable;
+import ijfx.explorer.datamodel.Taggable;
+import ijfx.explorer.display.DataClickEventListener;
 import ijfx.explorer.events.DisplayedListChanged;
 import ijfx.explorer.events.ExplorationModeChangeEvent;
 import ijfx.explorer.events.ExploredListChanged;
@@ -44,6 +46,7 @@ import ijfx.explorer.views.DataClickEvent;
 import ijfx.ui.filters.metadata.TaggableFilterPanel;
 import ijfx.explorer.views.ExplorerView;
 import ijfx.explorer.views.FolderListCellCtrl;
+import ijfx.explorer.views.ViewStateManager;
 import ijfx.ui.bindings.SideMenuBinding;
 
 import ijfx.ui.loading.LoadingScreenService;
@@ -55,6 +58,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -66,11 +70,10 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ListCell;
@@ -90,7 +93,6 @@ import mongis.utils.CallableTask;
 import mongis.utils.CallbackTask;
 import mongis.utils.FXUtilities;
 import mongis.utils.TextFileUtils;
-import mongis.utils.properties.ListChangeListenerBuilder;
 import org.reactfx.EventStreams;
 import org.scijava.event.EventHandler;
 import org.scijava.plugin.Parameter;
@@ -188,6 +190,11 @@ public class ExplorerActivity extends AnchorPane implements Activity {
 
     TaggableFilterPanel filterPanel = new TaggableFilterPanel();
 
+    public ViewStateManager viewStateManager = new ViewStateManager();
+    
+    
+    SideMenuBinding sideMenuBinding;
+    
     public ExplorerActivity() throws Exception {
        
             FXUtilities.injectFXML(this);
@@ -196,9 +203,9 @@ public class ExplorerActivity extends AnchorPane implements Activity {
             folderListView.setCellFactory(this::createFolderListCell);
             folderListView.getSelectionModel().selectedItemProperty().addListener(this::onFolderSelectionChanged);
 
-            SideMenuBinding binding = new SideMenuBinding(filterScrollPane);
+            sideMenuBinding = new SideMenuBinding(filterScrollPane);
 
-            binding.showProperty().bind(filterToggleButton.selectedProperty());
+            sideMenuBinding.showProperty().bind(filterToggleButton.selectedProperty());
             filterScrollPane.setTranslateX(-300);
 
             explorationModeToggleGroup = new ToggleGroup();
@@ -226,7 +233,15 @@ public class ExplorerActivity extends AnchorPane implements Activity {
             //fluentIconBinding(fileModeToggleButton,planeModeToggleButton,objectModeToggleButton);
             EventStreams.valuesOf(filterTextField.textProperty()).successionEnds(Duration.ofSeconds(1))
                     .subscribe(this::updateTextFilter);
-
+            
+            
+            filterPanel.predicateProperty().addListener(this::onFilterChanged);
+            
+            ((Accordion)filterPanel.getPane())
+                    .prefWidthProperty()
+                    .bind(filterScrollPane.widthProperty().subtract(25));
+            
+            viewStateManager.setTaggleFilterPanel(filterPanel);
        
     }
 
@@ -240,7 +255,7 @@ public class ExplorerActivity extends AnchorPane implements Activity {
             tabPane.getTabs().addAll(buttons);
 
             currentView.setValue(views.get(0));
-
+            
             // add the items to the menu in the background
             new CallableTask<List<MenuItem>>()
                     .setCallable(this::initMoreActionButton)
@@ -308,18 +323,20 @@ public class ExplorerActivity extends AnchorPane implements Activity {
         filterTextField.setText("");
     }
 
+    private void onFilterChanged(Observable obs, Predicate<Taggable> oldValue, Predicate<Taggable> newValue) {
+        explorerService.setFilter((Explorable exp)->newValue.test(exp));
+    }
+    
     public void updateFolderList() {
 
         CollectionsUtils.syncronizeContent(folderManagerService.getFolderList(), folderListView.getItems());
 
     }
 
-    private void updateExplorerView(ExplorerView view) {
-        this.view = view;
-        //contentBorderPane.setCenter(view.getNode());
-
-        view.setItems(explorerService.getDisplayedItems());
-    }
+    
+    
+    
+   
 
     public synchronized void updateUi(List<? extends Explorable> explorable) {
 
@@ -332,15 +349,22 @@ public class ExplorerActivity extends AnchorPane implements Activity {
             return;
         }
 
-        if (explorable != null) {
-            view.setItems(explorable);
-            view.setSelectedItem(explorerService.getSelectedItems());
-        }
+        updateCurrentView();
 
         if (folderListEmpty.getValue()) {
             hintService.displayHints("/ijfx/ui/explorer/ExplorerActivity-tutorial-1.hints.json", false);
         }
     }
+    
+    private void updateViewState() {
+        viewStateManager.updateState(explorerService);
+    }
+    
+    private void updateCurrentView() {
+        if(view == null || explorerService == null) return;
+        viewStateManager.checkView(view, explorerService);
+    }
+    
 
     // returns true if the folder is not displayed yet
     private boolean isNotDisplayed(Folder folder) {
@@ -374,12 +398,15 @@ public class ExplorerActivity extends AnchorPane implements Activity {
 
     @EventHandler
     public void onExploredItemListChanged(ExploredListChanged event) {
-        Platform.runLater(this::updateFilters);
+        updateViewState();
+        updateCurrentView();
         hintService.displayHints("/ijfx/ui/explorer/ExplorerActivity-tutorial-2.hints.json", false);
     }
 
     @EventHandler
     public void onDisplayedItemListChanged(DisplayedListChanged event) {
+        updateViewState();
+        updateCurrentView();
         Platform.runLater(() -> updateUi(event.getObject()));
 
     }
@@ -397,7 +424,8 @@ public class ExplorerActivity extends AnchorPane implements Activity {
 
     @EventHandler
     protected void onExplorerServiceSelectionChanged(ExplorerSelectionChangedEvent event) {
-        view.setSelectedItem(explorerService.getSelectedItems());
+        updateViewState();
+        updateCurrentView();
         Platform.runLater(this::updateButton);
     }
 
@@ -434,14 +462,6 @@ public class ExplorerActivity extends AnchorPane implements Activity {
         return cell;
     }
 
-    public void updateFilters() {
-
-       
-        filterPanel.updateFilters(null,explorerService.getItems());
-      
-
-    }
-
     /*
         View related functions
      */
@@ -452,7 +472,7 @@ public class ExplorerActivity extends AnchorPane implements Activity {
         tab.setGraphic(fxIconService.getIconAsNode(view));
         tab.setUserData(view);
 
-        view.setOnItemClicked(this::onViewClickEvent);
+        view.setOnItemClicked(new DataClickEventListener(explorerService));
 
         tab.setText(SciJavaUtils.getLabel(view));
 
@@ -461,7 +481,11 @@ public class ExplorerActivity extends AnchorPane implements Activity {
     }
 
     private void onViewModeChanged(Observable obs, ExplorerView oldValue, ExplorerView newValue) {
-        updateExplorerView(newValue);
+       
+            
+      view = newValue;
+      updateCurrentView();
+
     }
 
 
@@ -475,7 +499,7 @@ public class ExplorerActivity extends AnchorPane implements Activity {
 
     @FXML
     public void unselectAll() {
-        explorerService.selectItems(new ArrayList<>());
+        explorerService.setSelected(new ArrayList<>());
     }
 
     @FXML
@@ -563,6 +587,7 @@ public class ExplorerActivity extends AnchorPane implements Activity {
     }
 
     protected void updateTextFilter(final String query) {
+        if(explorerService == null) return;
         if (filterTextField.getText() != null && !filterTextField.getText().equals("")) {
             explorerService.setOptionalFilter(m -> m.getMetaDataSet().get(MetaData.FILE_NAME).getStringValue().toLowerCase().contains(query.toLowerCase()));
         } else {

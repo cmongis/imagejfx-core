@@ -130,6 +130,11 @@
 .lineno{
     -fx-background-color:#282E3A;
 }
+
+.code-area .caret{
+    -fx-stroke:white;
+}
+
 /*
 .text{
     -fx-prompt-text-fill : white;

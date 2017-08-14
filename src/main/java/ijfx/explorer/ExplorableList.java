@@ -41,12 +41,18 @@ public class ExplorableList extends ArrayList<Explorable>{
         addAll(list);
     }
     
+    
+   
+    
+    
     /**
-     * Return a hash that takes account the content of the metadata owner
+     * Return a hash that only takes account the which elements are
+     * in the list
      * @return hash
      */
-    public static int hash(Collection<? extends Explorable> list) {
+    public static int listHash(Collection<? extends Explorable> list) {
      if(list == null) return 0;
+        
         return list
                 .stream()
                 .mapToInt(exp->exp.hashCode())
@@ -56,15 +62,41 @@ public class ExplorableList extends ArrayList<Explorable>{
     
     }
     
-    public static int hashWithOrder(List<? extends Explorable> list) {
+   
+    
+    public static int listHashWithOrder(List<? extends Explorable> list) {
         
         if(list == null) return 0;
         
         return IntStream
+                
                 .range(0, list.size())
-                .map(i->list.get(i).hashCode() * i)
+                .map(i->list.get(i) == null ? (i+1) * -1 : list.get(i).hashCode() * (i+1))
                 .sum();
         
+    }
+    
+     public static int contentHash(Collection<? extends Explorable> list) {
+     if(list == null) return 0;
+        
+        return list
+                .stream()
+                .mapToInt(exp->exp.dataHashCode())
+                .parallel()
+                .sum();
+    
+    }
+    
+    
+    public static int contentHashWidthOrder(List<? extends Explorable> list) {
+        
+        if(list == null) return 0;
+        
+        return IntStream
+                
+                .range(0, list.size())
+                .map(i->list.get(i) == null ? (i+1) * -1 : list.get(i).hashCode() * (i+1))
+                .sum();  
     }
     
     

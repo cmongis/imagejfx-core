@@ -24,6 +24,7 @@ import ijfx.core.IjfxService;
 import ijfx.core.datamodel.Iconazable;
 import ijfx.core.imagedb.ImageRecord;
 import ijfx.explorer.datamodel.Explorable;
+import ijfx.explorer.views.ExplorerView;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,47 +37,22 @@ import mongis.utils.ProgressHandler;
  *
  * @author Cyril MONGIS, 2016
  */
-public interface ExplorerService extends IjfxService {
+public interface ExplorerService extends IjfxService,ExplorableViewModel {
 
-    List<Explorable> getItems();
 
-    void setItems(List<Explorable> items);
-
-    void applyFilter(Predicate<Explorable> predicate);
+    void setItems(List<? extends Explorable> items);
 
     void setOptionalFilter(Predicate<Explorable> addionnalFilter);
 
-    List<Explorable> getDisplayedItems();
-
-    List<? extends Explorable> getSelectedItems();
-
-    void selectItems(List<? extends Explorable> items);
-
-    
-    default void selectUntil(Explorable item) {
-        
-        List<Explorable> items = new ArrayList<>(getDisplayedItems());
-        List<Explorable> selected = new ArrayList<>(getSelectedItems());
-        selected.add(item);
-        // sorting item by appearance in item list
-        selected.sort((i1,i2)->Integer.compare(items.indexOf(i1),items.indexOf(i2)));
-        
-        int begin = items.indexOf(selected.get(0));
-        int end =  items.indexOf(selected.get(selected.size()-1))+1;
-        
-        selectItems(items.subList(begin, end));
-    }
-    
     default void selectItems(Explorable... items) {
-        selectItems(Lists.newArrayList(items));
+        setSelected(Lists.newArrayList(items));
     }
     
     default void selectAll() {
-        selectItems(getDisplayedItems());
+        setSelected(getDisplayedItems());
     }
 
-    void selectItem(Explorable explorable);
-
+  
     void toggleSelection(Explorable explorable);
 
     /**

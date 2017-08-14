@@ -23,6 +23,8 @@ import ijfx.explorer.ExplorableDisplay;
 import ijfx.explorer.datamodel.Explorable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.scijava.ItemVisibility;
 import org.scijava.command.DynamicCommand;
@@ -30,6 +32,7 @@ import org.scijava.command.InteractiveCommand;
 import org.scijava.plugin.Parameter;
 import org.scijava.ui.DialogPrompt;
 import org.scijava.ui.UIService;
+import org.scijava.widget.WidgetModel;
 
 /**
  *
@@ -40,36 +43,65 @@ public abstract class AbstractExplorableDisplayCommand extends DynamicCommand im
     @Parameter
     ExplorableDisplay display;
 
-    @Parameter(required = false,visibility = ItemVisibility.INVISIBLE)
-    boolean warning = true;
+    /*
+    @Parameter(required = false,visibility = ItemVisibility.INVISIBLE,autoFill = true)
+    boolean warning = true;*/
 
     @Parameter
     UIService uiService;
 
+    public static final String ALL_ITEMS = "All items";
+    
+    public static final String FILTERED_ITEMS = "Displayed items";
+    
+    public static final String SELECTED_ITEMS = "Selected items";
+    
+    
+    @Parameter(persist = false,label = "Apply to...",choices = {SELECTED_ITEMS,ALL_ITEMS,FILTERED_ITEMS},initializer = "initApplyTo")
+    private String applyTo = ALL_ITEMS;
+    
+    
+    public void initApplyTo() {
+        if(display == null) return;
+        if(display.getSelectedItems().size() > 0) {
+            applyTo = SELECTED_ITEMS;
+        }
+        
+        if(display.getDisplayedItems().size() != display.getItems().size()) {
+            applyTo = ALL_ITEMS;
+        }
+    }
+    
+    
     public void run() {
 
         List<Explorable> items;
-
-        if (display.getSelected().size() == 0 && warning) {
-
-            DialogPrompt.Result result = uiService.showDialog("Do you want to apply this action to all items ?", DialogPrompt.MessageType.QUESTION_MESSAGE, DialogPrompt.OptionType.YES_NO_OPTION);
-
-            if (result == DialogPrompt.Result.YES_OPTION) {
-                items = display.getItems();
-            } else {
-                items = new ArrayList<>();
-            }
-
-        } else {
-            items = display.getSelected();
+       
+        
+        if(applyTo == ALL_ITEMS) {
+            items = display.getItems();
         }
-        run(items);
+        else if(applyTo == SELECTED_ITEMS) {
+            items = display.getSelectedItems();
+        }
+        else {
+            items = display.getDisplayedItems();
+        }
+        
+        
+        try {
+            run(items);
+        } catch (Exception ex) {
+            cancel("Error when executing");
+            Logger.getLogger(AbstractExplorableDisplayCommand.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }
 
-    public abstract void run(List<? extends Explorable> items);
+    public abstract void run(List<? extends Explorable> items) throws Exception;
 
     protected void initWithPossibleKeys(String field) {
-
+        if(display == null) return;
         getInfo()
                 .getMutableInput(field, String.class)
                 .setChoices(new ArrayList<>(

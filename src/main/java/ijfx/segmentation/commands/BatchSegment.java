@@ -17,22 +17,47 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.explorer;
+package ijfx.segmentation.commands;
 
-import com.google.common.collect.Lists;
-import ijfx.explorer.datamodel.Explorable;
-import java.util.List;
-import java.util.function.Predicate;
-import org.scijava.display.Display;
+import ijfx.core.segmentation.SegmentationService;
+import ijfx.core.workflow.Workflow;
+import ijfx.explorer.ExplorableList;
+import ijfx.explorer.commands.AbstractExplorableListCommand;
+import org.scijava.plugin.Parameter;
 
 /**
  *
  * @author cyril
  */
-public interface ExplorableDisplay extends Display<ExplorableList>, ExplorableViewModel{
-    
-    
+public class BatchSegment extends AbstractExplorableListCommand{
 
+    @Parameter
+    SegmentationService segmentationService;
+    
+    @Parameter
+    Workflow workflow;
+    
+   
+    
+    @Override
+    public void run(ExplorableList t) {
+
+        
+        segmentationService
+                .createSegmentation()
+                .setWorkflow(workflow)
+                .add(t)
+                .measure()
+                .executeAsync()
+                .then(segmentationService::show);
+                
+        
+        
+        
+
+    }
+    
+    
     
     
 }

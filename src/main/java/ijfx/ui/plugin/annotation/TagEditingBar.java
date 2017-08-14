@@ -79,14 +79,14 @@ public class TagEditingBar implements UiPlugin {
     }
     
     public void addTag(Taggable taggable, Tag tag) {
-        List<Explorable> selected = display.getSelected();
+        List<Explorable> selected = display.getSelectedItems();
                 selected.forEach(explorable->explorable.addTag(tag));
         display.update();
     }
     
     public void removeTag(Taggable taggable, Tag tag) {
         display
-                .getSelected()
+                .getSelectedItems()
                 .forEach(explorable->explorable.deleteTag(tag));
         
         display.update();      
@@ -118,10 +118,10 @@ public class TagEditingBar implements UiPlugin {
         if(display == null) return;
         if(display.size() == 0) return;
         
-        taggablePane.setTaggle(display.getSelected().stream().findFirst().orElse(null));
+        taggablePane.setTaggle(display.getSelectedItems().stream().findFirst().orElse(null));
         
         taggablePane.setTags(display
-                .getSelected()
+                .getSelectedItems()
                 .stream()
                 .flatMap(explorable -> explorable.getTagList().stream())
                 .collect(Collectors.toSet()));

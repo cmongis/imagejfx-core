@@ -17,23 +17,31 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.segmentation;
-
-import ijfx.core.IjfxService;
-import java.util.List;
+package ijfx.core.metadata;
 
 /**
  *
  * @author cyril
  */
+public class DefaultMetaDataOwner implements MetaDataOwner{
 
-public interface SegmentationService extends IjfxService {
+    final MetaDataSet set;
+
+    public DefaultMetaDataOwner() {
+        this.set = new MetaDataSet();
+    }
+
     
     
-     SegmentationTaskBuilder createSegmentation();
+    public DefaultMetaDataOwner(MetaDataSet set) {
+        this.set = set;
+    }
     
-     
-     void show(List<List<? extends SegmentedObject>> objects);
-     
-     
+    
+    
+    @Override
+    public MetaDataSet getMetaDataSet() {
+        return set;
+    }
+    
 }

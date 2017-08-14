@@ -17,23 +17,23 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.segmentation;
+package ijfx.core.uiplugin;
 
-import ijfx.core.IjfxService;
-import java.util.List;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import java.util.function.Consumer;
 
 /**
  *
  * @author cyril
  */
-
-public interface SegmentationService extends IjfxService {
-    
-    
-     SegmentationTaskBuilder createSegmentation();
-    
-     
-     void show(List<List<? extends SegmentedObject>> objects);
-     
-     
+public interface LabelledAction<T> {
+        T data();
+        String label();
+        String description();
+        String iconPath();
+        Consumer<T> runner();
+        double priority();
+        
+        
+      
 }

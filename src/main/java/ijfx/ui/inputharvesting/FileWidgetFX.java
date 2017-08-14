@@ -23,6 +23,7 @@ import java.io.File;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import mongis.utils.FileButtonBinding;
+import org.apache.commons.lang3.ArrayUtils;
 import org.scijava.plugin.Plugin;
 import org.scijava.widget.FileWidget;
 import org.scijava.widget.InputWidget;
@@ -44,27 +45,75 @@ public class FileWidgetFX extends AbstractFXInputWidget<File> implements FileWid
         super.set(model);
         binding = new FileButtonBinding(button);
 
-        if (model.isStyle(DIRECTORY_STYLE)) {
-            binding.setMode(FileButtonBinding.Mode.FOLDER);
-        } else if (model.isStyle(SAVE_STYLE)) {
-            binding.setMode(FileButtonBinding.Mode.SAVE);
-        } else {
-            binding.setMode(FileButtonBinding.Mode.OPEN);
+        FileButtonBinding.Mode mode = null;
+
+        // first we try to get the adaptive widget style
+        // to get the type and configure the file dialog
+        if (model.getItem() != null) {
+
+            String style = model.getItem().getWidgetStyle();
+
+            if (style != null) {
+                style = style.toLowerCase();
+                if (style.contains("open")) {
+                    
+                    
+                    mode = FileButtonBinding.Mode.OPEN;
+                    binding.setExtensions(extractExtensions(style));
+                } else if (style.contains("save")) {
+                    mode = FileButtonBinding.Mode.SAVE;
+                    binding.setExtensions(extractExtensions(style));
+                }
+            }
+
         }
-        
+
+        // otherwise
+        if (mode == null) {
+            if (model.isStyle(DIRECTORY_STYLE)) {
+                mode = FileButtonBinding.Mode.FOLDER;
+            } else if (model.isStyle(SAVE_STYLE)) {
+                mode = FileButtonBinding.Mode.SAVE;
+            } else {
+                mode = FileButtonBinding.Mode.OPEN;
+
+            }
+        }
+        binding.setMode(mode);
+
         bindProperty(binding.fileProperty());
 
     }
-    
-    
 
     @Override
     public Node getComponent() {
-       return button;
-    }
-    
-    public boolean supports(WidgetModel model) {
-        return super.supports(model) && model.isType(File.class);
+        return button;
     }
 
+    public boolean supports(WidgetModel model) {
+        return super.supports(model) && model.isType(File.class
+        );
+    }
+
+    /**
+     * Extract the list of extensions from a widget style string
+     * e.g. save csv png --> ['csv','png']
+     * @param style
+     * @return an array containing the list of exention
+     */
+    private String[] extractExtensions(String style) {
+        
+        if(style.contains(" ") == false) {
+            return new String[0];
+        }
+        
+        String[] exts = style.split(" ");
+        exts = ArrayUtils.subarray(exts, 1, exts.length);
+        
+        return exts;
+        
+        
+    }
+    
+    
 }

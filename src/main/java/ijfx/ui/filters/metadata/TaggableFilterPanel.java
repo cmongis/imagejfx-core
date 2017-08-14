@@ -24,6 +24,7 @@ import ijfx.core.timer.Timer;
 import ijfx.core.timer.TimerService;
 import ijfx.explorer.datamodel.Taggable;
 import ijfx.ui.filter.DataFilter;
+import ijfx.ui.loading.LoadingScreenService;
 import ijfx.ui.widgets.FilterPanel;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -47,6 +48,9 @@ public class TaggableFilterPanel extends FilterPanel<Taggable> {
     @Parameter
     TimerService timerService;
 
+    @Parameter
+    LoadingScreenService loadingScreenService;
+    
     Timer timer;
 
     public void updateFilters(ProgressHandler handler, List<? extends Taggable> items) {
@@ -55,7 +59,8 @@ public class TaggableFilterPanel extends FilterPanel<Taggable> {
                 .setInput(items)
                 .callback(this::generateFilters)
                 .then(this::setFilters)
-                .start();
+                .start()
+                .submit(loadingScreenService);
     }
 
     /**

@@ -19,55 +19,39 @@
  */
 package ijfx.commands.explorable;
 
-import ijfx.core.metadata.MetaData;
-import ijfx.core.metadata.MetaDataSet;
+import com.google.common.io.Files;
+import ijfx.core.metadata.MetaDataKeyPriority;
+import ijfx.core.metadata.MetaDataSetUtils;
 import ijfx.explorer.datamodel.Explorable;
+import java.io.File;
 import java.util.List;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.FileUtils;
 
 /**
  *
  * @author cyril
  */
-@Plugin(type = ExplorableDisplayCommand.class, label="Set to value...",iconPath="fa:edit",initializer = "init")
-public class SetValue extends AbstractExplorableDisplayCommand{
+@Plugin(type= ExplorableDisplayCommand.class, iconPath="fa:save",label = "Export to csv",priority = 0.1)
+public class ExportToCsv extends AbstractExplorableDisplayCommand {
 
-    @Parameter(label = "Key to set")
-    String key;
-    
-    @Parameter(label = "Value")
-    String value;
-    
-    
+    @Parameter(label = "Export file", style = "save csv")
+    File file;
+
     @Override
-    public void run(List<? extends Explorable> items) {
-        
-        
-       items
-               .stream()
-               .forEach(this::setValue);
-       
-       
-       display.update();
+    public void run(List<? extends Explorable> items) throws Exception {
+
+        if (Files.getFileExtension(file.getName()).equals("csv") == false) {
+
+            file = new File(file.getParentFile(), file.getName() + ".csv");
+
+        }
+
+        String exportToCSVFromOwner = MetaDataSetUtils.exportToCSVFromOwner(items, ",", true, MetaDataKeyPriority.OBJECT);
+
+        FileUtils.writeFile(file, exportToCSVFromOwner.getBytes());
 
     }
-    
-    public void setValue(Explorable exp) {
-        MetaDataSet set = exp.getMetaDataSet();
-        if(set.containsKey(key) == false) {
-            set.put(MetaData.create(key, value));
-        }
-        else {
-            set.get(key).setValue(value);
-        }
-    }
-    
-    public void init() {
-        
-        
-        initWithPossibleKeys("key");
-        super.initApplyTo();
-    }
-    
+
 }

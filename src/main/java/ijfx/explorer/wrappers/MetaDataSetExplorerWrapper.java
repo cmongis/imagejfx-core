@@ -34,8 +34,8 @@ import net.imagej.Dataset;
  */
 public class MetaDataSetExplorerWrapper extends AbstractExplorable implements Explorable{
 
-    private static Image bieber = new Image("http://www.billboard.com/files/styles/article_main_image/public/media/justin-bieber-shirtless-presents-onstage-at-fashion-rocks-2014-billboard-650.jpg");
-    
+    //private static Image bieber = new Image("http://www.billboard.com/files/styles/article_main_image/public/media/justin-bieber-shirtless-presents-onstage-at-fashion-rocks-2014-billboard-650.jpg");
+    private static Image bieber = new Image ("https://s-media-cache-ak0.pinimg.com/736x/54/89/62/548962fbaa73ce1fd27b8d3f76793e27--funny-horses-funny-animals.jpg");
     private final MetaDataSet wrappedMetaDataSet;
     
     
@@ -59,10 +59,10 @@ public class MetaDataSetExplorerWrapper extends AbstractExplorable implements Ex
         
         if(value == null) {
             return getMetaDataSet()
-                    .getOrDefault(MetaData.NAME,MetaData.create(MetaData.NAME, "Embarassing..."))
+                    .getOrDefault(MetaData.NAME,MetaData.create(MetaData.NAME, "I'm special"))
                     .getStringValue();
         }
-        return "Embarassing...";
+        return "I'm special";
     }
 
     @Override

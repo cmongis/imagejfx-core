@@ -27,6 +27,7 @@ import ijfx.ui.utils.ObjectCache;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
@@ -67,10 +68,18 @@ public class PaneCellController<T extends Object> {
     // private PaneCellControllerFX<T> updater;
     ObjectCache<PaneCell<T>> cache;
 
+    private Consumer<Task> taskDisplayer;
+    
     public PaneCellController(Pane pane) {
         setPane(pane);
     }
 
+    public void setTaskDisplayer(Consumer<Task> taskDisplayer) {
+        this.taskDisplayer = taskDisplayer;
+    }
+
+    
+    
     /**
      * Set the pane that should be updated by the controller
      *
@@ -103,12 +112,13 @@ public class PaneCellController<T extends Object> {
                 .setInput(items)
                 .callback(this::retrieveCells)
                 .then(this::onCellRetrieved)
-                .start();
+                .start()
+                .submit(taskDisplayer);
     }
 
     private List<PaneCell<T>> retrieveCells(ProgressHandler handler, List<T> items) {
         return cache
-                .getFragmented(handler, items.size(), 10, this::onFragmentRetrieved);
+                .getFragmented(handler, items.size(), 20, this::onFragmentRetrieved);
     }
 
     /**

@@ -19,6 +19,7 @@
  */
 package ijfx.core.segmentation;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataSet;
 import ijfx.core.metadata.MetaDataSetType;
@@ -41,6 +42,8 @@ public class DefaultSegmentedObject extends AbstractTaggable implements Segmente
     RandomAccessibleInterval<? extends RealType> source;
     private Overlay overlay;
     private MetaDataSet set = new MetaDataSet();
+    
+    
     @Parameter
     private OverlayStatService overlayStatsService;
     
@@ -57,8 +60,22 @@ public class DefaultSegmentedObject extends AbstractTaggable implements Segmente
         set.putGeneric(MetaData.NAME, overlay.getName());
     }
     
+    @Override
+    @Getter(name = "overlay")
+    public Overlay getOverlay() {
+        return overlay;
+    }
+    
+    
+    @Setter(name = "metadataset")
     public void setMetaDataSet(MetaDataSet set) {
         this.set = set;
+    }
+    
+    
+    @Override
+    public MetaDataSet getMetaDataSet() {
+        return set;
     }
     
     public DefaultSegmentedObject(Overlay overlay, OverlayStatistics overlayStatistics) {
@@ -70,6 +87,7 @@ public class DefaultSegmentedObject extends AbstractTaggable implements Segmente
         
     }
 
+    @JsonIgnore
     public RandomAccessibleInterval<? extends RealType> getPixelSource() {
         return source;
     }
@@ -81,16 +99,9 @@ public class DefaultSegmentedObject extends AbstractTaggable implements Segmente
         return this;
     }
 
-    @Override
-    @Getter(name = "overlay")
-    public Overlay getOverlay() {
-        return overlay;
-    }
+  
     
    
 
-    @Override
-    public MetaDataSet getMetaDataSet() {
-        return set;
-    }
+   
 }

@@ -19,6 +19,11 @@
  */
 package ijfx.core.segmentation;
 
+import ijfx.explorer.ExplorableList;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.scijava.display.DisplayService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
@@ -30,10 +35,35 @@ import org.scijava.service.Service;
 @Plugin(type = Service.class)
 public class DefaultSegmentationService extends AbstractService implements SegmentationService {
 
+    @Parameter
+    DisplayService displayService;
+    
+    
     @Override
     public SegmentationTaskBuilder createSegmentation() {
         return new SegmentationTaskBuilder(getContext());
     }
+
+    @Override
+    public void show(List<List<? extends SegmentedObject>> objects) {
+        
+        ExplorableList result = new ExplorableList();
+        
+        List<SegmentedObjectExplorerWrapper> collect = objects
+                .stream()
+                .flatMap(list->list.stream())
+                .map(SegmentedObjectExplorerWrapper::new)
+                .peek(getContext()::inject)
+                .collect(Collectors.toList());
+
+        result.addAll(collect);
+        
+        
+        displayService.createDisplay("Segmentation result", result);
+    }
+    
+    
+    
 
    
     

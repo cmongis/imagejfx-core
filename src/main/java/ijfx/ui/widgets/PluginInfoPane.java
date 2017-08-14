@@ -41,9 +41,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
 import mongis.utils.CallbackTask;
-import org.scijava.module.ModuleInfo;
-import org.scijava.module.ModuleItem;
+import org.apache.commons.lang3.ArrayUtils;
 import org.scijava.plugin.PluginInfo;
+import org.scijava.service.AbstractService;
 
 /**
  *
@@ -192,6 +192,7 @@ public class PluginInfoPane extends BorderPane{
 
         return Lists.newArrayList(items)
                 .parallelStream()
+                .filter(item->!ArrayUtils.contains(AbstractService.class.getMethods(),item))
                 .map(this::convert)
                 .collect(Collectors.toList());
 
@@ -211,7 +212,7 @@ public class PluginInfoPane extends BorderPane{
         return Maps.newHashMap(ImmutableMap.<String, Object>builder()
                 .put("className", getClassName(module.getClassName()))
                 .put("class", module.getClassName())
-                .put("methods", toList(module.getClass().getMethods()))
+                .put("methods", toList(module.getPluginClass().getMethods()))
                 .build());
     }
 

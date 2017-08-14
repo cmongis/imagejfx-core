@@ -107,8 +107,11 @@ public class LinearSegmentationExecutor<T> implements SegmentationExecutor<T> {
                 op.load();
                 Dataset applyWorkflow = batchService.applyWorkflow(segmentationHandler, op.getInput().duplicate(), op.getWorkflow());
                 op.setOutput((Img<BitType>) applyWorkflow.getImgPlus().getImg());
+                
             }
-            return this.resultHandler.handle(completionHandler,op.getMetaDataSet(),op.getMeasuredDataset(),op.getOutput());
+            T result = this.resultHandler.handle(completionHandler,op.getMetaDataSet(),op.getMeasuredDataset(),op.getOutput());
+            op.dispose();
+            return result;
         };
         
     }

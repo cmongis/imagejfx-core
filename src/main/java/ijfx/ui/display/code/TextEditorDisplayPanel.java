@@ -64,10 +64,8 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     @Parameter
     private UiCommandService uiCommandSrv;
 
-    ScriptDisplay display;
     private DefaultTextArea textArea;
 
-    @FXML
     private BorderPane root;
 
     @FXML
@@ -96,15 +94,15 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
 
             root = loader.getRoot();
 
-            textArea = new DefaultTextArea(commandService.getCommands(), display.getLanguage(), (TextEditorPreferencies) scriptEditorPreferenciesService.getPreferencies());
+            DefaultTextArea textArea = getTextArea();
 
             root.setCenter(textArea);
 
         
-            textArea.setBottomAnchor(this.textArea.getCodeArea(), 15d);
-            textArea.setTopAnchor(this.textArea.getCodeArea(), 0d);
-            textArea.setLeftAnchor(this.textArea.getCodeArea(), 0d);
-            textArea.setRightAnchor(this.textArea.getCodeArea(), 0d);
+            textArea.setBottomAnchor(textArea.getCodeArea(), 15d);
+            textArea.setTopAnchor(textArea.getCodeArea(), 0d);
+            textArea.setLeftAnchor(textArea.getCodeArea(), 0d);
+            textArea.setRightAnchor(textArea.getCodeArea(), 0d);
 
             initLanguageComboBox();
 
@@ -114,47 +112,56 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
             throw new IllegalArgumentException("Damn it Ted !");
         }
     }
+    
+    protected DefaultTextArea getTextArea() {
+        
+        if(textArea == null) {
+            textArea = new DefaultTextArea(commandService.getCommands(), getDisplay().getLanguage(), (TextEditorPreferencies) scriptEditorPreferenciesService.getPreferencies());
+            
+        }
+        return textArea;
+        
+    }
 
     protected void initLanguageComboBox() {
         languageComboBox.getItems().addAll(scriptService.getLanguages());
         languageComboBox.valueProperty().addListener(this::onLanguageChanged);
-        languageComboBox.setValue(display.getLanguage());
+        languageComboBox.setValue(getDisplay().getLanguage());
     }
 
     protected void onLanguageChanged(Observable obs, ScriptLanguage oldValue, ScriptLanguage newValue) {
 
-        display.setLanguage(newValue);
-        textArea.initLanguage(newValue);
+        getDisplay().setLanguage(newValue);
+        getTextArea().initLanguage(newValue);
 
     }
 
     @FXML
     public void runScript() {
-        display.runScript();
+        getDisplay().runScript();
     }
 
     public void initCode() {
         Platform.runLater(() -> {
-            this.textArea.setText(display.get(0).getCode());
-            display.textProperty().bind(this.textArea.textProperty());
-            display.selectedTextProperty().bind(this.textArea.selectedTextProperty());
-            display.selectionProperty().bind(this.textArea.selectionProperty());
+            getTextArea().setText(getDisplay().get(0).getCode());
+            getDisplay().textProperty().bind(this.textArea.textProperty());
+            getDisplay().selectedTextProperty().bind(this.textArea.selectedTextProperty());
+            getDisplay().selectionProperty().bind(this.textArea.selectionProperty());
         });
 
     }
 
     public void setCode(String code) {
-        display.get(0).setCode(code);
+        getDisplay().get(0).setCode(code);
     }
 
     public String getCode() {
-        return display.get(0).getCode();
+        return getDisplay().get(0).getCode();
     }
 
     @Override
     public void view(DisplayWindow window, ScriptDisplay display) {
-        this.display = display;
-
+        super.view(window, display);
     }
 
     @Override

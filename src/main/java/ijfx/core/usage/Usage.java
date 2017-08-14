@@ -145,6 +145,11 @@ public class Usage {
         });
     }
     
+     public static void listenButton(Button button, UsageLocation location) {
+         listenButton(button, location,button.getText());
+        
+    }
+    
     public static void listenClick(MenuItem item, UsageLocation location) {
         item.addEventHandler(ActionEvent.ANY, event->{
             factory()

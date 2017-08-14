@@ -22,6 +22,7 @@ package mongis.utils;
 
 import com.github.rjeschke.txtmark.Processor;
 import com.sun.javafx.tk.Toolkit;
+import ijfx.core.metadata.MetaDataOwner;
 import ijfx.ui.main.ImageJFX;
 import ijfx.ui.RichMessageDisplayer;
 import java.io.File;
@@ -41,6 +42,7 @@ import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.css.Styleable;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -48,10 +50,12 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
@@ -188,6 +192,19 @@ public class FXUtilities {
     public static final String BUTTON_PRIMARY_CLASS = "primary";
     public static final String BUTTON_SUCCESS_CLASS = "success";
     public static final String BUTTON_DANGER_CLASS = "danger";
+
+    public static void setAnchors(Node node, double top, double right, double bottom, double left) {
+
+        AnchorPane.setTopAnchor(node, top);
+        AnchorPane.setRightAnchor(node, right);
+        AnchorPane.setBottomAnchor(node, bottom);
+        AnchorPane.setLeftAnchor(node,left);
+        
+    }
+    
+    public static void setAnchors(Node node, double anchors) {
+        setAnchors(node,anchors, anchors, anchors, anchors);
+    }
 
     private static class ThrowableWrapper {
 
@@ -544,6 +561,30 @@ public class FXUtilities {
             while (node.getStyleClass().contains(styleClass)) {
                 node.getStyleClass().remove(styleClass);
             }
+        }
+
+    }
+
+    public static final String TOGGLE_GROUP = "toggle-group";
+
+    public static final String TOGGLE_GROUP_FIRST = "first";
+
+    public static final String TOGGLE_GROUP_LAST = "last";
+
+    public static void makeToggleGroup(Node parent, List<? extends Node> childen) {
+        toggleCssStyle(parent, TOGGLE_GROUP,true);
+        makeToogleGroup(childen);
+    }
+
+    public static void makeToogleGroup(List<? extends Node> children) {
+
+        children
+                .forEach(child -> toggleCssStyle(child, TOGGLE_GROUP_FIRST, false));
+        children
+                .forEach(child -> toggleCssStyle(child, TOGGLE_GROUP_LAST, false));
+        if (children.size() >= 2) {
+            toggleCssStyle(children.get(0), TOGGLE_GROUP_FIRST, true);
+            toggleCssStyle(children.get(children.size() - 1), TOGGLE_GROUP_LAST, true);
         }
 
     }

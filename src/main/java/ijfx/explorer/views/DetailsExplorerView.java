@@ -19,8 +19,11 @@
  */
 package ijfx.explorer.views;
 
+import com.google.common.collect.Lists;
+import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataSet;
 import ijfx.explorer.datamodel.Explorable;
+import ijfx.explorer.widgets.ExplorerIconCell;
 import ijfx.ui.display.annotation.DefaultAnnotationDialog;
 import ijfx.ui.main.ImageJFX;
 import java.io.IOException;
@@ -30,8 +33,6 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -42,11 +43,10 @@ import javafx.scene.control.SelectionModel;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import mongis.utils.panecell.PaneCellController;
-import net.imagej.Dataset;
+import javafx.scene.layout.TilePane;
 
 import org.scijava.plugin.Plugin;
 
@@ -54,14 +54,8 @@ import org.scijava.plugin.Plugin;
  *
  * @author sapho
  */
-@Plugin(type = ExplorerView.class, priority = 0.7, label = "Summary", iconPath = "fa:table")
+@Plugin(type = ExplorerView.class, priority = 0.7, label = "Details", iconPath = "fa:table")
 public class DetailsExplorerView extends BorderPane implements ExplorerView {
-
-    @FXML
-    private BorderPane borderPane;
-
-    @FXML
-    private HBox hBox;
 
     @FXML
     private Button last;
@@ -70,104 +64,101 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
     private Button next;
 
     @FXML
-    private Label label;
-
-    @FXML
-    private TableView<Explorable> tableView;
+    private Label title;
     
     @FXML
+    private Label subtitle;
+    
+    @FXML
+    private TilePane tilePane;
+    
+    @FXML
+    private BorderPane borderPane;
+
+    @FXML
+    private TableView<MetaData> tableView;
+
+    @FXML
     private TableColumn<Explorable, String> keyColumn;
+
     @FXML
     private TableColumn<Explorable, String> valueColumn;
 
-    private List<? extends Explorable> itemsList;
+    private List<? extends Explorable> itemList;
 
     private Explorable currentItem;
 
-    private Consumer<DataClickEvent<Explorable>> onItemClicked;
-    
-    private List<Explorable> currentItemList = new ArrayList<>();
+    private final List<Explorable> currentItemList = new ArrayList<>();
 
-    private static String FXMLWAY = "/ijfx/ui/display/image/DetailsDisplay.fxml";
+    private Consumer<DataClickEvent<Explorable>> eventHandler;
+
+    private List<? extends Explorable> selectedItems = new ArrayList<>();
+
+    private static final String FXMLWAY = "/ijfx/ui/display/image/DetailsDisplay2.fxml";
+    
+    private ExplorerIconCell leftCell = new ExplorerIconCell();
+        
+    private ExplorerIconCell rightCell = new ExplorerIconCell();
 
     public DetailsExplorerView() {
 
         loadFXML();
+        
+        borderPane.setLeft(leftCell);
+        borderPane.setRight(rightCell);
+        
+        leftCell.onScreenProperty().setValue(Boolean.TRUE);
+        rightCell.onScreenProperty().setValue(Boolean.TRUE);
 
-        last.setOnAction(this::onDisplayLastExplorable);
+        last.setOnAction(this::onDisplayPreviousExplorable);
         next.setOnAction(this::onDisplayNextExplorable);
 
-    }
+        keyColumn.setCellValueFactory(
+                new PropertyValueFactory<>("name"));
 
-    private void loadFXML() {
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource(FXMLWAY));
-        loader.setRoot(this);
-        loader.setController(this);
-        try {
-            loader.load();
-
-        } catch (IOException ex) {
-            Logger.getLogger(DefaultAnnotationDialog.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        System.out.println("prout");
+        valueColumn.setCellValueFactory(
+                new PropertyValueFactory<>("value"));
 
     }
 
     @Override
     public Node getUIComponent() {
+        System.out.println("getUIComponent");
         return this;
     }
 
     @Override
     public void setItems(List<? extends Explorable> items) {
-        this.itemsList = items;
+        System.out.println("setItem");
 
-        System.out.println("itemlist " + itemsList);
+        this.itemList = items;
 
-        //labelDisplay(currentItem);
-
-        /*
-        for (Explorable exp : items){
-            if (getSelectedItems().contains(exp)){
-                this.currentItem= exp;
-                labelDisplay(exp);
-            }
-        }
-        /*
-        items.stream().forEach(this::labelDisplay);
-
-        this.itemsList = items;
-
-        currentItem = items;.
-         */
+        ImageJFX.getLogger().info(String.format("Items List   " + itemList));
+        
+        refresh();
     }
 
     @Override
     public List<? extends Explorable> getSelectedItems() {
-        if (!currentItemList.contains(currentItem)){
-            currentItemList.add(currentItem);
+        if (currentItem == null) {
+            return new ArrayList<>();
+        } else {
+            return Lists.newArrayList(currentItem);
         }
-        
-        labelDisplay(currentItem);
-        
-
-        return currentItemList;
     }
 
     @Override
-    public void setSelectedItem(List<? extends Explorable> items) {
-        System.out.println("itemlist current" + itemsList);
-        for (Explorable exp : items) {
-            this.currentItem = exp;
+    public void setSelectedItem(List<? extends Explorable> itemList) {
+
+        selectedItems = itemList;
+
+        setData(selectedItems.get(0));
+
+        if (selectedItems.size() > 0) {
+            setCurrentItem(itemList.get(0));
         }
-        labelDisplay(currentItem);
-        tableView.getItems().add(currentItem);
-        MetaDataSet truc = currentItem.getMetaDataSet();
-        truc.
-        keyColumn.setCellValueFactory();
-        //tableView.
-        
+        ImageJFX.getLogger().info(String.format("Current item  " + currentItem));
+        refresh();
 
     }
 
@@ -179,50 +170,121 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
     @Override
     public void refresh() {
-
+        checkSelection();
     }
 
     @Override
     public void setOnItemClicked(Consumer<DataClickEvent<Explorable>> eventHandler) {
-    }
 
-    public void onDisplayLastExplorable(ActionEvent event) {
-
-    }
-
-    public void onDisplayNextExplorable(ActionEvent event) {
-
-    }
-
-    public void labelDisplay(Explorable exp) {
-        ImageJFX.getLogger().info(String.format("Label display nous y passons enfin "));
-        Platform.runLater(() -> {
-            System.out.println("TableDisplay ? ");
-            //Dataset set = exp.getDataset();
-            label.setText(exp.getTitle());
-        });
+        this.eventHandler = eventHandler;
 
     }
 
     @Override
     public List<? extends Explorable> getItems() {
-        if (!currentItemList.contains(currentItem)){
+        System.out.println("getItem");
+
+        if (currentItem != null && !currentItemList.contains(currentItem)) {
             currentItemList.add(currentItem);
+            return currentItemList;
+
+        } else {
+            ImageJFX.getLogger().info(String.format("Current item is null : nothing selected"));
+            return null;
         }
-        return currentItemList;
+    }
+
+    private void loadFXML() {
+        System.out.println("loadFXML");
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource(FXMLWAY));
+        loader.setRoot(this);
+        loader.setController(this);
+        try {
+            loader.load();
+
+        } catch (IOException ex) {
+            Logger.getLogger(DefaultAnnotationDialog.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    public void setCurrentItem(Explorable explorable) {
+
+        currentItem = explorable;
+
     }
 
     public Explorable getDisplayedItem() {
         return currentItem;
     }
 
-    private class truc<T extends Object> {
+    private void setData(Explorable exp) {
+        
+        int index = itemList.indexOf(exp);
 
-        private List<T> currentItems;
+        title.setText(exp.getTitle());
+        subtitle.setText(exp.getSubtitle());
+        
+        
+        if (index > 0 ){
+            leftCell.setItem(itemList.get(index-1));
+        }
+        
+        if (index< itemList.size()){
+            rightCell.setItem(itemList.get(index+1));
+        }
+        
+        
+        ImageView mon_imageview = new ImageView(exp.getImage());
+        
+        tilePane.getChildren().clear();
+        tilePane.getChildren().add(mon_imageview);
+        //tilePane.
 
-        private ObservableList<T> selectedItems = FXCollections.observableArrayList();
+        tableView.getItems().clear();
 
-        public truc() {
+        exp.getMetaDataSet().entrySet().stream().forEach((entry) -> {
+            tableView.getItems().add(entry.getValue());
+        });
+
+    }
+
+    public void onDisplayLastExplorable(ActionEvent event) {
+        int index = itemList.indexOf(currentItem);
+        if (index > 0) {
+            currentItem = itemList.get(index - 1);
+            currentItemList.clear();
+            currentItemList.add(currentItem);
+        }
+    }
+
+    private void checkSelection() {
+
+        if (selectedItems.size() == 0 && itemList.size() > 0) {
+            eventHandler.accept(new DataClickEvent<Explorable>(itemList.get(0), null, false));
+        }
+
+        if (selectedItems.size() > 1) {
+            eventHandler.accept(new DataClickEvent<Explorable>(currentItem, null, true));
+        }
+        else {
+            
+        }
+    }
+
+    private void onDisplayPreviousExplorable(ActionEvent event) {
+        int index = itemList.indexOf(currentItem) - 1;
+        if (index >= 0 && index + 1 < itemList.size()) {
+            eventHandler.accept(new DataClickEvent<Explorable>(itemList.get(index), null, false));
+        }
+
+    }
+
+    private void onDisplayNextExplorable(ActionEvent event) {
+        int index = itemList.indexOf(currentItem) + 1;
+        if (index >= 0 && index + 1 < itemList.size()) {
+            eventHandler.accept(new DataClickEvent<Explorable>(itemList.get(index), null, false));
         }
 
     }
