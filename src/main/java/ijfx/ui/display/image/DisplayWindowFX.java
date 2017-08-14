@@ -143,6 +143,7 @@ public class DisplayWindowFX extends Window implements DisplayWindow {
     }
 
     void putInFront(Event event) {
+        if(displayService.getActiveDisplay() != getDisplay())
         displayService.setActiveDisplay(getDisplay());
     }
     
