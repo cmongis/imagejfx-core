@@ -6,43 +6,16 @@
  <small>{{class}}</small>
  <br><br>
  {%for method in methods%}
-<h4>{{method.name}}</h4>
-
-<h5>inputs</h5>
-
-<table class="table">
-    <tr>
-        <th>name</th>
-        <th>type</th>
-    </tr>
-    
-   {%for input in method.inputs%} 
-    <tr>
-        <td>{{input.name}}</td>
-        <td>{{input.type}}</td>
-        
-    </tr>
-    
-  {% endfor %}  
-</table>
-<br><br>
-<h5>outputs</h5>
-
-<table class="table">
-    <tr>
-       
-        <th>type</th>
-    </tr>
-    
-    <tr>
-        <td>{{method.output}}</td>
-        
-    </tr>
-    
-</table>
-<br><br>
+ {{method.output}}
+ <b>{{method.name}}</b>
+   
+        (
+        {%for input in method.inputs%} 
+        <b>{{input.type}}</b>,
+        {% endfor %}    
+        )
+        <br><br>
 {% endfor %}
-<br><br>
 <!--
 <h4>Outputs</h4>
 
