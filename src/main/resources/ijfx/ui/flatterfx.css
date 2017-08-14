@@ -111,6 +111,7 @@
     -fx-background-color:transparent;
 
 }
+
 .label.small, .label.smaller {
     -fx-font-size:0.8em;
 }
@@ -2521,3 +2522,4 @@ Label.chart-legend-item{
 #consoleTextArea:focused .text, #consoleTextArea .text {
     -fx-text-color:white;
 }
+
