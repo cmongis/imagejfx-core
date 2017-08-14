@@ -66,7 +66,6 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
 
     private DefaultTextArea textArea;
 
-    @FXML
     private BorderPane root;
 
     @FXML
