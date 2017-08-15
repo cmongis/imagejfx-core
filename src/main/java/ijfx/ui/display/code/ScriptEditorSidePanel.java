@@ -36,15 +36,15 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import jfxtras.scene.control.ToggleGroupValue;
 import org.scijava.Context;
 import org.scijava.command.Command;
 import org.scijava.command.CommandInfo;
@@ -77,13 +77,17 @@ public class ScriptEditorSidePanel extends BorderPane implements UiPlugin{
     @FXML
     TabPane tabPane;
     @FXML
-    Button methodsButton;
+    ToggleButton methodsButton;
     @FXML
-    Button servicesButton;
+    ToggleButton servicesButton;
+    
+    ToggleGroupValue<Panel> currentPanel;
     
     private List<CommandInfo> methodsList;
     private List<PluginInfo<?>> servicesList;
     private Panel panelDisplayed = Panel.METHODS;
+    
+    
     
     public ScriptEditorSidePanel() throws IOException {
         
@@ -94,7 +98,13 @@ public class ScriptEditorSidePanel extends BorderPane implements UiPlugin{
         loader.load(); // generation de la fenetre.
         
         
-        initButtons();
+        currentPanel = new ToggleGroupValue<>();
+        currentPanel.add(methodsButton, Panel.METHODS);
+        currentPanel.add(servicesButton,Panel.SERVICES);
+        
+        //initButtons();
+        currentPanel.valueProperty().addListener((obs,oldValue,newValue)->refresh(newValue));
+        currentPanel.setValue(Panel.METHODS);
         listView.setCellFactory(this::createCell);        
         
     }
@@ -107,8 +117,17 @@ public class ScriptEditorSidePanel extends BorderPane implements UiPlugin{
         
         this.listView.getItems().clear();
         this.methodsList = commandService.getCommands();
-        this.servicesList = context.getPluginIndex().getAll();// List<PluginInfo<?>>
+        this.servicesList = context
+                .getPluginIndex()
+                .getAll()
+                .stream()
+                .filter(info->info.getPluginType().getSimpleName().contains("Service"))
+                .collect(Collectors.toList());// List<PluginInfo<?>>
         
+        this.listView.refresh();
+        return this;
+    }
+    public void refresh(Panel panelDisplayed) {
         if (panelDisplayed.equals(Panel.METHODS)){
             this.listView.getItems().addAll(methodsList);
             this.listView.setOnMouseClicked(this::onActionMethod);
@@ -121,11 +140,11 @@ public class ScriptEditorSidePanel extends BorderPane implements UiPlugin{
         }
         
         
-        this.listView.refresh();
+       
         
-	return this;
     }
     
+    /*
     public void initButtons(){
         methodsButton.setOnAction((event) -> {
                 switchPanel(Panel.METHODS);
@@ -134,6 +153,7 @@ public class ScriptEditorSidePanel extends BorderPane implements UiPlugin{
                 switchPanel(Panel.SERVICES);
             });
     }
+    */
     
     public void onActionMethod( MouseEvent event){
         ModuleInfoPane moduleInfoPane = new ModuleInfoPane();

@@ -17,23 +17,27 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.segmentation;
+package ijfx.commands.script;
 
-import ijfx.core.IjfxService;
-import java.util.List;
+import ijfx.ui.display.code.ScriptDisplay;
+import org.scijava.command.ContextCommand;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  *
- * @author cyril
+ * @author florian
  */
+@Plugin(type = ScriptCommand.class,menuPath = "Edit > Convert Spaces to tabs")
 
-public interface SegmentationService extends IjfxService {
+public class CnvertSpaceToTab extends ContextCommand implements ScriptCommand {
+     @Parameter
+    ScriptDisplay scriptDisplay;
     
-    
-     SegmentationTaskBuilder createSegmentation();
-    
-     
-     void show(List<List<? extends SegmentedObject>> objects);
-     
-     
+    @Override
+    public void run() {
+        
+        scriptDisplay.convertSpaceToTab();
+        
+    }
 }

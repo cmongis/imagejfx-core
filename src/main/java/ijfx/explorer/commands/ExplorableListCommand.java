@@ -17,23 +17,16 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.segmentation;
+package ijfx.explorer.commands;
 
-import ijfx.core.IjfxService;
-import java.util.List;
+import ijfx.core.uiplugin.UiCommand;
+import ijfx.explorer.ExplorableList;
+import org.scijava.command.Command;
 
 /**
  *
  * @author cyril
  */
-
-public interface SegmentationService extends IjfxService {
+public interface ExplorableListCommand extends Command,UiCommand<ExplorableList>{
     
-    
-     SegmentationTaskBuilder createSegmentation();
-    
-     
-     void show(List<List<? extends SegmentedObject>> objects);
-     
-     
 }

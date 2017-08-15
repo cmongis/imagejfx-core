@@ -52,6 +52,8 @@ public class MetaDataSetDisplayService extends AbstractService implements IjfxSe
 
         MetaDataOwnerDisplay display = (MetaDataOwnerDisplay) displayService.createDisplay(new MetaDataOwnerList());
         
+        display.setName(name);
+        
         displayService.getDisplays().add(display);
         
         
@@ -95,6 +97,12 @@ public class MetaDataSetDisplayService extends AbstractService implements IjfxSe
         display.add(owners);
         
         display.update();
+        
+    }
+    
+    public void addMetaDataSetToDisplay(String displayName, List<MetaDataSet> list) {
+        
+        addMetaDataSetToDisplay(list.stream().map(DefaultMetaDataOwner::new).collect(Collectors.toList()), displayName);
         
     }
     

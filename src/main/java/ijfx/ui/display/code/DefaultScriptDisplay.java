@@ -218,4 +218,17 @@ public class DefaultScriptDisplay extends AbstractDisplay<Script> implements Scr
 
     }
 
+    @Override
+    public void convertSpaceToTab() {
+         for (String line : get(0).getCode().split("\n")){
+            if (line.startsWith("    ")){
+                String newLine = line.replaceFirst("    ", "\t");
+                String newText = get(0).getCode().replace(line, newLine);
+                editText(newText);
+                System.out.println("prout");
+            }
+        }
+         
+    }
+
 }

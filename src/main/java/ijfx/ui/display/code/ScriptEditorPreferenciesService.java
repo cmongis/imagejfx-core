@@ -74,67 +74,6 @@ public class ScriptEditorPreferenciesService extends AbstractService implements 
         return this.preferencies;
     }
     
-    @Override
-    public Node generatepreferenciesWidget(){
-        VBox preferenciesBox = new VBox();
-        preferenciesBox.setPadding(new Insets(20));
-        HBox themeBox = new HBox();
-        themeBox.setPadding(new Insets(20));
-        HBox autocompletionBox = new HBox();
-        autocompletionBox.setPadding(new Insets(20));
-        HBox sidePanelBox =new HBox();
-        sidePanelBox.setPadding(new Insets(20));
-        HBox cssBox =new HBox();
-        cssBox.setPadding(new Insets(20));
-        InputWidget<?,Node> booleanWidget = (InputWidget<?, Node>) widgetService.create(
-                new SuppliedWidgetModel<>(Boolean.class)
-                .setGetter(preferencies::isAutocompletion)
-                .setSetter(preferencies::setAutocompletion)
-                       
-                .setWidgetLabel("Enable autocompletion")
-                
-        );
-        
-        InputWidget<?,Node> sidePanelActivator = (InputWidget<?, Node>) widgetService.create(
-                new SuppliedWidgetModel<>(Boolean.class)
-                .setGetter(preferencies::isAutocompletion)
-                .setSetter(preferencies::setAutocompletion)
-                .setWidgetLabel("Enable side panel")
-                
-        );
-        InputWidget<?,Node> setStyleWidget = (InputWidget<?, Node>) widgetService.create(
-                new SuppliedWidgetModel<>(String.class)
-                .setGetter(preferencies::getTheme)
-                .setSetter(preferencies::setTheme)
-                .setStyle(ChoiceWidget.LIST_BOX_STYLE)
-                .setWidgetLabel("Choose style")
-                
-        );
-        InputWidget<?,Node> customCssWidget = (InputWidget<?, Node>) widgetService.create(
-                new SuppliedWidgetModel<>(File.class)
-                .setGetter(preferencies::getCustomCSS)
-                .setSetter(preferencies::setCustomCSS)
-                .setStyle(FileWidget.DIRECTORY_STYLE)
-                .setWidgetLabel("Choose style")
-        );
-        AbstractWidgetModel styleWidget = (AbstractWidgetModel) setStyleWidget.get();
-        for (String theme : preferencies.getListOfTheme()){
-            styleWidget.addChoice(theme);
-        }
-        setStyleWidget = (InputWidget<?, Node>) widgetService.create(styleWidget);
-        booleanWidget.refreshWidget();
-        sidePanelActivator.refreshWidget();
-        setStyleWidget.refreshWidget();
-        customCssWidget.refreshWidget();
-        
-        themeBox.getChildren().addAll(new Label("Select a default theme  "), setStyleWidget.getComponent() );
-        autocompletionBox.getChildren().addAll(new Label("Enable autocompletion  "), booleanWidget.getComponent() );
-        sidePanelBox.getChildren().addAll(new Label("Enable side panel  "), sidePanelActivator.getComponent());
-        cssBox.getChildren().addAll(new Label("Select a custom css file  "), customCssWidget.getComponent());
-        
-        preferenciesBox.getChildren().addAll(themeBox,autocompletionBox, sidePanelBox, cssBox);
-        return preferenciesBox;
-    }
    
     @Override
     public void initialize(){

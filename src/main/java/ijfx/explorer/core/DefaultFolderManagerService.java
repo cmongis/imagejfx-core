@@ -230,6 +230,7 @@ public class DefaultFolderManagerService extends AbstractService implements Fold
             logger.info("Items are null");
         }
         explorerService.setItems(items);
+        explorerService.update();
     }
 
     private Integer fetchMoreStatistics(ProgressHandler progress, List<Explorable> explorableList) {

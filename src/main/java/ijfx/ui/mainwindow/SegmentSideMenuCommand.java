@@ -17,13 +17,15 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.explorer.commands;
+package ijfx.ui.mainwindow;
 
-import ijfx.core.metadata.MetaData;
-import ijfx.explorer.ExplorableDisplay;
-import org.scijava.ItemIO;
-import org.scijava.command.Command;
-import org.scijava.command.ContextCommand;
+import ijfx.core.activity.ActivityService;
+import ijfx.core.mainwindow.MainWindow;
+import ijfx.core.uicontext.UiContextService;
+import ijfx.core.uiplugin.AbstractUiCommand;
+import ijfx.core.uiplugin.UiCommand;
+import ijfx.ui.UiContexts;
+import ijfx.ui.activity.DisplayContainer;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
@@ -31,28 +33,32 @@ import org.scijava.plugin.Plugin;
  *
  * @author cyril
  */
-@Plugin(type = Command.class,menuPath = "Plugins > Explorer > Add metadata")
-public class AddMetaData extends ContextCommand{
+@Plugin(type = UiCommand.class,label = "Segment",iconPath="fa:dot_circle",priority = 0.6)
+public class SegmentSideMenuCommand extends AbstractUiCommand<MainWindow>{
 
-    @Parameter(type = ItemIO.BOTH)
-    ExplorableDisplay display;
     
-    @Parameter(label = "Key")
-    String key;
+    @Parameter
+    UiContextService contextService;
     
-    @Parameter(label = "Value")
-    String value;
+    @Parameter
+    ActivityService activityService;
     
-    
-    @Override
-    public void run() {
-        display
-                .getSelectedItems()
-                .forEach(item->{
-            item.getMetaDataSet().put(key, MetaData.create(key, value));
-        });
+    public SegmentSideMenuCommand() {
+        super(MainWindow.class);
     }
-    
-    
+
+   
+
+    @Override
+    public void run(MainWindow t) {
+        
+        contextService.enter(UiContexts.SEGMENT);
+        contextService.update();
+        
+        activityService.open(DisplayContainer.class);
+        
+       
+        
+    }
     
 }

@@ -21,6 +21,8 @@ package ijfx.segmentation.ui;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import ijfx.core.metadata.MetaDataSet;
+import ijfx.core.metadata.MetaDataSetDisplayService;
 import ijfx.core.segmentation.DisplayedSegmentedObject;
 import ijfx.core.segmentation.SegmentationService;
 import ijfx.core.segmentation.SegmentedObject;
@@ -29,6 +31,7 @@ import ijfx.core.uicontext.UiContextService;
 import ijfx.core.uiplugin.Localization;
 import ijfx.explorer.ExplorableList;
 import ijfx.explorer.datamodel.Explorable;
+import ijfx.explorer.datamodel.MetaDataOwnerDisplay;
 import ijfx.segmentation.core.InteractiveSegmentation;
 import ijfx.segmentation.core.InteractiveSegmentationPanel;
 import ijfx.segmentation.core.InteractiveSegmentationService;
@@ -98,6 +101,9 @@ public class DefaultInteractiveSegmentationPanel extends BorderPane implements U
     @Parameter
     private UIService uiService;
 
+    @Parameter
+    private MetaDataSetDisplayService metadataDisplaySrv;
+    
     private Runnable onRefresh;
 
     /*
@@ -265,7 +271,18 @@ public class DefaultInteractiveSegmentationPanel extends BorderPane implements U
 
     @FXML
     public void countObjects() {
-
+        
+        segmentationService
+                .createSegmentation()
+                .addImageDisplay(imageDisplayService.getActiveImageDisplay())
+                .count()
+                .executeAsync()
+                .then(this::displayCount);
+        
+    }
+    
+    private void displayCount(List<MetaDataSet> metaDataSet) {
+        metadataDisplaySrv.addMetaDataSetToDisplay("Object count", metaDataSet);
     }
 
     private boolean isExplorer() {

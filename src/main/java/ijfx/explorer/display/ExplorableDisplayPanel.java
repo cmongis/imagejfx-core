@@ -26,13 +26,12 @@ import ijfx.core.icon.FXIconService;
 import ijfx.core.timer.TimerService;
 import ijfx.core.utils.SciJavaUtils;
 import ijfx.explorer.ExplorableDisplay;
-import ijfx.explorer.ExplorableList;
+import ijfx.explorer.ExplorableViewModel;
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.datamodel.Taggable;
 import ijfx.explorer.views.DataClickEvent;
 import ijfx.explorer.views.ExplorerView;
 import ijfx.explorer.views.ViewStateManager;
-import ijfx.explorer.views.ViewStateManager.ViewState;
 import ijfx.ui.bindings.SideMenuBinding;
 import ijfx.ui.display.image.AbstractFXDisplayPanel;
 import ijfx.ui.display.image.FXDisplayPanel;
@@ -41,6 +40,7 @@ import ijfx.ui.main.ImageJFX;
 import ijfx.ui.metadata.MetaDataBar;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -56,7 +56,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
-import mongis.utils.ProgressHandler;
 import org.scijava.Context;
 import org.scijava.command.CommandService;
 import org.scijava.event.EventService;
@@ -107,6 +106,8 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
     
     ViewStateManager viewStateManager;
  
+    DataClickEventListener eventListener;
+    
     int filterDataHash = -10;
     
     private final double leftBorder = 36;
@@ -185,6 +186,10 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
 
         viewStateManager = new ViewStateManager();
         
+        viewStateManager.setTaggleFilterPanel(filterPanel);
+        
+        
+        
         redoLayout();
         redraw();
 
@@ -230,9 +235,7 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
         } else {
             getDisplay().setFilter(exp -> newValue.test(exp));
         }
-        // no need to call for display update
-        // only the displayed item should be changed anyway
-        updateCurrentView();
+        getDisplay().update();
     }
 
     private Tab createTab(ExplorerView view) {
@@ -244,37 +247,18 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
         tab.setText(SciJavaUtils.getLabel(view));
         tab.setGraphic(fxIconService.getIconAsNode(view));
 
-        view.setOnItemClicked(this::onItemClicked);
+        if(eventListener == null) {
+            eventListener = new DataClickEventListener(getDisplay());
+        }
+        
+        view.setOnItemClicked(eventListener);
 
         return tab;
 
     }
-
-    public void onItemClicked(DataClickEvent<Explorable> event) {
-
-        int selected = getDisplay().getSelected().size();
-
-        Explorable clicked = event.getData();
-
-        if (event.getEvent() == null) {
-            getDisplay().selectOnly(clicked);
-            getDisplay().update();
-            return;
-        }
-
-        boolean isShiftDown = event.getEvent() != null ? event.getEvent().isShiftDown() : false;
-        boolean isAlreadySelected = getDisplay().getSelected().contains(clicked);
-
-        if (isShiftDown && selected > 0) {
-            getDisplay().selectUntil(clicked);
-        } else if (isAlreadySelected && selected == 1) {
-            getDisplay().getSelected().remove(clicked);
-        } else {
-            getDisplay().selectOnly(clicked);
-        }
-
-        getDisplay().update();
-    }
+    
+    
+   
 
     @Override
     public Pane getUIComponent() {
@@ -345,14 +329,6 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
             return;
         }
         
-        int state = ExplorableList.contentHash(getDisplay().getItems());
-        
-        if(state != filterDataHash) {
-             filterPanel.updateFilters(ProgressHandler.check(null), getDisplay().getItems());
-             filterDataHash = state;
-        }   
-        
-       
         
         updateCurrentView();
 

@@ -125,12 +125,19 @@
 }
 .styled-text-area{
     -fx-background-color:#383f50;
+    /*-fx-prompt-text-fill : white;*/
 }
 .lineno{
     -fx-background-color:#282E3A;
 }
+
+.code-area .caret{
+    -fx-stroke:white;
+}
+
 /*
 .text{
+    -fx-prompt-text-fill : white;
     -fx-fill:white;
 }
 */

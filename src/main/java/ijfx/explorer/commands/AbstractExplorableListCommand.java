@@ -17,23 +17,35 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.core.segmentation;
+package ijfx.explorer.commands;
 
-import ijfx.core.IjfxService;
-import java.util.List;
+import ijfx.core.uiplugin.AbstractUiCommand;
+import ijfx.explorer.ExplorableList;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  *
  * @author cyril
  */
+public abstract class AbstractExplorableListCommand extends AbstractUiCommand<ExplorableList>implements ExplorableListCommand{
+        
+    
+    @Parameter
+    ExplorableList elements;
 
-public interface SegmentationService extends IjfxService {
+    public AbstractExplorableListCommand() {
+        super(ExplorableList.class);
+    }
+
     
     
-     SegmentationTaskBuilder createSegmentation();
     
-     
-     void show(List<List<? extends SegmentedObject>> objects);
-     
-     
+    @Override
+    public void run() {
+        
+        
+        
+        run(elements);
+    }    
 }

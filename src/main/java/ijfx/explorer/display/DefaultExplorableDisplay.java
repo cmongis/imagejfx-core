@@ -56,8 +56,6 @@ public class DefaultExplorableDisplay extends AbstractDisplay<ExplorableList> im
     
      public DefaultExplorableDisplay() {
         super(ExplorableList.class);
-
-       
     }
     
     
@@ -104,7 +102,7 @@ public class DefaultExplorableDisplay extends AbstractDisplay<ExplorableList> im
     }
 
     @Override
-    public List<Explorable> getSelected() {
+    public List<Explorable> getSelectedItems() {
         return selected;
     }
 
