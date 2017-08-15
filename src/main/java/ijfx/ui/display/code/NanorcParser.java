@@ -78,7 +78,8 @@ public class NanorcParser implements LanguageKeywords{
     }
     
     public static String findFileLanguage(ScriptLanguage language) {
-       return String.format("/ijfx/ui/display/code/%s.nanorc",language.getLanguageName().toLowerCase().replace(" ", ""));
+        String path = "/ijfx/ui/display/code/%s.nanorc".replaceAll("/", File.separator);
+       return String.format(path,language.getLanguageName().toLowerCase().replace(" ", ""));
     }
     
     public void computeComment(){

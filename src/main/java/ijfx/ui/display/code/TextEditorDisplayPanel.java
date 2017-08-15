@@ -1,4 +1,4 @@
-/*
+ /*
     This file is part of ImageJ FX.
 
     ImageJ FX is free software: you can redistribute it and/or modify
@@ -157,6 +157,10 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
 
     public String getCode() {
         return getDisplay().get(0).getCode();
+    }
+    
+    public void initPreferencies (){
+        
     }
 
     @Override

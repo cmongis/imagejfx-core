@@ -49,9 +49,16 @@ public class TextEditorPreferencies implements Preferencies {
         this.listOfTheme.add("lightTheme");
        
     }
+    
+    public void init(){
+        try {
+            
+        } catch (Exception e) {
+        }
+    }
 
     public String getTheme() {
-        System.out.println(themeProperty.get());
+        //System.out.println(themeProperty.get());
         return themeProperty.get();
     }
 
