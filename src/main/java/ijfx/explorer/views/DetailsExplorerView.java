@@ -88,9 +88,6 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
 
     private ExplorerIconCell rightCell = new ExplorerIconCell();
 
-    private final static double WIDTH = 170.0;
-    private final static double HEIGHT = 270.0;
-    private final static double GAP = 5.0;
 
     public DetailsExplorerView() {
 
@@ -228,15 +225,6 @@ public class DetailsExplorerView extends BorderPane implements ExplorerView {
             tableView.getItems().add(entry.getValue());
         });
 
-    }
-
-    public void onDisplayLastExplorable(ActionEvent event) {
-        int index = itemList.indexOf(currentItem);
-        if (index > 0) {
-            currentItem = itemList.get(index - 1);
-            currentItemList.clear();
-            currentItemList.add(currentItem);
-        }
     }
 
     private void checkSelection() {
