@@ -22,6 +22,9 @@ package ijfx.ui.utils;
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.views.DataClickEvent;
 import ijfx.explorer.widgets.ExplorerIconCell;
+import ijfx.ui.main.ImageJFX;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
 import javafx.scene.Node;
@@ -36,68 +39,98 @@ import mongis.utils.panecell.PaneCell;
  *
  * @author sapho
  */
-public class CategorizedExplorableController extends Pane{
+public class CategorizedExplorableController extends Pane {
+
+    private final HashMap<String, List<? extends Explorable>> catMap = new HashMap();
+    private final Pane pane = new Pane();
+    private final HBox hBox = new HBox();
 
     public CategorizedExplorableController() {
-        Pane pane = new Pane();
-        HBox hBox = new HBox();
-        
+        pane.getChildren().add(hBox);
+
     }
-    
-    public List<Explorable> addCategory(String name, List<Explorable> list){
-        
-        
-        return list;
-    }
-    
-    
-    
-    public List<Explorable> setElements (String name, List<Explorable> list){
-        
-        
-        return list;
-    }
-    
-    public void setMaxItemPerCategory (int max){
-        
-    }
-    
-    public void update (){
-        
-    }
-    
-    
-    public Node generate(){
-        
+
+    public Node addCategory(String name, List<Explorable> list) { //inchangeable
+        model(name, list);
+
         return this;
     }
-    
+
+    public Node setElements(String name, List<Explorable> list) { //inchangeable
+        if (catMap.containsKey(name)) {
+            catMap.replace(name, catMap.get(list), list);
+
+        } else {
+            model(name, list);
+        }
+
+        return this;
+    }
+
+    public void setMaxItemPerCategory(int max) { //inchangeable
+        
+
+    }
+
+    public void update() { //inchangeable
+        
+        catMap.keySet().stream().forEach((mapKey) -> {
+            hBox.getChildren().add(categoryDesign(mapKey, catMap.size()));
+        });
+        
+        
+    }
+
+    public Node generate() { //inchangeable
+
+        return this;
+    }
+
+    public Node categoryDesign(String title, int max) {
+        Label label = new Label(title);
+        TilePane tilePane = new TilePane();
+        VBox vBox = new VBox();
+        vBox.getChildren().addAll(label, tilePane);
+        for (int i = 1; i <= max; i++) {
+
+        }
+
+        return tilePane;
+
+    }
+
+    public List<? extends Explorable> getList(String name) {
+        return catMap.get(name);
+    }
+
+    public HashMap<String, List<? extends Explorable>> getMap() {
+        return catMap;
+    }
+
+    private void model(String name, List<Explorable> list) {
+        if (!catMap.containsKey(name)) {
+            catMap.put(name, list);
+        } else {
+            ImageJFX.getLogger().info(String.format("This category already exist. "));
+        }
+
+    }
+
     private PaneCell<Explorable> createIcon() {
         ExplorerIconCell cell = new ExplorerIconCell();
         /*
         cell.setOnDataClick(event->{
             onItemClicked.accept(event);
         });
-*/
-       
+         */
+
         //context.inject(cell);
         return cell;
     }
-    
-    private void categoryDesign(String title, int max){
-        Label label = new Label(title);
-        TilePane tilePane = new TilePane();
-        VBox vBox = new VBox();
-        vBox.getChildren().addAll(label, tilePane);
-        for (int i = 1; i <= max; i++){
-            
-        }
-        
-        
-    }
+
     /*
     public void setOnItemClicked(Consumer<DataClickEvent<Explorable>> onItemClicked) {
         this.onItemClicked = onItemClicked;
     }
-*/
+     */
 }
