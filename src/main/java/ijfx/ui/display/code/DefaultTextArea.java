@@ -295,11 +295,22 @@ public class DefaultTextArea extends AnchorPane{
        this.getStylesheets().add(path);
        
    }
+    
+   public static String computeConfigPath(String name) {
+       String path = "File:"+ImageJFX.getConfigDirectory() + "/ScriptEditorConfig/" + name + ".css";
+       path = path.replaceAll("/", File.separator);
+       return path;
+    }
    
     public void setPreferencies(TextEditorPreferencies preferencies){
         this.autocomplete = preferencies.isAutocompletion();
-       
-       
+        String cssPath = computeConfigPath(preferencies.getTheme());
+        try {
+            changeCss(cssPath);
+        } catch (NullPointerException e) {
+            System.out.println("Css file not found");
+        }
+        /*
         if (preferencies.getTheme().equals("darkTheme")){
             changeCss("File:"+ImageJFX.getConfigDirectory() + "/ScriptEditorConfig/darkTheme.css".replaceAll("/", File.separator));
             
@@ -318,7 +329,7 @@ public class DefaultTextArea extends AnchorPane{
             
            }
            
-       
+       */
    }
     
 }

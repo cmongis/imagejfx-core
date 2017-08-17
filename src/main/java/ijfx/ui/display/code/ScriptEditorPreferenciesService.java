@@ -62,7 +62,7 @@ public class ScriptEditorPreferenciesService extends AbstractService implements 
         //List<String> text = Files.readAllLines(file.toPath(), Charset.defaultCharset());
         if (!file.exists()){
             try {
-                createnanorcDirectory();
+                createConfigDirectory();
             } catch (Exception IOException) {
                 
                 throw new UnsupportedOperationException("Not supported yet.");
@@ -73,7 +73,7 @@ public class ScriptEditorPreferenciesService extends AbstractService implements 
         
     }
     
-    public void createnanorcDirectory(){
+    public void createConfigDirectory(){
         File target = new File(this.configDirectory + separator + nanorcDirectory);
         File source = new File(getClass().getResource("/ijfx/ui/display/code").getPath());
         try {
@@ -93,7 +93,6 @@ public class ScriptEditorPreferenciesService extends AbstractService implements 
             //if directory not exists, create it
             if(!dest.exists()){
                dest.mkdir();
-               System.out.println("Directory copied from "+ src + "  to " + dest);
             }
 
             //list all the directory contents
@@ -127,11 +126,9 @@ public class ScriptEditorPreferenciesService extends AbstractService implements 
 
                 in.close();
                 out.close();
-                System.out.println("File copied from " + src + " to " + dest);
             }
     	}
     }
-    
     
     @Override
     public void loadPreferencies(){
