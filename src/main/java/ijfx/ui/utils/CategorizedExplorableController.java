@@ -20,18 +20,14 @@
 package ijfx.ui.utils;
 
 import ijfx.explorer.datamodel.Explorable;
-import ijfx.explorer.views.DataClickEvent;
+import ijfx.explorer.views.IconExplorerView;
 import ijfx.explorer.widgets.ExplorerIconCell;
 import ijfx.ui.main.ImageJFX;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.Consumer;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import mongis.utils.panecell.PaneCell;
 
@@ -93,9 +89,12 @@ public class CategorizedExplorableController extends Pane {
 
     public Node categoryDesign(String name) { //design chaque category
         Label label = new Label(name);
-        TilePane tilePane = new TilePane();
+        IconExplorerView icon = new IconExplorerView();
         VBox vBox = new VBox();
-        vBox.getChildren().addAll(label, tilePane);
+        vBox.getChildren().addAll(label, icon);
+        
+        icon.setItems(catMap.get(name));
+        
         
         
         return vBox;
