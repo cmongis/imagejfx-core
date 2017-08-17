@@ -35,7 +35,7 @@ import mongis.utils.panecell.PaneCell;
  *
  * @author sapho
  */
-public class CategorizedExplorableController extends Pane {
+public class CategorizedExplorableController extends Pane{
 
     private final HashMap<String, List<? extends Explorable>> catMap = new HashMap();
     private final Pane pane = new Pane();
@@ -46,13 +46,13 @@ public class CategorizedExplorableController extends Pane {
 
     }
 
-    public Node addCategory(String name) { //inchangeable
+    public CategorizedExplorableController addCategory(String name) { //inchangeable
         model(name, null);
 
         return this;
     }
 
-    public Node setElements(String name, List<Explorable> list) { //inchangeable
+    public CategorizedExplorableController setElements(String name, List<Explorable> list) { //inchangeable
         if (catMap.containsKey(name)) {
             catMap.replace(name, catMap.get(list), list);
 
@@ -64,10 +64,12 @@ public class CategorizedExplorableController extends Pane {
         return this;
     }
 
-    public void setMaxItemPerCategory(int max) { //inchangeable
+    public CategorizedExplorableController setMaxItemPerCategory(int max) { //inchangeable
         catMap.keySet().stream().forEach((mapKey)->{
             catMap.replace(mapKey, catMap.get(mapKey), catMap.get(mapKey).subList(0, max));
         });
+        
+        return this;
         
 
     }
@@ -81,7 +83,7 @@ public class CategorizedExplorableController extends Pane {
         
     }
 
-    public Node generate() { //inchangeable
+    public Pane generate() { //inchangeable
         update();
 
         return this;
