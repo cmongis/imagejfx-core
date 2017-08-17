@@ -25,23 +25,27 @@ import ijfx.explorer.widgets.ExplorerIconCell;
 import ijfx.ui.main.ImageJFX;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.Callable;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import mongis.utils.panecell.PaneCell;
+import mongis.utils.panecell.PaneCellController;
 
 /**
  *
  * @author sapho
  */
-public class CategorizedExplorableController extends Pane{
+public class CategorizedExplorableController extends Pane {
 
     private final HashMap<String, List<? extends Explorable>> catMap = new HashMap();
     private final Pane pane = new Pane();
     private final VBox mainVBox = new VBox();
 
     public CategorizedExplorableController() {
+        //setContent(pane);
         pane.getChildren().add(mainVBox);
 
     }
@@ -55,6 +59,7 @@ public class CategorizedExplorableController extends Pane{
     public CategorizedExplorableController setElements(String name, List<Explorable> list) { //inchangeable
         if (catMap.containsKey(name)) {
             catMap.replace(name, catMap.get(list), list);
+            System.out.println("setElements" + name);
 
         } else {
             //model(name, list);
@@ -65,22 +70,20 @@ public class CategorizedExplorableController extends Pane{
     }
 
     public CategorizedExplorableController setMaxItemPerCategory(int max) { //inchangeable
-        catMap.keySet().stream().forEach((mapKey)->{
+        catMap.keySet().stream().forEach((mapKey) -> {
             catMap.replace(mapKey, catMap.get(mapKey), catMap.get(mapKey).subList(0, max));
         });
-        
+
         return this;
-        
 
     }
 
     public void update() { //inchangeable
-        
+
         catMap.keySet().stream().forEach((mapKey) -> {
             mainVBox.getChildren().add(categoryDesign(mapKey));
         });
-        
-        
+
     }
 
     public Pane generate() { //inchangeable
@@ -89,21 +92,34 @@ public class CategorizedExplorableController extends Pane{
         return this;
     }
 
-    public Node categoryDesign(String name) { //design chaque category
+    private Node categoryDesign(String name) { //design chaque category
+        System.out.println("naaaaaMMMMMMMEEEE" + name);
         Label label = new Label(name);
-        IconExplorerView icon = new IconExplorerView();
         VBox vBox = new VBox();
-        vBox.getChildren().addAll(label, icon);
+        TilePane tilePane = new TilePane();
+        PaneCellController<Explorable> icon = new PaneCellController<>(tilePane);
         
-        icon.setItems(catMap.get(name));
+        icon.setCellFactory(this::createIcon);
         
+        /*
+        List<? extends Explorable> list = catMap.get(name);
+        for (Explorable ixp : list){
+            ExplorerIconCell cell = new ExplorerIconCell();
+            cell.setTitle(ixp.getTitle());
+            cell.setSubtitle(ixp.getSubtitle());
+            cell.setImage(ixp.getImage());
+            vBox.getChildren().addAll(label,cell);
+        }
+        */
         
-        
+
         return vBox;
 
     }
     
-    
+    public void setCellFactory(Callable<PaneCell<Explorable>> callable) {
+        icon.setCellFactory(callable);
+    }
 
     public List<? extends Explorable> getList(String name) {
         return catMap.get(name);
@@ -124,6 +140,7 @@ public class CategorizedExplorableController extends Pane{
 
     private PaneCell<Explorable> createIcon() {
         ExplorerIconCell cell = new ExplorerIconCell();
+        
         /*
         cell.setOnDataClick(event->{
             onItemClicked.accept(event);
