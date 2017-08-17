@@ -43,15 +43,15 @@ public class CategorizedExplorableController extends Pane {
 
     private final HashMap<String, List<? extends Explorable>> catMap = new HashMap();
     private final Pane pane = new Pane();
-    private final HBox hBox = new HBox();
+    private final VBox mainVBox = new VBox();
 
     public CategorizedExplorableController() {
-        pane.getChildren().add(hBox);
+        pane.getChildren().add(mainVBox);
 
     }
 
-    public Node addCategory(String name, List<Explorable> list) { //inchangeable
-        model(name, list);
+    public Node addCategory(String name) { //inchangeable
+        model(name, null);
 
         return this;
     }
@@ -61,13 +61,17 @@ public class CategorizedExplorableController extends Pane {
             catMap.replace(name, catMap.get(list), list);
 
         } else {
-            model(name, list);
+            //model(name, list);
+            ImageJFX.getLogger().info(String.format("This category doesn't exist. "));
         }
 
         return this;
     }
 
     public void setMaxItemPerCategory(int max) { //inchangeable
+        catMap.keySet().stream().forEach((mapKey)->{
+            catMap.replace(mapKey, catMap.get(mapKey), catMap.get(mapKey).subList(0, max));
+        });
         
 
     }
@@ -75,29 +79,30 @@ public class CategorizedExplorableController extends Pane {
     public void update() { //inchangeable
         
         catMap.keySet().stream().forEach((mapKey) -> {
-            hBox.getChildren().add(categoryDesign(mapKey, catMap.size()));
+            mainVBox.getChildren().add(categoryDesign(mapKey));
         });
         
         
     }
 
     public Node generate() { //inchangeable
+        update();
 
         return this;
     }
 
-    public Node categoryDesign(String title, int max) {
-        Label label = new Label(title);
+    public Node categoryDesign(String name) { //design chaque category
+        Label label = new Label(name);
         TilePane tilePane = new TilePane();
         VBox vBox = new VBox();
         vBox.getChildren().addAll(label, tilePane);
-        for (int i = 1; i <= max; i++) {
-
-        }
-
-        return tilePane;
+        
+        
+        return vBox;
 
     }
+    
+    
 
     public List<? extends Explorable> getList(String name) {
         return catMap.get(name);
@@ -108,7 +113,7 @@ public class CategorizedExplorableController extends Pane {
     }
 
     private void model(String name, List<Explorable> list) {
-        if (!catMap.containsKey(name)) {
+        if (!catMap.containsKey(name) && !catMap.containsValue(list)) {
             catMap.put(name, list);
         } else {
             ImageJFX.getLogger().info(String.format("This category already exist. "));
