@@ -19,6 +19,7 @@
  */
 package ijfx.ui.display.code;
 
+import ijfx.ui.main.ImageJFX;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -67,7 +68,7 @@ public class NanorcParser implements LanguageKeywords{
     public void run() {
         try {
             this.keywordsTable.clear();
-            this.nanorcFile = getClass().getResource(findFileLanguage(language)).getFile();
+            this.nanorcFile = findFileLanguage(language);
             nanoRcParseV2(this.nanorcFile);
             //computeComment();
         } catch (NullPointerException e) {
@@ -78,7 +79,7 @@ public class NanorcParser implements LanguageKeywords{
     }
     
     public static String findFileLanguage(ScriptLanguage language) {
-        String path = "/ijfx/ui/display/code/%s.nanorc".replaceAll("/", File.separator);
+       String path = ImageJFX.getConfigDirectory() + "/ScriptEditorConfig/%s.nanorc".replaceAll("/", File.separator);
        return String.format(path,language.getLanguageName().toLowerCase().replace(" ", ""));
     }
     

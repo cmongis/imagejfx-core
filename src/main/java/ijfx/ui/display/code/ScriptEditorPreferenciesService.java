@@ -60,18 +60,16 @@ public class ScriptEditorPreferenciesService extends AbstractService implements 
     public ScriptEditorPreferenciesService() {
         File file = new File(this.configDirectory + separator + nanorcDirectory);
         //List<String> text = Files.readAllLines(file.toPath(), Charset.defaultCharset());
-        if (file.exists()){
+        if (!file.exists()){
             try {
-                List<String> text = Files.readAllLines(file.toPath(), Charset.defaultCharset());
+                createnanorcDirectory();
             } catch (Exception IOException) {
                 
                 throw new UnsupportedOperationException("Not supported yet.");
                 //System.out.println("/!\\ /!\\ !!! " + e.getMessage());
             }
         }
-        else{
-            createnanorcDirectory();
-        }
+        
         
     }
     

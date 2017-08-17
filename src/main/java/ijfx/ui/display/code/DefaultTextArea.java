@@ -19,6 +19,8 @@
  */
 package ijfx.ui.display.code;
 
+import ijfx.ui.main.ImageJFX;
+import java.io.File;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
@@ -299,11 +301,11 @@ public class DefaultTextArea extends AnchorPane{
        
        
         if (preferencies.getTheme().equals("darkTheme")){
-            changeCss(getClass().getResource("/ijfx/ui/display/code/TextEditorDarkTheme.css").toExternalForm());
+            changeCss("File:"+ImageJFX.getConfigDirectory() + "/ScriptEditorConfig/darkTheme.css".replaceAll("/", File.separator));
             
         }
         else if (preferencies.getTheme().equals("lightTheme")){
-               changeCss(getClass().getResource("/ijfx/ui/display/code/TextEditorLightTheme.css").toExternalForm());
+            changeCss("File:"+ImageJFX.getConfigDirectory() + "/ScriptEditorConfig/lightTheme.css".replaceAll("/", File.separator));
            }
         else{
             try {
@@ -311,7 +313,7 @@ public class DefaultTextArea extends AnchorPane{
                 path = "file:"+path;
                 changeCss((String) preferencies.getTheme());
             } catch (Exception NullPointerException) {
-                changeCss(getClass().getResource("/ijfx/ui/display/code/TextEditorDarkTheme.css").toExternalForm());
+                changeCss("File:"+ImageJFX.getConfigDirectory() + "/ScriptEditorConfig/darkTheme.css".replaceAll("/", File.separator));
             }
             
            }
