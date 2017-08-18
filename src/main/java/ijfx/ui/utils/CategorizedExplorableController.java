@@ -65,7 +65,7 @@ public class CategorizedExplorableController extends Pane {
         }
 */
         
-        getStyleClass().add("pane-icon-cell");
+        //getStyleClass().add("pane-icon-cell");
 
 
         }
@@ -137,7 +137,7 @@ public class CategorizedExplorableController extends Pane {
         icon.setTaskDisplayer(loadingScreenService);
         icon.setSelected((List<Explorable>) catMap.get(name));
         icon.update(new ArrayList<>(catMap.get(name)));
-
+        
         vBox.getChildren().addAll(label, tilePane);
 
         return vBox;
@@ -155,6 +155,8 @@ public class CategorizedExplorableController extends Pane {
 
     private PaneCell<Explorable> createIcon() {
         ExplorerIconCell cell = new ExplorerIconCell();
+        cell.onScreenProperty().setValue(Boolean.TRUE);
+        cell.getStyleClass().add("pane-icon-cell");
 
         cell.setOnDataClick(event -> {
             onItemClicked.accept(event);
