@@ -33,20 +33,25 @@ import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import mongis.utils.panecell.PaneCell;
 import mongis.utils.panecell.PaneCellController;
+import org.scijava.Context;
+import org.scijava.plugin.Parameter;
 
 /**
  *
  * @author sapho
  */
 public class CategorizedExplorableController extends Pane {
+    
+    @Parameter
+    private Context context;
 
     private final HashMap<String, List<? extends Explorable>> catMap = new HashMap();
     private final Pane pane = new Pane();
     private final VBox mainVBox = new VBox();
 
     public CategorizedExplorableController() {
-        //setContent(pane);
         pane.getChildren().add(mainVBox);
+        this.getChildren().add(pane);
 
     }
 
@@ -97,9 +102,11 @@ public class CategorizedExplorableController extends Pane {
         Label label = new Label(name);
         VBox vBox = new VBox();
         TilePane tilePane = new TilePane();
+        
         PaneCellController<Explorable> icon = new PaneCellController<>(tilePane);
         
         icon.setCellFactory(this::createIcon);
+        icon.setSelected((List<Explorable>) catMap.get(name));
         
         /*
         List<? extends Explorable> list = catMap.get(name);
@@ -111,15 +118,17 @@ public class CategorizedExplorableController extends Pane {
             vBox.getChildren().addAll(label,cell);
         }
         */
-        
+        vBox.getChildren().addAll(label, tilePane);
 
         return vBox;
 
     }
     
+    /*
     public void setCellFactory(Callable<PaneCell<Explorable>> callable) {
         icon.setCellFactory(callable);
     }
+    */
 
     public List<? extends Explorable> getList(String name) {
         return catMap.get(name);
@@ -147,7 +156,7 @@ public class CategorizedExplorableController extends Pane {
         });
          */
 
-        //context.inject(cell);
+        context.inject(cell);
         return cell;
     }
 
