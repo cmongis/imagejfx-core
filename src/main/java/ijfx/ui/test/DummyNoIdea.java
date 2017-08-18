@@ -26,7 +26,14 @@ import ijfx.explorer.datamodel.Tag;
 import ijfx.explorer.wrappers.MetaDataSetExplorerWrapper;
 import ijfx.ui.utils.CategorizedExplorableController;
 import java.util.Random;
+import javafx.application.Platform;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.scijava.ItemIO;
 import org.scijava.command.Command;
@@ -92,14 +99,35 @@ public class DummyNoIdea extends ContextCommand {
                 .setElements("Cat 2", output2)
                 //.setMaxItemPerCategory(5)
                 .generate(); // returns the Pane that contains the view
-        
-        
+
+        Platform.runLater(() -> {
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            Label label = new Label("truc");
+            pane.getChildren().add(label);
+            Scene scene = new Scene(pane, 200, 100);
+            stage.setScene(scene);
+            stage.show();
+            /*
+
+
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Information Dialog");
+            //alert.setGraphic(pane);
+            //alert.getDialogPane().setContent(pane);
+            //alert.getDialogPane().setExpandableContent(pane);
+            //alert.getDialogPane().setVisible(true);
+            alert.getDialogPane().getChildren().add(pane);
+            alert.getDialogPane().setPrefSize(480, 320);
+
+            alert.showAndWait();
+*/
+        });
 
         //ctrl.setElements("Cat 2", truc2);
         //ctrl.update(); // updates the pane returned previously
-        
         //pane.getParent();
-        
     }
 
 }
