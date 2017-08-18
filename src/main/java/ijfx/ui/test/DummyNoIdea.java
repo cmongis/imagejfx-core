@@ -81,7 +81,7 @@ public class DummyNoIdea extends ContextCommand {
 
         }
 
-        for (int i = 0; i != 10; i++) {
+        for (int i = 0; i != 5; i++) {
 
             MetaData name = MetaData.create(MetaData.NAME, RandomStringUtils.random(3, true, false));
             MetaData m1 = MetaData.create("Random strings 1", RandomStringUtils.random(5, true, false));
@@ -96,7 +96,7 @@ public class DummyNoIdea extends ContextCommand {
 
         }
 
-        for (int i = 0; i != 5; i++) {
+        for (int i = 0; i != 3; i++) {
 
             MetaData name = MetaData.create(MetaData.NAME, RandomStringUtils.random(3, true, false));
             MetaData m1 = MetaData.create("Random strings 1", RandomStringUtils.random(5, true, false));
@@ -116,7 +116,7 @@ public class DummyNoIdea extends ContextCommand {
                 .setElements("Cat 1", output) //set the element that the first line will contain
                 .addCategory("Cat 2")
                 .setElements("Cat 2", output2)
-                .setMaxItemPerCategory(5)
+                .setMaxItemPerCategory(8)
                 .generate(); // returns the Pane that contains the view
 
         ctrl.setElements("Cat 2", output3);
@@ -126,7 +126,7 @@ public class DummyNoIdea extends ContextCommand {
 
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
-            Scene scene = new Scene(pane, 350, 500);
+            Scene scene = new Scene(pane, 550, 600);
 
             stage.setScene(scene);
             stage.show();
