@@ -25,6 +25,7 @@ import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.datamodel.Tag;
 import ijfx.explorer.wrappers.MetaDataSetExplorerWrapper;
 import ijfx.ui.utils.CategorizedExplorableController;
+import java.net.URL;
 import java.util.Random;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -127,6 +128,14 @@ public class DummyNoIdea extends ContextCommand {
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             Scene scene = new Scene(pane, 550, 600);
+
+            ////////CSS part///////
+            
+                    
+            URL cssURL = getClass().getResource("/ijfx/ui/flatterfx.css");
+            if (cssURL != null) {
+                scene.getStylesheets().add(cssURL.toExternalForm());
+            }
 
             stage.setScene(scene);
             stage.show();
