@@ -27,6 +27,7 @@ import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.datamodel.Mapper;
 import ijfx.ui.service.AnnotationService;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -68,7 +69,9 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
     @FXML
     private VBox vBox;
 
-    private static String FXMLWAY = "/ijfx/ui/widgets/AnnotationDialog2.fxml";
+    private final URL CSSURL = getClass().getResource("/ijfx/ui/flatterfx.css");
+
+    private static final String FXMLWAY = "/ijfx/ui/widgets/AnnotationDialog2.fxml";
     private List<? extends Explorable> items;
     private List<MetaDataSet> setList;
 
@@ -137,15 +140,17 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
         }
 
         Pane root = loader.getRoot();
-        ///////////////////////////////////CSS PART
-        //root.getStylesheets().add(getClass().getResource("/ijfx/ui/flatterfx.css").toExternalForm());
-        //root.applyCss();
-        ///////////////////////////////////
         getDialogPane().setContent(root);
         getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
         setResultConverter(DefaultAnnotationDialog.this::convert);
 
         newKey.setPromptText("new key");
+
+        if (CSSURL != null) {
+            this.getDialogPane().getStylesheets().add(CSSURL.toExternalForm());
+
+        }
+
     }
 
     /**
@@ -172,14 +177,19 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
         Alert alert = new Alert(AlertType.CONFIRMATION);
         alert.setTitle("Confirmation Dialog");
 
+        if (CSSURL != null) {
+            alert.getDialogPane().getStylesheets().add(CSSURL.toExternalForm());
+
+        }
+
         ctrlList.clear();
 
         String temp = cBox.getSelectionModel().getSelectedItem();
 
         Set<MetaData> setM = MetaDataSetUtils.getValues(items, temp);
         int setSize = setM.size();
-        
-        alert.setHeaderText("There are "+ setSize +" values to display, do you want to continue ? ");
+
+        alert.setHeaderText("There are " + setSize + " values to display, do you want to continue ? ");
 
         if (setM.size() > 10) {
             Optional<ButtonType> result = alert.showAndWait();
