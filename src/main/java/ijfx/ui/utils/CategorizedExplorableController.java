@@ -19,7 +19,6 @@
  */
 package ijfx.ui.utils;
 
-
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.views.DataClickEvent;
 import ijfx.explorer.widgets.ExplorerIconCell;
@@ -29,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
@@ -50,35 +50,20 @@ public class CategorizedExplorableController extends Pane {
     private final HashMap<String, List<? extends Explorable>> catMap = new HashMap();
     private final Pane pane = new Pane();
     private final VBox mainVBox = new VBox();
-    private Consumer<DataClickEvent<Explorable>> onItemClicked;
 
     public CategorizedExplorableController() {
         pane.getChildren().add(mainVBox);
         this.getChildren().add(pane);
-        
-        
-        ////////CSS part///////
-/*
-        String cssURL = getClass().getResource("ijfx/ui/flatterfx.css").toExternalForm();
-        if (cssURL != null) {
-            this.getStylesheets().add(cssURL);
-        }
-*/
-        
-        //getStyleClass().add("pane-icon-cell");
 
+    }
 
-        }
-
-    
-
-    public CategorizedExplorableController addCategory(String name) { //inchangeable
+    public CategorizedExplorableController addCategory(String name) { //unchangeable
         model(name, null);
 
         return this;
     }
 
-    public CategorizedExplorableController setElements(String name, List<Explorable> list) { //inchangeable
+    public CategorizedExplorableController setElements(String name, List<Explorable> list) { //unchangeable
         if (catMap.containsKey(name)) {
             catMap.replace(name, catMap.get(name), list);
 
@@ -89,7 +74,7 @@ public class CategorizedExplorableController extends Pane {
         return this;
     }
 
-    public CategorizedExplorableController setMaxItemPerCategory(int max) { //inchangeable
+    public CategorizedExplorableController setMaxItemPerCategory(int max) { //unchangeable
 
         catMap.keySet()
                 .stream()
@@ -102,17 +87,20 @@ public class CategorizedExplorableController extends Pane {
 
     }
 
-    public void update() { //inchangeable
+    public void update() { //unchangeable
 
         mainVBox.getChildren().clear();
 
-        catMap.keySet().stream().forEach((mapKey) -> {
-            mainVBox.getChildren().add(categoryDesign(mapKey));
-        });
+        List<Node> listNode = catMap.keySet()
+                .stream()
+                .map((mapKey) -> categoryDesign(mapKey))
+                .collect(Collectors.toList());
+
+        mainVBox.getChildren().addAll(listNode);
 
     }
 
-    public Pane generate() { //inchangeable
+    public Pane generate() { //unchangeable
         update();
         return this;
     }
@@ -137,7 +125,7 @@ public class CategorizedExplorableController extends Pane {
         icon.setTaskDisplayer(loadingScreenService);
         icon.setSelected((List<Explorable>) catMap.get(name));
         icon.update(new ArrayList<>(catMap.get(name)));
-        
+
         vBox.getChildren().addAll(label, tilePane);
 
         return vBox;
@@ -158,15 +146,7 @@ public class CategorizedExplorableController extends Pane {
         cell.onScreenProperty().setValue(Boolean.TRUE);
         cell.getStyleClass().add("pane-icon-cell");
 
-        cell.setOnDataClick(event -> {
-            onItemClicked.accept(event);
-        });
-
         return cell;
-    }
-
-    public void setOnItemClicked(Consumer<DataClickEvent<Explorable>> onItemClicked) {
-        this.onItemClicked = onItemClicked;
     }
 
 }
