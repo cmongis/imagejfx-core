@@ -48,7 +48,7 @@ public class CategorizedExplorableController extends Pane {
     LoadingScreenService loadingScreenService;
 
     private final HashMap<String, List<? extends Explorable>> catMap = new HashMap();
-    private final Pane pane = new Pane();
+    private final TilePane pane = new TilePane();
     private final VBox mainVBox = new VBox();
 
     public CategorizedExplorableController() {
