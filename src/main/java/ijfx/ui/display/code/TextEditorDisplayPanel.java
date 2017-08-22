@@ -39,6 +39,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import org.scijava.command.CommandService;
@@ -92,13 +94,22 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     private SplitPane splitPane;
     
     @FXML
-    private Button consoleButton;
+    private ToggleButton showConsoleButton;
     
     @FXML
-    private Button vButton;
+    private ToggleButton hideConsoleButton;
     
     @FXML
-    private Button hButton;
+    private ToggleButton vButton;
+    
+    @FXML
+    private ToggleButton hButton;
+    
+    @FXML
+    private ToggleGroup console;
+    
+    @FXML
+    private ToggleGroup position;
     
     PublishSubject<String> consoleDispatcher = PublishSubject.create();
     
@@ -197,13 +208,19 @@ public class TextEditorDisplayPanel extends AbstractFXDisplayPanel<ScriptDisplay
     
      @FXML
     public void showConsole() {
-        if (this.splitPane.getItems().size() >= 2){
-            this.splitPane.getItems().remove(1);
-        }
-        else {
+        if (this.splitPane.getItems().size() < 2){
             this.splitPane.getItems().add(this.consoleArea);
             initConsole();
         }
+        
+    }
+    
+     @FXML
+    public void hideConsole() {
+        if (this.splitPane.getItems().size() >= 2){
+            this.splitPane.getItems().remove(1);
+        }
+        
     }
     
     public void initConsole(){
