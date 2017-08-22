@@ -82,16 +82,18 @@ public class NanorcParser implements LanguageKeywords{
        String path = ImageJFX.getConfigDirectory() + "/ScriptEditorConfig/%s.nanorc".replaceAll("/", File.separator);
        return String.format(path,language.getLanguageName().toLowerCase().replace(" ", ""));
     }
-    
+    /*
     public void computeComment(){
         if (this.language.getLanguageName().equals("Python")){
             this.keywordsTable.put("COMMENT", "#[^\n]*" + "|" + "\"\"\"(.|\\R)*?\"\"\""+ "|" + "\'\'\'(.|\\R)*?\'\'\'");
         }
-        else{
-            this.keywordsTable.put("COMMENT", "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/");
+        else{*/
+    
+            //this.keywordsTable.put("COMMENT", "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/");
+    /*
         }
     }
-    
+    */
     public void nanoRcParseV2(String path){
         List<String> text = new ArrayList<>();
         File file = new File(path);
