@@ -37,6 +37,9 @@ public interface ExplorableIOService extends IjfxService{
     
     void save(List<? extends Taggable> explorableList);
     
+    void saveDatasets(String folder, String suffix, List<? extends Taggable> taggable);
+    
+    
    // List<? extends Taggable> loadTaggables(File file) throws IOException;
     
     //void saveTaggables(List<? extends Taggable> taggables);
