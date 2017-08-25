@@ -19,25 +19,46 @@
  */
 package ijfx.segmentation.commands;
 
+import ijfx.core.metadata.MetaData;
+import ijfx.core.segmentation.MeasurementSegmentationTask;
 import ijfx.core.segmentation.SegmentationService;
+import ijfx.core.uiplugin.UiCommand;
 import ijfx.core.workflow.Workflow;
 import ijfx.explorer.ExplorableList;
 import ijfx.explorer.commands.AbstractExplorableListCommand;
+import ijfx.ui.loading.LoadingScreenService;
+import mongis.utils.ProgressHandler;
+import org.scijava.display.DisplayService;
 import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.widget.NumberWidget;
 
 /**
  *
  * @author cyril
  */
+@Plugin(type = UiCommand.class)
 public class BatchSegment extends AbstractExplorableListCommand{
 
     @Parameter
-    SegmentationService segmentationService;
+    private SegmentationService segmentationService;
     
     @Parameter
-    Workflow workflow;
+    private DisplayService displayService;
     
+    @Parameter
+    private Workflow workflow;
+    
+    @Parameter
+    private LoadingScreenService loadingScreenService;
    
+    @Parameter(label = "Minimum object size",style=NumberWidget.SCROLL_BAR_STYLE,min = "1.0",max = "10")
+    private double minSize = 4.0;
+    
+    @Parameter(label = "Use mask to measure each plane of the source",description = "If activated")
+    private boolean measureSource = false;
+    
+ 
     
     @Override
     public void run(ExplorableList t) {
@@ -48,13 +69,25 @@ public class BatchSegment extends AbstractExplorableListCommand{
                 .setWorkflow(workflow)
                 .add(t)
                 .measure()
+                .then(this::onSegmentationDone)
                 .executeAsync()
-                .then(segmentationService::show);
+                .submit(loadingScreenService);
+
+    }
+    
+    public void onSegmentationDone(ProgressHandler progress,MeasurementSegmentationTask task) {
+        
+        progress.setStatus("Displaying...");
+        
+        ExplorableList list = task
+                .getAsExplorable()
+                .filterGreaterThan(MetaData.LBL_AREA, minSize);
+                
                 
         
+        displayService.createDisplay("Segmentation results", list);
         
         
-
     }
     
     
