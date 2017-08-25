@@ -28,6 +28,7 @@ import ijfx.explorer.datamodel.Tag;
 import ijfx.ui.display.metadataowner.MetaDataOwnerHelper;
 import ijfx.ui.main.ImageJFX;
 import ijfx.ui.utils.CollectionsUtils;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.WeakHashMap;
 import java.util.function.Consumer;
@@ -35,7 +36,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -119,7 +119,7 @@ public class TableExplorerView implements ExplorerView {
     public void setItems(List<? extends Explorable> items) {
 
         ImageJFX.getLogger().info(String.format("Setting %d items", items.size()));
-
+        items = new ArrayList<Explorable>(items);
         boolean columnsHasChanged = MetaDataSetUtils.getKeys(items).size() != MetaDataSetUtils.getKeys(currentItems).size();
 
         // if checking the priority first
@@ -176,25 +176,7 @@ public class TableExplorerView implements ExplorerView {
                 .forEach(tableView.getSelectionModel()::clearSelection);
     }
 
-    /*
-    private void onListChange(ListChangeListener.Change<? extends Explorable> changes) {
-
-        while (changes.next()) {
-
-            logger.info(String.format("Selection changed : %d newly selected, %d unselected", changes.getAddedSize(), changes.getRemovedSize()));
-            changes.getAddedSubList()
-                    .stream()
-                    .map(owner -> (Explorable) owner)
-                    .forEach(explo -> explo.selectedProperty().setValue(true));
-
-            changes.getRemoved()
-                    .stream()
-                    .map(owner -> (Explorable) owner)
-                    .forEach(explo -> explo.selectedProperty().setValue(false));
-
-        }
-
-    }*/
+   
     private void displayHints() {
 
         //hintService.displayHint(new DefaultHint(String.format("#%s",TABLE_VIEW_ID),"Double click on an element to open it."), false);
