@@ -196,7 +196,7 @@ public class ImageRecordIconizer implements Explorable {
     }
     
     public void dispose() {
-        
+        dataset = null;
     }
     
    
