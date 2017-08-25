@@ -132,7 +132,7 @@ public class DefaultParametersChoser extends BorderPane implements Activity{
                 .setGetter(preferencies::getCustomCSS)
                 .setSetter(preferencies::setCustomCSS)
                 .setStyle(FileWidget.OPEN_STYLE)
-                .setWidgetLabel("Choose custom css")
+                .setWidgetLabel("Add custom css")
         );
         
         
@@ -148,18 +148,23 @@ public class DefaultParametersChoser extends BorderPane implements Activity{
      
     public void savePreferencies(ActionEvent event){
         preferenceService.savePreferencies();
+        updateBox();
         
     }
 
     public TextEditorPreferencies getParameters() {
         return this.preferencies;
     }
-
+    
+    public void updateBox(){
+        this.preferencies = (TextEditorPreferencies) preferenceService.getPreferencies();
+        this.mainBox.getChildren().clear();
+        this.mainBox.getChildren().add(generatepreferenciesWidget());
+    }
+    
     @Override
     public Node getContent() {
-        this.preferencies = (TextEditorPreferencies) preferenceService.getPreferencies();
-        mainBox.getChildren().clear();
-        mainBox.getChildren().add(generatepreferenciesWidget());
+        updateBox();
         return this;
     }
 

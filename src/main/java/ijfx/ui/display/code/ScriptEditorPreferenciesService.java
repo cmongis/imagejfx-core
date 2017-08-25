@@ -20,24 +20,24 @@
 package ijfx.ui.display.code;
 
 import ijfx.core.prefs.JsonPreferenceService;
-import ijfx.ui.inputharvesting.AbstractWidgetModel;
-import ijfx.ui.inputharvesting.SuppliedWidgetModel;
+import ijfx.ui.main.ImageJFX;
 import java.io.File;
-import javafx.geometry.Insets;
-import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.util.List;
 import net.imagej.ImageJService;
 import org.scijava.Priority;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
-import org.scijava.widget.ChoiceWidget;
-import org.scijava.widget.FileWidget;
-import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetService;
+
 
 /**
  *
@@ -52,10 +52,82 @@ public class ScriptEditorPreferenciesService extends AbstractService implements 
     WidgetService widgetService;
     
     private String fileName = "ScriptEdtirorPreferences";
+    private String nanorcDirectory = "ScriptEditorConfig";
     private TextEditorPreferencies preferencies= new TextEditorPreferencies();
+    private File configDirectory = ImageJFX.getConfigDirectory(); 
+    private String separator = File.separator;
 
     public ScriptEditorPreferenciesService() {
+        File file = new File(this.configDirectory + separator + nanorcDirectory);
+        //List<String> text = Files.readAllLines(file.toPath(), Charset.defaultCharset());
+        if (!file.exists()){
+            try {
+                createConfigDirectory();
+            } catch (Exception IOException) {
+                
+                throw new UnsupportedOperationException("Not supported yet.");
+                //System.out.println("/!\\ /!\\ !!! " + e.getMessage());
+            }
+        }
         
+        
+    }
+    
+    public void createConfigDirectory(){
+        File target = new File(this.configDirectory + separator + nanorcDirectory);
+        File source = new File(getClass().getResource("/ijfx/ui/display/code").getPath());
+        try {
+            copyFolder(source, target);
+        } catch (Exception IOException) {
+            System.out.println(IOException);
+            System.out.println("Error: nanorcFiles not found");
+        }
+        
+    }
+    
+    public void copyFolder(File src, File dest) throws IOException{
+        Boolean test = src.isDirectory();
+        String test2 = src.getPath();
+    	if(src.isDirectory()){
+
+            //if directory not exists, create it
+            if(!dest.exists()){
+               dest.mkdir();
+            }
+
+            //list all the directory contents
+            String files[] = src.list();
+
+            for (String file : files) {
+               //construct the src and dest file structure
+                
+               File srcFile = new File(src, file);
+               File destFile = new File(dest, file);
+               //recursive copy
+               copyFolder(srcFile,destFile);
+                
+               
+            }
+
+    	}else{
+            //if file, then copy it
+            //Use bytes stream to support all file types
+            if (src.getName().endsWith(".nanorc")|| src.getName().endsWith(".css")) {
+                InputStream in = new FileInputStream(src);
+                OutputStream out = new FileOutputStream(dest);
+
+                byte[] buffer = new byte[1024];
+
+                int length;
+                //copy the file content in bytes
+                while ((length = in.read(buffer)) > 0){
+                   out.write(buffer, 0, length);
+                }
+
+                in.close();
+                out.close();
+            }
+    	}
     }
     
     @Override

@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
- <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?> 
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 
 <BorderPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <bottom>
@@ -13,16 +17,43 @@
          <left>
             <ComboBox fx:id="languageComboBox" prefWidth="150.0" promptText="Language" styleClass="smaller" BorderPane.alignment="CENTER" />
          </left>
+         
          <right>
             <Button fx:id="runButton" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#runScript" styleClass="smaller" text="Run" BorderPane.alignment="CENTER">
+                
                <graphic>
                   <FontAwesomeIconView glyphName="PLAY" styleClass="success" /> 
                </graphic>
+               
             </Button>
          </right>
+          
          <padding>
             <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
          </padding>
+         <center>
+            <HBox BorderPane.alignment="CENTER">
+               <children>
+                    <ToggleButton fx:id="showConsoleButton" onAction="#showConsole" text="Show console">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="console" />
+                     </toggleGroup>
+                    </ToggleButton>
+                    <ToggleButton fx:id="hideConsoleButton" onAction="#hideConsole" selected="true" text="Hide console" toggleGroup="$console" />
+                    <ToggleButton fx:id="vButton" onAction="#flipConsoleVertical" text="|">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="position" />
+                     </toggleGroup>
+                    </ToggleButton>
+                    <ToggleButton fx:id="hButton" onAction="#flipConsoleHorizontal" selected="true" text="--" toggleGroup="$position" />
+               </children>
+            </HBox>
+         </center>
       </BorderPane>
    </bottom>
+   <center>
+      <SplitPane fx:id="splitPane" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" BorderPane.alignment="CENTER">
+        
+      </SplitPane>
+   </center>
 </BorderPane>

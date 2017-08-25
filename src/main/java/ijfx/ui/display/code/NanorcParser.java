@@ -19,6 +19,7 @@
  */
 package ijfx.ui.display.code;
 
+import ijfx.ui.main.ImageJFX;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -67,7 +68,7 @@ public class NanorcParser implements LanguageKeywords{
     public void run() {
         try {
             this.keywordsTable.clear();
-            this.nanorcFile = getClass().getResource(findFileLanguage(language)).getFile();
+            this.nanorcFile = findFileLanguage(language);
             nanoRcParseV2(this.nanorcFile);
             //computeComment();
         } catch (NullPointerException e) {
@@ -78,18 +79,21 @@ public class NanorcParser implements LanguageKeywords{
     }
     
     public static String findFileLanguage(ScriptLanguage language) {
-       return String.format("/ijfx/ui/display/code/%s.nanorc",language.getLanguageName().toLowerCase().replace(" ", ""));
+       String path = ImageJFX.getConfigDirectory() + "/ScriptEditorConfig/%s.nanorc".replaceAll("/", File.separator);
+       return String.format(path,language.getLanguageName().toLowerCase().replace(" ", ""));
     }
-    
+    /*
     public void computeComment(){
         if (this.language.getLanguageName().equals("Python")){
             this.keywordsTable.put("COMMENT", "#[^\n]*" + "|" + "\"\"\"(.|\\R)*?\"\"\""+ "|" + "\'\'\'(.|\\R)*?\'\'\'");
         }
-        else{
-            this.keywordsTable.put("COMMENT", "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/");
+        else{*/
+    
+            //this.keywordsTable.put("COMMENT", "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/");
+    /*
         }
     }
-    
+    */
     public void nanoRcParseV2(String path){
         List<String> text = new ArrayList<>();
         File file = new File(path);

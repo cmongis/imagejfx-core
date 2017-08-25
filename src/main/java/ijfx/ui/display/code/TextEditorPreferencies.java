@@ -19,7 +19,13 @@
  */
 package ijfx.ui.display.code;
 
+import ijfx.ui.main.ImageJFX;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.beans.property.ObjectProperty;
@@ -49,9 +55,9 @@ public class TextEditorPreferencies implements Preferencies {
         this.listOfTheme.add("lightTheme");
        
     }
-
+    
     public String getTheme() {
-        System.out.println(themeProperty.get());
+        //System.out.println(themeProperty.get());
         return themeProperty.get();
     }
 
@@ -88,14 +94,39 @@ public class TextEditorPreferencies implements Preferencies {
     }
 
     public void setCustomCSS(File customCSS) {
-        this.customCssProperty.set(customCSS);
-        if (!listOfTheme.contains(customCSS.getAbsolutePath())){
-            listOfTheme.add(customCSS.getAbsolutePath());
+        // copy of the new css file in the config directory
+        String[] newCssName = customCSS.getAbsolutePath().split(File.separator);
+        String newCssPath = ImageJFX.getConfigDirectory() + "/ScriptEditorConfig/" + newCssName[newCssName.length-1];
+        File newCss = new File(newCssPath.replaceAll("/", File.separator));
+        try {
+            copyFile(customCSS, newCss);
+        } catch (IOException IOException) {
+            System.out.println("Error while copying imported CSS");
         }
-        //themeProperty.set(customCSS.getAbsolutePath());
+        String[] themeName = newCssName[newCssName.length-1].split("\\.");
+        if (!listOfTheme.contains(themeName[0])){
+            listOfTheme.add(themeName[0]);
+        }
+        this.customCssProperty.set(newCss);
     }
     
-    
+    public void copyFile(File src, File dest)throws IOException{
+        
+        InputStream in = new FileInputStream(src);
+        OutputStream out = new FileOutputStream(dest);
+
+        byte[] buffer = new byte[1024];
+
+        int length;
+        //copy the file content in bytes
+        while ((length = in.read(buffer)) > 0){
+           out.write(buffer, 0, length);
+        }
+
+        in.close();
+        out.close();
+            
+    }
     
     
 }
