@@ -209,7 +209,7 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
     @Override
     protected void failed() {
         super.failed();
-        Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, getException());
+        Logger.getLogger(getClass().getName()).log(Level.SEVERE, String.format("%s failed", getCallerClassName()), getException());
         if (onError != null) {
             onError.accept(getException());
         }
