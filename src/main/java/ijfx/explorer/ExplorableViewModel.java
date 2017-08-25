@@ -29,37 +29,43 @@ import java.util.function.Predicate;
  * @author cyril
  */
 public interface ExplorableViewModel {
-        public List<Explorable> getDisplayedItems();
-    
+
+    public List<Explorable> getDisplayedItems();
+
     public void setFilter(Predicate<Explorable> filter);
-    
+
     public List<Explorable> getSelectedItems();
-    
+
     public void select(Explorable explorable);
-    
+
     default void selectUntil(Explorable explorable) {
-        
-        select(explorable);
-        if(getSelectedItems().size() == 0) {
-            
+
+        //select(explorable);
+        if (getSelectedItems().size() == 0) {
+
             return;
         }
-        int begin = getItems().indexOf(getSelectedItems().get(0));
-        int end =  getItems().indexOf(getSelectedItems().get(getSelectedItems().size()-1))+1;
-        
-        setSelected(getItems().subList(begin, end));
-        
-        
+        int begin = getDisplayedItems().indexOf(getSelectedItems().get(0));
+        int end = getDisplayedItems().indexOf(explorable) + 1;
+
+        if (begin < end) {
+            setSelected(getDisplayedItems().subList(begin, end));
+        } else if (begin > end) {
+            setSelected(getDisplayedItems().subList(end, begin));
+        } else {
+
+        }
+
     }
-    
+
     default void selectOnly(Explorable explorable) {
         setSelected(Lists.newArrayList(explorable));
     }
-    
+
     public void setSelected(List<Explorable> explorable);
-    
+
     public List<Explorable> getItems();
-    
+
     void update();
-    
+
 }
