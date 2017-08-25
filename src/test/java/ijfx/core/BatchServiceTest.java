@@ -65,7 +65,7 @@ public class BatchServiceTest extends IjfxTest{
         
     }
     
-    @Test
+    //@Test
     public void testSegmentation() {
         segmentationService
                 .createSegmentation()

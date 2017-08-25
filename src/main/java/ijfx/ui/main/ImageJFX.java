@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javax.swing.SwingUtilities;
 import net.imagej.ImageJ;
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
@@ -110,8 +111,12 @@ public final class ImageJFX  {
         
         
         ImageJ imagej = new ImageJ();
-        imagej.ui().setDefaultUI(imagej.ui().getUI(SwingUI.NAME));
-        imagej.ui().showUI();   
+        //imagej.ui().setDefaultUI(imagej.ui().getUI(SwingUI.NAME));
+        //imagej.ui().showUI();
+       // imagej.ui().getDefaultUI();
+        //SwingUtilities.
+        //imagej.ui().getDefaultUI().dispose();
+
         imagej.ui().setDefaultUI(imagej.ui().getUI(UI_NAME));
         imagej.ui().showUI(UI_NAME);
         //imagej.ui().setDefaultUI(imagej.ui().getUI(SwingUI.NAME));

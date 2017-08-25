@@ -131,7 +131,7 @@ public class DefaultFolderManagerService extends AbstractService implements Fold
             setCurrentFolder(f);
         }
 
-        eventService.publish(new FolderAddedEvent().setObject(f));
+        eventService.publishLater(new FolderAddedEvent().setObject(f));
         save();
         return f;
     }

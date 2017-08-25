@@ -201,7 +201,7 @@ public class DefaultFolder implements Folder, FileChangeListener {
 
     public void setStatus(String status) {
         this.status = status;
-        eventService.publish(new FolderUpdatedEvent().setObject(this));
+        eventService.publishLater(new FolderUpdatedEvent().setObject(this));
     }
 
   
@@ -232,7 +232,7 @@ public class DefaultFolder implements Folder, FileChangeListener {
 
     private void addItems(List<Explorable> explorables) {
         files.addAll(explorables);
-        eventService.publish(new FolderUpdatedEvent().setObject(this));
+        eventService.publishLater(new FolderUpdatedEvent().setObject(this));
     }
 
     @Override

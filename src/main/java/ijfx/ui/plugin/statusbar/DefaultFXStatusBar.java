@@ -49,10 +49,9 @@ import org.scijava.plugin.Plugin;
  * @author cyril
  */
 @Plugin(type = UiPlugin.class)
-@UiConfiguration(id = "status-bar",localization = Localization.BOTTOM_LEFT,context = "always")
-public class DefaultFXStatusBar implements FXStatusBar,UiPlugin {
+@UiConfiguration(id = "status-bar", localization = Localization.BOTTOM_LEFT, context = "always")
+public class DefaultFXStatusBar implements FXStatusBar, UiPlugin {
 
-    
     /**
      * Status messages submitted by the IJ API
      */
@@ -63,48 +62,46 @@ public class DefaultFXStatusBar implements FXStatusBar,UiPlugin {
      */
     private final DoubleProperty ijProgress = new SimpleDoubleProperty();
 
-    
     /**
-     *  Current task displayed by the progress bar
+     * Current task displayed by the progress bar
      */
     private final ObjectProperty<Task> taskProperty = new SimpleObjectProperty<>();
 
     /**
-     *  Displayed status property
+     * Displayed status property
      */
     private final StringProperty statusProperty = new SimpleStringProperty();
 
     /**
-     *  Displayed progress property
+     * Displayed progress property
      */
     private final DoubleProperty progressProperty = new SimpleDoubleProperty();
 
     /**
-     *  TaskList which handles the current task.
+     * TaskList which handles the current task.
      */
     private final TaskList2 taskList = new TaskList2();
 
-    
     /**
-     *  Value inverted each time the status or the progress changes
+     * Value inverted each time the status or the progress changes
      */
     private final BooleanProperty changeClock = new SimpleBooleanProperty(true);
-    
+
     /**
-     *  True if the progress bar should be shown
+     * True if the progress bar should be shown
      */
     BooleanProperty shouldShow = new SimpleBooleanProperty(true);
-    
+
     private final static int DELAY_BEFORE_HIDING = 5;
-    
+
     private ProgressBar progressBar = new ProgressBar();
-    
+
     private Label statusLabel = new Label();
-    
-    private HBox pane = new HBox(progressBar,statusLabel);
-    
+
+    private HBox pane = new HBox(progressBar, statusLabel);
+
     private Boolean changeLock = Boolean.TRUE;
-    
+
     public DefaultFXStatusBar() {
 
         taskProperty.addListener(this::onTaskChanged);
@@ -113,86 +110,74 @@ public class DefaultFXStatusBar implements FXStatusBar,UiPlugin {
 
         statusProperty.addListener(this::onChange);
         progressProperty.addListener(this::onChange);
-        
+
         statusProperty.bind(ijStatus);
         progressProperty.bind(ijProgress);
-        
-        
+
         // if the progress or status doen't change
         // for a certain time, the status will be hidden
         EventStreams
                 .changesOf(changeClock)
                 .successionEnds(Duration.ofSeconds(DELAY_BEFORE_HIDING))
                 .subscribe(this::onNoChange);
-        
+
         pane.getStyleClass().add("status-bar");
-        
-        
+
     }
 
-     
-                
-                
-                
     /**
      * When the task is changed...
-     * 
+     *
      * @param obs
      * @param oldVAlue
-     * @param newValue 
+     * @param newValue
      */
     private void onTaskChanged(Observable obs, Task oldVAlue, Task newValue) {
 
         /*
             If there no current task,
             the displayed message are the ones coming from ImageJ
-        */
+         */
         if (newValue == null) {
             statusProperty.bind(ijStatus);
             progressProperty.bind(ijProgress);
-        }
-        /*
+        } /*
             Otherwise, it displays the messages and 
             progress of the current task
-        */
-        else {
+         */ else {
             statusProperty.bind(newValue.messageProperty());
             progressProperty.bind(newValue.progressProperty());
         }
     }
-    
-    
-   
-    
+
     private void onChange(Observable obs, Object oldValue, Object newValue) {
         shouldShow.setValue(true);
         toggleChangeClock();
     }
-    
-    
+
     private synchronized void toggleChangeClock() {
         changeClock.setValue(!changeClock.getValue());
     }
-    
-     private void onNoChange(Object event) {
+
+    private void onNoChange(Object event) {
         shouldShow.setValue(false);
     }
 
     @Override
     public void addTask(Task task) {
-       taskList.submitTask(task);
+        taskList.submitTask(task);
     }
 
     @Override
     public void setStatus(String message) {
         System.out.println(message);
         System.out.println(pane.getOpacity());
-        Platform.runLater(()->ijStatus.setValue(message));   
+        //Platform.runLater(() -> ijStatus.setValue(message));
     }
 
     @Override
     public void setProgress(int val, int max) {
-       Platform.runLater(()->ijProgress.setValue(1.0 * val / max));
+        Platform.runLater(() -> ijProgress.setValue(1.0 * val / max));
     }
 
     @Override
@@ -203,12 +188,11 @@ public class DefaultFXStatusBar implements FXStatusBar,UiPlugin {
     @Override
     public UiPlugin init() throws Exception {
 
-        
-       progressBar.progressProperty().bind(progressProperty);
+        progressBar.progressProperty().bind(progressProperty);
         statusLabel.textProperty().bind(statusProperty);
-        
+
         new OpacityTransitionBinding(pane, shouldShow);
-        
+
         return this;
 
     }

@@ -42,6 +42,7 @@ import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 import mongis.utils.ConditionList;
 import java.util.stream.Collectors;
+import javafx.application.Platform;
 import org.scijava.event.EventService;
 import org.scijava.plugin.Parameter;
 
@@ -168,7 +169,12 @@ public class UiContextService extends AbstractService implements UiContextManage
 
     @Override
     public UiContextManager update() {
-
+        
+        if(Platform.isFxApplicationThread()) {
+            ImageJFX.getThreadQueue().execute(this::update);
+            return this;
+        }
+        
         if (!hasChanged()) {
             return this;
         }
@@ -182,12 +188,13 @@ public class UiContextService extends AbstractService implements UiContextManage
         //logger.info(linkSet.toString());
         // for each controller, update the controller by telling it which widget it should show
         // and which widget it should hide
+        
         viewMap
                 .values()
                 .stream()
                 .forEach(controller -> updateController(controller));
-
-        eventService.publish(new UiContextUpdatedEvent().setObject(currentContextList));
+        
+        eventService.publishLater(new UiContextUpdatedEvent().setObject(currentContextList));
 
         return this;
     }

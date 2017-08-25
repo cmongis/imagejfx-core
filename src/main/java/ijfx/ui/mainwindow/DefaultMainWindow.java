@@ -64,7 +64,9 @@ import org.scijava.plugin.Plugin;
 import ijfx.core.uiplugin.UiCommand;
 import ijfx.core.uiplugin.UiCommandService;
 import ijfx.ui.main.ImageJFX;
+import javafx.animation.Transition;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 
 /**
  * Controller class for the main window
@@ -284,12 +286,12 @@ public class DefaultMainWindow implements MainWindow {
      */
     @Override
     public void displayHint(Hint hint) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
     }
 
     @Override
     public void displayActivity(Activity activity) {
-        /*
+        
         Transition configure = Animations.ZOOMOUT.configure(mainBorderPane.getCenter(), 400);
 
         configure.setOnFinished(event -> {
@@ -297,12 +299,12 @@ public class DefaultMainWindow implements MainWindow {
             Animations.ZOOMIN.configure(mainBorderPane.getCenter(), 400).play();
         });
 
-        configure.play();*
+        configure.play();
 
-         */
+         /*
         Platform.runLater(() -> {
             mainBorderPane.setCenter(activity.getContent());
-        });
+        });*/
         
         
         Task task = activity.updateOnShow();
@@ -316,7 +318,7 @@ public class DefaultMainWindow implements MainWindow {
 
     @Override
     public void displayNotification(Notification notification) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
     }
 
     @Override
@@ -335,7 +337,7 @@ public class DefaultMainWindow implements MainWindow {
 
     @Override
     public void registerUiPlugin(UiPlugin uiPlugin) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
     }
 
     @Override

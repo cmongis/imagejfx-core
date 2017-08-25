@@ -62,7 +62,7 @@ public class WorkflowStepWidgetModel extends DefaultWidgetModel {
 
             step.getParameters().put(parameterName, object);
             
-            eventService.publish(new WorkflowStepModifiedEvent().setObject(step));
+            eventService.publishLater(new WorkflowStepModifiedEvent().setObject(step));
             
         }
     }

@@ -146,7 +146,9 @@ public class FXUserInterface extends Application implements UserInterface {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-
+        
+        if(SCENE != null) return;
+        
         SCENE = new Scene(new BorderPane());
         SCENE.getStylesheets().add(getClass().getResource("/ijfx/ui/fonts.css").toExternalForm());
         SCENE.getStylesheets().add(getStylesheet());
@@ -173,9 +175,6 @@ public class FXUserInterface extends Application implements UserInterface {
         ui.initialize();
     }
 
-    /*
-        Initializing ImageJFX core components
-     */
     /**
      * Method ran after launching the FXThread
      */
@@ -199,9 +198,10 @@ public class FXUserInterface extends Application implements UserInterface {
 
     public void onAllUiPluginLoaded(Collection<UiPlugin> plugins) {
         uiContextService.enter("imagej", "visualize", "always");
-        uiContextService.update();
+        
         activityService.open(DisplayContainer.class);
-
+        ImageJFX.getThreadPool().submit(uiContextService::update);
+        logger.info("Initialization finished");
     }
 
     @Override
@@ -314,7 +314,7 @@ public class FXUserInterface extends Application implements UserInterface {
 
     @Override
     public boolean requiresEDT() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return false;
     }
 
     @Override

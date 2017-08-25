@@ -82,7 +82,7 @@ public class HistoryExecutorService extends AbstractService implements ImageJSer
 
             // stop the workflow if asked
             if (workflow.mustBeStopped()) {
-                eventService.publish(new WorkflowEndedEvent(WorkflowEnd.CANCELED));
+                eventService.publishLater(new WorkflowEndedEvent(WorkflowEnd.CANCELED));
 
                 // we just cancel the stop signal for the future starts
                 workflow.setMustBeStopped(false);
@@ -93,7 +93,7 @@ public class HistoryExecutorService extends AbstractService implements ImageJSer
 
             logger.info("The show must go on.");
 
-            eventService.publish(new WorkflowStartEvent(workflow));
+            eventService.publishLater(new WorkflowStartEvent(workflow));
 
             logger.info("Executing step  " + step.getId());
             final Module module = moduleService.createModule(step.getModule().getInfo());

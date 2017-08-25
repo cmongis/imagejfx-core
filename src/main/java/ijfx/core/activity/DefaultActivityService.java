@@ -220,7 +220,7 @@ public class DefaultActivityService extends AbstractService implements ActivityS
         currentActivity = activity;
         uiContextService.enter(activity.getActivityId());
         uiContextService.update();
-        eventService.publish(new ActivityChangedEvent(activity));
+        eventService.publishLater(new ActivityChangedEvent(activity));
         logger.info("Event published");
         hintService.displayHints(activity.getClass(), false);
     }

@@ -248,13 +248,13 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
     @Override
     public void succeeded() {
 
-        logger.info(String.format("%s '%s' executed in %d", getClass().getSimpleName(), getTitle(), elapsed));
-
+        //logger.info(String.format("%s '%s' executed in %d", getClass().getSimpleName(), getTitle(), elapsed));
+        super.succeeded();
         for(Consumer<OUTPUT> handler : onSuccess) {
             handler.accept(getValue());
         }
         
-        super.succeeded();
+      
 
     }
 

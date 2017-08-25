@@ -304,7 +304,7 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
 
     
     public void publishSelectionEvent() {
-        eventService.publish(new ExplorerSelectionChangedEvent());
+        eventService.publishLater(new ExplorerSelectionChangedEvent());
     }
     
     public void update() {

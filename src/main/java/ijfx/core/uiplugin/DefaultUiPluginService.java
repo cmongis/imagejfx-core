@@ -114,9 +114,13 @@ public final class DefaultUiPluginService extends AbstractService implements UiP
                         handler.increment(1.0);
 
                     });
-
+            
+            
+            
             logger.info(String.format("%d UiPlugins created", count));
         }
+        handler.setProgress(1.0);
+        handler.setStatus("Welcome to ImageJ-FX");
 
         timer.logAll();
         return uiPluginMap.values();
@@ -209,6 +213,8 @@ public final class DefaultUiPluginService extends AbstractService implements UiP
 
             logger.log(Level.SEVERE, MSG_ERROR_WHEN_LAUNCHING, ex);
         }
+        
+       
 
         return uiPlugin;
     }
@@ -234,7 +240,7 @@ public final class DefaultUiPluginService extends AbstractService implements UiP
         PluginInfo<UiPlugin> pluginInfo = pluginService.getPlugin(clazz, UiPlugin.class);
 
         UiPlugin plugin = loadWidget(pluginInfo);
-        eventService.publish(new UiPluginReloadedEvent(plugin));
+        eventService.publishLater(new UiPluginReloadedEvent(plugin));
 
     }
 

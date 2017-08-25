@@ -172,13 +172,14 @@ public class AnimatedPaneContextualView extends HashMap<String, ContextualWidget
         return speed;
     }
 
-    Lock lock = new ReentrantLock();
+    private Lock lock = new ReentrantLock();
 
     /**
      *
      */
     public void lockPane() {
 
+        
         try {
             lock.lockInterruptibly();
         } catch (InterruptedException ex) {
@@ -265,7 +266,7 @@ public class AnimatedPaneContextualView extends HashMap<String, ContextualWidget
         });
         // start the sequence by adding it to the animation queue
         log("Start disapearce !");
-
+       //sequence.play();
         transitionQueue.queue(sequence);
 
         return this;
