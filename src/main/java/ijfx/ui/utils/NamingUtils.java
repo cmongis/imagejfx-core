@@ -48,7 +48,23 @@ public class NamingUtils {
     
     public static File replaceWithExtension(File originalFile,String extension) {
         String basename = FilenameUtils.getBaseName(originalFile.getName());
+        if(extension.startsWith(".") == false) extension = "." + extension;
         return new File(originalFile.getParentFile(),basename+extension);
+    }
+    
+    public static File addSuffix(File original, String suffix) {
+        
+        String baseName = FilenameUtils.getBaseName(original.getName());
+        String extension = FilenameUtils.getExtension(original.getName());
+        String finalName = new StringBuilder()
+                    .append(baseName)
+                    .append("_")
+                    .append(suffix)
+                    .append(".")
+                    .append(extension)
+                    .toString();
+        
+        return new File(original.getParent(),finalName);
     }
     
 }
