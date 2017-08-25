@@ -26,10 +26,8 @@ import ijfx.core.icon.FXIconService;
 import ijfx.core.timer.TimerService;
 import ijfx.core.utils.SciJavaUtils;
 import ijfx.explorer.ExplorableDisplay;
-import ijfx.explorer.ExplorableViewModel;
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.datamodel.Taggable;
-import ijfx.explorer.views.DataClickEvent;
 import ijfx.explorer.views.ExplorerView;
 import ijfx.explorer.views.ViewStateManager;
 import ijfx.ui.bindings.SideMenuBinding;
@@ -40,7 +38,6 @@ import ijfx.ui.main.ImageJFX;
 import ijfx.ui.metadata.MetaDataBar;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -49,11 +46,11 @@ import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import org.scijava.Context;
@@ -103,13 +100,13 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
     List<Explorable> displayed;
 
     SideMenuBinding sideMenuBinding;
-    
+
     ViewStateManager viewStateManager;
- 
+
     DataClickEventListener eventListener;
-    
+
     int filterDataHash = -10;
-    
+
     private final double leftBorder = 36;
 
     Logger logger = ImageJFX.getLogger();
@@ -150,11 +147,14 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
         root.setClip(clip);
 
         //
-        HBox sideBox = new HBox();
+        ScrollPane sideBox = new ScrollPane();
+        sideBox.setFitToWidth(true);
+        sideBox.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         Label label = new Label("Filter", new FontAwesomeIconView(FontAwesomeIcon.FILTER));
         label.setRotate(90);
         sideBox.getStyleClass().add("filter-pane-container");
-        sideBox.getChildren().addAll(filterPanel.getPane(), label);
+        sideBox.setContent(filterPanel.getPane());
+        sideBox.setPrefWidth(300);
 
         sideMenuBinding = new SideMenuBinding(sideBox)
                 .setxWhenHidden(-leftBorder);
@@ -185,11 +185,9 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
         root.setOnMouseMoved(this::onMouseMoved);
 
         viewStateManager = new ViewStateManager();
-        
+
         viewStateManager.setTaggleFilterPanel(filterPanel);
-        
-        
-        
+
         redoLayout();
         redraw();
 
@@ -198,8 +196,6 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
     private ExplorerView getCurrentView() {
         return (ExplorerView) tabPane.getSelectionModel().getSelectedItem().getUserData();
     }
-
-   
 
     private void updateCurrentView() {
 
@@ -247,18 +243,15 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
         tab.setText(SciJavaUtils.getLabel(view));
         tab.setGraphic(fxIconService.getIconAsNode(view));
 
-        if(eventListener == null) {
+        if (eventListener == null) {
             eventListener = new DataClickEventListener(getDisplay());
         }
-        
+
         view.setOnItemClicked(eventListener);
 
         return tab;
 
     }
-    
-    
-   
 
     @Override
     public Pane getUIComponent() {
@@ -298,10 +291,9 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
             return;
         }
         logger.info("Redrawing for " + getDisplay().getName());
-        
+
         viewStateManager.updateState(getDisplay());
-        
-        
+
         Platform.runLater(this::redrawFX);
     }
 
@@ -328,8 +320,7 @@ public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDis
         if (getCurrentView() == null) {
             return;
         }
-        
-        
+
         updateCurrentView();
 
     }
