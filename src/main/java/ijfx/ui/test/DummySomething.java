@@ -19,28 +19,14 @@
  */
 package ijfx.ui.test;
 
-import ijfx.core.uiextra.ChoiceDialog;
-import ijfx.explorer.datamodel.DefaultMapper;
 import ijfx.explorer.datamodel.Mapper;
 import ijfx.ui.display.annotation.DefaultAnnotationDialog;
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Platform;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
-import javafx.stage.Stage;
-import mongis.utils.FXUtilities;
 import org.scijava.command.Command;
 import org.scijava.command.ContextCommand;
-import org.scijava.module.process.PreprocessorPlugin;
 import org.scijava.plugin.Plugin;
-import org.scijava.widget.InputHarvester;
 
 /**
  *
