@@ -362,7 +362,7 @@ public class BatchService extends AbstractService implements ImageJService {
             
             handler.increment(1.0);
             
-            Module module = step.getModule();
+            Module module = moduleService.createModule(step.getModule().getInfo());
             String moduleName = module.getInfo().getName();
             
             // injecting main input
@@ -394,7 +394,10 @@ public class BatchService extends AbstractService implements ImageJService {
             try {
                 run.get();
                 logger.info(String.format("[%s] module finished", moduleName));
-                dataset = extractOutput(module);
+                Dataset result = extractOutput(run.get());
+                if(result != null) {
+                    dataset = result;
+                }
             } catch (Exception ex) {
                 logger.log(Level.SEVERE, "Error when extracting ouput from module module " + moduleName, ex);;
                 return dataset;
@@ -410,7 +413,7 @@ public class BatchService extends AbstractService implements ImageJService {
         ModuleItem item;
         logger.info("Injecting inputs into module : " + module.getDelegateObject().getClass().getSimpleName());
         item = moduleService.getSingleInput(module, Dataset.class);
-
+        
         if (item != null) {
             logger.info("Dataset input field found : " + item.getName());
 
@@ -428,12 +431,18 @@ public class BatchService extends AbstractService implements ImageJService {
     }
 
     private Dataset extractOutput(Module module) {
-        ModuleItem<Dataset> singleOutput = moduleService.getSingleOutput(module, Dataset.class);
-        if (singleOutput == null) {
-            return null;
-        } else {
-            return (Dataset) module.getOutput(singleOutput.getName());
-        }
+      
+        
+        return (Dataset)module
+                .getOutputs()
+                .values()
+                .stream()
+                .filter(object->object!=null && Dataset.class.isAssignableFrom(object.getClass()))
+                .findFirst()
+                .orElse(null);
+                
+        
+        
     }
 
     // inject the dataset or display depending on the requirements of the module
@@ -578,6 +587,11 @@ public class BatchService extends AbstractService implements ImageJService {
                 .filter(p -> !processorBlackList.contains(p.getClass()))
                 //.map(this::injectPlugin)
                 .collect(Collectors.toList());
+    }
+    
+    
+    public BatchBuilder builder() {
+        return new BatchBuilder(getContext());
     }
 
 }
