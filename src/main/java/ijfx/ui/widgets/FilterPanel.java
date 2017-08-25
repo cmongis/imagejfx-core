@@ -34,6 +34,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Accordion;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
 import mongis.utils.FXUtilities;
 import mongis.utils.properties.ListChangeListenerBuilder;
@@ -68,7 +69,7 @@ public class FilterPanel<T> {
                         .build();
 
         filterList.addListener(filterLister);
-        
+
         // add a listener that add and remove wrapper nodes
         // to the panel when added and removed from the list
         ListChangeListener<TitledPaneFilterWrapper<T>> listener
