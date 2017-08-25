@@ -32,14 +32,12 @@ import ijfx.ui.UiPlugin;
 import ijfx.ui.main.ImageJFX;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.MenuButton;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
@@ -49,16 +47,12 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import org.controlsfx.control.PopOver;
-import org.scijava.console.ConsoleService;
-import org.scijava.console.OutputEvent;
 import org.scijava.event.EventHandler;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.UIService;
-import org.scijava.ui.console.ConsolePane;
-import rx.schedulers.Schedulers;
-import rx.subjects.PublishSubject;
 
 /**
  *
@@ -66,7 +60,7 @@ import rx.subjects.PublishSubject;
  */
 @Plugin(type = UiPlugin.class)
 @UiConfiguration(id = "console-plugin", context = "always", localization = Localization.TOP_RIGHT)
-public class ConsoleUIPlugin implements UiPlugin, ConsolePane<Node> {
+public class ConsoleUIPlugin implements UiPlugin {
 
     @FXML
     TextArea consoleTextArea;
@@ -75,21 +69,21 @@ public class ConsoleUIPlugin implements UiPlugin, ConsolePane<Node> {
     Pane root;
 
     @FXML
-    MenuButton debugButton;
-
-    @FXML
     FlowPane uiContextFlowPane;
 
     @FXML
     TextField uiContextTextField;
 
+    @FXML
+    VBox actionsVBox;
+
     HBox hbox = new HBox();
 
     ToggleButton toggleButton;
 
-    Button cssButton = new Button("CSS");
+    private Button cssButton = new Button("CSS");
 
-    PopOver popOver;
+    private PopOver popOver;
 
     @Parameter
     UIService uiService;
@@ -98,17 +92,10 @@ public class ConsoleUIPlugin implements UiPlugin, ConsolePane<Node> {
     UiContextService uiContextService;
 
     @Parameter
-            FXUiCommandService commandService;
-    
-    @Parameter
-    ConsoleService consoleService;
-    
+    FXUiCommandService commandService;
+
     Set<String> lastContextList;
 
-    StringBuffer consoleBuffer = new StringBuffer(20000);
-    
-    PublishSubject<String> consoleDispatcher = PublishSubject.create();
-    
     @Override
     public Node getUiElement() {
         return hbox;
@@ -128,39 +115,30 @@ public class ConsoleUIPlugin implements UiPlugin, ConsolePane<Node> {
 
         cssButton.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.RECYCLE));
         cssButton.getStyleClass().add("first");
-        cssButton.setOnAction(event->reloadCss());
+        cssButton.setOnAction(event -> reloadCss());
         uiContextTextField.addEventHandler(KeyEvent.KEY_RELEASED, this::onKeyPressed);
         popOver = new PopOver(root);
-        toggleButton = new ToggleButton("Console");
+        toggleButton = new ToggleButton("Debug");
+        toggleButton.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.BUG));
         toggleButton.getStyleClass().add("last");
         toggleButton.selectedProperty().bind(popOver.showingProperty());
         //toggleButton.addEventFilter(MouseEvent.MOUSE_CLICKED,this::onMousePressed);
         toggleButton.addEventFilter(MouseEvent.MOUSE_PRESSED, this::onMousePressed);
-        
-        hbox.getChildren().addAll(cssButton,toggleButton);
-        
-        debugButton.getItems().addAll(commandService
+
+        hbox.getChildren().addAll(cssButton, toggleButton);
+
+        actionsVBox.getChildren().addAll(commandService
                 .getAssociatedAction(this.getClass())
                 .stream()
-                .map(commandService::createMenuItem)
+                .map(commandService::createButton)
                 .collect(Collectors.toList()));
-        
-        consoleService.addOutputListener(this);
-        
-        consoleDispatcher
-                .observeOn(Schedulers.from(ImageJFX.getThreadPool()))
-                .buffer(1000, TimeUnit.MILLISECONDS)
-                
-                .filter(strList->!strList.isEmpty())
-                .map(strList->strList.stream().collect(Collectors.joining()))
-                .subscribe(str->Platform.runLater(()->consoleTextArea.appendText(str)));
-        
+
         return this;
 
     }
 
     public void onMousePressed(MouseEvent event) {
-        popOver.setArrowLocation(PopOver.ArrowLocation.RIGHT_BOTTOM);
+        popOver.setArrowLocation(PopOver.ArrowLocation.TOP_RIGHT);
 
         if (popOver.isShowing()) {
             popOver.hide();
@@ -177,34 +155,6 @@ public class ConsoleUIPlugin implements UiPlugin, ConsolePane<Node> {
             uiContextService.update();
             uiContextTextField.clear();
         }
-    }
-
-    @Override
-    public void append(OutputEvent event) {
-        
-        consoleDispatcher.onNext(event.getOutput());  
-         
-    }
-
-    @Override
-    public void show() {
-
-        popOver.show(toggleButton);
-    }
-
-    @Override
-    public Node getComponent() {
-        return consoleTextArea;
-    }
-
-    @Override
-    public Class<Node> getComponentType() {
-        return Node.class;
-    }
-
-    @Override
-    public void outputOccurred(OutputEvent event) {
-        append(event);
     }
 
     @FXML
