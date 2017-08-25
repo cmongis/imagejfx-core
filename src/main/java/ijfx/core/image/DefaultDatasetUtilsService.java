@@ -20,9 +20,13 @@
 package ijfx.core.image;
 
 import ijfx.core.image.sampler.DatasetSamplerService;
+import ijfx.core.metadata.MetaData;
+import ijfx.core.metadata.MetaDataOwner;
 import ijfx.core.stats.ImageStatisticsService;
 import ijfx.core.timer.Timer;
 import ijfx.core.timer.TimerService;
+import ijfx.core.utils.AxisUtils;
+import ijfx.core.utils.DimensionUtils;
 import ijfx.ui.main.ImageJFX;
 import io.scif.MetadataLevel;
 import io.scif.config.SCIFIOConfig;
@@ -45,6 +49,7 @@ import net.imagej.axis.AxisType;
 import net.imagej.axis.CalibratedAxis;
 import net.imagej.display.ImageDisplay;
 import net.imagej.display.ImageDisplayService;
+import net.imagej.ops.OpService;
 import net.imagej.plugins.commands.assign.DivideDataValuesBy;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
@@ -99,6 +104,9 @@ public class DefaultDatasetUtilsService extends AbstractService implements Datas
     @Parameter
     private TimerService timerService;
 
+    @Parameter
+    private OpService opService;
+    
     private final Logger logger = ImageJFX.getLogger();
 
     public final static String DEFAULT_SEPARATOR = " - ";
@@ -444,4 +452,36 @@ public class DefaultDatasetUtilsService extends AbstractService implements Datas
 
         return image;
     }
+
+    @Override
+    public Dataset openSource(MetaDataOwner explorable, boolean virtual) throws IOException {
+        String source = explorable.getMetaDataSet().get(MetaData.ABSOLUTE_PATH).getStringValue();
+
+        Integer serie = explorable
+                .getMetaDataSet()
+                .getOrDefault(MetaData.SERIE, MetaData.create(MetaData.SERIE, 0))
+                .getIntegerValue();
+
+        return open(new File(source), serie, virtual);
+
+    }
+
+    @Override
+    public Dataset copy(Dataset dataset) {
+        
+        
+       
+       
+        Dataset result = copyDataset(dataset);
+        copyInfos(dataset, result);
+        return result;
+    }
+    
+    
+    
+    
+    private <T extends RealType<T>> Dataset copyDataset(Dataset dataset) {
+        return datasetService.create((ImgPlus<T>)dataset.getImgPlus().copy());
+    }
+
 }

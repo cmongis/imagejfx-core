@@ -20,6 +20,7 @@
 package ijfx.core.image;
 
 import ijfx.core.IjfxService;
+import ijfx.core.metadata.MetaDataOwner;
 import java.io.File;
 import java.io.IOException;
 import javafx.scene.image.Image;
@@ -37,6 +38,8 @@ import net.imglib2.type.numeric.RealType;
  */
 public interface DatasetUtilsService extends IjfxService {
 
+    public Dataset copy(Dataset dataset);
+    
     public Dataset extractPlane(ImageDisplay imageDisplay);
 
     public ImageDisplay getImageDisplay(Dataset dataset);
@@ -66,6 +69,8 @@ public interface DatasetUtilsService extends IjfxService {
 
     public Dataset open(File file, int imgId, boolean virtual) throws IOException;
 
+    public Dataset openSource(MetaDataOwner explorable, boolean virtual) throws IOException;
+    
     public void copyInfos(Dataset input, Dataset output);
 
     /**

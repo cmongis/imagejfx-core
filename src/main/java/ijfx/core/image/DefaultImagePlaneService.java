@@ -70,7 +70,7 @@ public class DefaultImagePlaneService extends AbstractService implements ImagePl
 
     Logger logger = ImageJFX.getLogger();
 
-    ConcurrentMap<File, Dataset> graphs = new MapMaker()
+    ConcurrentMap<String, Dataset> graphs = new MapMaker()
             .weakValues()
             .makeMap();
 
@@ -78,7 +78,7 @@ public class DefaultImagePlaneService extends AbstractService implements ImagePl
         return null;
     }
 
-    private Dataset computeVirtualDataset(File file) {
+    private Dataset computeVirtualDataset(String file) {
         try {
             Timer timer = timerService.getTimer(this.getClass());
             SCIFIOConfig config = new SCIFIOConfig();
@@ -88,7 +88,7 @@ public class DefaultImagePlaneService extends AbstractService implements ImagePl
             config.imgOpenerSetImgFactoryHeuristic(new CellImgFactoryHeuristic());
             config.parserSetLevel(MetadataLevel.MINIMUM);
             timer.start();
-            Dataset open = datasetIoService.open(file.getAbsolutePath(), config);
+            Dataset open = datasetIoService.open(file, config);
             timer.elapsed("Virtual dataset opening");
             return open;
         } catch (IOException ex) {
@@ -99,7 +99,7 @@ public class DefaultImagePlaneService extends AbstractService implements ImagePl
 
     @Override
     public Dataset openVirtualDataset(File file) throws IOException {
-        return graphs.computeIfAbsent(file, this::computeVirtualDataset);
+        return graphs.computeIfAbsent(file.getAbsolutePath(), this::computeVirtualDataset);
     }
 
     @Override
