@@ -19,40 +19,35 @@
  */
 package ijfx.core.segmentation;
 
-import java.util.ArrayList;
+import ijfx.core.metadata.MetaDataSet;
 import java.util.List;
-import mongis.utils.CallbackTask;
 import mongis.utils.ProgressHandler;
+import net.imagej.Dataset;
+import net.imglib2.img.Img;
+import net.imglib2.type.logic.BitType;
 import org.scijava.Context;
-import org.scijava.plugin.Parameter;
 
 /**
  *
  * @author cyril
  */
-public class SegmentationOpList<T> extends ArrayList<SegmentationOp> {
+public class RawSegmentation extends AbstractSegmentationTask<Img<BitType>> implements MaskHandler{
 
-    @Parameter
-    Context context;
-    
-    private final SegmentationHandler<T> segmentationHandler;
+    public RawSegmentation(Context context, List<SegmentationOp> ops) {
+        super(context);
+        setOpList(ops);
+    }
 
-    public SegmentationOpList(SegmentationHandler<T> segmentationHandler) {
-        this.segmentationHandler = segmentationHandler;
+    @Override
+    public RawSegmentation execute(ProgressHandler handler) {
+        setResults(getExecutor().execute(handler, this, getOpList()));
+        return this;
     }
     
-    public List<T> execute(ProgressHandler progressHandler) {
-
-         return new LinearSegmentationExecutor<T>(context,segmentationHandler).execute(progressHandler, this);
-
+   
+    @Override
+    public Img<BitType> handle(ProgressHandler handler, MetaDataSet metadata, Dataset original, Img result) {
+        return result;
     }
-
-    public CallbackTask<?, List<T>> executeAsync() {
-
-        return new CallbackTask<Void, List<T>>()
-                .call(this::execute)
-                .start();
-
-    }
-
+    
 }

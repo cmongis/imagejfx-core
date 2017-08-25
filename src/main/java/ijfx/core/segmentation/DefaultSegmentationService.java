@@ -53,7 +53,6 @@ public class DefaultSegmentationService extends AbstractService implements Segme
                 .stream()
                 .flatMap(list->list.stream())
                 .map(SegmentedObjectExplorerWrapper::new)
-                .peek(getContext()::inject)
                 .collect(Collectors.toList());
 
         result.addAll(collect);

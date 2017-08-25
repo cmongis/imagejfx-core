@@ -31,7 +31,7 @@ import net.imglib2.type.logic.BitType;
  *
  * @author cyril
  */
-public class DefaultSegmentationTask implements SegmentationOp {
+public class DefaultSegmentationOp implements SegmentationOp {
     
     private Dataset input;
     
@@ -43,7 +43,7 @@ public class DefaultSegmentationTask implements SegmentationOp {
     
     private MetaDataSet set;
     
-    public DefaultSegmentationTask() {
+    public DefaultSegmentationOp() {
          
     }
     
@@ -51,9 +51,9 @@ public class DefaultSegmentationTask implements SegmentationOp {
        
     }
     
-    
+   
      
-    public DefaultSegmentationTask(Dataset input, Workflow workflow, MetaDataSet set) {
+    public DefaultSegmentationOp(Dataset input, Workflow workflow, MetaDataSet set) {
         this.measuredDataset = input;
         this.input = input;
         this.workflow = workflow;
@@ -61,20 +61,26 @@ public class DefaultSegmentationTask implements SegmentationOp {
     }
     
     
-    public DefaultSegmentationTask(Dataset input, Dataset measured, Workflow workflow, MetaDataSet set) {
+    public DefaultSegmentationOp(Dataset input, Dataset measured, Workflow workflow, MetaDataSet set) {
         this.measuredDataset = measured;
         this.input = input;
         this.workflow = workflow;
         this.set = set;
     }
 
-    public DefaultSegmentationTask(Dataset measured, Img<BitType> mask, Workflow workflow, MetaDataSet set) {
+    public DefaultSegmentationOp(Dataset measured, Img<BitType> mask, Workflow workflow, MetaDataSet set) {
         this.measuredDataset = measured;
         this.output = mask;
         this.workflow = workflow;
         this.set = set;
     }
 
+    public void setMetaDataSet(MetaDataSet set) {
+        this.set = set;
+    }
+
+    
+    
     protected void setMeasuredDataset(Dataset measuredDataset) {
         this.measuredDataset = measuredDataset;
     }
@@ -104,7 +110,7 @@ public class DefaultSegmentationTask implements SegmentationOp {
 
     @Override
     public Dataset getInput() {
-        return measuredDataset;
+        return input;
     }
 
     @Override

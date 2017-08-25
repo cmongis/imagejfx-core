@@ -19,6 +19,7 @@
  */
 package ijfx.core.segmentation;
 
+import com.sun.deploy.uitoolkit.impl.fx.ui.FXAboutDialog;
 import ijfx.core.image.ImagePlaneService;
 import ijfx.core.image.PreviewService;
 import ijfx.core.metadata.MetaData;
@@ -72,6 +73,8 @@ public class SegmentedObjectExplorerWrapper extends AbstractExplorable {
 
     private WeakReference<ImageDisplay> imageDisplay = new WeakReference<>(null);
 
+    Image image;
+
     public SegmentedObjectExplorerWrapper(SegmentedObject object) {
         this.object = object;
         object.getOverlay().context().inject(this);
@@ -104,46 +107,51 @@ public class SegmentedObjectExplorerWrapper extends AbstractExplorable {
         return this.imageDisplay.get();
     }
 
-    private void load() {
+    public void load() {
 
     }
 
     @Override
-    public Image getImage() {
-        try {
+    public synchronized Image getImage() {
+        
 
-            RandomAccessibleInterval<? extends RealType> extractedObject;
-            if (object.getPixelSource() != null) {
+        if (image == null) {
+            try {
 
-                extractedObject = overlayDrawingService.extractObject(object.getOverlay(),object.getPixelSource());
+                RandomAccessibleInterval<? extends RealType> extractedObject;
+                if (object.getPixelSource() != null) {
 
-            } else {
+                    extractedObject = overlayDrawingService.extractObject(object.getOverlay(), object.getPixelSource());
 
-                // we get the position the overlay was extracted from
-                long[] nonPlanarPosition = MetaDataSetUtils.getNonPlanarPosition(getMetaDataSet());
+                } else {
 
-                // we open the image virtually just in case
-                File imageFile = new File(object.getMetaDataSet().get(MetaData.ABSOLUTE_PATH).getStringValue());
+                    // we get the position the overlay was extracted from
+                    long[] nonPlanarPosition = MetaDataSetUtils.getNonPlanarPosition(getMetaDataSet());
 
-                Dataset dataset = imagePlaneService.openVirtualDataset(imageFile);
-                // the pixels are extracted
-                extractedObject = overlayDrawingService.extractObject(object.getOverlay(), dataset, nonPlanarPosition);
+                    // we open the image virtually just in case
+                    File imageFile = new File(object.getMetaDataSet().get(MetaData.ABSOLUTE_PATH).getStringValue());
 
+                    Dataset dataset = imagePlaneService.openVirtualDataset(imageFile);
+                    // the pixels are extracted
+                    extractedObject = overlayDrawingService.extractObject(object.getOverlay(), dataset, nonPlanarPosition);
+
+                }
+                double min = object.getMetaDataSet().get(MetaData.STATS_PIXEL_MIN).getDoubleValue();
+                double max = object.getMetaDataSet().get(MetaData.STATS_PIXEL_MAX).getDoubleValue();
+                Image image = previewService.datasetToImage((RandomAccessibleInterval<? extends RealType>) extractedObject, new ColorTable8(), min, max);
+                Double sampleFactor = 100 * 100 / image.getWidth() / image.getHeight();
+                sampleFactor = sampleFactor < 1 ? 1 : sampleFactor;
+                this.image = resample(image, sampleFactor);
+
+            } catch (IOException ioe) {
+                logger.log(Level.SEVERE, "Error when accessing file " + getFile().getAbsolutePath(), ioe);
+                return null;
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, "Error when getting image for " + getTitle(), e);
+                return null;
             }
-            double min = object.getMetaDataSet().get(MetaData.STATS_PIXEL_MIN).getDoubleValue();
-            double max = object.getMetaDataSet().get(MetaData.STATS_PIXEL_MAX).getDoubleValue();
-            Image image = previewService.datasetToImage((RandomAccessibleInterval<? extends RealType>) extractedObject, new ColorTable8(), min, max);
-            Double sampleFactor = 100 * 100 / image.getWidth() / image.getHeight();
-            sampleFactor = sampleFactor < 1 ? 1 : sampleFactor;
-            return resample(image, sampleFactor);
-
-        } catch (IOException ioe) {
-            logger.log(Level.SEVERE, "Error when accessing file " + getFile().getAbsolutePath(), ioe);
-            return null;
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error when getting image for " + getTitle(), e);
-            return null;
         }
+        return image;
     }
 
     private Image resample(Image input, double scaleFactor) {

@@ -19,15 +19,22 @@
  */
 package ijfx.core.segmentation;
 
+import ijfx.commands.binary.BinaryToOverlay;
+import ijfx.core.metadata.MetaDataSet;
 import java.util.List;
 import mongis.utils.ProgressHandler;
+import net.imagej.Dataset;
+import net.imagej.overlay.Overlay;
+import net.imglib2.img.Img;
+import net.imglib2.type.logic.BitType;
 
 /**
  *
  * @author cyril
  */
-public interface SegmentationExecutor<T> {
-    
-    public List<T> execute(ProgressHandler progress, MaskHandler<T> handler, List<SegmentationOp> tasks);
-    
+@FunctionalInterface
+public interface MaskHandler<T> { 
+   T handle(ProgressHandler handler, MetaDataSet metadata, Dataset original,Img<BitType> result);
+   
+   
 }

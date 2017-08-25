@@ -19,22 +19,25 @@
  */
 package ijfx.core.segmentation;
 
-import ijfx.commands.binary.BinaryToOverlay;
-import ijfx.core.metadata.MetaDataSet;
 import java.util.List;
+import mongis.utils.CallbackTask;
 import mongis.utils.ProgressHandler;
-import net.imagej.Dataset;
-import net.imagej.overlay.Overlay;
-import net.imglib2.img.Img;
-import net.imglib2.type.logic.BitType;
 
 /**
  *
  * @author cyril
  */
-@FunctionalInterface
-public interface SegmentationHandler<T> { 
-   T handle(ProgressHandler handler, MetaDataSet metadata, Dataset original,Img<BitType> result);
-   
-   
+public interface SegmentationTask<T> {
+    
+    public SegmentationTask<T> setOpList(List<? extends SegmentationOp> op);
+    
+    public SegmentationTask<T> setExecutor(SegmentationExecutor ex);
+    
+    public CallbackTask<?,List<T>> executeAsync();
+    
+    public SegmentationTask<T> execute(ProgressHandler handler);
+    
+    public List<T> getResults();
+        
+    
 }

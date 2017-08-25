@@ -20,17 +20,17 @@
 package ijfx.core.segmentation;
 
 import ijfx.core.batch.BatchService;
-import ijfx.core.metadata.MetaDataSet;
+import ijfx.core.image.DatasetUtilsService;
 import ijfx.ui.main.ImageJFX;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import mongis.utils.ObservableProgressHandler;
 import mongis.utils.ProgressHandler;
 import net.imagej.Dataset;
+import net.imagej.DatasetService;
 import net.imglib2.img.Img;
 import net.imglib2.type.logic.BitType;
 import org.scijava.Context;
@@ -47,8 +47,14 @@ public class LinearSegmentationExecutor<T> implements SegmentationExecutor<T> {
     @Parameter
     BatchService batchService;
 
+    @Parameter
+    DatasetService datasetService;
+
+    @Parameter
+    DatasetUtilsService datasetUtilsService;
+
     Logger logger = ImageJFX.getLogger();
-    
+
     /**
      * List of all handlers currently executed
      */
@@ -56,80 +62,91 @@ public class LinearSegmentationExecutor<T> implements SegmentationExecutor<T> {
 
     private ProgressHandler progressHandler;
 
-    private final SegmentationHandler<T> resultHandler;
-    
-    public LinearSegmentationExecutor(Context context, SegmentationHandler<T> segmentationHandler) {
+    private MaskHandler<T> maskHandler;
+
+    public LinearSegmentationExecutor(Context context) {
         context.inject(this);
-        resultHandler = segmentationHandler;
     }
 
-    
-    
     @Override
-    public List<T> execute(ProgressHandler handler, List<SegmentationOp> tasks) {
+    public List<T> execute(ProgressHandler progress,MaskHandler<T> handler, List<SegmentationOp> tasks) {
 
-        this.progressHandler = ProgressHandler.check(handler);
+        this.progressHandler = ProgressHandler.check(progress);
+        
+        this.maskHandler = handler;
+        
+        List<T> results = new ArrayList<>(tasks.size());
+        for (SegmentationOp op : tasks) {
 
-        return tasks
-                .stream()
-                .map(this::createTask)
-                .map(callable->{
-                    try {
-                       return  callable.call();
-                    }
-                    catch(Exception e) {
-                        logger.log(Level.SEVERE, "error when executing task", e);
-                        return null;
-                    }
-                })
-                .collect(Collectors.toList());
+            try {
+                results.add(createTask(op).call());
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, "error when executing task", e);
+                results.add(null);
+            }
 
+        }
+        return results;
     }
 
     private Callable<T> createTask(SegmentationOp op) {
-
-        // we need to monitor the progress of each task
-        final ObservableProgressHandler segmentationHandler = new ObservableProgressHandler();
-
-        final ObservableProgressHandler completionHandler = new ObservableProgressHandler();
-
-        // we add it to the list of current task
-        subHandlerList.add(segmentationHandler);
-        subHandlerList.add(completionHandler);
-
-        return () -> {
-            // when one handler changes, all handlers are queried
-            // the big handler is updated
-            segmentationHandler.setOnChange(this::updateHandler);
-            MetaDataSet set = op.getMetaDataSet();
-            
-            if(op.getOutput() == null) {
-                op.load();
-                Dataset applyWorkflow = batchService.applyWorkflow(segmentationHandler, op.getInput().duplicate(), op.getWorkflow());
-                op.setOutput((Img<BitType>) applyWorkflow.getImgPlus().getImg());
-                
-            }
-            T result = this.resultHandler.handle(completionHandler,op.getMetaDataSet(),op.getMeasuredDataset(),op.getOutput());
-            op.dispose();
-            return result;
-        };
-        
+        return new Job(op, this::updateHandler);
     }
 
-    private synchronized void updateHandler() {
+    private class Job implements Callable<T> {
+
+        private final ObservableProgressHandler segmentationHandler = new ObservableProgressHandler();
+
+        private final ObservableProgressHandler completionHandler = new ObservableProgressHandler();
+
+        private final SegmentationOp op;
+
+        public Job(SegmentationOp op, Runnable onChange) {
+
+            this.op = op;
+            // we add it to the list of current task
+            subHandlerList.add(segmentationHandler);
+            subHandlerList.add(completionHandler);
+            segmentationHandler.setOnChange(onChange);
+            completionHandler.setOnChange(onChange);
+        }
+
+        @Override
+        public T call() throws Exception {
+            
+            segmentationHandler.setTotal(2+op.getWorkflow().getStepList().size());
+            
+            if (op.getOutput() == null) {
+                op.load();
+                segmentationHandler.increment(1.0);
+                Dataset input = datasetUtilsService.copy(op.getInput());
+                Dataset output = batchService.applyWorkflow(segmentationHandler, input, op.getWorkflow());
+                
+                op.setOutput((Img<BitType>) output.getImgPlus().getImg());
+                segmentationHandler.increment(1.0);
+            }
+            T result = maskHandler.handle(completionHandler, op.getMetaDataSet(), op.getMeasuredDataset(), op.getOutput());
+            op.dispose();
+            return result;
+        }
+
+    }
+
+    protected synchronized void updateHandler() {
         synchronized (subHandlerList) {
             double globalProgress = subHandlerList
                     .stream()
                     .mapToDouble(ProgressHandler::getProgress)
+                    .map(d->d < 0 ? 0 : d)
                     .sum() / subHandlerList.size();
 
             progressHandler.setProgress(globalProgress);
-
+            /*
             ProgressHandler get = subHandlerList
                     .stream()
                     .filter(h -> h.getProgress() < 1)
                     .sorted((o1, o2) -> Double.compare(o2.getProgress(), o1.getProgress()))
-                    .findFirst().get();
+                    .findFirst().get();*/
         }
     }
 

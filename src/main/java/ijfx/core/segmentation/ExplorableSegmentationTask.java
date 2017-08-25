@@ -19,44 +19,57 @@
  */
 package ijfx.core.segmentation;
 
-import ijfx.core.metadata.MetaDataSet;
+import ijfx.core.image.DatasetUtilsService;
+import ijfx.core.metadata.MetaData;
 import ijfx.core.workflow.Workflow;
 import ijfx.explorer.datamodel.Explorable;
-import net.imagej.Dataset;
-import net.imglib2.img.Img;
-import net.imglib2.type.logic.BitType;
+import ijfx.ui.main.ImageJFX;
+import java.util.logging.Level;
+import org.scijava.plugin.Parameter;
 
 /**
  *
  * @author cyril
  */
-public class ExplorableSegmentationTask extends DefaultSegmentationTask{
+public class ExplorableSegmentationTask extends DefaultSegmentationOp {
 
-    final Explorable explorable;
+    private final Explorable explorable;
+
+    private boolean measureSource;
+
+    @Parameter
+    DatasetUtilsService datasetUtilsService;
 
     public ExplorableSegmentationTask(Explorable explorable, Workflow workflow) {
-      
-        
-        super(null, workflow, explorable.getMetaDataSet());
-        
+
+        super();
         this.explorable = explorable;
-        
+        setWorkflow(workflow);
+        setMetaDataSet(explorable.getMetaDataSet());
     }
 
+    @Override
     public void load() {
-        setMeasuredDataset(explorable.getDataset());
-        setInput(getMeasuredDataset().duplicate());
-    }
-    
-    public void dispose() {
         
+        System.out.println(explorable.getMetaDataSet());
+        setInput(explorable.getDataset());
+        
+        try {
+            setMeasuredDataset(datasetUtilsService.openSource(explorable, true));
+        } catch (Exception e) {
+            ImageJFX.getLogger().log(Level.SEVERE, "Couldn't open the source.", e);
+            setMeasuredDataset(explorable.getDataset());
+        }
+        System.out.println("Datasets loaded");
+    }
+
+    public void dispose() {
+
         super.dispose();
         setInput(null);
         setMeasuredDataset(null);
         explorable.dispose();
-        
+
     }
-    
-  
-    
+
 }

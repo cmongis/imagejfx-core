@@ -24,38 +24,41 @@ import ijfx.commands.binary.BinaryToOverlay;
 import ijfx.core.batch.item.BatchItemBuilder;
 import ijfx.core.image.ImagePlaneService;
 import ijfx.core.imagedb.ImageRecordService;
+import ijfx.core.imagedb.MetaDataExtractionService;
 import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataService;
 import ijfx.core.metadata.MetaDataSet;
-import ijfx.core.metadata.MetaDataSetType;
 import ijfx.core.overlay.MeasurementService;
 import ijfx.core.overlay.OverlayUtilsService;
-import ijfx.core.utils.AxisUtils;
 import ijfx.core.utils.DimensionUtils;
 import ijfx.core.workflow.DefaultWorkflow;
 import ijfx.core.workflow.Workflow;
+import ijfx.core.workflow.WorkflowService;
 import ijfx.core.workflow.WorkflowStep;
+import ijfx.explorer.ExplorerService;
+import ijfx.explorer.core.FolderManagerService;
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.ui.main.ImageJFX;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import mongis.utils.ProgressHandler;
 import net.imagej.Dataset;
 import net.imagej.DatasetService;
-import net.imagej.axis.CalibratedAxis;
 import net.imagej.display.ImageDisplay;
 import net.imagej.display.ImageDisplayService;
-import net.imagej.overlay.Overlay;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.type.logic.BitType;
 import org.scijava.Context;
+import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
+import org.scijava.ui.UIService;
 
 /**
  *
@@ -67,7 +70,7 @@ public class SegmentationTaskBuilder {
 
     final BatchItemBuilder itemBuilder;
 
-    Workflow workflow;
+    DefaultWorkflow workflow = new DefaultWorkflow();
 
     Logger logger = ImageJFX.getLogger();
 
@@ -95,6 +98,21 @@ public class SegmentationTaskBuilder {
     @Parameter
     ImageRecordService imageRecordService;
 
+    @Parameter
+    ExplorerService explorerService;
+
+    @Parameter
+    FolderManagerService folderManagerService;
+
+    @Parameter
+    UIService uiService;
+
+    @Parameter
+    MetaDataExtractionService metaDataExtractionService;
+
+    @Parameter
+    WorkflowService workflowService;
+
     List<SegmentationOp> opList = new ArrayList<>();
 
     public SegmentationTaskBuilder(Context context) {
@@ -116,53 +134,79 @@ public class SegmentationTaskBuilder {
         Img<BitType> mask = overlayUtilsService.extractBinaryMask(display);
 
         Dataset dataset = imageDisplayService.getActiveDataset(display);
-        
-        String source = imageDisplayService.getActiveDataset(display).getSource();
-        MetaDataSet set = null;
-                
-        if(source != null && new File(source).exists()) {
-           set = imageRecordService.getRecord(new File(imageDisplayService.getActiveDataset(display).getSource())).getMetaDataSet();
-            
-        }
-        
-        
+
+        // String source = imageDisplayService.getActiveDataset(display).getSource();
+        MetaDataSet set = new MetaDataSet();
+        set.put(MetaData.create(MetaData.NAME, display.getName()));
+
         if (mask == null) {
             Dataset maskDataset = datasetService.create((RandomAccessibleInterval) imagePlaneService.planeView(display));
 
-            opList.add(new DefaultSegmentationTask(imageDisplayService.getActiveDataset(display), maskDataset, workflow, set));
+            opList.add(new DefaultSegmentationOp(imageDisplayService.getActiveDataset(display), maskDataset, workflow, set));
 
         } else {
-            opList.add(new DefaultSegmentationTask(dataset, mask, workflow, set));
+            opList.add(new DefaultSegmentationOp(dataset, mask, workflow, set));
         }
 
         return this;
     }
 
     public SegmentationTaskBuilder add(Collection<? extends Explorable> list) {
-        
-       opList.addAll(list
+
+        opList.addAll(list
                 .stream()
-                .map(exp->new ExplorableSegmentationTask(exp, workflow))
+                .map(exp -> new ExplorableSegmentationTask(exp, workflow))
+                .peek(context::inject)
                 .collect(Collectors.toList()));
-       
-       
-       return this;
-        
-        
+
+        return this;
+
     }
-    
+
+    public SegmentationTaskBuilder addStep(Class<? extends Command> cmd, Object... params) {
+        workflow.getStepList().add(workflowService.createStep(cmd, params));
+        return this;
+    }
+
+    public SegmentationTaskBuilder add(String folder, boolean separatePlanes) {
+
+        List<Explorable> collect = explorerService
+                .indexDirectory(ProgressHandler.console(), new File(folder))
+                .collect(Collectors.toList());
+
+        if (separatePlanes) {
+            add(folderManagerService.extractPlanes(collect));
+        } else {
+            add(collect);
+        }
+
+        return this;
+
+    }
+
+    public <T> SegmentationTaskBuilder filterNumber(String key, Predicate<Double> predicate) {
+
+        opList = opList
+                .stream()
+                .filter(op
+                        -> predicate.test(op.getMetaDataSet().getDoubleValue(key, 0)))
+                .collect(Collectors.toList());
+
+        return this;
+    }
+
     public SegmentationTaskBuilder addDataset(Dataset dataset, MetaDataSet set, boolean separatePlane) {
 
-       List<SegmentationOp> ops = new ArrayList<>();
+        List<SegmentationOp> ops = new ArrayList<>();
 
         if (separatePlane = false || dataset.numDimensions() == 2) {
-            ops = Lists.newArrayList(new DefaultSegmentationTask(dataset, workflow, set));
+            ops = Lists.newArrayList(new DefaultSegmentationOp(dataset, workflow, set));
         } else {
             long[][] possibilities = DimensionUtils.allPossibilities(dataset);
             ops = Stream
                     .of(possibilities)
                     .map(position -> imagePlaneService.isolatePlane(dataset, DimensionUtils.planarToAbsolute(position)))
-                    .map(plane -> new DefaultSegmentationTask(plane, workflow, set))
+                    .map(plane -> new DefaultSegmentationOp(plane, workflow, set))
                     .collect(Collectors.toList());
         }
         return this;
@@ -174,11 +218,12 @@ public class SegmentationTaskBuilder {
     }
 
     public SegmentationTaskBuilder setWorkflow(List<WorkflowStep> steps) {
-        return setWorkflow(new DefaultWorkflow(steps));
+        workflow.getStepList().addAll(steps);
+        return this;
     }
 
     public SegmentationTaskBuilder setWorkflow(Workflow workflow) {
-        this.workflow = workflow;
+        this.workflow.getStepList().addAll(workflow.getStepList());
         return this;
     }
 
@@ -187,59 +232,14 @@ public class SegmentationTaskBuilder {
         return this;
     }
 
-    private <T> SegmentationOpList<T> build(SegmentationHandler<T> handler) {
-
-        SegmentationOpList<T> segmentationOpList = new SegmentationOpList<>(handler);
-        context.inject(segmentationOpList);
-        segmentationOpList.addAll(opList);
-
-        return segmentationOpList;
-        // take input dataset   
+    public MeasurementSegmentationTask measure() {
+        MeasurementSegmentationTask measurementSegmentationTask = new MeasurementSegmentationTask(context);
+        measurementSegmentationTask.setOpList(opList);
+        return measurementSegmentationTask;            
     }
-
-    public SegmentationOpList<List<? extends SegmentedObject>> measure() {
-        return build(this::measure);
-    }
-
-    private List<? extends SegmentedObject> measure(ProgressHandler handler, MetaDataSet set, Dataset original, Img<BitType> mask) {
-
-        List<Overlay> overlays = Lists.newArrayList(BinaryToOverlay.transform(context, mask, true));
-
-        handler.setTotal(overlays.size());
-
-        List<SegmentedObject> objects = new ArrayList<SegmentedObject>();
-
-        if (original.numDimensions() > 2) {
-
-            CalibratedAxis[] axes = AxisUtils.getAxes(original);
-
-            for (long[] position : DimensionUtils.allPossibilities(original)) {
-                MetaDataSet planeMetaDataSet = new MetaDataSet(MetaDataSetType.PLANE);
-                planeMetaDataSet.merge(set);
-
-                metaDataService.fillPositionMetaData(planeMetaDataSet, axes, position);
-
-                List<? extends SegmentedObject> measureOverlays = measurementService.measureOverlays(overlays, original, position);
-
-                measureOverlays.forEach(obj -> obj.getMetaDataSet().merge(planeMetaDataSet));
-
-                handler.increment(1);
-                objects.addAll(measureOverlays);
-
-            }
-        } else {
-            List<SegmentedObject> measureOverlays = measurementService.measureOverlays(overlays, (RandomAccessibleInterval) original);
-            measureOverlays
-                    .forEach(obj -> obj.getMetaDataSet().merge(set));
-
-            objects.addAll(measureOverlays);
-        }
-
-        return objects;
-    }
-
-    public SegmentationOpList<Img<BitType>> getAsMask() {
-        return build(this::getAsMask);
+    
+    public RawSegmentation getAsMask() {
+        return new RawSegmentation(context,opList);
     }
 
     private Img<BitType> getAsMask(ProgressHandler handler, MetaDataSet set, Dataset original, Img<BitType> mask) {
@@ -252,13 +252,10 @@ public class SegmentationTaskBuilder {
 
         finalSet.merge(set);
 
-        set.put(MetaData.create(MetaData.COUNT, BinaryToOverlay.transform(context, original, true).length));
+        set.put(MetaData.create(MetaData.COUNT, BinaryToOverlay.transform(context, mask, false).length));
 
         return finalSet;
 
     }
 
-    public SegmentationOpList<MetaDataSet> count() {
-        return build(this::count);
-    }
 }
