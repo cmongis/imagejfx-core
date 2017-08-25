@@ -21,6 +21,7 @@ package ijfx.explorer.core;
 
 import ijfx.core.IjfxService;
 import ijfx.explorer.ExplorationMode;
+import ijfx.explorer.datamodel.Explorable;
 import java.io.File;
 import java.util.List;
 import net.imagej.display.ImageDisplay;
@@ -60,5 +61,7 @@ public interface FolderManagerService extends IjfxService {
     public void openImageFolder(String imagePath);
     
     public void openImageFolder(ImageDisplay imageDisplay);
+    
+    public List<Explorable> extractPlanes(List<? extends Explorable> object);
     
 }

@@ -52,7 +52,6 @@ import java.util.stream.Stream;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
-import mongis.utils.CallbackTask;
 import mongis.utils.ProgressHandler;
 import org.scijava.Context;
 import org.scijava.app.StatusService;
@@ -107,6 +106,8 @@ public class DefaultFolder implements Folder, FileChangeListener {
     @Parameter
     private ExplorerService explorerService;
     
+    private String status = "Click to open";
+    
     Property<Task> currentTaskProperty = new SimpleObjectProperty<>();
 
     public DefaultFolder() {
@@ -136,31 +137,19 @@ public class DefaultFolder implements Folder, FileChangeListener {
     }
 
     @Override
-    public List<Explorable> getFileList() {
-
-        if (files == null) {
-
-            files = new ArrayList<>();
-
-            Task task = new CallbackTask<Void, List<Explorable>>()
-                    .setName("Getting file list...")
-                    .callback(this::fetchFiles)
-                    .then(result -> {
-                        files = result;
-                        eventService.publish(new FolderUpdatedEvent().setObject(this));
-                    })
-                    .setIn(currentTaskProperty())
-                    .start();
-
-            loadingScreenService.frontEndTask(task);
-
+    public List<Explorable> getFileList(ProgressHandler handler) {
+        if (files == null) {            
+            fetchFiles(handler);
+            listenToDirectoryChange();
         }
-        listenToDirectoryChange();
+       
         return files;
     }
 
-    private List<Explorable> fetchFiles(ProgressHandler progress, Void v) {
-
+    private List<Explorable> fetchFiles(ProgressHandler progress) {
+        
+        
+        setStatus("Fetching files...");
         
         /*
         //if(progress == null) progress = new SilentProgressHandler();
@@ -193,7 +182,10 @@ public class DefaultFolder implements Folder, FileChangeListener {
         List<Explorable> explorables = explorerService.indexDirectory(progress,file)
                 .map(this::addPlanes)
                 .collect(Collectors.toList());
-                
+        
+        files = explorables;
+        
+        setStatus(String.format("%d images / %d planes",explorables.size(),planes.size()));
         
         return explorables;
     }
@@ -203,8 +195,17 @@ public class DefaultFolder implements Folder, FileChangeListener {
         return explorerService.getSeries(record);
     }
 
-  
+    public String getStatus() {
+        return status;
+    }
 
+    public void setStatus(String status) {
+        this.status = status;
+        eventService.publish(new FolderUpdatedEvent().setObject(this));
+    }
+
+  
+  
     private Explorable addPlanes(Explorable explorable) {
 
         List<Explorable> planeExplorableList = metadataExtractionService.extractPlaneMetaData(explorable.getMetaDataSet())
@@ -235,12 +236,16 @@ public class DefaultFolder implements Folder, FileChangeListener {
     }
 
     @Override
-    public List<Explorable> getPlaneList() {
+    public List<Explorable> getPlaneList(ProgressHandler handler) {
+        
+        // the files should be there before the planes
+        getFileList(handler);
+        
         return planes;
     }
 
     @Override
-    public List<Explorable> getObjectList() {
+    public List<Explorable> getObjectList(ProgressHandler handler) {
         return objects;
     }
 
@@ -277,7 +282,7 @@ public class DefaultFolder implements Folder, FileChangeListener {
         if (file.getName().endsWith(OverlayIOService.OVERLAY_FILE_EXTENSION)) {
             File imageFile = overlayIOService.getImageFileFromOverlayFile(file);
 
-            getObjectList().addAll(loadOverlay(imageFile, file));
+            //getObjectList().addAll(loadOverlay(imageFile, file));
         }
 
     }
@@ -305,6 +310,7 @@ public class DefaultFolder implements Folder, FileChangeListener {
         return currentTaskProperty;
     }
 
+    /*
     @EventHandler
     public void onObjectSegmented(ObjectSegmentedEvent event) {
         if (event.getFile().getAbsolutePath().indexOf(file.getAbsolutePath()) == 0) {
@@ -316,8 +322,8 @@ public class DefaultFolder implements Folder, FileChangeListener {
                     .collect(Collectors.toList())
             );
         }
-    }
-
+    }*/
+    /*
     @Override
     public void addObjects(List<SegmentedObject> objects) {
 
@@ -335,7 +341,7 @@ public class DefaultFolder implements Folder, FileChangeListener {
 
         eventService.publishLater(new FolderUpdatedEvent().setObject(this));
 
-    }
+    }*/
 
     public boolean isFilePartOf(File f) {
         return f.getAbsolutePath().startsWith(file.getAbsolutePath());

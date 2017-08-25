@@ -25,6 +25,7 @@ import java.io.File;
 import java.util.List;
 import javafx.beans.property.Property;
 import javafx.concurrent.Task;
+import mongis.utils.ProgressHandler;
 
 /**
  *
@@ -39,15 +40,17 @@ public interface Folder {
     
     public File getDirectory();
     
-    public List<Explorable> getFileList();
+    public List<Explorable> getFileList(ProgressHandler handler);
     
-    public List<Explorable> getPlaneList();
+    public List<Explorable> getPlaneList(ProgressHandler handler);
     
-    public List<Explorable> getObjectList();
+    public List<Explorable> getObjectList(ProgressHandler handler);
     
     public Property<Task> currentTaskProperty();
     
-    public void addObjects(List<SegmentedObject> objects);
+    public String getStatus();
+    
+    //public void addObjects(List<SegmentedObject> objects);
     
     public boolean isFilePartOf(File f);
     

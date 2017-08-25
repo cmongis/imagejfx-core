@@ -32,6 +32,7 @@ import ijfx.explorer.ExplorationMode;
 import ijfx.explorer.ExplorerActivity;
 import ijfx.explorer.ExplorerService;
 import ijfx.explorer.datamodel.Explorable;
+import ijfx.explorer.datamodel.wrappers.PlaneMetaDataSetWrapper;
 import ijfx.explorer.events.ExplorationModeChangeEvent;
 import ijfx.explorer.events.FolderAddedEvent;
 import ijfx.explorer.events.FolderDeletedEvent;
@@ -46,7 +47,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
-import mongis.utils.AsyncCallable;
+import java.util.stream.Collectors;
 import mongis.utils.CallbackTask;
 import mongis.utils.ProgressHandler;
 import mongis.utils.SilentProgressHandler;
@@ -163,8 +164,7 @@ public class DefaultFolderManagerService extends AbstractService implements Fold
 
             logger.info("Setting current folder " + folder.getName());
 
-            explorerService.setItems(currentFolder.getFileList());
-
+            //explorerService.setItems(currentFolder.getFileList(ProgressHandler.NONE));
             uiContextService.enter("explore-files");
             uiContextService.update();
             updateExploredElements();
@@ -193,8 +193,8 @@ public class DefaultFolderManagerService extends AbstractService implements Fold
 
         ExplorationMode mode = currentExplorationMode;
         logger.info("Updating current elements");
-        AsyncCallable<List<Explorable>> task = new AsyncCallable<>();
-        task.setTitle("Fetching elements...");
+        CallbackTask<Void, List<Explorable>> task = new CallbackTask<>();
+        task.setName("Fetching elements...");
 
         if (currentFolder == null) {
             return;
@@ -203,18 +203,19 @@ public class DefaultFolderManagerService extends AbstractService implements Fold
             if (mode != null) {
                 switch (mode) {
                     case FILE:
-                        task.run(currentFolder::getFileList);
+                        task.call(currentFolder::getFileList);
                         break;
                     case PLANE:
-                        task.run(currentFolder::getPlaneList);
+                        task.call(currentFolder::getPlaneList);
                         break;
                     case OBJECT:
-                        task.run(currentFolder::getObjectList);
+                        task.call(currentFolder::getObjectList);
 
                 }
             }
             task.then(this::setItems);
             task.start();
+            System.out.println(ImageJFX.getThreadPool());
             loadingScreenService.frontEndTask(task, false);
         }
         if (mode != null) {
@@ -292,7 +293,7 @@ public class DefaultFolderManagerService extends AbstractService implements Fold
     public void completeStatistics() {
         loadingScreenService.frontEndTask(new CallbackTask<List<Explorable>, Integer>()
                 .callback(this::fetchMoreStatistics)
-                .setInput(getCurrentFolder().getFileList())
+                .setInput(getCurrentFolder().getFileList(ProgressHandler.NONE))
                 .then(this::onStatisticComputingEnded)
                 .start()
         );
@@ -350,6 +351,22 @@ public class DefaultFolderManagerService extends AbstractService implements Fold
 
         }
 
+    }
+
+    @Override
+    public List<Explorable> extractPlanes(List<? extends Explorable> list) {
+
+        return list
+                .stream()
+                .flatMap(exp -> {
+
+                    return metaDataExtractionService
+                            .extractPlaneMetaData(exp.getMetaDataSet())
+                            .stream()
+                            .map(m -> new PlaneMetaDataSetWrapper(getContext(), m));
+
+                })
+                .collect(Collectors.toList());
     }
 
 }
