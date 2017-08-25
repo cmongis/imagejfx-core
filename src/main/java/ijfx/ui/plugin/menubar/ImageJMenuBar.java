@@ -120,9 +120,9 @@ public class ImageJMenuBar extends MenuBar implements UiPlugin {
     @EventHandler
     private void onMenusAddedEvent(MenusAddedEvent event) {
         
-        ShadowMenu parent = event.getItems().get(0).getParent();
+        //ShadowMenu parent = event.getItems().get(0).getParent();
         
-        event.getItems().forEach(creator::addMenu);
+        //event.getItems().forEach(creator::addMenu);
         
     }
     
