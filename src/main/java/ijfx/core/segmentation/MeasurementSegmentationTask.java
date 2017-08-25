@@ -195,13 +195,16 @@ public class MeasurementSegmentationTask extends AbstractSegmentationTask<Segmen
                     .append("")
                     .append(FilenameUtils.getBaseName(exp.getMetaDataSet().getStringValue(MetaData.FILE_NAME, "None")))
                     .append("_pl")
-                    .append(exp.getMetaDataSet().getStringValue(MetaData.POSITION, ""))
+                    .append(exp.getMetaDataSet().getStringValue(MetaData.PLANE_NON_PLANAR_POSITION, ""))
                     .append("_")
                     .append(exp.getMetaDataSet().getStringValue(MetaData.NAME, "noname"))
                     .append(".tif")
                     .toString();
             
             try {
+                if(new File(filename).getParentFile().exists() == false) {
+                    new File(filename).getParentFile().mkdirs();
+                }
                 datasetIOService.save(exp.getDataset(), filename);
             } catch (IOException ex) {
                 Logger.getLogger(MeasurementSegmentationTask.class.getName()).log(Level.SEVERE, null, ex);

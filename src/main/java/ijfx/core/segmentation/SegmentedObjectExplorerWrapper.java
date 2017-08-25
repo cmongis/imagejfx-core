@@ -69,6 +69,9 @@ public class SegmentedObjectExplorerWrapper extends AbstractExplorable {
     @Parameter
     private LoadingScreenService loadingScreenService;
 
+    @Parameter
+    private Dataset extractedObject;
+
     private Dataset source;
 
     private WeakReference<ImageDisplay> imageDisplay = new WeakReference<>(null);
@@ -108,45 +111,23 @@ public class SegmentedObjectExplorerWrapper extends AbstractExplorable {
     }
 
     public void load() {
-
+        getDataset();
     }
 
     @Override
     public synchronized Image getImage() {
-        
 
         if (image == null) {
             try {
-
-                RandomAccessibleInterval<? extends RealType> extractedObject;
-                if (object.getPixelSource() != null) {
-
-                    extractedObject = overlayDrawingService.extractObject(object.getOverlay(), object.getPixelSource());
-
-                } else {
-
-                    // we get the position the overlay was extracted from
-                    long[] nonPlanarPosition = MetaDataSetUtils.getNonPlanarPosition(getMetaDataSet());
-
-                    // we open the image virtually just in case
-                    File imageFile = new File(object.getMetaDataSet().get(MetaData.ABSOLUTE_PATH).getStringValue());
-
-                    Dataset dataset = imagePlaneService.openVirtualDataset(imageFile);
-                    // the pixels are extracted
-                    extractedObject = overlayDrawingService.extractObject(object.getOverlay(), dataset, nonPlanarPosition);
-
-                }
+                
                 double min = object.getMetaDataSet().get(MetaData.STATS_PIXEL_MIN).getDoubleValue();
                 double max = object.getMetaDataSet().get(MetaData.STATS_PIXEL_MAX).getDoubleValue();
                 Image image = previewService.datasetToImage((RandomAccessibleInterval<? extends RealType>) extractedObject, new ColorTable8(), min, max);
                 Double sampleFactor = 100 * 100 / image.getWidth() / image.getHeight();
                 sampleFactor = sampleFactor < 1 ? 1 : sampleFactor;
                 this.image = resample(image, sampleFactor);
-
-            } catch (IOException ioe) {
-                logger.log(Level.SEVERE, "Error when accessing file " + getFile().getAbsolutePath(), ioe);
-                return null;
-            } catch (Exception e) {
+            }
+           catch (Exception e) {
                 logger.log(Level.SEVERE, "Error when getting image for " + getTitle(), e);
                 return null;
             }
@@ -199,7 +180,33 @@ public class SegmentedObjectExplorerWrapper extends AbstractExplorable {
 
     @Override
     public Dataset getDataset() {
-        return null;
+
+        //RandomAccessibleInterval<? extends RealType> extractedObject;
+        
+        if(extractedObject != null) return extractedObject;
+        
+        if (object.getPixelSource() != null) {
+
+            extractedObject = overlayDrawingService.extractObject(object.getOverlay(), object.getPixelSource());
+
+        } else {
+
+            // we get the position the overlay was extracted from
+            long[] nonPlanarPosition = MetaDataSetUtils.getNonPlanarPosition(getMetaDataSet());
+
+            // we open the image virtually just in case
+            File imageFile = new File(object.getMetaDataSet().get(MetaData.ABSOLUTE_PATH).getStringValue());
+            try {
+            Dataset dataset = imagePlaneService.openVirtualDataset(imageFile);
+            // the pixels are extracted
+            extractedObject = overlayDrawingService.extractObject(object.getOverlay(), dataset, nonPlanarPosition);
+            }
+            catch(IOException ioe) {
+                logger.log(Level.SEVERE,"Couldn't load object dataset",ioe);
+            }
+        }
+        return extractedObject;
+
     }
 
     @Override
@@ -212,6 +219,6 @@ public class SegmentedObjectExplorerWrapper extends AbstractExplorable {
     }
 
     public void dispose() {
-
+        extractedObject = null;
     }
 }
