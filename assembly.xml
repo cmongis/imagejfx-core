@@ -4,8 +4,9 @@
     <formats>
         <format>dir</format>
     </formats>
+    
  
-   <includeBaseDirectory>true</includeBaseDirectory>
+   <includeBaseDirectory>false</includeBaseDirectory>
  
     <!-- Adds the dependencies of our application to the lib directory -->
     <dependencySets>
@@ -32,8 +33,9 @@
         -->
         
         <fileSet>
-            <directory>${project.build.directory}</directory>
-            <outputDirectory></outputDirectory>
+           <directory>${project.build.directory}</directory>
+            
+            <outputDirectory>./lib</outputDirectory>
             <includes>
                 <include>*.jar</include>
             </includes>
