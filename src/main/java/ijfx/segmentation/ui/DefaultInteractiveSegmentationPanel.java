@@ -21,17 +21,20 @@ package ijfx.segmentation.ui;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import ijfx.core.activity.ActivityService;
 import ijfx.core.metadata.MetaDataSet;
 import ijfx.core.metadata.MetaDataSetDisplayService;
 import ijfx.core.segmentation.DisplayedSegmentedObject;
 import ijfx.core.segmentation.SegmentationService;
 import ijfx.core.segmentation.SegmentedObject;
 import ijfx.core.segmentation.SegmentedObjectExplorerWrapper;
+import ijfx.core.uicontext.UiContextProperty;
 import ijfx.core.uicontext.UiContextService;
 import ijfx.core.uiplugin.Localization;
 import ijfx.explorer.ExplorableList;
+import ijfx.explorer.core.FolderManagerService;
 import ijfx.explorer.datamodel.Explorable;
-import ijfx.explorer.datamodel.MetaDataOwnerDisplay;
+import ijfx.segmentation.commands.BatchSegment;
 import ijfx.segmentation.core.InteractiveSegmentation;
 import ijfx.segmentation.core.InteractiveSegmentationPanel;
 import ijfx.segmentation.core.InteractiveSegmentationService;
@@ -48,6 +51,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -62,6 +66,8 @@ import mongis.utils.CallbackTask;
 import mongis.utils.FXUtilities;
 import mongis.utils.ProgressHandler;
 import net.imagej.display.ImageDisplayService;
+import org.scijava.Context;
+import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.UIService;
@@ -92,7 +98,12 @@ public class DefaultInteractiveSegmentationPanel extends BorderPane implements U
     @FXML
     private Button segmentMoreButton;
 
-    @Parameter
+  
+    /*
+        SciJava services
+     */
+    
+      @Parameter
     private SegmentationService segmentationService;
 
     @Parameter
@@ -103,22 +114,38 @@ public class DefaultInteractiveSegmentationPanel extends BorderPane implements U
 
     @Parameter
     private MetaDataSetDisplayService metadataDisplaySrv;
+
+    @Parameter
+    private CommandService commandService;
     
-    private Runnable onRefresh;
+    @Parameter
+    private Context context;
+    
+    
+    @Parameter
+    private LoadingScreenService loadingScreenService;
 
+    @Parameter
+    private InteractiveSegmentationService segUISrv;
+
+    @Parameter
+    private UiContextService uiContextSrv;
+
+    @Parameter
+    private ActivityService activityService;
+
+    @Parameter
+    private FolderManagerService folderManagerService;
+
+    
     /*
-        SciJava services
-     */
-    @Parameter
-    LoadingScreenService loadingScreenService;
-
-    @Parameter
-    InteractiveSegmentationService segUISrv;
-
-    @Parameter
-    UiContextService uiContextSrv;
-
-    Map<Class<?>, TitledPane> paneMap = new HashMap<>();
+        Attributes
+    */
+    
+    private Map<Class<?>, TitledPane> paneMap = new HashMap<>();
+    
+    private UiContextProperty uiContextProperty;
+   
 
     /*
         Constants
@@ -154,6 +181,10 @@ public class DefaultInteractiveSegmentationPanel extends BorderPane implements U
 
         accordion.expandedPaneProperty().addListener(this::onExpanded);
 
+        uiContextProperty = new UiContextProperty(context, UiContexts.EXPLORE);
+        
+        segmentMoreButton.textProperty().bind(Bindings.createStringBinding(this::getSegmentMoreButtonText, uiContextProperty));
+        
         refresh();
         return this;
     }
@@ -211,6 +242,8 @@ public class DefaultInteractiveSegmentationPanel extends BorderPane implements U
 
     private void segmentAndAnalyseEachPlane(ProgressHandler event) {
 
+        commandService.run(BatchSegment.class, true);
+
     }
 
     @Override
@@ -242,51 +275,67 @@ public class DefaultInteractiveSegmentationPanel extends BorderPane implements U
 
     @FXML
     public void analyseParticles() {
+        
+        /*
         segmentationService
                 .createSegmentation()
                 .addImageDisplay(imageDisplayService.getActiveImageDisplay())
                 .measure()
                 .executeAsync()
                 .submit(loadingScreenService)
-                .then(this::displayObject);
-                         
+                .then(this::displayObject);*/
+
     }
 
     private void displayObject(List<List<? extends SegmentedObject>> result) {
         List<? extends Explorable> objectList
                 = result.stream()
                         .flatMap(objects -> objects.stream())
-                        .map(object->new DisplayedSegmentedObject(imageDisplayService.getActiveImageDisplay(), object))
-                        .map(object->new SegmentedObjectExplorerWrapper(object))
+                        .map(object -> new DisplayedSegmentedObject(imageDisplayService.getActiveImageDisplay(), object))
+                        .map(object -> new SegmentedObjectExplorerWrapper(object))
                         .collect(Collectors.toList());
-                        
-        
-       uiService.show(new ExplorableList(objectList));
+
+        uiService.show(new ExplorableList(objectList));
     }
 
     @FXML
     public void segmentMore() {
-
+        if (!isExplorer()) {
+            folderManagerService.openImageFolder(imageDisplayService.getActiveImageDisplay());
+        } else {
+            commandService.run(BatchSegment.class, true,"workflow",segUISrv.getWorkflow());
+        }
     }
 
     @FXML
     public void countObjects() {
         
+        /*
         segmentationService
                 .createSegmentation()
                 .addImageDisplay(imageDisplayService.getActiveImageDisplay())
                 .count()
                 .executeAsync()
-                .then(this::displayCount);
-        
+                .then(this::displayCount);*/
+
     }
+
+    private String getSegmentMoreButtonText() {
+        if(isExplorer()) {
+            return "Launch";
+        }
+        else {
+            return "Batch";
+        }
+    }
+    
     
     private void displayCount(List<MetaDataSet> metaDataSet) {
         metadataDisplaySrv.addMetaDataSetToDisplay("Object count", metaDataSet);
     }
 
     private boolean isExplorer() {
-        return false;
+        return uiContextProperty.get();
     }
 
     @FXML
