@@ -45,5 +45,4 @@ public interface DataFilter<T> {
     ObservableValue<Predicate<T>> predicateProperty();
 
     Node getContent();
-
 }
