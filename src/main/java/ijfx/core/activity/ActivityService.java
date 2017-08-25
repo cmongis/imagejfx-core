@@ -57,4 +57,8 @@ public interface ActivityService extends IjfxService{
     
     public void reloadCurrentActivity();
     
+    default boolean isCurrentActivity(Class<? extends Activity> activityType) {
+        return getActivity(activityType) == getCurrentActivity();
+    }
+    
 }
