@@ -44,6 +44,7 @@ public class MetaDataSetUtils {
         list
                 .parallelStream()
                 .forEach(set -> {
+                    if(set != null && set.getMetaDataSet() != null)
             possibleKeys.addAll(set.getMetaDataSet().keySet());
         });
         return possibleKeys;

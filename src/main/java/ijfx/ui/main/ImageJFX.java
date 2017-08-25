@@ -33,6 +33,7 @@ import javafx.util.Duration;
 import net.imagej.ImageJ;
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
+import org.scijava.ui.swing.SwingUI;
 
 /**
  *
@@ -109,10 +110,12 @@ public final class ImageJFX  {
         
         
         ImageJ imagej = new ImageJ();
-        imagej.ui().setDefaultUI(imagej.ui().getUI(UI_NAME));
-        //imagej.ui().showUI(UI_NAME);
-        //imagej.ui().setDefaultUI(imagej.ui().getUI(SwingUI.NAME));
+        imagej.ui().setDefaultUI(imagej.ui().getUI(SwingUI.NAME));
         imagej.ui().showUI();   
+        imagej.ui().setDefaultUI(imagej.ui().getUI(UI_NAME));
+        imagej.ui().showUI(UI_NAME);
+        //imagej.ui().setDefaultUI(imagej.ui().getUI(SwingUI.NAME));
+       
         
     }
     
@@ -164,4 +167,6 @@ public final class ImageJFX  {
         return Runtime.getRuntime().availableProcessors();
     }
 
+    
+    
 }

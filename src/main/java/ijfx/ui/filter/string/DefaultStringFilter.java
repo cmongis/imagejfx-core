@@ -181,7 +181,7 @@ public class DefaultStringFilter extends BorderPane implements Initializable, St
         
         // updating count
         allItems.forEach(item->item.setNumber(itemCount.get(item.getName())));
-
+        allItems.forEach(item->item.setState(false));
         Platform.runLater(this::updateDisplayedItems);
         
         predicateProperty().setValue(null);

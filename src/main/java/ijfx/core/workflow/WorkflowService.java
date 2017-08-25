@@ -17,35 +17,19 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.ui.main;
+package ijfx.core.workflow;
 
+import ijfx.core.IjfxService;
 import org.scijava.command.Command;
-import org.scijava.command.ContextCommand;
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
-import org.scijava.ui.UIService;
-import org.scijava.ui.swing.SwingUI;
 
 /**
  *
  * @author cyril
  */
-@Plugin(type = Command.class, menuPath="Help > Switch to ImageJ-FX")
-public class ActivateImageJFX extends ContextCommand {
-
-    @Parameter
-    UIService uiService;
+public interface WorkflowService extends IjfxService{
     
-    @Override
-    public void run() {
-        
-        uiService.getUI(SwingUI.NAME).dispose();
-        
-        uiService.setDefaultUI(uiService.getUI(ImageJFX.UI_NAME));
-        uiService.showUI(ImageJFX.UI_NAME);
-        
-        
-        
-    }
+    public WorkflowStep createStep(Class<? extends Command> cmdType, Object... params);
+    public WorkflowStep createStep(String cmd, Object... params);
+    
     
 }

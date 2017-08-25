@@ -124,7 +124,7 @@ public class ScriptEditorSidePanel extends BorderPane implements UiPlugin{
                 .filter(info->info.getPluginType().getSimpleName().contains("Service"))
                 .collect(Collectors.toList());// List<PluginInfo<?>>
         
-        this.listView.refresh();
+        //this.listView.refresh();
         return this;
     }
     public void refresh(Panel panelDisplayed) {

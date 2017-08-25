@@ -21,6 +21,7 @@ package ijfx.explorer.commands;
 
 import ijfx.core.uiplugin.AbstractUiCommand;
 import ijfx.explorer.ExplorableList;
+import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
@@ -31,7 +32,7 @@ import org.scijava.plugin.Plugin;
 public abstract class AbstractExplorableListCommand extends AbstractUiCommand<ExplorableList>implements ExplorableListCommand{
         
     
-    @Parameter
+    @Parameter(type = ItemIO.INPUT,required = false,autoFill = true)
     ExplorableList elements;
 
     public AbstractExplorableListCommand() {

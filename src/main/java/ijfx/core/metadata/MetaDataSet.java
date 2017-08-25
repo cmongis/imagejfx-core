@@ -82,6 +82,14 @@ public class MetaDataSet extends HashMap<String, MetaData> {
         return super.getOrDefault(key, new GenericMetaData(key,null));
     }
     
+    public String getStringValue(String key, String def) {
+        return getOrDefault(key, MetaData.create(key,def)).getStringValue();
+    }
+    
+    public double getDoubleValue(String key, double def) {
+         return getOrDefault(key, MetaData.create(key,def)).getDoubleValue();
+    }
+    
     public String toString() {
         StringBuffer buffer = new StringBuffer(10000);
         buffer.append("## Metadata Set ##");
