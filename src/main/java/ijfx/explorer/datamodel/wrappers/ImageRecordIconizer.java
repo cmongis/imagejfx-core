@@ -73,6 +73,8 @@ public class ImageRecordIconizer implements Explorable {
     @Parameter
     DatasetUtilsService datasetUtilsService;
 
+    Dataset dataset;
+    
     Set<Tag> tagList = new HashSet<>();
     
 
@@ -171,8 +173,15 @@ public class ImageRecordIconizer implements Explorable {
         return selectedProperty;
     }*/
 
+    public void load() {
+        dataset = getDataset();
+    }
+    
     @Override
     public Dataset getDataset() {
+        
+        if(dataset != null) return dataset;
+        
         try {
 
             if (series) {
