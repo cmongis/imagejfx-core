@@ -75,7 +75,7 @@ public class FolderListCellCtrl extends VBox implements ListCellController<Folde
 
     public void updateLabel() {
         subtitleLabel.textProperty().unbind();
-        subtitleLabel.setText(String.format("%d images", currentFolder.getFileList().size()));
+        subtitleLabel.setText(getItem().getStatus());
     }
     
     @Override
