@@ -28,6 +28,11 @@ import java.io.File;
  */
 public abstract class AbstractExplorable extends AbstractTaggable implements Explorable {
 
+    public void load() {
+        
+    }
+    
+    
     protected File getFile() {
         return new File(getMetaDataSet().get(MetaData.ABSOLUTE_PATH).getStringValue());
     }
