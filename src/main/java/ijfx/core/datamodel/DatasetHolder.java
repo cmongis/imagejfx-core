@@ -26,6 +26,8 @@ import net.imagej.Dataset;
  * @author Cyril MONGIS, 2016
  */
 public interface DatasetHolder {
+        
+        public void load();
         Dataset getDataset();
         public void dispose();
 }
