@@ -127,14 +127,15 @@ public class CanvasListener {
 
         double percent = 100 * display.getCanvas().getZoomFactor();
 
+        final double factor = 0.05;
+
         if (event.getDeltaY() < 0) {
-            percent -= 5;
+            percent *= (1 + factor);
 
         } else {
-            percent += 5;
+            percent *= (1 - factor);
         }
 
-      
         RealCoords centerReal = display.getCanvas().getPanCenter();//display.getCanvas().panelToDataCoords(center);
 
         zoomService.zoomSet(display, percent, centerReal.x, centerReal.y);
@@ -188,7 +189,6 @@ public class CanvasListener {
     }
 
     private void onDragEvent(MouseEvent event) {
-
 
         onDragEvent(event, getActiveTool());
 
@@ -245,7 +245,6 @@ public class CanvasListener {
 
     private void onMouseClicked(MouseEvent event) {
 
-      
         canvas.requestFocus();
 
         List<Overlay> overlays = overlayService
