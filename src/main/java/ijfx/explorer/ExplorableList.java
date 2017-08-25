@@ -43,7 +43,7 @@ public class ExplorableList extends ArrayList<Explorable> {
         super(list.size());
         addAll(list);
     }
-
+    // TODO : moving filtering to a child class called MetaDataOwnerLIST
     public ExplorableList filter(Predicate<? super Explorable> predicate) {
 
         return new ExplorableList(
