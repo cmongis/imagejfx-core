@@ -2278,7 +2278,7 @@ list-cell:filled:selected:focused, .list-cell:filled:selected{
 
 .filter-pane-container {
     -fx-background-color:-bg-darker;
-    -fx-pref-width:250px;
+    -fx-pref-width:320px;
 }
 #filterScrollPane {
     -fx-pref-width:300px;
@@ -2509,17 +2509,12 @@ Label.chart-legend-item{
     Console UI Plugin
 */
 
-#consoleTextArea, #consoleTextArea .content, #consoleTextArea:focused .content {
-    -fx-background-color:black;
-    -fx-padding:0px;
-    -fx-border:0;
-    -fx-stroke:0;
+#actionsVBox {
+    -fx-spacing:2;
+    -fx-padding:10;
 }
-#consoleTextArea .content,#consoleTextArea:focused .content {
-    -fx-padding:10px;
-    -fx-color:white;
-}
-#consoleTextArea:focused .text, #consoleTextArea .text {
-    -fx-text-color:white;
+#actionsVBox .button{
+    -fx-max-width:infinity;
+    -fx-effect:none;
 }
 
