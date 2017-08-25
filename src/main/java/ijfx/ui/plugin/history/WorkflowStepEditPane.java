@@ -22,6 +22,7 @@ package ijfx.ui.plugin.history;
 import ijfx.core.workflow.WorkflowStep;
 import ijfx.core.workflow.WorkflowStepWidgetModel;
 import ijfx.ui.inputharvesting.InputPanelFX;
+import ijfx.ui.inputharvesting.SuppliedWidgetModel;
 import ijfx.ui.main.ImageJFX;
 import java.util.logging.Level;
 import javafx.scene.Node;
@@ -81,7 +82,12 @@ public class WorkflowStepEditPane extends BorderPane {
 
     public WidgetModel createModel(WorkflowStep step, String key) {
         try {
-        return new WorkflowStepWidgetModel(context, step, key, panel);
+        return new SuppliedWidgetModel(step.getParameters().get(key).getClass())
+                .setGetter(()->step.getParameters().get(key))
+                .setSetter(p->step.getParameters().put(key,p));
+                
+                
+                  // new WorkflowStepWidgetModel(context, step, key, panel);
         }
         catch(Exception e) {
             ImageJFX
