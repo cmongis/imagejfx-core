@@ -47,6 +47,17 @@ import mongis.utils.properties.ServiceProperty;
  * the model occurs. The PaneController cache used PaneCell and create new when
  * necessary. When the list of items change, the PaneCellController update the
  * children nodes of the associated Pane.
+ * 
+ * Usage:
+ * 
+ * TilePane pane = new TilePane();
+ * 
+ * PaneController<Explorable> ctrl = new PaneCellController<>(pane);
+ * 
+ * ctrl.setCellFactory(ExplorablePanelCell::new);
+ * 
+ * ctrl.update( * a list of Explorable * );
+ * 
  *
  * @author Cyril MONGIS
  */
