@@ -48,7 +48,13 @@ public interface ProgressHandler {
     public boolean isCancelled();
     
     public static ProgressHandler check(ProgressHandler handler) {
-        return handler == null ? new SilentProgressHandler() : handler;
+        return handler == null ? NONE : handler;
     }
     
+    public static final ProgressHandler NONE = new SilentProgressHandler();
+    
+    public static ProgressHandler console() {
+        return new ConsoleProgressHandler();
+    }
 }
+
