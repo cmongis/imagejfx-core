@@ -227,7 +227,7 @@ public class FXUserInterface extends Application implements UserInterface {
     @Override
     public ConsolePane<?> getConsolePane() {
 
-        return uiPluginService.getUiPlugin(ConsoleUIPlugin.class);
+        return null; //uiPluginService.getUiPlugin(ConsoleUIPlugin.class);
 
     }
 
@@ -425,7 +425,7 @@ public class FXUserInterface extends Application implements UserInterface {
                   
                     displayService.setActiveDisplay(display);
                     activityService.getActivity(DisplayContainer.class).addWindow(displayWindow);
-                     display.update();
+                    display.update();
                     progress.setProgress(1.0);
                 })
                 .error(thr->System.out.println(thr))
