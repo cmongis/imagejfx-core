@@ -73,7 +73,7 @@ public class WorkflowStepEditPane extends BorderPane {
                 .keySet()
                 .stream()
                 .map(key -> createModel(step, key))
-                .filter(model->model != null)
+                .filter(model -> model != null)
                 .map(this::createWidget)
                 .forEach(panel::addWidget);
 
@@ -82,29 +82,27 @@ public class WorkflowStepEditPane extends BorderPane {
 
     public WidgetModel createModel(WorkflowStep step, String key) {
         try {
-        return new SuppliedWidgetModel(step.getParameters().get(key).getClass())
-                .setGetter(()->step.getParameters().get(key))
-                .setSetter(p->step.getParameters().put(key,p));
-                
-                
-                  // new WorkflowStepWidgetModel(context, step, key, panel);
-        }
-        catch(Exception e) {
+
+            WorkflowStepWidgetModel workflowStepWidgetModel = new WorkflowStepWidgetModel(step, step.getParameters().get(key).getClass(), key);
+            context.inject(workflowStepWidgetModel);
+            return workflowStepWidgetModel;
+
+        } catch (Exception e) {
             ImageJFX
                     .getLogger()
-                    .log(Level.SEVERE,"Error when creating WidgetModel for "+key,e);
+                    .log(Level.SEVERE, "Error when creating WidgetModel for " + key, e);
             return null;
         }
 
     }
-    
-    public InputWidget<?,Node> createWidget(WidgetModel model) {
-        InputWidget<?,Node> widget =(InputWidget<?,Node>) widgetService.find(model);
-        
+
+    public InputWidget<?, Node> createWidget(WidgetModel model) {
+        InputWidget<?, Node> widget = (InputWidget<?, Node>) widgetService.find(model);
+
         widget.set(model);
-        
+
         return widget;
-        
+
     }
 
 }
