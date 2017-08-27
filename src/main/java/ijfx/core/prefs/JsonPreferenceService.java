@@ -121,7 +121,7 @@ public class JsonPreferenceService extends AbstractService implements ImageJServ
             return getMapper().readValue(new File(configDirectory,addExtension(filename)),getMapper().getTypeFactory().constructCollectionType(Set.class,clazz));
         }
         catch(Exception e) {
-             ImageJFX.getLogger().log(Level.SEVERE,"Error when reading the configuration file"+filename,e);
+             ImageJFX.getLogger().log(Level.SEVERE,"Error when reading the configuration file "+filename,e);
             return new HashSet<K>();
         }
         
