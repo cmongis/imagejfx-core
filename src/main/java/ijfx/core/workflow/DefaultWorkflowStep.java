@@ -57,11 +57,12 @@ public class DefaultWorkflowStep implements WorkflowStep {
     protected Module module;
 
     @JsonIgnore
-    protected String className;
+    protected String moduleType;
 
     @JsonIgnore
     protected Map<String, Object> parameters = new HashMap<>();
 
+    
     @Parameter
     protected CommandService commandService;
 
@@ -79,11 +80,7 @@ public class DefaultWorkflowStep implements WorkflowStep {
 
     }
 
-    private void checkInjection() {
-        if(commandService == null) {
-            
-        }
-    }
+    
     
     public DefaultWorkflowStep(Context context) {
         context.inject(this);
@@ -97,7 +94,7 @@ public class DefaultWorkflowStep implements WorkflowStep {
 
     public DefaultWorkflowStep(Context context,String className) {
         this(context);
-        setClassName(className);
+        setModuleType(className);
         prefill();
     }
 
@@ -120,8 +117,12 @@ public class DefaultWorkflowStep implements WorkflowStep {
         return createModule(ij.command(), ij.module());
     }
 
+
+
+    
+    
     protected DefaultWorkflowStep createModule(CommandService commandService, ModuleService moduleService) {
-        CommandInfo infos = commandService.getCommand(getClassName());
+        CommandInfo infos = commandService.getCommand(getModuleType());
         if (infos != null) {
             module = moduleService.createModule(infos);
             try {
@@ -161,7 +162,7 @@ public class DefaultWorkflowStep implements WorkflowStep {
 
     public void setModule(Module module) {
         //this.module = module;
-        className = module.getInfo().getDelegateClassName();
+        moduleType = module.getInfo().getDelegateClassName();
     }
 
     @JsonSetter("parameters")
@@ -189,16 +190,16 @@ public class DefaultWorkflowStep implements WorkflowStep {
    
    
     @JsonGetter(value = JsonFieldName.CLASS)
-    public String getClassName() {
-        if (className == null && module != null) {
-            className = module.getInfo().getDelegateClassName();
+    public String getModuleType() {
+        if (moduleType == null && module != null) {
+            moduleType = module.getInfo().getDelegateClassName();
         }
-        return className;
+        return moduleType;
     }
 
     @JsonSetter(value = JsonFieldName.CLASS)
-    public void setClassName(String className) {
-        this.className = className;
+    public void setModuleType(String moduleType) {
+        this.moduleType = moduleType;
     }
 
     @JsonSetter(value = "parameters")

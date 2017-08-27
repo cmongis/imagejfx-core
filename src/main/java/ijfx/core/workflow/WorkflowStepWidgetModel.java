@@ -19,52 +19,55 @@
  */
 package ijfx.core.workflow;
 
-import java.util.ArrayList;
-import org.scijava.Context;
-import org.scijava.event.EventService;
+import ijfx.ui.inputharvesting.SuppliedWidgetModel;
+import org.scijava.module.ModuleItem;
+import org.scijava.module.ModuleService;
 import org.scijava.plugin.Parameter;
-import org.scijava.widget.DefaultWidgetModel;
-import org.scijava.widget.InputPanel;
 
 /**
  *
  * @author cyril
  */
-public class WorkflowStepWidgetModel extends DefaultWidgetModel {
+public class WorkflowStepWidgetModel<T> extends SuppliedWidgetModel<T> {
 
     final WorkflowStep step;
 
     final String parameterName;
 
     @Parameter
-    EventService eventService;
+    ModuleService moduleService;
     
-    public WorkflowStepWidgetModel(Context context, WorkflowStep step, String parameter, InputPanel<?, ?> panel) {
-        super(context, panel, step.getModule(), step.getModule().getInfo().getInput(parameter), new ArrayList<>());
+    public WorkflowStepWidgetModel(WorkflowStep step, Class<T> type, String key) {
+        super(type);
         this.step = step;
-        this.parameterName = parameter;
+                
+        parameterName = key;
+        
+        setGetter(this::getValueFromStep);
+        setSetter(this::setValueInStep);
+        
         
     }
-
+    
     @Override
-    public Object getValue() {
-
-        if (step.getParameters().get(parameterName) == null) {
-            return super.getValue();
+    public ModuleItem<?> getItem() {
+        if(moduleService != null) {
+            return moduleService.getModuleById(step.getModuleType()).getInput(parameterName);
         }
-        return step.getParameters().get(parameterName);
-    }
-
-    @Override
-    public void setValue(Object object) {
-        if (step != null) {
-            super.setValue(object);
-
-            step.getParameters().put(parameterName, object);
-            
-            eventService.publishLater(new WorkflowStepModifiedEvent().setObject(step));
-            
+        else {
+            return null;
         }
     }
+    
+    private T getValueFromStep() {
+        return (T) step.getParameters().get(parameterName);
+        
+    }
+    
+    private void setValueInStep(T t) {
+        step.getParameters().put(parameterName, t);
+    }
+
+ 
 
 }

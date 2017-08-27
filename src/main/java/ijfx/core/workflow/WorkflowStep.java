@@ -41,6 +41,8 @@ public interface WorkflowStep {
 
     public Map<String, Object> getParameters();
 
+    
+    public String getModuleType();
     //public void setParameterType(String parameter, StepParameterType type);
 
     //public StepParameterType getParameterType(String parameter);
