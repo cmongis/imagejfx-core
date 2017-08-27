@@ -137,6 +137,7 @@ public class DefaultHintService extends AbstractService implements HintService {
     }
 
     private List<DefaultHint> jsonToHintList(String json) {
+        if(json == null) return new ArrayList<>();
         try {
             ObjectMapper mapper = new ObjectMapper();
            List<DefaultHint> hints =  mapper.readValue(json,mapper.getTypeFactory().constructCollectionType(List.class,DefaultHint.class));
