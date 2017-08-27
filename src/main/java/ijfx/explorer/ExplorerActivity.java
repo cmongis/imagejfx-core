@@ -249,8 +249,9 @@ public class ExplorerActivity extends AnchorPane implements Activity {
 
             List<Tab> buttons = views.stream().map(this::createTab).collect(Collectors.toList());
             //Map<ExplorerView, ToggleButton> viewButtons = views.stream().collect(Collectors.toMap(v -> v, this::createViewToggle));
-
-            tabPane.getTabs().addAll(buttons);
+            
+            FXUtilities.addLater(buttons, tabPane.getTabs());
+            //tabPane.getTabs().addAll(buttons);
 
             currentView.setValue(views.get(0));
 
