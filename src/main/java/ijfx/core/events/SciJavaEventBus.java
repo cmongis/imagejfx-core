@@ -19,8 +19,10 @@
  */
 package ijfx.core.events;
 
+import ijfx.ui.main.ImageJFX;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import org.scijava.event.SciJavaEvent;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -54,7 +56,12 @@ public class SciJavaEventBus {
 
     public void channel(SciJavaEvent event) {
         //System.out.println("Channeling ! " + event.getClass().getSimpleName());
+        try {
         bus.onNext(event);
+        }
+        catch(Exception e) {
+            ImageJFX.getLogger().log(Level.SEVERE,"Error when handling event "+event.getClass().getSimpleName(),e);
+        }
     }
 
 }
