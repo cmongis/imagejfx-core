@@ -35,6 +35,7 @@ import java.nio.charset.Charset;
 public class TextFileUtils {
 
     public static String readFileFromJar(String url) throws IOException {
+        if(TextFileUtils.class.getResource(url) == null) return null;
         return Resources.toString(TextFileUtils.class.getResource(url), Charset.forName("UTF-8"));
     }
 
