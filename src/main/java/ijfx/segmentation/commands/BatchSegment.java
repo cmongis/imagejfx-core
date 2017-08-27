@@ -82,7 +82,7 @@ public class BatchSegment extends AbstractExplorableListCommand{
         ExplorableList list = task
                 .getAsExplorable()
                 .filterGreaterThan(MetaData.LBL_AREA, minSize);
-                
+         
                 
         
         displayService.createDisplay("Segmentation results", list);
