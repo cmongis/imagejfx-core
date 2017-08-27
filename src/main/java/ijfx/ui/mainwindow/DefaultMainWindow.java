@@ -291,7 +291,8 @@ public class DefaultMainWindow implements MainWindow {
 
     @Override
     public void displayActivity(Activity activity) {
-        
+    
+        /*
         Transition configure = Animations.ZOOMOUT.configure(mainBorderPane.getCenter(), 400);
 
         configure.setOnFinished(event -> {
@@ -301,10 +302,10 @@ public class DefaultMainWindow implements MainWindow {
 
         configure.play();
 
-         /*
+         */
         Platform.runLater(() -> {
             mainBorderPane.setCenter(activity.getContent());
-        });*/
+        });
         
         
         Task task = activity.updateOnShow();
