@@ -22,6 +22,7 @@ package ijfx.ui.filters.metadata;
 import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataOwner;
 import ijfx.ui.utils.ObjectCache;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -85,8 +86,9 @@ public class DefaultMetaDataFilterFactory<T extends MetaDataOwner> implements Me
     }
 
     public Collection<MetaData> getAllPossibleValues(Collection<? extends MetaDataOwner> ownerList, String keyName) {
-
-        return ownerList
+        
+        List<MetaDataOwner> list =  new ArrayList(ownerList);
+            return list
                 .parallelStream()
                 .map(owner -> owner.getMetaDataSet().get(keyName))
                 .filter(MetaData::notNull)

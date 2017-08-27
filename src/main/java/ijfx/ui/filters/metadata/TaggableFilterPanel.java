@@ -71,7 +71,7 @@ public class TaggableFilterPanel extends FilterPanel<Taggable> {
      * @param items
      * @return The list of DataFilters to add to the pane (usually done)
      */
-    private List<DataFilter<Taggable>> generateFilters(ProgressHandler handler, List<? extends Taggable> items) {
+    private synchronized List<DataFilter<Taggable>> generateFilters(ProgressHandler handler, List<? extends Taggable> items) {
 
         factory.recycleCache();
         handler.setProgress(0.1);
