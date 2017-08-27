@@ -38,7 +38,7 @@ public abstract class AbstractWidgetModel<T> implements WidgetModel {
     private static InputPanel<?, ?> panel = new DummyFXInputPanel();
 
     private final Class<T> type;
-
+    
     private String label;
 
     private String style = "";
