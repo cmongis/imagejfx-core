@@ -48,10 +48,13 @@ import net.imagej.ImageJService;
 import net.imagej.display.DatasetView;
 import net.imagej.display.ImageDisplay;
 import net.imagej.display.ImageDisplayService;
+import net.imagej.display.process.ActiveDataViewPreprocessor;
+import net.imagej.display.process.ActiveDatasetPreprocessor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.scijava.command.Command;
 import org.scijava.command.CommandInfo;
 import org.scijava.command.CommandService;
+import org.scijava.display.ActiveDisplayPreprocessor;
 import org.scijava.display.DisplayPostprocessor;
 import org.scijava.display.DisplayService;
 import org.scijava.module.Module;
@@ -384,9 +387,11 @@ public class BatchService extends AbstractService implements ImageJService {
             } catch (Exception e) {
                 logger.info("Context already injected.");
             }
-            
+            List<PreprocessorPlugin> preProcessors = getPreProcessors(ActiveDisplayPreprocessor.class,ActiveDatasetPreprocessor.class,ActiveDataViewPreprocessor.class);
             // running
-            run = moduleService.run(module, getPreProcessors(), getPostprocessors(), step.getParameters());
+            run = moduleService.run(module, 
+                    preProcessors
+                    , getPostprocessors(), step.getParameters());
             
             logger.info(String.format("[%s] module started", moduleName));
 
@@ -570,6 +575,21 @@ public class BatchService extends AbstractService implements ImageJService {
                 .createInstancesOfType(PreprocessorPlugin.class)
                 .stream()
                 .sequential()
+                .filter(p -> !processorBlackList.contains(p.getClass()))
+                .sequential()
+                .map(p -> {
+                    return p;
+                })
+                //.map(this::injectPlugin)
+                .collect(Collectors.toList());
+    }
+    
+     public List<PreprocessorPlugin> getPreProcessors(Class<?>... blacklist) {
+        return pluginService
+                .createInstancesOfType(PreprocessorPlugin.class)
+                .stream()
+                .sequential()
+                .filter(p-> !ArrayUtils.contains(blacklist, p.getClass()))
                 .filter(p -> !processorBlackList.contains(p.getClass()))
                 .sequential()
                 .map(p -> {
