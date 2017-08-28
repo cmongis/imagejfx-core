@@ -34,7 +34,10 @@ import ijfx.core.uiplugin.Localization;
 import ijfx.explorer.ExplorableList;
 import ijfx.explorer.core.FolderManagerService;
 import ijfx.explorer.datamodel.Explorable;
-import ijfx.segmentation.commands.BatchSegment;
+import ijfx.segmentation.commands.AnalyseParticles;
+import ijfx.segmentation.commands.BatchCount;
+import ijfx.segmentation.commands.BatchMeasurement;
+import ijfx.segmentation.commands.CountObject;
 import ijfx.segmentation.core.InteractiveSegmentation;
 import ijfx.segmentation.core.InteractiveSegmentationPanel;
 import ijfx.segmentation.core.InteractiveSegmentationService;
@@ -77,7 +80,7 @@ import org.scijava.ui.UIService;
  * @author cyril
  */
 @Plugin(type = UiPlugin.class)
-@UiConfiguration(id = "segmentation-panel", localization = Localization.RIGHT, context = "any-display-open+segment explore+segment -overlay-selected")
+@UiConfiguration(id = "segmentation-panel", localization = Localization.RIGHT, context = "image-display-open+segment explore+segment -overlay-selected")
 public class DefaultInteractiveSegmentationPanel extends BorderPane implements UiPlugin, InteractiveSegmentationPanel {
 
     /*
@@ -241,8 +244,7 @@ public class DefaultInteractiveSegmentationPanel extends BorderPane implements U
     }
 
     private void segmentAndAnalyseEachPlane(ProgressHandler event) {
-
-        commandService.run(BatchSegment.class, true);
+       
 
     }
 
@@ -275,15 +277,13 @@ public class DefaultInteractiveSegmentationPanel extends BorderPane implements U
 
     @FXML
     public void analyseParticles() {
-        
-        /*
-        segmentationService
-                .createSegmentation()
-                .addImageDisplay(imageDisplayService.getActiveImageDisplay())
-                .measure()
-                .executeAsync()
-                .submit(loadingScreenService)
-                .then(this::displayObject);*/
+         if(isExplorer()) {
+            commandService.run(BatchMeasurement.class,true,"workflow",segUISrv.getWorkflow());
+        }
+        else {
+            commandService.run(AnalyseParticles.class, true);
+        }
+      
 
     }
 
@@ -303,26 +303,25 @@ public class DefaultInteractiveSegmentationPanel extends BorderPane implements U
         if (!isExplorer()) {
             folderManagerService.openImageFolder(imageDisplayService.getActiveImageDisplay());
         } else {
-            commandService.run(BatchSegment.class, true,"workflow",segUISrv.getWorkflow());
+             
         }
     }
 
     @FXML
     public void countObjects() {
         
-        /*
-        segmentationService
-                .createSegmentation()
-                .addImageDisplay(imageDisplayService.getActiveImageDisplay())
-                .count()
-                .executeAsync()
-                .then(this::displayCount);*/
+        if(isExplorer()) {
+            commandService.run(BatchCount.class, true,"workflow",segUISrv.getWorkflow());
+        }
+        else {
+            commandService.run(CountObject.class,true);
+        }
 
     }
 
     private String getSegmentMoreButtonText() {
         if(isExplorer()) {
-            return "Launch";
+            return "Test";
         }
         else {
             return "Batch";
