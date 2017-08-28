@@ -117,6 +117,7 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
     }
 
     public void setItem(List<? extends T> mList) {
+        if(tableView == null) return;
         tableView.getItems().clear();
         tableView.getItems().addAll(mList);
 
@@ -138,6 +139,7 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
     public void setColumnsFromItems(List<? extends T> items) {
         List<MetaDataSet> mList = items
                 .stream()
+                .filter(i->i != null)
                 .map(i -> i.getMetaDataSet())
                 .collect(Collectors.toList());
         Platform.runLater(() -> {

@@ -71,7 +71,10 @@ public class MetaDataOwnerDisplayPanel extends AbstractFXDisplayPanel<MetaDataOw
 
     @Override
     public void redraw() {
+        if(getDisplay().size() == 0) return;
+        helper.setPriority(getDisplay().getKeyOrder());
         helper.setColumnsFromItems(getDisplay().get(0));
+        
         helper.setItem(getDisplay().get(0));
     }
 
