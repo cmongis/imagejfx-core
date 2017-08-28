@@ -28,7 +28,7 @@ public class DefaultMetaDataOwner implements MetaDataOwner{
     final MetaDataSet set;
 
     public DefaultMetaDataOwner() {
-        this.set = new MetaDataSet();
+        this(new MetaDataSet());
     }
 
     
