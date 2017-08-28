@@ -20,6 +20,7 @@
 package ijfx.explorer.datamodel;
 
 import ijfx.core.datamodel.MetaDataOwnerList;
+import ijfx.core.metadata.MetaDataKeyPriority;
 import ijfx.core.metadata.MetaDataOwner;
 import ijfx.core.metadata.MetaDataSet;
 import ijfx.explorer.wrappers.MetaDataSetExplorerWrapper;
@@ -40,6 +41,8 @@ public class MetaDataOwnerDisplay extends AbstractDisplay<MetaDataOwnerList>{
         super(MetaDataOwnerList.class);
     }
     
+    String[] keyOrder = MetaDataKeyPriority.OBJECT;
+    
     public boolean add(MetaDataOwner owner) {
         
         if(size() == 0) {
@@ -48,6 +51,12 @@ public class MetaDataOwnerDisplay extends AbstractDisplay<MetaDataOwnerList>{
         
         return get(0).add(owner);
     }
+
+    public String[] getKeyOrder() {
+        return keyOrder;
+    }
+    
+    
     
     public boolean add(MetaDataSet set) {
        return add(new MetaDataSetExplorerWrapper(set));
