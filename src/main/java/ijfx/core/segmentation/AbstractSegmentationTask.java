@@ -35,7 +35,7 @@ import org.scijava.plugin.Parameter;
 public abstract class AbstractSegmentationTask<T> implements SegmentationTask<T> {
 
     @Parameter
-    Context context;
+    protected Context context;
 
     private SegmentationExecutor executor;
 
@@ -49,12 +49,15 @@ public abstract class AbstractSegmentationTask<T> implements SegmentationTask<T>
         context.inject(this);
         executor = new LinearSegmentationExecutor(context);
     }
-    
+
     protected AbstractSegmentationTask<T> addHandler(LongConsumer<List<T>> consumer) {
         resultsHandler.add(consumer);
         return this;
     }
-    
+
+    public Context getContext() {
+        return context;
+    }
 
     protected SegmentationExecutor getExecutor() {
         return executor;
@@ -67,9 +70,9 @@ public abstract class AbstractSegmentationTask<T> implements SegmentationTask<T>
     public List<T> getResults() {
         return results;
     }
-    
+
     protected void executeResultsHandlers(ProgressHandler progress) {
-        for(LongConsumer<List<T>> consumer : resultsHandler) {
+        for (LongConsumer<List<T>> consumer : resultsHandler) {
             consumer.consume(progress, getResults());
         }
     }
