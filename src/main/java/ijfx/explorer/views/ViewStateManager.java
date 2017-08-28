@@ -75,7 +75,7 @@ public class ViewStateManager extends WeakHashMap<ExplorerView, ViewState> {
         }
     }
 
-    public void checkView(ExplorerView view, ExplorableViewModel display) {
+    public synchronized void checkView(ExplorerView view, ExplorableViewModel display) {
 
         if (displayState == null || display == null) {
             return;
