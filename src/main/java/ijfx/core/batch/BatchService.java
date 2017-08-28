@@ -26,6 +26,7 @@ import ijfx.core.timer.TimerService;
 import ijfx.core.workflow.Workflow;
 import ijfx.core.workflow.WorkflowRecorderPreprocessor;
 import ijfx.core.workflow.WorkflowStep;
+import ijfx.ui.inputharvesting.InputHarversterFX;
 import ijfx.ui.main.ImageJFX;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,6 +51,8 @@ import net.imagej.display.ImageDisplay;
 import net.imagej.display.ImageDisplayService;
 import net.imagej.display.process.ActiveDataViewPreprocessor;
 import net.imagej.display.process.ActiveDatasetPreprocessor;
+import net.imagej.display.process.ActiveDatasetViewPreprocessor;
+import net.imagej.display.process.ActiveImageDisplayPreprocessor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.scijava.command.Command;
 import org.scijava.command.CommandInfo;
@@ -105,6 +108,7 @@ public class BatchService extends AbstractService implements ImageJService {
         InitPreprocessor.class,
         WorkflowRecorderPreprocessor.class,
         DatasetArrayPostprocessor.class
+            ,InputHarversterFX.class
     };
 
     public BatchService() {
@@ -357,29 +361,28 @@ public class BatchService extends AbstractService implements ImageJService {
 
     }
 
-    
-    
     public Dataset applyWorkflow(ProgressHandler handler, Dataset dataset, Workflow workflow) {
 
         for (WorkflowStep step : workflow.getStepList()) {
-            
+
             handler.increment(1.0);
-            
+
             Module module = moduleService.createModule(step.getModule().getInfo());
             String moduleName = module.getInfo().getName();
-            
+
             // injecting main input
             injectInput(dataset, module);
-            
+
             // injecting parameters
             step.getParameters().forEach((key, value) -> {
                 module.setInput(key, value);
                 module.setResolved(key, true);
+                module.resolveInput(key);
             });
 
             logger.info("Running module");
             Future<Module> run;
-            
+
             // initializing the module
             try {
                 getContext().inject(module);
@@ -387,11 +390,17 @@ public class BatchService extends AbstractService implements ImageJService {
             } catch (Exception e) {
                 logger.info("Context already injected.");
             }
-            List<PreprocessorPlugin> preProcessors = getPreProcessors(ActiveDisplayPreprocessor.class,ActiveDatasetPreprocessor.class,ActiveDataViewPreprocessor.class);
+            List<PreprocessorPlugin> preProcessors = getPreProcessors(
+                    ActiveDisplayPreprocessor.class,
+                    ActiveDatasetPreprocessor.class,
+                    ActiveDataViewPreprocessor.class
+            ,ActiveDatasetViewPreprocessor.class
+            ,ActiveImageDisplayPreprocessor.class
+            );
             // running
-            run = moduleService.run(module, 
-                    preProcessors
-                    , getPostprocessors(), step.getParameters());
+            run = moduleService.run(module,
+                    preProcessors,
+                     getPostprocessors(), step.getParameters());
             
             logger.info(String.format("[%s] module started", moduleName));
 
@@ -400,7 +409,7 @@ public class BatchService extends AbstractService implements ImageJService {
                 run.get();
                 logger.info(String.format("[%s] module finished", moduleName));
                 Dataset result = extractOutput(run.get());
-                if(result != null) {
+                if (result != null) {
                     dataset = result;
                 }
             } catch (Exception ex) {
@@ -418,7 +427,7 @@ public class BatchService extends AbstractService implements ImageJService {
         ModuleItem item;
         logger.info("Injecting inputs into module : " + module.getDelegateObject().getClass().getSimpleName());
         item = moduleService.getSingleInput(module, Dataset.class);
-        
+
         if (item != null) {
             logger.info("Dataset input field found : " + item.getName());
 
@@ -436,18 +445,15 @@ public class BatchService extends AbstractService implements ImageJService {
     }
 
     private Dataset extractOutput(Module module) {
-      
-        
-        return (Dataset)module
+
+        return (Dataset) module
                 .getOutputs()
                 .values()
                 .stream()
-                .filter(object->object!=null && Dataset.class.isAssignableFrom(object.getClass()))
+                .filter(object -> object != null && Dataset.class.isAssignableFrom(object.getClass()))
                 .findFirst()
                 .orElse(null);
-                
-        
-        
+
     }
 
     // inject the dataset or display depending on the requirements of the module
@@ -583,13 +589,13 @@ public class BatchService extends AbstractService implements ImageJService {
                 //.map(this::injectPlugin)
                 .collect(Collectors.toList());
     }
-    
-     public List<PreprocessorPlugin> getPreProcessors(Class<?>... blacklist) {
+
+    public List<PreprocessorPlugin> getPreProcessors(Class<?>... blacklist) {
         return pluginService
                 .createInstancesOfType(PreprocessorPlugin.class)
                 .stream()
                 .sequential()
-                .filter(p-> !ArrayUtils.contains(blacklist, p.getClass()))
+                .filter(p -> Stream.of(blacklist).filter(cl->cl.equals(p.getClass())).count() == 0)
                 .filter(p -> !processorBlackList.contains(p.getClass()))
                 .sequential()
                 .map(p -> {
@@ -608,8 +614,7 @@ public class BatchService extends AbstractService implements ImageJService {
                 //.map(this::injectPlugin)
                 .collect(Collectors.toList());
     }
-    
-    
+
     public BatchBuilder builder() {
         return new BatchBuilder(getContext());
     }
