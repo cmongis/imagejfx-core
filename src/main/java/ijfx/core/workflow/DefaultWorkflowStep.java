@@ -62,7 +62,6 @@ public class DefaultWorkflowStep implements WorkflowStep {
     @JsonIgnore
     protected Map<String, Object> parameters = new HashMap<>();
 
-    
     @Parameter
     protected CommandService commandService;
 
@@ -71,35 +70,29 @@ public class DefaultWorkflowStep implements WorkflowStep {
 
     @Parameter
     protected WorkflowIOService workflowIOService;
-    
+
     Logger logger = ImageJFX.getLogger();
-    
-   
 
     public DefaultWorkflowStep() {
 
     }
 
-    
-    
     public DefaultWorkflowStep(Context context) {
         context.inject(this);
     }
-    
-    public DefaultWorkflowStep(Context context,Module module) {
+
+    public DefaultWorkflowStep(Context context, Module module) {
         this(context);
         setModule(module);
         setParameters(module.getInputs());
     }
 
-    public DefaultWorkflowStep(Context context,String className) {
+    public DefaultWorkflowStep(Context context, String className) {
         this(context);
         setModuleType(className);
         prefill();
     }
 
-    
-    
     public DefaultWorkflowStep prefill() {
         setParameters(getModule().getInputs());
         return this;
@@ -117,10 +110,6 @@ public class DefaultWorkflowStep implements WorkflowStep {
         return createModule(ij.command(), ij.module());
     }
 
-
-
-    
-    
     protected DefaultWorkflowStep createModule(CommandService commandService, ModuleService moduleService) {
         CommandInfo infos = commandService.getCommand(getModuleType());
         if (infos != null) {
@@ -128,11 +117,10 @@ public class DefaultWorkflowStep implements WorkflowStep {
             try {
                 module.initialize();
             } catch (Exception ex) {
-               logger.log(Level.WARNING,"Error when initializing module...",ex);
+                logger.log(Level.WARNING, "Error when initializing module...", ex);
             }
         }
-        
-        
+
         return this;
     }
 
@@ -143,7 +131,7 @@ public class DefaultWorkflowStep implements WorkflowStep {
         if (module == null) {
             createModule(commandService, moduleSerivce);
         }
-         
+
         return module;
     }
 
@@ -153,7 +141,6 @@ public class DefaultWorkflowStep implements WorkflowStep {
         return parameters;
     }
 
-   
     @Override
     @JsonSetter("id")
     public void setId(String id) {
@@ -161,7 +148,6 @@ public class DefaultWorkflowStep implements WorkflowStep {
     }
 
     public void setModule(Module module) {
-        //this.module = module;
         moduleType = module.getInfo().getDelegateClassName();
     }
 
@@ -172,23 +158,17 @@ public class DefaultWorkflowStep implements WorkflowStep {
             if (value == null) {
                 return;
             }
-            
-            boolean canSave  = workflowIOService.canSave(value);
+
+            boolean canSave = workflowIOService.canSave(value);
             if (canSave) {
 
-                //if (value instanceof String && value.toString().startsWith(FileSerializer.FILE_PREFIX)) {
-                //    this.parameters.put(key, FileDeserializer.deserialize(value.toString()));
-                //} else {
-                    this.parameters.put(key, value);
-                //}
-
+               
+                this.parameters.put(key, value);
+               
             }
         });
-        //this.parameters = parameters;
     }
 
-   
-   
     @JsonGetter(value = JsonFieldName.CLASS)
     public String getModuleType() {
         if (moduleType == null && module != null) {
