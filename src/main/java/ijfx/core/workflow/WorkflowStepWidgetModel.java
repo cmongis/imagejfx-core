@@ -20,6 +20,7 @@
 package ijfx.core.workflow;
 
 import ijfx.ui.inputharvesting.SuppliedWidgetModel;
+import org.scijava.module.Module;
 import org.scijava.module.ModuleItem;
 import org.scijava.module.ModuleService;
 import org.scijava.plugin.Parameter;
@@ -51,7 +52,7 @@ public class WorkflowStepWidgetModel<T> extends SuppliedWidgetModel<T> {
     
     @Override
     public ModuleItem<?> getItem() {
-        if(moduleService != null) {
+        if(moduleService != null) {            
             return moduleService.getModuleById(step.getModuleType()).getInput(parameterName);
         }
         else {
