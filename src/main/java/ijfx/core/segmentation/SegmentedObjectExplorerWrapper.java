@@ -119,7 +119,7 @@ public class SegmentedObjectExplorerWrapper extends AbstractExplorable {
 
         if (image == null) {
             try {
-                
+                if(extractedObject == null) getDataset();
                 double min = object.getMetaDataSet().get(MetaData.STATS_PIXEL_MIN).getDoubleValue();
                 double max = object.getMetaDataSet().get(MetaData.STATS_PIXEL_MAX).getDoubleValue();
                 Image image = previewService.datasetToImage((RandomAccessibleInterval<? extends RealType>) extractedObject, new ColorTable8(), min, max);
