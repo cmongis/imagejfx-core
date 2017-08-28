@@ -49,7 +49,7 @@ public class ExplorableList extends ArrayList<Explorable> {
         return new ExplorableList(
                 this
                         .stream()
-                        .filter(item -> !predicate.test(item))
+                        .filter(item -> predicate.test(item))
                         .collect(Collectors.toList())
         );
 

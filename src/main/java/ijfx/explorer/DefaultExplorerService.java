@@ -106,7 +106,6 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
 
         explorableList.clear();
         explorableList.addAll(items);
-        //eventService.publish(new ExploredListChanged().setObject(items));
         setFilter(lastFilter);
        
     }
@@ -148,7 +147,6 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     protected void setFilteredItems(List<Explorable> filteredItems) {
         this.filteredList = filteredItems;
         update();
-        //eventService.publishLater(new DisplayedListChanged().setObject(filteredItems));
     }
 
     @Override
@@ -166,13 +164,11 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     public void select(Explorable explorable) {
         if(selectedItems.contains(explorable) == false)
         selectedItems.add(explorable);
-       //publishSelectionEvent();
     }
     @Override
     public void setSelected(List<Explorable> selectedList) {
         selectedItems.clear();
         selectedItems.addAll(selectedList);
-        //publishSelectionEvent();
     }
     
 
@@ -191,27 +187,7 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
         return keyList;
     }
 
-    
-    private void notifySelectionChange(List<SelectionChange<Explorable>> changes) {
-        
-        ExplorerSelectionChangedEvent event = new ExplorerSelectionChangedEvent(changes);
-        
-        
-        eventService.publishLater(event);
-    }
-    
-    /*
-    private void onExplorableSelected(Explorable explorable, Boolean selected) {
-      
-       
-       if(selected) selecotedItems.add(explorable);
-       else selectedItems.remove(explorable);
-       
-       
-       this.selected.setValue(selectedItems.size());
-       
-    }*/
-
+   
     public void open(Iconazable explorable) {
 
         new CallbackTask<Void, Boolean>()
@@ -252,8 +228,6 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
         else {
             selectedItems.add(explorable);
         }
-        
-        //publishSelectionEvent();
     }
     
     

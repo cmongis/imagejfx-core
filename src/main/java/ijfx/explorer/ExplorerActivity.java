@@ -415,13 +415,10 @@ public class ExplorerActivity extends AnchorPane implements Activity {
     @EventHandler
     protected void onExplorationModeChanged(ExplorationModeChangeEvent event) {
         explorationModeToggleGroup.selectToggle(getToggleButton(event.getObject()));
-        updateViewState();
     }
 
     @EventHandler
     protected void onExplorerServiceSelectionChanged(ExplorerSelectionChangedEvent event) {
-        updateViewState();
-        updateCurrentView();
         Platform.runLater(this::updateButton);
     }
 
