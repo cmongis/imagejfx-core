@@ -28,7 +28,9 @@ import mongis.utils.ProgressHandler;
 import net.imagej.DatasetService;
 import net.imagej.plugins.commands.assign.InvertDataValues;
 import net.imagej.plugins.commands.imglib.GaussianBlur;
+import org.junit.Assert;
 import org.junit.Test;
+import org.scijava.display.ActiveDisplayPreprocessor;
 import org.scijava.plugin.Parameter;
 
 /**
@@ -51,6 +53,18 @@ public class BatchServiceTest extends IjfxTest{
     SegmentationService segmentationService;
     
     
+    
+
+    public void testBatchService() {
+        Assert.assertTrue("Blacklisting",batchService
+                .getPreProcessors(ActiveDisplayPreprocessor.class)
+                .stream()
+                .filter(p->p.getClass() == ActiveDisplayPreprocessor.class)
+                .count() == 0
+        );
+    }
+    
+    
     public void testProcessing() {
         
         
@@ -65,7 +79,7 @@ public class BatchServiceTest extends IjfxTest{
         
     }
     
-    //@Test
+    
     public void testSegmentation() {
         segmentationService
                 .createSegmentation()
