@@ -238,6 +238,10 @@ public class SegmentationTaskBuilder {
         return measurementSegmentationTask;            
     }
     
+    public CountObjectSegmentationTask count() {
+        return new CountObjectSegmentationTask(context,opList);
+    }
+    
     public RawSegmentation getAsMask() {
         return new RawSegmentation(context,opList);
     }
