@@ -44,6 +44,7 @@ public class SciJavaEventBus {
         // streamMap.putIfAbsent(eventClass, new Observab);
         return bus
                 .filter(obj -> eventClass.isAssignableFrom(obj.getClass()))
+                
                 .map(obj -> (T) obj);
 
     }
