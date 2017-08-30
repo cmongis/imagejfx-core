@@ -179,6 +179,7 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
 
         if (CSSURL != null) {
             alert.getDialogPane().getStylesheets().add(CSSURL.toExternalForm());
+            
 
         }
 
