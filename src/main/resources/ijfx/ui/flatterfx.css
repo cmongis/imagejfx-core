@@ -2523,3 +2523,13 @@ Label.chart-legend-item{
     -fx-text-color:white;
 }
 
+/*******************************************************************************
+ *                                                                             *
+ * Alert Dialog                                                         *
+ *                                                                             *
+ ******************************************************************************/
+
+.dialog-pane:header *.header-panel{
+    -fx-background-color: -bg-darker;   
+}
+
