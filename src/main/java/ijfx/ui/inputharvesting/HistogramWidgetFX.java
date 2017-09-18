@@ -41,16 +41,18 @@ import org.scijava.widget.WidgetModel;
 @Plugin(type = InputWidget.class)
 public class HistogramWidgetFX extends AbstractFXInputWidget<HistogramBundle> implements HistogramWidget<Node> {
 
-    final NumberAxis xAxis = new NumberAxis();
-    final NumberAxis yAxis = new NumberAxis();
+    private NumberAxis xAxis;// = new NumberAxis();
+    private NumberAxis yAxis;// = new NumberAxis();
     private LineChart<Number, Number> lineChart;
 
     public void set(WidgetModel model) {
         super.set(model);
         ObjectProperty<HistogramBundle> histogramProperty = new SimpleObjectProperty();
 
+        xAxis = new NumberAxis();
+        yAxis = new NumberAxis();
         lineChart = new LineChart<>(xAxis, yAxis);
-
+        
         lineChart.setPrefWidth(300);
         lineChart.setPrefHeight(300);
         lineChart.setAnimated(false);
