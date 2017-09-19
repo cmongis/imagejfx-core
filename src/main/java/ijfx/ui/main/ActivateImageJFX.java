@@ -19,7 +19,9 @@
  */
 package ijfx.ui.main;
 
+import org.scijava.app.AppService;
 import org.scijava.command.Command;
+import org.scijava.command.CommandService;
 import org.scijava.command.ContextCommand;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -36,16 +38,25 @@ public class ActivateImageJFX extends ContextCommand {
     @Parameter
     UIService uiService;
     
+    @Parameter
+    CommandService commandService;
+    
+    @Parameter
+    AppService appService;
+    
     @Override
     public void run() {
         
         uiService.getUI(SwingUI.NAME).dispose();
         
         uiService.setDefaultUI(uiService.getUI(ImageJFX.UI_NAME));
-        uiService.showUI(ImageJFX.UI_NAME);
+        
+        uiService.showDialog("ImageJ-FX activated. Restart ImageJ/Fiji to use ImageJ-FX.");
+        
+        
+        //uiService.showUI(ImageJFX.UI_NAME);
         
         
         
-    }
-    
+    } 
 }
