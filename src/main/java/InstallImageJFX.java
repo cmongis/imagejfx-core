@@ -33,8 +33,7 @@ import org.scijava.plugin.Plugin;
  *
  * @author cyril
  */
-@Plugin(type = Command.class,menu = {@Menu(label = "Help"),
-	@Menu(label = "Install ImageJ-FX") },label="Install ImageJ-FX")
+@Deprecated
 public class InstallImageJFX extends ContextCommand{
 
     @Parameter
@@ -47,10 +46,11 @@ public class InstallImageJFX extends ContextCommand{
     
     @Override
     public void run() {
-
-        FilesCollection filesCollection = new FilesCollection(appService.getApp().getBaseDirectory());
+        File file = appService.getApp().getBaseDirectory();
+        FilesCollection filesCollection = new FilesCollection(file);
         
         UpdateSite addUpdateSite = filesCollection.addUpdateSite("ImageJ-FX", "http://localhost:8080", null, null, 0);
+        
         try {
             filesCollection.activateUpdateSite(addUpdateSite, null);
         }
