@@ -13,7 +13,7 @@ var FilesCollection = Java.type("net.imagej.updater.FilesCollection");
 var filesCollection = new FilesCollection(fiji);
 
 var repoName = "ImageJ-FX";
-var repoUrl = "http://localhost:8080/";
+var repoUrl = "http://site.imagejfx.net/";
 
 // adds ImaegJ-FX update site, activates it and saves the new configuration
 var updateSite = filesCollection.addUpdateSite(repoName, repoUrl, null, null, 0);
