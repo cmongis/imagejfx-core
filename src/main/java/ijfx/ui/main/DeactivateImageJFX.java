@@ -19,7 +19,9 @@
  */
 package ijfx.ui.main;
 
+import net.imagej.app.QuitProgram;
 import org.scijava.command.Command;
+import org.scijava.command.CommandService;
 import org.scijava.command.ContextCommand;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -37,6 +39,9 @@ public class DeactivateImageJFX extends ContextCommand{
     @Parameter
     UIService uiService;
     
+    @Parameter
+    CommandService commandService;
+    
     @Override
     public void run() {
         
@@ -44,6 +49,9 @@ public class DeactivateImageJFX extends ContextCommand{
         
         uiService.setDefaultUI(uiService.getUI(SwingUI.NAME));
         
+        uiService.showDialog("ImageJ-FX is shutting down to apply the new changes.");
+        
+        commandService.run(QuitProgram.class, true);
         
         //uiService.showUI(ImageJFX.UI_NAME);
         
