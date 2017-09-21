@@ -33,7 +33,7 @@
         -->
         
         <fileSet>
-           <directory>${project.build.directory}</directory>
+           <directory>${project.source.directory}</directory>
             
             <outputDirectory>./lib</outputDirectory>
             <includes>
