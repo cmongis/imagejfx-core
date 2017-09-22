@@ -159,7 +159,7 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
      * @return
      */
     @Override
-    public ObservableList firstUse() { //création du premier controlleur et mise dans la liste
+    public ObservableList firstUse() { // creation of the first controller
         DataAnnotationController x = new DataAnnotationController();
         ctrlList.add(x);
         cBox.setPromptText("Key");

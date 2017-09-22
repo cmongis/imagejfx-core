@@ -88,8 +88,8 @@ public class DefaultScriptHighlighting implements ScriptHighlight{
                     //matcher.group("COMMENT") != null ? "comment" :
                     "null";  assert styleClass != null;
             
-            spansBuilder.add(Collections.singleton("null"), matcher.start() - lastKwEnd);               // ajoute un style null entre les deux styles 
-             spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start()); // ajout du style en question sur le nombre de characteres apropriés
+            spansBuilder.add(Collections.singleton("null"), matcher.start() - lastKwEnd);            
+             spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start()); 
             lastKwEnd = matcher.end();
         }
         
