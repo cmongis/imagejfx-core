@@ -19,6 +19,7 @@
  */
 package ijfx.ui.main;
 
+import ij.IJ;
 import org.scijava.app.AppService;
 import org.scijava.command.Command;
 import org.scijava.command.CommandService;
@@ -44,6 +45,8 @@ public class ActivateImageJFX extends ContextCommand {
     @Parameter
     AppService appService;
     
+  
+    
     @Override
     public void run() {
         
@@ -51,10 +54,9 @@ public class ActivateImageJFX extends ContextCommand {
         
         uiService.setDefaultUI(uiService.getUI(ImageJFX.UI_NAME));
         
-        uiService.showDialog("ImageJ-FX activated. Restart ImageJ/Fiji to use ImageJ-FX.");
+        uiService.showDialog("ImageJ-FX activated.");
         
-        
-        //uiService.showUI(ImageJFX.UI_NAME);
+        IJ.run("Switch to Modern Mode");
         
         
         
