@@ -36,15 +36,17 @@ import org.scijava.widget.WidgetModel;
 @Plugin(type = InputWidget.class)
 public class FileWidgetFX extends AbstractFXInputWidget<File> implements FileWidget<Node> {
 
-    Button button = new Button();
+    Button button;
 
     FileButtonBinding binding;
 
     @Override
     public void set(WidgetModel model) {
         super.set(model);
+        
+        button = new Button();
         binding = new FileButtonBinding(button);
-
+        
         FileButtonBinding.Mode mode = null;
 
         // first we try to get the adaptive widget style
