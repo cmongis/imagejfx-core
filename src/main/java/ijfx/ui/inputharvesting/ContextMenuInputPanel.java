@@ -28,7 +28,7 @@ import org.scijava.widget.InputWidget;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class ContextMenuInputPanel extends AbstractInputPanel<ContextMenu,Node>  {
 

@@ -25,7 +25,7 @@ import javafx.collections.ListChangeListener;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public interface ListChangeListenerBuilder<T> {
     

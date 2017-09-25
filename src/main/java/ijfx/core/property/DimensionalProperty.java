@@ -27,7 +27,7 @@ import static javafx.scene.input.KeyCode.T;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class DimensionalProperty<T> {
 

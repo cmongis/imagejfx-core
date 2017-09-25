@@ -25,7 +25,7 @@ import org.scijava.plugin.SciJavaPlugin;
  * The Classes implementing the Choice should act as wrapper
  * and Choice factories.
  * 
- * @author cyril
+ * @author Cyril MONGIS
  */
 public interface Choice<T> extends SciJavaPlugin{
      

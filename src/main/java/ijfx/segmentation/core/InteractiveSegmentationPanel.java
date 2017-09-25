@@ -21,7 +21,7 @@ package ijfx.segmentation.core;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public interface InteractiveSegmentationPanel {
     

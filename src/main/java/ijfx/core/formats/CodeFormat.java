@@ -27,7 +27,7 @@ import org.scijava.text.AbstractTextFormat;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class CodeFormat extends AbstractTextFormat {
 

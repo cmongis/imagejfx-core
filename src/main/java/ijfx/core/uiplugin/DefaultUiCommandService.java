@@ -30,7 +30,7 @@ import org.scijava.service.Service;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = Service.class,priority = Priority.LOW_PRIORITY)
 public class DefaultUiCommandService extends AbstractService implements UiCommandService {

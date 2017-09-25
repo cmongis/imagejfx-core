@@ -38,7 +38,7 @@ import org.scijava.Context;
 import org.scijava.plugin.Parameter;
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class CountObjectSegmentationTask extends AbstractSegmentationTask<MetaDataOwner> implements MaskHandler {
 

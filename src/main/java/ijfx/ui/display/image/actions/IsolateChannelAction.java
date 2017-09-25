@@ -30,7 +30,7 @@ import ijfx.core.uiplugin.UiCommand;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 
 @Plugin(type = UiCommand.class,label = "Isolate this image",iconPath="fa:picture_alt")

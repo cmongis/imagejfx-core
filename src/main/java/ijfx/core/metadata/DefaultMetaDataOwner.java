@@ -21,7 +21,7 @@ package ijfx.core.metadata;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class DefaultMetaDataOwner implements MetaDataOwner{
 

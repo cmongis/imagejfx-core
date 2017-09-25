@@ -31,7 +31,7 @@ import org.scijava.plugin.Plugin;
  */
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Deprecated
 public class InstallImageJFX extends ContextCommand{

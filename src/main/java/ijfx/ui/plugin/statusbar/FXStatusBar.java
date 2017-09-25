@@ -19,7 +19,7 @@
  */
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 
 package ijfx.ui.plugin.statusbar;

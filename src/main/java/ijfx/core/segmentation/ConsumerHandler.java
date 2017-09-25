@@ -27,7 +27,7 @@ import mongis.utils.ProgressHandler;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class ConsumerHandler<T> extends ArrayList<LongConsumer<T>>{
     

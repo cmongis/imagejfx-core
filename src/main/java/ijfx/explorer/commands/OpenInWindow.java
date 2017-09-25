@@ -31,7 +31,7 @@ import org.scijava.ui.UIService;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = UiCommand.class,label = "Annotate...",iconPath = "fa:edit")
 public class OpenInWindow extends AbstractUiCommand<ExplorerActivity>{

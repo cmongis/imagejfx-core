@@ -30,7 +30,7 @@ import ijfx.core.uiplugin.UiCommand;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = UiCommand.class,label = "Isolate the current {0}",iconPath="fa:clone")
 public class IsolateCurrentPositionUIAction extends AbstractUiCommand<AxisSlider> {

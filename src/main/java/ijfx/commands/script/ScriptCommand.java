@@ -23,7 +23,7 @@ import org.scijava.command.Command;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 
 public interface ScriptCommand extends Command {

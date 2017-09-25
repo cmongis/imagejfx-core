@@ -24,7 +24,7 @@ import java.io.StringWriter;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class ExceptionUtils {
 

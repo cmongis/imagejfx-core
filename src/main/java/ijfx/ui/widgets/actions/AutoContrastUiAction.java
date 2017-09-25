@@ -26,7 +26,7 @@ import ijfx.core.uiplugin.UiCommand;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = UiCommand.class, label = "Auto-contrast", iconPath="fa:magic",priority=100,description="Adjust the contrast depending on min/max values of each channel.")
 public class AutoContrastUiAction extends AbstractAdjusterUIAction{

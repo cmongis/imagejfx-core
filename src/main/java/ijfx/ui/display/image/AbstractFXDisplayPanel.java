@@ -25,7 +25,7 @@ import org.scijava.ui.viewer.DisplayWindow;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public abstract class AbstractFXDisplayPanel<T extends Display> implements FXDisplayPanel<T> {
 

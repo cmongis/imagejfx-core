@@ -41,7 +41,7 @@ import org.scijava.widget.WidgetModel;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = InputWidget.class)
 public class TextWidgetFX extends AbstractFXInputWidget<String> implements TextWidget<Node> {

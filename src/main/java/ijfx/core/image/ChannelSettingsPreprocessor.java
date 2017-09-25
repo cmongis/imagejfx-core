@@ -31,7 +31,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = PreprocessorPlugin.class)
 public class ChannelSettingsPreprocessor extends AbstractPreprocessorPlugin  {

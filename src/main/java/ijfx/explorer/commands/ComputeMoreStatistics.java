@@ -26,7 +26,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = UiCommand.class, iconPath="fa:bar_chart",label="Compute more statistics")
 public class ComputeMoreStatistics extends ExplorerActivityCommand{

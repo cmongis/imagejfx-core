@@ -51,7 +51,7 @@ import org.scijava.Context;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class TaggablePane {
 

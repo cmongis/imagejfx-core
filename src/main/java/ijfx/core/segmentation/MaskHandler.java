@@ -30,7 +30,7 @@ import net.imglib2.type.logic.BitType;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @FunctionalInterface
 public interface MaskHandler<T> { 

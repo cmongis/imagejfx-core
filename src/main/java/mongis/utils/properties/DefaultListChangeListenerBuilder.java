@@ -25,7 +25,7 @@ import javafx.collections.ListChangeListener;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class DefaultListChangeListenerBuilder<T> implements ListChangeListener<T>,ListChangeListenerBuilder<T>{
 

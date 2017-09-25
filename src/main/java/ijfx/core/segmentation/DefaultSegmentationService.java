@@ -30,7 +30,7 @@ import org.scijava.service.Service;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = Service.class)
 public class DefaultSegmentationService extends AbstractService implements SegmentationService {

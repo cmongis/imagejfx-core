@@ -30,7 +30,7 @@ import org.scijava.plugin.Parameter;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public abstract class ExplorerActivityCommand extends AbstractUiCommand<ExplorerActivity>{
     

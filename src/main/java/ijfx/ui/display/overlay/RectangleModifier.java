@@ -32,7 +32,7 @@ import org.scijava.util.RealCoords;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = OverlayModifier.class, priority = Priority.HIGH_PRIORITY)
 

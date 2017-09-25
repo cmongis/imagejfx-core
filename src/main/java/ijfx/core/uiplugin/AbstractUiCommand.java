@@ -21,7 +21,7 @@ package ijfx.core.uiplugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public abstract class AbstractUiCommand<T> implements UiCommand<T>{
 

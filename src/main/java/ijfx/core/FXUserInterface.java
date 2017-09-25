@@ -76,7 +76,7 @@ import org.scijava.widget.FileWidget;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = UserInterface.class, name = ImageJFX.UI_NAME, priority = Priority.NORMAL_PRIORITY)
 public class FXUserInterface extends Application implements UserInterface {

@@ -52,7 +52,7 @@ import mongis.utils.FXUtilities;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class FXChoiceDialog<T> implements ChoiceDialog<T> {
 

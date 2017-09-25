@@ -25,7 +25,7 @@ import ijfx.core.uiplugin.UiCommand;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public interface SideMenuCommand extends UiCommand<MainWindow>, SciJavaPlugin {
     

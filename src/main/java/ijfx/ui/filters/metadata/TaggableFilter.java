@@ -24,7 +24,7 @@ import ijfx.ui.filter.DataFilter;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public interface TaggableFilter extends DataFilter<Taggable>  {
     

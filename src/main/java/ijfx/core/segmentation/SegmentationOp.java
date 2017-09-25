@@ -28,7 +28,7 @@ import net.imglib2.type.logic.BitType;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public interface SegmentationOp extends MetaDataOwner {
     

@@ -27,7 +27,7 @@ import org.scijava.plugin.SciJavaPlugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public interface FXIconService extends IjfxService {
     

@@ -25,7 +25,7 @@ import org.scijava.widget.InputWidget;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class DummyFXInputPanel extends AbstractInputPanel<Object,Object>{
 

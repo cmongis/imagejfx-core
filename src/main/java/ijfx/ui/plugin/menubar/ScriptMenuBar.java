@@ -35,7 +35,7 @@ import org.scijava.plugin.PluginService;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = UiPlugin.class)
 @UiConfiguration(id = "script-menu-bar",context = "script-open",localization = Localization.TOP_LEFT)

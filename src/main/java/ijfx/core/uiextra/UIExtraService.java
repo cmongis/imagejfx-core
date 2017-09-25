@@ -28,7 +28,7 @@ import javafx.concurrent.Task;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public interface UIExtraService extends IjfxService{
     

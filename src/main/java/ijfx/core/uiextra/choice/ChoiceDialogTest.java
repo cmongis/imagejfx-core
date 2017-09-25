@@ -34,7 +34,7 @@ import org.scijava.widget.FileWidget;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = Command.class, menuPath="Plugins > Test > ChoiceDialog")
 public class ChoiceDialogTest extends ContextCommand{

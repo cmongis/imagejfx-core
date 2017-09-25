@@ -31,7 +31,7 @@ import org.scijava.ui.SystemClipboard;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */public class JavaFXClipboard implements SystemClipboard {
 
         Clipboard clipboard;

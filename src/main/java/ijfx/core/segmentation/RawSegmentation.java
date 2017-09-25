@@ -29,7 +29,7 @@ import org.scijava.Context;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class RawSegmentation extends AbstractSegmentationTask<Img<BitType>> implements MaskHandler{
 

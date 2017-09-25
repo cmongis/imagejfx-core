@@ -32,7 +32,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class JarLoader implements Loader<String> {
     

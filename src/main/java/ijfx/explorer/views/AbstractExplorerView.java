@@ -25,7 +25,7 @@ import javafx.scene.input.MouseEvent;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public abstract class AbstractExplorerView implements ExplorerView{
     

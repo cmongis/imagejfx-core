@@ -25,7 +25,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = DebugAction.class, label = "Reload current activity")
 public class ReloadActivityDebugAction extends DebugActionBase{

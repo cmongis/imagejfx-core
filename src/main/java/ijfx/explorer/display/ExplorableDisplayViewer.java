@@ -27,7 +27,7 @@ import org.scijava.ui.viewer.DisplayViewer;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = DisplayViewer.class)
 public class ExplorableDisplayViewer extends AbstractFXDisplayViewer<ExplorableDisplay> {

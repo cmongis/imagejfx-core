@@ -41,7 +41,7 @@ import mongis.utils.properties.ListChangeListenerBuilder;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class FilterPanel<T> {
 

@@ -32,7 +32,7 @@ import mongis.utils.ProgressHandler;
  * Object responsible of synchronize the ExplorableViewModel state with view
  * states.
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class ViewStateManager extends WeakHashMap<ExplorerView, ViewState> {
 

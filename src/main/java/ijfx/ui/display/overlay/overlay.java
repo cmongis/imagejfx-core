@@ -21,7 +21,7 @@ package ijfx.ui.display.overlay;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class overlay {
     

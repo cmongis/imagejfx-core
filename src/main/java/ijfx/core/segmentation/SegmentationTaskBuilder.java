@@ -62,7 +62,7 @@ import org.scijava.ui.UIService;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class SegmentationTaskBuilder {
 

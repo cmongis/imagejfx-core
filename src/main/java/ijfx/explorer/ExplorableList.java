@@ -31,7 +31,7 @@ import java.util.stream.IntStream;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class ExplorableList extends ArrayList<Explorable> {
 

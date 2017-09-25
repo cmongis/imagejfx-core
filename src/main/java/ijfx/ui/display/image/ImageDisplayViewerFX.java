@@ -29,7 +29,7 @@ import org.scijava.ui.viewer.DisplayPanel;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = ImageDisplayViewer.class)
 public class ImageDisplayViewerFX extends AbstractImageDisplayViewer {

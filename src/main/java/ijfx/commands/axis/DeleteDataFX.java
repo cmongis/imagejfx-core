@@ -32,7 +32,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = Command.class,label = "DeleteData")
 public class DeleteDataFX extends ContextCommand{

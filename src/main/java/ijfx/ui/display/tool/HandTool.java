@@ -34,7 +34,7 @@ import org.scijava.util.RealCoords;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = Tool.class, description = "Move the image around", iconPath = "fa:hand_paper_alt")
 public class HandTool extends ReactiveTool {

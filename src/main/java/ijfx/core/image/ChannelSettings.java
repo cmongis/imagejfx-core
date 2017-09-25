@@ -25,7 +25,7 @@ import net.imagej.display.DatasetView;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public interface ChannelSettings {
 

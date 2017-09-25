@@ -31,7 +31,7 @@ import org.scijava.util.FileUtils;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type= ExplorableDisplayCommand.class, iconPath="fa:save",label = "Export to csv",priority = 0.1)
 public class ExportToCsv extends AbstractExplorableDisplayCommand {

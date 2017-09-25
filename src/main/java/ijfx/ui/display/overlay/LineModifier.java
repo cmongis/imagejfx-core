@@ -27,7 +27,7 @@ import org.scijava.util.RealCoords;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = OverlayModifier.class)
 public class LineModifier extends EasyOverlayModifier<LineOverlay>{

@@ -25,7 +25,7 @@ import mongis.utils.ProgressHandler;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public interface SegmentationTask<T> {
     

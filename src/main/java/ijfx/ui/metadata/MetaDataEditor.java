@@ -24,7 +24,7 @@ import java.util.Set;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public interface MetaDataEditor {
     

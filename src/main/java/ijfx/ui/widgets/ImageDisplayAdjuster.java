@@ -73,7 +73,7 @@ import ijfx.core.uiplugin.UiCommandService;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class ImageDisplayAdjuster extends BorderPane {
 

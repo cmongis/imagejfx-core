@@ -27,7 +27,7 @@ import org.scijava.display.Display;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public interface ExplorableDisplay extends Display<ExplorableList>, ExplorableViewModel{
     

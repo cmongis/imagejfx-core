@@ -35,7 +35,7 @@ import org.scijava.widget.NumberWidget;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = UiCommand.class)
 public class BatchMeasurement extends AbstractExplorableListCommand{

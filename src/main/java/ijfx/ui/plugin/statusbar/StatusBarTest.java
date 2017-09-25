@@ -30,7 +30,7 @@ import org.scijava.ui.UIService;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = Command.class, menuPath = "Plugins > Test > FXStatusBar")
 public class StatusBarTest extends ContextCommand {

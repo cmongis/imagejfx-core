@@ -31,7 +31,7 @@ import org.scijava.script.ScriptLanguage;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 
 public interface ScriptDisplay extends Display<Script> {

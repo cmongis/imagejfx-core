@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public interface ChoiceDialog<T> {
     

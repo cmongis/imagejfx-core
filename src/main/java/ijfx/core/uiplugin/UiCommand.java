@@ -25,7 +25,7 @@ import org.scijava.plugin.TypedPlugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 
 

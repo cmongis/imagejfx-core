@@ -31,7 +31,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = Activity.class, name = "imagej")
 public class DisplayContainer extends StackPane implements Activity {

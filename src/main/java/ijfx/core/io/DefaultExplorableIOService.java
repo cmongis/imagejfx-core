@@ -21,7 +21,7 @@ package ijfx.core.io;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class DefaultExplorableIOService {
     

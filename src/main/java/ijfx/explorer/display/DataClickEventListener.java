@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class DataClickEventListener implements Consumer<DataClickEvent<Explorable>> {
     

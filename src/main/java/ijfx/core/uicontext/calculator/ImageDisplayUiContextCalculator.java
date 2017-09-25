@@ -32,7 +32,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = UiContextCalculator.class)
 public class ImageDisplayUiContextCalculator extends AbstractUiContextCalculator<ImageDisplay>{

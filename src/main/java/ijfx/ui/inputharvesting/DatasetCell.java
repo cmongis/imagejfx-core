@@ -26,7 +26,7 @@ import net.imagej.Dataset;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class DatasetCell extends ListCell<Dataset>{
     

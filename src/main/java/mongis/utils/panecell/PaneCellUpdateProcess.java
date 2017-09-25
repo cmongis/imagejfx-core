@@ -35,7 +35,7 @@ import rx.subjects.PublishSubject;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class PaneCellUpdateProcess<T> {
 

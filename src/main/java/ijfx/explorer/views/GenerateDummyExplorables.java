@@ -34,7 +34,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = Command.class, menuPath = "Plugins > Test > Generate dummy explorables")
 public class GenerateDummyExplorables extends ContextCommand{

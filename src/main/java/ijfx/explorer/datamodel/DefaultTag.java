@@ -21,7 +21,7 @@ package ijfx.explorer.datamodel;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class DefaultTag implements Tag {
 

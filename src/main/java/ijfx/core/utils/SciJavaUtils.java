@@ -25,7 +25,7 @@ import org.scijava.plugin.SciJavaPlugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class SciJavaUtils {
     public static String getLabel(SciJavaPlugin plugin) {

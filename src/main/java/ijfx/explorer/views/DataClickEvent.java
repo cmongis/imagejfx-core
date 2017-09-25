@@ -24,7 +24,7 @@ import javafx.scene.input.MouseEvent;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class DataClickEvent<T> {
     

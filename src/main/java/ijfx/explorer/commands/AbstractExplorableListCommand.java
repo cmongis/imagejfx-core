@@ -27,7 +27,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public abstract class AbstractExplorableListCommand extends AbstractUiCommand<ExplorableList>implements ExplorableListCommand{
         

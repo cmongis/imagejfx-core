@@ -23,7 +23,7 @@ import ijfx.core.uiplugin.AbstractUiCommand;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public abstract class DebugActionBase extends AbstractUiCommand<ConsoleUIPlugin>{
 

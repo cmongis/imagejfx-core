@@ -39,7 +39,7 @@ import org.scijava.ui.viewer.DisplayWindow;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class DisplayWindowFX extends Window implements DisplayWindow {
 

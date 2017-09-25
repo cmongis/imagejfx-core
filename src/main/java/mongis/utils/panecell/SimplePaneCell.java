@@ -35,7 +35,7 @@ import mongis.utils.FailableCallback;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class SimplePaneCell<T> implements PaneCell<T> {
 

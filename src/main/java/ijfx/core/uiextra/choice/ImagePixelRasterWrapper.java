@@ -28,7 +28,7 @@ import javafx.scene.image.WritablePixelFormat;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class ImagePixelRasterWrapper implements PixelRaster{
 

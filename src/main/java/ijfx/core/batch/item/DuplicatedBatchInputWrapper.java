@@ -24,7 +24,7 @@ import ijfx.core.metadata.MetaDataSet;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class DuplicatedBatchInputWrapper extends NaiveBatchInput {
     

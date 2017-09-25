@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class ConsoleProgressHandler implements ProgressHandler {
 

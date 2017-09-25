@@ -29,7 +29,7 @@ import javafx.scene.control.TableView;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class MetaDataOwnerTableListener<T extends MetaDataOwner> {
     

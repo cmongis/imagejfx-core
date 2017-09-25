@@ -38,7 +38,7 @@ import org.scijava.service.Service;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = Service.class)
 public class DefaultFXIconService extends AbstractService implements FXIconService {

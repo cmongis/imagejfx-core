@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public interface LabelledAction<T> {
         T data();

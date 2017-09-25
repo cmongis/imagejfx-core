@@ -48,7 +48,7 @@ import rx.subjects.PublishSubject;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = Display.class, priority = Priority.HIGH_PRIORITY)
 public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImageDisplay {
@@ -167,7 +167,8 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
 
     @Override
     public double getCurrentLUTMax() {
-        return getDatasetView().getChannelMax(getCurrentChannel());
+        double max = getDatasetView().getChannelMax(getCurrentChannel());
+        return max;
     }
 
     @Override

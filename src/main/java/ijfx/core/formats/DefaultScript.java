@@ -23,7 +23,7 @@ import org.scijava.script.ScriptLanguage;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class DefaultScript implements Script{
 

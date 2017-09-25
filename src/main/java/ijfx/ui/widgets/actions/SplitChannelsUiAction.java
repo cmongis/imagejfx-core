@@ -24,7 +24,7 @@ import ijfx.ui.widgets.AbstractAdjusterUIAction;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class SplitChannelsUiAction  extends AbstractAdjusterUIAction{
 

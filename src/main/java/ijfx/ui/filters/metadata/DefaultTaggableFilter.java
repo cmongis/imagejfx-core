@@ -32,7 +32,7 @@ import javafx.scene.Node;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class DefaultTaggableFilter implements TaggableFilter {
 

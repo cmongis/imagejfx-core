@@ -21,7 +21,7 @@ package ijfx.ui.utils;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class SelectionChange<T> {
     

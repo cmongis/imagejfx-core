@@ -29,7 +29,7 @@ import org.scijava.util.RealCoords;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public abstract class EasyOverlayModifier<T extends Overlay> extends AbstractOverlayModifier<T> {
 

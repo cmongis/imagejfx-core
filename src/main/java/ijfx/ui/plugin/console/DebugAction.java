@@ -23,7 +23,7 @@ import ijfx.core.uiplugin.UiCommand;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public interface DebugAction extends UiCommand<ConsoleUIPlugin>{
     

@@ -42,7 +42,7 @@ import org.scijava.service.Service;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = Service.class, priority = Priority.NORMAL_PRIORITY)
 public class FXUiCommandService extends DefaultUiCommandService implements IjfxService {

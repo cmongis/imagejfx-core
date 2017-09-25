@@ -43,7 +43,7 @@ import rx.subjects.PublishSubject;
 
 /**
  * Reactive tool uses a 
- * @author cyril
+ * @author Cyril MONGIS
  */
 public abstract class ReactiveTool extends AbstractRichPlugin implements Tool{
 

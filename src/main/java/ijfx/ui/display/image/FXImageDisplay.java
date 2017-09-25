@@ -30,7 +30,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public interface FXImageDisplay extends ImageDisplay {
 

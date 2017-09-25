@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class CollectionsUtils {
     public static <T> List<T> toAdd(Collection<? extends T> source, Collection<? extends T> target) {

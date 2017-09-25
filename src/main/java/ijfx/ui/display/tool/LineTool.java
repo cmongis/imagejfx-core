@@ -31,7 +31,7 @@ import org.scijava.widget.NumberWidget;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = Tool.class, iconPath="fa:arrows_v",description = "Line tool")
 public class LineTool extends AbstractPathTool<LineOverlay>{

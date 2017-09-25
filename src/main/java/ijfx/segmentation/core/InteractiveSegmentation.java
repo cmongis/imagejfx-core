@@ -29,7 +29,7 @@ import net.imglib2.type.numeric.RealType;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public interface InteractiveSegmentation {
     

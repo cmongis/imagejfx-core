@@ -40,7 +40,7 @@ import org.scijava.plugin.PluginService;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class MetaDataBar extends HBox {
 

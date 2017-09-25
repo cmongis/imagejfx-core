@@ -26,7 +26,7 @@ import javafx.scene.control.ComboBox;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public abstract class AbstractComboBoxWidget<T> extends EasyInputWidget<T>{
 

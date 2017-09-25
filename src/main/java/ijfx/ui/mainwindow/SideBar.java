@@ -40,7 +40,7 @@ import mongis.utils.transition.TransitionBinding;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class SideBar {
 

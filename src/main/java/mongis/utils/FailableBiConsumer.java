@@ -21,7 +21,7 @@ package mongis.utils;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @FunctionalInterface
 public interface FailableBiConsumer<T, R> {

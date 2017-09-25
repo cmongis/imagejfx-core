@@ -24,7 +24,7 @@ import javafx.scene.image.Image;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public interface PixelRaster {
     

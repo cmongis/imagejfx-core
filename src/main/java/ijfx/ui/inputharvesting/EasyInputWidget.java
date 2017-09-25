@@ -30,7 +30,7 @@ import org.scijava.widget.WidgetModel;
  *  - choosing which property will be use as value
  *  - which type of object the will be handled
  * 
- * @author cyril
+ * @author Cyril MONGIS
  */
 public abstract class EasyInputWidget<T> extends AbstractFXInputWidget<T>{
 

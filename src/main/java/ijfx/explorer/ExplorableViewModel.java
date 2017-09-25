@@ -26,7 +26,7 @@ import java.util.function.Predicate;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public interface ExplorableViewModel {
 

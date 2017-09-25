@@ -32,7 +32,7 @@ import org.scijava.widget.TextWidget;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = Command.class,menuPath = "Plugins > Test > Input harvesting")
 public class HarvestTest extends ContextCommand{

@@ -27,7 +27,7 @@ import javafx.scene.image.WritableImage;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class PixelRasterUtils {
     

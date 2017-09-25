@@ -36,7 +36,7 @@ import org.scijava.widget.WidgetModel;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public abstract class AbstractExplorableDisplayCommand extends DynamicCommand implements ExplorableDisplayCommand {
 

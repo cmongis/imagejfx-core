@@ -28,7 +28,7 @@ import org.scijava.plugin.SciJavaPlugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class ModuleWrapper<T extends SciJavaPlugin> extends AbstractModule {
 

@@ -35,7 +35,7 @@ import org.scijava.widget.WidgetService;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class WorkflowStepEditPane extends BorderPane {
 

@@ -24,7 +24,7 @@ import org.scijava.plugin.TypedPlugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public interface UiContextCalculator<T> extends SciJavaPlugin,TypedPlugin<T>{
     

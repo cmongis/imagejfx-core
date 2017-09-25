@@ -27,7 +27,7 @@ import org.scijava.plugins.commands.io.OpenFile;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = ScriptCommand.class, menuPath = "File > Open...", menu = {
 		@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,

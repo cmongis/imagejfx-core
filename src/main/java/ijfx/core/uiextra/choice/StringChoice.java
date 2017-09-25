@@ -27,7 +27,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = Choice.class, priority = Priority.VERY_LOW_PRIORITY)
 @Handles(type = Object.class)

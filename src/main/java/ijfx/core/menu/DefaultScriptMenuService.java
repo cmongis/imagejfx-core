@@ -21,7 +21,7 @@ package ijfx.core.menu;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class DefaultScriptMenuService {
     

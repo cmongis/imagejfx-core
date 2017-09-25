@@ -26,7 +26,7 @@ import ijfx.core.uiplugin.UiCommand;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type= UiCommand.class,label = "Isolate this channel",iconPath="fa:remove",description="Create a new image with only the current channel")
 public class IsolateChannelUiAction extends AbstractAdjusterUIAction{

@@ -27,7 +27,7 @@ import javafx.scene.control.TitledPane;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 class TitledPaneFilterWrapper<T> implements DataFilter<T> {
     

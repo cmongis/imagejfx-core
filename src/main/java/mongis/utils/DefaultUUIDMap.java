@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class DefaultUUIDMap<T> extends HashMap<UUID,T> implements UUIDMap{
     

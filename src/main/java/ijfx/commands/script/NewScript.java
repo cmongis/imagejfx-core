@@ -32,7 +32,7 @@ import org.scijava.script.ScriptLanguage;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = Command.class, menuPath = "File > New script...")
 public class NewScript extends ContextCommand implements ScriptCommand{

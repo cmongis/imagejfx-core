@@ -24,7 +24,7 @@ import mongis.utils.CallableTask;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class Async {
     

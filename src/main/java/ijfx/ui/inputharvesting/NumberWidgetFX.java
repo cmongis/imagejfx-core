@@ -37,7 +37,7 @@ import org.scijava.widget.WidgetModel;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = InputWidget.class)
 public class NumberWidgetFX extends AbstractFXInputWidget<Number> implements NumberWidget<Node> {

@@ -23,7 +23,7 @@ import ijfx.ui.IjfxEvent;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class WorkflowStepModifiedEvent extends IjfxEvent<WorkflowStep>{
     

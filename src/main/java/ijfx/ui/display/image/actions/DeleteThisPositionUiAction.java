@@ -28,7 +28,7 @@ import ijfx.core.uiplugin.UiCommand;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type=UiCommand.class,label = "Delete this {0}",iconPath="fa:remove")
 public class DeleteThisPositionUiAction extends AbstractAxisSliderUiAction {

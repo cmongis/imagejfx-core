@@ -25,7 +25,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = UiContextCalculator.class)
 public class DisplayNumberCalculator extends AbstractUiContextCalculator<Object> {

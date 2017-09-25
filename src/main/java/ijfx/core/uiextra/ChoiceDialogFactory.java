@@ -23,7 +23,7 @@ import java.util.List;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public interface ChoiceDialogFactory {
     

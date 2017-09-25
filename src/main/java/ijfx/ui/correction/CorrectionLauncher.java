@@ -26,7 +26,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = UiCommand.class,label = "Correction", iconPath= "fa:fire_instinguisher")
 public class CorrectionLauncher extends AbstractActivityLauncher<Activity>{

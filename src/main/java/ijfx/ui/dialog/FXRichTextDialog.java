@@ -50,7 +50,7 @@ import mongis.utils.FXUtilities;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class FXRichTextDialog extends Dialog<RichTextDialog.Answer> implements RichTextDialog {
 

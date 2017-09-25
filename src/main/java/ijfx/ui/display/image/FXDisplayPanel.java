@@ -27,7 +27,7 @@ import org.scijava.ui.viewer.DisplayWindow;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public interface FXDisplayPanel<T extends Display> extends DisplayPanel,SciJavaPlugin{
     

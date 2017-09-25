@@ -33,7 +33,7 @@ import javafx.scene.Node;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public interface MainWindow extends SciJavaPlugin {
 

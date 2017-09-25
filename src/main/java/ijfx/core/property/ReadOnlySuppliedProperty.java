@@ -27,7 +27,7 @@ import javafx.beans.value.ObservableValue;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class ReadOnlySuppliedProperty<T> extends ReadOnlyObjectPropertyBase<T> {
 

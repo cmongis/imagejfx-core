@@ -28,7 +28,7 @@ import net.imglib2.display.ColorTable;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class DefaultChannelSettings implements ChannelSettings {
 

@@ -29,7 +29,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = Command.class,menuPath = "Plugins > Explorer > Add metadata")
 public class AddMetaData extends ContextCommand{

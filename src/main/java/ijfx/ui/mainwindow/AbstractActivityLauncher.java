@@ -27,7 +27,7 @@ import org.scijava.plugin.Parameter;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public abstract class AbstractActivityLauncher<T extends Activity> extends AbstractUiCommand<MainWindow>{
 

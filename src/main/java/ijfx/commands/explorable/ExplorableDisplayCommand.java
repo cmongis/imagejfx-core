@@ -25,7 +25,7 @@ import org.scijava.plugin.Parameter;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public interface ExplorableDisplayCommand extends Command{
     

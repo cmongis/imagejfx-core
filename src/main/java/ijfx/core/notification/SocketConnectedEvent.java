@@ -25,7 +25,7 @@ import org.scijava.event.SciJavaEvent;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class SocketConnectedEvent extends IjfxEvent<Socket>{
     

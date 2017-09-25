@@ -36,7 +36,7 @@ import org.scijava.plugin.Parameter;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class MenuGenerator {
 

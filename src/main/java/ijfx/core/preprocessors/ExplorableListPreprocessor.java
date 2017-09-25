@@ -36,7 +36,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type=PreprocessorPlugin.class,priority = Priority.LOW_PRIORITY)
 public class ExplorableListPreprocessor extends AbstractPreprocessorPlugin{

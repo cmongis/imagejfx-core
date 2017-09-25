@@ -38,7 +38,7 @@ import mongis.utils.ProgressHandler;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class ObjectCache<T> {
 

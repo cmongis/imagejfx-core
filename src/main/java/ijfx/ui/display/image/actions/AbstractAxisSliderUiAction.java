@@ -26,7 +26,7 @@ import org.scijava.plugin.Parameter;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public abstract class AbstractAxisSliderUiAction extends AbstractUiCommand<AxisSlider> {
     

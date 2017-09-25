@@ -23,7 +23,7 @@ import java.util.prefs.Preferences;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class StringPreferenceWidgetModel extends AbstractWidgetModel<String>{
     

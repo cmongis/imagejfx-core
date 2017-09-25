@@ -44,7 +44,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = UiPlugin.class)
 @UiConfiguration(id = "tag-bar", localization = Localization.RIGHT, context = "explorable-open")

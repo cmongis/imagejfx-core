@@ -31,7 +31,7 @@ import org.scijava.widget.WidgetModel;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = InputWidget.class)
 public class ButtonWidgetFX extends AbstractInputWidget<org.scijava.widget.Button,Node> implements ButtonWidget<Node>{

@@ -43,7 +43,7 @@ import org.scijava.service.Service;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = Service.class)
 public class DisplayRangeService extends AbstractService implements IjfxService {

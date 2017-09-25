@@ -77,7 +77,7 @@ import org.scijava.ui.UIService;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = UiPlugin.class)
 @UiConfiguration(id = "segmentation-panel", localization = Localization.RIGHT, context = "image-display-open+segment explore+segment -overlay-selected")

@@ -25,7 +25,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = UiCommand.class,label = "Performances",iconPath = "fa:clock_alt")
 public class PerformanceActivityLauncher extends AbstractActivityLauncher<PerformanceActivity>{

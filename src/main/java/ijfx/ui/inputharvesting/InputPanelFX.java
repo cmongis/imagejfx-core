@@ -42,7 +42,7 @@ import org.scijava.widget.InputWidget;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class InputPanelFX implements InputPanel<Node, Node> {
 

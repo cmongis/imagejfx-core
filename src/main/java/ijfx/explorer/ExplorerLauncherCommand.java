@@ -25,7 +25,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = UiCommand.class, label ="Database",iconPath= "fa:database")
 public class ExplorerLauncherCommand extends AbstractActivityLauncher<ExplorerActivity>{

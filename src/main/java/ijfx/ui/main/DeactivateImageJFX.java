@@ -30,7 +30,7 @@ import org.scijava.ui.swing.SwingUI;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
  @Plugin(type = Command.class, menuPath="Help > Switch back to ImageJ/Fiji")
 public class DeactivateImageJFX extends ContextCommand{

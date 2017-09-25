@@ -38,6 +38,7 @@ import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -58,7 +59,7 @@ import org.scijava.plugin.Parameter;
 /**
  * Button displaying the brightest color of a color table in a rectangle
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class LUTSwitchButton extends Button {
 
@@ -69,18 +70,15 @@ public class LUTSwitchButton extends Button {
     private static final double RECTANGLE_SIZE_WHEN_CURRENT_CHANNEL = 16;
     private static final double RECTANGLE_SIZE = 20;
 
-    private Rectangle rectangle = new Rectangle(RECTANGLE_SIZE, RECTANGLE_SIZE);
+    private Rectangle toggleRectangle = new Rectangle(RECTANGLE_SIZE, RECTANGLE_SIZE);
 
     private final BooleanProperty channelActivatedProperty = new SimpleBooleanProperty();
 
     private final BooleanProperty channelSelectedProperty = new SimpleBooleanProperty();
-    
-    
+
     private ContextMenu contextMenu = new ContextMenu();
 
     private static final UsageLocation TABLE_COLOR_BUTTON = UsageLocation.get("Channel Rectangle");
-
-   
 
     private DoubleBinding rectangleSize = Bindings.createDoubleBinding(this::getRectangleSize, channelSelectedProperty);
 
@@ -100,11 +98,11 @@ public class LUTSwitchButton extends Button {
     public LUTSwitchButton(FXImageDisplay display) {
         super();
         display.getContext().inject(this);
-        rectangle.getStyleClass().add("rectangle");
+        toggleRectangle.getStyleClass().add("rectangle");
         selector.getStyleClass().add("selector");
         selector.setWidth(RECTANGLE_SIZE);
         selector.setHeight(RECTANGLE_SIZE / 2);
-        vbox.getChildren().addAll(rectangle, selector);
+        vbox.getChildren().addAll(toggleRectangle, selector);
         vbox.getStyleClass().add("container");
         getStyleClass().add("color-button");
         setGraphic(vbox);
@@ -112,16 +110,15 @@ public class LUTSwitchButton extends Button {
         imageDisplayProperty.setValue(display);
         Usage.listenButton(this, TABLE_COLOR_BUTTON, "Channel switch");
 
-
         channelActivatedProperty.setValue(Boolean.TRUE);
-        
-        channelActivatedProperty.bind(Bindings.createBooleanBinding(()->getDisplay().isChannelComposite(getChannelId()), getDisplay().compositeChannelsProperty()));
-        channelSelectedProperty.bind(Bindings.createBooleanBinding(()->getDisplay().getCurrentChannel() == getChannelId(),getDisplay().currentChannelProperty()));
-        
-        rectangle.fillProperty().bind(Bindings.createObjectBinding(this::getColor, getDisplay().currentLUTProperty(),getDisplay().currentChannelProperty(),channelActivatedProperty));
-        
-        selector.addEventHandler(MouseEvent.MOUSE_CLICKED, this::onCircleClicked);
-        rectangle.addEventHandler(MouseEvent.MOUSE_CLICKED, this::onRectangleClicked);
+
+        channelActivatedProperty.bind(Bindings.createBooleanBinding(() -> getDisplay().isChannelComposite(getChannelId()), getDisplay().compositeChannelsProperty()));
+        channelSelectedProperty.bind(Bindings.createBooleanBinding(() -> getDisplay().getCurrentChannel() == getChannelId(), getDisplay().currentChannelProperty()));
+
+        toggleRectangle.fillProperty().bind(Bindings.createObjectBinding(this::getColor, getDisplay().currentLUTProperty(), getDisplay().currentChannelProperty(), channelActivatedProperty));
+
+        selector.addEventHandler(MouseEvent.MOUSE_CLICKED, this::onChannelSelectorClicked);
+        toggleRectangle.addEventHandler(MouseEvent.MOUSE_CLICKED, this::onChannelToggleClicked);
 
         PseudoClass currentChannelPseudoClass = PseudoClass.getPseudoClass("current-channel");
         PseudoClass selectedPseudoClass = PseudoClass.getPseudoClass("selected");
@@ -135,23 +132,20 @@ public class LUTSwitchButton extends Button {
         addAction("Isolate this channel", FontAwesomeIcon.COPY, this::isolateChannel);
 
         setTooltip(new Tooltip("The first click select the channel, the second click activate or deactivate it."));
-        
-        
-    }
-    
-    
-   
-    
 
-    private void onCircleClicked(MouseEvent event) {
+    }
+
+    private void onChannelSelectorClicked(MouseEvent event) {
 
         setAsCurrentChannel();
         event.consume();
     }
 
-    private void onRectangleClicked(MouseEvent event) {
-        toggle();
-        event.consume();
+    private void onChannelToggleClicked(MouseEvent event) {
+        if (event.getButton() == MouseButton.PRIMARY) {
+            toggle();
+            event.consume();
+        }
     }
 
     private long getCloser(long currentId, long min, long max) {
@@ -170,7 +164,7 @@ public class LUTSwitchButton extends Button {
 
         getDisplay().toggleChannelComposite(getChannelId());
         getDisplay().updateAsync();
-       
+
     }
 
     public Property<FXImageDisplay> imageDisplayProperty() {
@@ -180,7 +174,7 @@ public class LUTSwitchButton extends Button {
     private FXImageDisplay getDisplay() {
         return imageDisplayProperty().getValue();
     }
-    
+
     public IntegerProperty channelProperty() {
         return channelProperty;
     }
@@ -188,8 +182,7 @@ public class LUTSwitchButton extends Button {
     private DatasetView getCurrentView() {
         return imageDisplayService.getActiveDatasetView(getDisplay());
     }
-    
-    
+
     private Color getCurrentBrightestColor() {
 
         DatasetView view = getCurrentView();
@@ -205,17 +198,15 @@ public class LUTSwitchButton extends Button {
         return getBrighterColor(view.getColorTables().get(channelId));
     }
 
-    
-
     private Boolean isSelected() {
         return getDisplay().isChannelComposite(getChannelId());
     }
 
     private Paint getColor() {
         if (!isSelected()) {
-           return Color.BLACK;
+            return Color.BLACK;
         } else {
-           return getCurrentBrightestColor();
+            return getCurrentBrightestColor();
         }
 
     }
@@ -243,7 +234,7 @@ public class LUTSwitchButton extends Button {
     private int getChannelId() {
         return channelProperty().get();
     }
-  
+
     private Color getBrighterColor(ColorTable colorTable) {
 
         if (colorTable instanceof ColorTable8) {
@@ -282,8 +273,6 @@ public class LUTSwitchButton extends Button {
 
     }
 
-   
-
     private void displayOnlyThis() {
 
         DatasetView view = getCurrentView();
@@ -306,7 +295,6 @@ public class LUTSwitchButton extends Button {
             imageDisplayProperty().getValue().context().inject(this);
         }
 
-        // commandService.run(Isolate.class, true, "axisType", Axes.CHANNEL, "position", channelProperty().getValue());
     }
 
     private void editThisChannel() {

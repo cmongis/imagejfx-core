@@ -26,7 +26,7 @@ import org.scijava.ui.viewer.AbstractDisplayViewer;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public abstract class AbstractFXDisplayViewer<T extends Display> extends AbstractDisplayViewer<T>{
 

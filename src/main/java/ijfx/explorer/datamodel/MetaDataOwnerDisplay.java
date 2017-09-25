@@ -32,7 +32,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = Display.class)
 public class MetaDataOwnerDisplay extends AbstractDisplay<MetaDataOwnerList>{

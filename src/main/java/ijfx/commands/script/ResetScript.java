@@ -27,7 +27,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = ScriptCommand.class,menuPath = "Edit > Reset (example)")
 public class ResetScript extends ContextCommand implements ScriptCommand{

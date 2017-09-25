@@ -21,7 +21,7 @@ package ijfx.core.uiextra;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public interface RichTextDialog {
 

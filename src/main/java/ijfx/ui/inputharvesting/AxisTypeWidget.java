@@ -29,7 +29,7 @@ import org.scijava.widget.WidgetModel;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = InputWidget.class)
 public class AxisTypeWidget extends AbstractFXInputWidget<AxisType> implements InputWidget<AxisType, Node> {

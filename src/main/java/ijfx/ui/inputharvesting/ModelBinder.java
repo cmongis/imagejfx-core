@@ -29,7 +29,7 @@ import org.scijava.widget.InputWidget;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class ModelBinder<T> implements ChangeListener<T> {
 

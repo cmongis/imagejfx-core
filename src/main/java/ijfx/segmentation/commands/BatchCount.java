@@ -32,7 +32,7 @@ import org.scijava.widget.NumberWidget;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = UiCommand.class)
 public class BatchCount extends AbstractExplorableListCommand{

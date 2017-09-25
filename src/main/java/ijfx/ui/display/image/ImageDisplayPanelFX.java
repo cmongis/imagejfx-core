@@ -81,7 +81,7 @@ import org.scijava.util.RealCoords;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = FXDisplayPanel.class)
 public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel, FXDisplayPanel<FXImageDisplay> {

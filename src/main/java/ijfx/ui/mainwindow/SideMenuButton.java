@@ -35,7 +35,7 @@ import javafx.scene.layout.StackPane;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class SideMenuButton extends HBox {
 

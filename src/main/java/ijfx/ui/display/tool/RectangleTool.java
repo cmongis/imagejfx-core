@@ -31,7 +31,7 @@ import org.scijava.util.RealCoords;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = Tool.class, iconPath = "fa:square_alt", description = "Draw a damn rectangle")
 public class RectangleTool extends AbstractPathTool<RectangleOverlay> {

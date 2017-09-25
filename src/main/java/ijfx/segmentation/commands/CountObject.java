@@ -33,9 +33,9 @@ import org.scijava.widget.NumberWidget;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
-@Plugin(type = Command.class, menuPath = "Analyse > Count objects")
+@Plugin(type = Command.class, menuPath = "Analyze > Count objects")
 public class CountObject extends ContextCommand {
 
     @Parameter

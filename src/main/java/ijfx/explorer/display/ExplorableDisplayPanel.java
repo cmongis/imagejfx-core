@@ -62,7 +62,7 @@ import org.scijava.plugin.PluginService;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = FXDisplayPanel.class)
 public class ExplorableDisplayPanel extends AbstractFXDisplayPanel<ExplorableDisplay> {

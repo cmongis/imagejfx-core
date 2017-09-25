@@ -32,7 +32,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = FXDisplayPanel.class)
 public class MetaDataOwnerDisplayPanel extends AbstractFXDisplayPanel<MetaDataOwnerDisplay> {

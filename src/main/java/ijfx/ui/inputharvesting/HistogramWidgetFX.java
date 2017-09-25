@@ -36,7 +36,7 @@ import org.scijava.widget.WidgetModel;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = InputWidget.class)
 public class HistogramWidgetFX extends AbstractFXInputWidget<HistogramBundle> implements HistogramWidget<Node> {

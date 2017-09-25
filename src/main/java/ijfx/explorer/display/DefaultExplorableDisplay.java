@@ -37,7 +37,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = Display.class)
 public class DefaultExplorableDisplay extends AbstractDisplay<ExplorableList> implements ExplorableDisplay {

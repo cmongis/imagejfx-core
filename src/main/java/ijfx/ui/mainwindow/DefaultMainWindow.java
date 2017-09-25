@@ -71,7 +71,7 @@ import javafx.concurrent.Task;
 /**
  * Controller class for the main window
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = MainWindow.class)
 public class DefaultMainWindow implements MainWindow {

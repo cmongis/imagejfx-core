@@ -21,7 +21,7 @@ package ijfx.core.property;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @FunctionalInterface
 public interface Getter<T> {

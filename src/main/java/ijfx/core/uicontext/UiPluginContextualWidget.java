@@ -23,7 +23,7 @@ import ijfx.ui.UiPlugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class UiPluginContextualWidget extends NodeContextualWidget{
     

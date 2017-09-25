@@ -24,7 +24,7 @@ import java.util.concurrent.Callable;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class ObservableProgressHandler implements ProgressHandler{
 

@@ -21,7 +21,7 @@ package ijfx.core.notification;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public interface NotificationData {
     

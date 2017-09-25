@@ -44,7 +44,7 @@ import org.scijava.module.ModuleItem;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class ModuleInfoPane extends BorderPane{
 

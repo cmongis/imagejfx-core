@@ -24,7 +24,7 @@ import org.scijava.command.Command;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public interface WorkflowService extends IjfxService{
     

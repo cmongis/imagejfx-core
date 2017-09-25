@@ -28,7 +28,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = ExplorableDisplayCommand.class, label="Set to value...",iconPath="fa:edit",initializer = "init")
 public class SetValue extends AbstractExplorableDisplayCommand{

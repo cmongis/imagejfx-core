@@ -37,9 +37,9 @@ import org.scijava.widget.NumberWidget;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
-@Plugin(type = Command.class, menuPath = "Analyse > Analyse particles")
+@Plugin(type = Command.class, menuPath = "Analyze > Analyze particles")
 public class AnalyseParticles extends ContextCommand{
     
     @Parameter

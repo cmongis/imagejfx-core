@@ -34,7 +34,7 @@ import org.scijava.tool.Tool;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = Tool.class)
 public class OverlayDeleterTool extends ReactiveTool{

@@ -31,7 +31,7 @@ import org.scijava.ui.swing.SwingUI;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = Command.class, menuPath="Help > Switch to ImageJ-FX")
 public class ActivateImageJFX extends ContextCommand {

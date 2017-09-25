@@ -31,7 +31,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = UiCommand.class,label = "Segment",iconPath="fa:dot_circle",priority = 0.6)
 public class SegmentSideMenuCommand extends AbstractUiCommand<MainWindow>{

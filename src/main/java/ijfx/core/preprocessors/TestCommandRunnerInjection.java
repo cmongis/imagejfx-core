@@ -29,7 +29,7 @@ import static ucar.unidata.util.Format.s;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = Command.class, menuPath =  "Plugins > Test > CommandRunner")
 public class TestCommandRunnerInjection extends ContextCommand{

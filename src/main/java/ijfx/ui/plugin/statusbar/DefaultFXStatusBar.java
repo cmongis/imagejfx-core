@@ -46,7 +46,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = UiPlugin.class)
 @UiConfiguration(id = "status-bar", localization = Localization.BOTTOM_LEFT, context = "always")

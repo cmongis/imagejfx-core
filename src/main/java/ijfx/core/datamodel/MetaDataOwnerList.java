@@ -24,7 +24,7 @@ import java.util.ArrayList;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class MetaDataOwnerList extends ArrayList<MetaDataOwner>{
     

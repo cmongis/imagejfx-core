@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public abstract class AbstractTaggable implements Taggable{
       private MetaDataSet metadataSet;

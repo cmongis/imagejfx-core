@@ -26,7 +26,7 @@ import static ucar.unidata.util.Format.d;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public interface Channel {
     

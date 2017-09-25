@@ -38,7 +38,7 @@ import org.scijava.widget.WidgetService;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = Command.class, menuPath = "Plugins > Test > Generic Input harvesting")
 public class GenericInputHarvestingTest extends ContextCommand{

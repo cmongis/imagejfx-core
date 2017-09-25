@@ -31,7 +31,7 @@ import org.scijava.widget.WidgetModel;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public abstract class AbstractWidgetModel<T> implements WidgetModel {
 

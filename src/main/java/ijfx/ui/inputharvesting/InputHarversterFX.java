@@ -38,7 +38,7 @@ import org.scijava.widget.InputPanel;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = PreprocessorPlugin.class, priority = InputHarvester.PRIORITY)
 public class InputHarversterFX extends AbstractInputHarvesterPlugin<Node, Node> {

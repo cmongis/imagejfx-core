@@ -31,7 +31,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 @Plugin(type = Command.class, menuPath = "Plugins > Test > Overlay Demo")
 public class OverlayDemo extends ContextCommand{
