@@ -971,6 +971,15 @@ h1,h2,h3,h4 {
 
 }
 
+
+/*
+*   Main Border Pane
+*/
+
+#mainBorderPane.drag-over {
+    -fx-background-color:-bg-darker;
+}
+
 /*
 *       List
 */

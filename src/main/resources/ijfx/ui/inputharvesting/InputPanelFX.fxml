@@ -4,6 +4,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -21,6 +22,7 @@
                   <String fx:value="h3" />
                </styleClass>
             </Label>
+            <Separator prefWidth="200.0" />
          </children></VBox>
    </top>
    <bottom>

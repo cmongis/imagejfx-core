@@ -10,7 +10,7 @@
 <AnchorPane fx:id="mainAnchorPane" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
    <children>
    
-   <BorderPane fx:id="mainBorderPane" maxHeight="-Infinity" prefHeight="700.0" prefWidth="1200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="55.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+   <BorderPane fx:id="mainBorderPane" maxHeight="-Infinity" onDragDetected="#onDragDetected" onDragDone="#onDragDone" onDragDropped="#onDragDropped" onDragExited="#onDragExited" onDragOver="#onDragOver" onMouseDragReleased="#onMouseDragReleased" prefHeight="700.0" prefWidth="1200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="55.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
        <bottom>
            <BorderPane fx:id="bottomBorderPane" BorderPane.alignment="CENTER">
                <left>
