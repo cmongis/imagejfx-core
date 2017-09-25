@@ -21,6 +21,7 @@ package ijfx.core.workflow;
 
 import ijfx.ui.inputharvesting.SuppliedWidgetModel;
 import org.scijava.module.Module;
+import org.scijava.module.ModuleInfo;
 import org.scijava.module.ModuleItem;
 import org.scijava.module.ModuleService;
 import org.scijava.plugin.Parameter;
@@ -31,44 +32,59 @@ import org.scijava.plugin.Parameter;
  */
 public class WorkflowStepWidgetModel<T> extends SuppliedWidgetModel<T> {
 
-    final WorkflowStep step;
+    private final WorkflowStep step;
 
-    final String parameterName;
+    private final String parameterName;
 
     @Parameter
-    ModuleService moduleService;
-    
+    private ModuleService moduleService;
+
+    private ModuleInfo moduleInfo;
+
     public WorkflowStepWidgetModel(WorkflowStep step, Class<T> type, String key) {
         super(type);
         this.step = step;
-                
+
         parameterName = key;
-        
+
         setGetter(this::getValueFromStep);
         setSetter(this::setValueInStep);
-        
-        
+
+    }
+
+    public ModuleInfo getModuleInfo() {
+        if (moduleInfo == null) {
+            if (moduleService != null) {
+                
+                moduleInfo = moduleService.getIndex()
+                        .getAll()
+                        .stream()
+                        .filter(i -> step.getModuleType().equals(i.getDelegateClassName()))
+                        .findFirst()
+                        .orElse(null);
+            }
+        }
+        return moduleInfo;
+    }
+
+    public String getWidgetLabel() {
+        return getItem().getLabel();
     }
     
     @Override
     public ModuleItem<?> getItem() {
-        if(moduleService != null) {            
-            return moduleService.getModuleById(step.getModuleType()).getInput(parameterName);
-        }
-        else {
-            return null;
-        }
+
+        return getModuleInfo().getInput(parameterName);
+
     }
-    
+
     private T getValueFromStep() {
         return (T) step.getParameters().get(parameterName);
-        
+
     }
-    
+
     private void setValueInStep(T t) {
         step.getParameters().put(parameterName, t);
     }
-
- 
 
 }
