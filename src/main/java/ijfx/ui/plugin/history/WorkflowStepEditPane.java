@@ -76,7 +76,7 @@ public class WorkflowStepEditPane extends BorderPane {
                 .filter(model -> model != null)
                 .map(this::createWidget)
                 .forEach(panel::addWidget);
-
+        panel.setName(step.getId());
         panel.refresh();
     }
 
