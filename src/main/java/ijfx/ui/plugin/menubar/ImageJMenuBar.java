@@ -61,7 +61,6 @@ public class ImageJMenuBar extends MenuBar implements UiPlugin {
 
     //@Parameter
     //LegacyService legacyService;
-
     @Parameter
     private ModuleService moduleService;
 
@@ -76,10 +75,9 @@ public class ImageJMenuBar extends MenuBar implements UiPlugin {
 
     @Parameter
     private Context context;
-    
-    
+
     private FxMenuCreator creator;
-    
+
     @Override
     public Node getUiElement() {
         return this;
@@ -87,52 +85,59 @@ public class ImageJMenuBar extends MenuBar implements UiPlugin {
 
     final Logger logger = ImageJFX.getLogger();
 
-   
-
     public static final String CSS_IJ1_CMD = "ij1-command";
-    
+
     BooleanProperty isHover = new SimpleBooleanProperty();
-    
+
     @Override
     public UiPlugin init() {
         creator = new FxMenuCreator(context);
-        
-        
-        MenuGenerator menuGenerator = new MenuGenerator(context);
-        
-        
-        menuGenerator.addModules(moduleService.getModules(),ScriptCommand.class);
-        menuGenerator.createMenus(creator, this);
-       
-        addEventHandler(MouseEvent.MOUSE_ENTERED,event->isHover.setValue(true));
-        addEventHandler(MouseEvent.MOUSE_EXITED,event->isHover.setValue(false));
-        
+
+        addEventHandler(MouseEvent.MOUSE_ENTERED, event -> isHover.setValue(true));
+        addEventHandler(MouseEvent.MOUSE_EXITED, event -> isHover.setValue(false));
+
         new TransitionBinding<Double>(0.5, 1.0)
-                .bind(isHover,opacityProperty().asObject());
-        
-      
-        
+                .bind(isHover, opacityProperty().asObject());
+
+        refillMenus();
         
         return this;
 
     }
 
+    private void refillMenus() {
+        MenuGenerator menuGenerator = new MenuGenerator(context);
+        this.getChildren().clear();
+
+        menuGenerator.addModules(moduleService.getModules(), ScriptCommand.class);
+        menuGenerator.createMenus(creator, this);
+        
+    }
+
     @EventHandler
     private void onMenusAddedEvent(MenusAddedEvent event) {
+        //refillMenus();
         
+        
+        event
+                .getItems()
+                .forEach(creator::addMenu);
         //ShadowMenu parent = event.getItems().get(0).getParent();
-        
         //event.getItems().forEach(creator::addMenu);
-        
     }
     
+   
+
     @EventHandler
     private void onMenusRemovedEvent(MenusRemovedEvent event) {
-        event.getItems().forEach(creator::removeMenu);
+        event
+                .getItems()
+                .forEach(creator::removeMenu);
+       // event.getItems().forEach(creator::removeMenu);
+       //refillMenus();
+       
     }
-    
-    
-    
+
     public Menu getParentMenu(String path) {
         String[] folders = path.split("/");
 
@@ -140,7 +145,7 @@ public class ImageJMenuBar extends MenuBar implements UiPlugin {
         final String topFolder = folders[depth];
         Menu parentMenu = getMenus().stream().filter(m -> m.getText().equals(topFolder)).findFirst().get();
         Menu childMenu = parentMenu;
-        
+
         if (parentMenu == null) {
             parentMenu = new Menu(topFolder);
             this.getMenus().add(parentMenu);
@@ -155,7 +160,7 @@ public class ImageJMenuBar extends MenuBar implements UiPlugin {
             try {
                 childMenu = (Menu) parentMenu.getItems().stream().filter(m -> currentFolder.equals(m.getText())).findFirst().orElseThrow(null);
             } catch (Exception e) {
-                
+
                 childMenu = null;
 
             }
@@ -171,9 +176,6 @@ public class ImageJMenuBar extends MenuBar implements UiPlugin {
         return childMenu;
     }
 
-  
-
-    
     public class LegacyCommandInfo {
 
         public String path;

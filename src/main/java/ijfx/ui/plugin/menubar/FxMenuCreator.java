@@ -23,8 +23,6 @@ package ijfx.ui.plugin.menubar;
 import ijfx.core.icon.FXIconService;
 import ijfx.core.usage.Usage;
 import ijfx.ui.main.ImageJFX;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
@@ -32,6 +30,8 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
+import mongis.utils.DefaultUUIDMap;
+import mongis.utils.UUIDMap;
 import net.mongis.usage.UsageType;
 import org.scijava.Context;
 
@@ -56,7 +56,7 @@ public class FxMenuCreator extends AbstractMenuCreator<MenuBar, Menu> {
     @Parameter
     FXIconService fxIconService;
 
-    Map<ShadowMenu, MenuItem> menuMap = new HashMap<>();
+    UUIDMap<MenuItem> menuMap = new DefaultUUIDMap<>();
 
     Logger logger = ImageJFX.getLogger();
 
@@ -72,7 +72,9 @@ public class FxMenuCreator extends AbstractMenuCreator<MenuBar, Menu> {
         if (iconAsNode != null) {
             item.setGraphic(iconAsNode);
         }
-        menuMap.put(sm, item);
+        menuMap
+                .key(new Integer(sm.getMenuDepth()),sm.getName())
+                .put(item);
 
         item.addEventHandler(ActionEvent.ANY, event -> {
             Usage
@@ -99,10 +101,12 @@ public class FxMenuCreator extends AbstractMenuCreator<MenuBar, Menu> {
     }
 
     @Override
-    protected Menu addNonLeafToMenu(ShadowMenu sm, Menu m) {
+    protected Menu addNonLeafToMenu(ShadowMenu sm, Menu m) {    
         Menu newMenu = new Menu(sm.getName());
         m.getItems().add(newMenu);
-        menuMap.put(sm, newMenu);
+         menuMap
+                .key(new Integer(sm.getMenuDepth()),sm.getName())
+                .put(m);
         return newMenu;
 
     }
@@ -111,7 +115,11 @@ public class FxMenuCreator extends AbstractMenuCreator<MenuBar, Menu> {
     protected Menu addNonLeafToTop(ShadowMenu sm, MenuBar t) {
 
         Menu newMenu = new Menu(sm.getName());
-        menuMap.put(sm, newMenu);
+       
+         //menuMap
+           //     .key(new Integer(sm.getMenuDepth()),sm.getName())
+             //   .put(t);
+        
         t.getMenus().add(newMenu);
         return newMenu;
 
@@ -129,7 +137,9 @@ public class FxMenuCreator extends AbstractMenuCreator<MenuBar, Menu> {
 
     public void removeMenu(ShadowMenu sm) {
         logger.info("Removing " + sm.getName());
-        MenuItem item = menuMap.get(sm);
+        MenuItem item = menuMap
+                .key(new Integer(sm.getMenuDepth()),sm.getName())
+                .get();
         if (item == null) {
             return;
         }
@@ -140,7 +150,12 @@ public class FxMenuCreator extends AbstractMenuCreator<MenuBar, Menu> {
     }
 
     public void addMenu(ShadowMenu sm) {
-        Menu menu = (Menu) menuMap.get(sm.getParent());
+        Menu menu = (Menu)  menuMap
+                .key(new Integer(sm.getMenuDepth()),sm.getName())
+                .get();
+        
+        if(menu == null) return;
+        
         if (sm.isLeaf()) {
             addLeafToMenu(sm, menu);
         } else {
