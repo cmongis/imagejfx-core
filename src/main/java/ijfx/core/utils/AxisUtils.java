@@ -19,6 +19,8 @@
  */
 package ijfx.core.utils;
 
+import ijfx.ui.main.ImageJFX;
+import java.util.logging.Level;
 import net.imagej.Dataset;
 import net.imagej.ImgPlus;
 import net.imagej.axis.Axes;
@@ -99,11 +101,16 @@ public class AxisUtils {
 
     public static boolean hasAxisType(ImageDisplay display, AxisType axisType) {
         CalibratedAxis[] calibratedAxises = new CalibratedAxis[display.numDimensions()];
+        try {
         display.axes(calibratedAxises);
         for (CalibratedAxis calibratedAxis : calibratedAxises) {
             if (calibratedAxis.type() == axisType) {
                 return true;
             }
+        }
+        }
+        catch(IllegalStateException e) {
+            ImageJFX.getLogger().log(Level.WARNING,"Error when detecting axes",e);
         }
         return false;
     }
