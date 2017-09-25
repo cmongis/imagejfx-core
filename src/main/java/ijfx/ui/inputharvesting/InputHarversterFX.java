@@ -44,7 +44,7 @@ import org.scijava.widget.InputPanel;
 public class InputHarversterFX extends AbstractInputHarvesterPlugin<Node, Node> {
 
     UIExtraService uiExtraService;
-    
+
     @Override
     public InputPanel<Node, Node> createInputPanel() {
 
@@ -55,6 +55,12 @@ public class InputHarversterFX extends AbstractInputHarvesterPlugin<Node, Node> 
     @Override
     public boolean harvestInputs(InputPanel<Node, Node> inputPanel, Module module) {
 
+        try {
+            InputPanelFX panel = (InputPanelFX) inputPanel;
+            panel.setName(module.getInfo().getName());
+        } catch (ClassCastException ex) {
+            ImageJFX.getLogger().warning("Couldn't cas the input panel into a InputPanelFX");
+        }
         if (module.getInfo().isInteractive()) {
 
             Platform.runLater(() -> {
@@ -73,7 +79,7 @@ public class InputHarversterFX extends AbstractInputHarvesterPlugin<Node, Node> 
                 Dialog<Boolean> dialog = new Dialog<Boolean>();
 
                 dialog.getDialogPane().setContent(inputPanel.getComponent());
-                
+
                 dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
                 dialog.setResultConverter(buttonType -> buttonType == ButtonType.OK);

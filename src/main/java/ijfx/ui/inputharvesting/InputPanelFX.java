@@ -114,13 +114,15 @@ public class InputPanelFX implements InputPanel<Node, Node> {
         }
 
         String name = widget.get().getItem().getName();
+        
+        getComponent();
+        
+       // String title = widget.get().getModule().getInfo().getName();
 
-        String title = widget.get().getModule().getInfo().getName();
-
-        setName(title);
+       // setName(title);
 
         widgetList.put(name, widget);
-
+        
         if (widget instanceof ButtonWidget) {
             buttonHBox.getChildren().add(widget.getComponent());
         } else if (widget instanceof HistogramWidget) {
