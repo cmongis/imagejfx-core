@@ -42,7 +42,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleListProperty;
-import javafx.concurrent.Task;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -64,9 +63,16 @@ import org.scijava.plugin.Plugin;
 import ijfx.core.uiplugin.UiCommand;
 import ijfx.core.uiplugin.UiCommandService;
 import ijfx.ui.main.ImageJFX;
-import javafx.animation.Transition;
+import java.io.File;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseDragEvent;
+import javafx.scene.input.TransferMode;
+import mongis.utils.FXUtilities;
+import org.scijava.ui.dnd.DragAndDropHandler;
+import org.scijava.ui.dnd.DragAndDropService;
 
 /**
  * Controller class for the main window
@@ -120,7 +126,7 @@ public class DefaultMainWindow implements MainWindow {
 
     @FXML
     private VBox bottomTopVBox;
-    
+
     private SideBar sideBar;
 
     List<ContextualContainer<Node>> contextualContainer = new ArrayList<>();
@@ -147,6 +153,9 @@ public class DefaultMainWindow implements MainWindow {
     @Parameter
     UiCommandService uiActionService;
 
+    @Parameter
+    DragAndDropService dragAndDropService;
+
     @Override
     public void init() {
         try {
@@ -169,6 +178,11 @@ public class DefaultMainWindow implements MainWindow {
 
             mainBorderPane.setOpacity(1.0);
             mainBorderPane.setCenter(new Label("Loading..."));
+
+            mainBorderPane.addEventHandler(DragEvent.ANY, event -> {
+                System.out.println(event.getEventType());
+                System.out.println(event);
+            });
 
             getLoadingPopup().taskProperty().bind(taskList.foregroundTaskProperty());
             getLoadingPopup()
@@ -230,7 +244,7 @@ public class DefaultMainWindow implements MainWindow {
         registerContextualContainer(topToolBarVBox)
                 .setAnimationOnShow(Animations.FADEIN)
                 .setAnimationOnHide(Animations.FADEOUT);
-        
+
         registerContextualContainer(bottomTopVBox)
                 .setAnimationOnShow(Animations.QUICK_EXPAND)
                 .setAnimationOnHide(Animations.DISAPPEARS_DOWN);
@@ -291,7 +305,7 @@ public class DefaultMainWindow implements MainWindow {
 
     @Override
     public void displayActivity(Activity activity) {
-    
+
         /*
         Transition configure = Animations.ZOOMOUT.configure(mainBorderPane.getCenter(), 400);
 
@@ -306,10 +320,9 @@ public class DefaultMainWindow implements MainWindow {
         Platform.runLater(() -> {
             mainBorderPane.setCenter(activity.getContent());
         });
-        
-        
+
         Task task = activity.updateOnShow();
-        if(task!= null) {
+        if (task != null) {
             ImageJFX
                     .getThreadPool()
                     .submit(task);
@@ -343,11 +356,10 @@ public class DefaultMainWindow implements MainWindow {
 
     @Override
     public void addForegroundTask(Task task) {
-        Platform.runLater(()->{
-             taskList.submitTask(task);
+        Platform.runLater(() -> {
+            taskList.submitTask(task);
         });
-                
-             
+
     }
 
     @Override
@@ -370,6 +382,54 @@ public class DefaultMainWindow implements MainWindow {
     @Override
     public List<ContextualContainer<Node>> getContextualContainerList() {
         return contextualContainer;
+    }
+
+    /*
+        Drag and drop event
+     */
+    @FXML
+    public void onDragDropped(DragEvent event) {
+        FXUtilities.toggleCssStyle(mainBorderPane, "drag-over", false);
+
+        Dragboard dragboard = event.getDragboard();
+        if (dragboard.hasFiles()) {
+
+            dragboard.getFiles()
+                    .stream()
+                    .forEach((File f) -> {
+                        ImageJFX.getThreadPool().execute(() -> dragAndDropService.drop(f, null));
+                    });
+            event.setDropCompleted(true);
+            event.consume();
+        }
+    }
+
+    @FXML
+    public void onDragOver(DragEvent event) {
+        FXUtilities.toggleCssStyle(mainBorderPane, "drag-over", true);
+        event.acceptTransferModes(TransferMode.ANY);
+    }
+
+    @FXML
+    public void onDragDone(DragEvent event) {
+        FXUtilities.toggleCssStyle(mainBorderPane, "drag-over", false);
+
+    }
+
+    @FXML
+    public void onDragDetected(DragEvent event) {
+        FXUtilities.toggleCssStyle(mainBorderPane, "drag-over", true);
+    }
+
+    @FXML
+    public void onDragExited(DragEvent event) {
+
+        FXUtilities.toggleCssStyle(mainBorderPane, "drag-over", false);
+    }
+
+    @FXML
+    public void onMouseDragReleased(MouseDragEvent event) {
+        FXUtilities.toggleCssStyle(mainBorderPane, "drag-over", false);
     }
 
 }
