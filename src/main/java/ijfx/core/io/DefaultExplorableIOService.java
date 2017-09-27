@@ -22,12 +22,12 @@ package ijfx.core.io;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import ijfx.core.metadata.MetaDataJsonModule;
 import ijfx.core.overlay.io.OverlayIOService;
 import ijfx.core.prefs.JsonPreferenceService;
+import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.datamodel.Taggable;
 import java.io.File;
 import java.io.IOException;
@@ -70,9 +70,9 @@ public class DefaultExplorableIOService extends AbstractService implements Explo
     }
 
     @Override
-    public List<? extends Taggable> load(File file) throws IOException {
+    public List<? extends Explorable> loadAll(File file) throws IOException {
 
-        List<? extends Taggable> readValue = mapper.readValue(file, mapper.getTypeFactory().constructCollectionType(List.class, Taggable.class));
+        List<? extends Explorable> readValue = mapper.readValue(file, mapper.getTypeFactory().constructCollectionType(List.class, Explorable.class));
 
         readValue.forEach(tag -> tag.inject(getContext()));
 
@@ -80,26 +80,22 @@ public class DefaultExplorableIOService extends AbstractService implements Explo
     }
 
     @Override
-    public void save(List<? extends Taggable> explorableList, File file) throws IOException {
+    public void saveAll(List<? extends Explorable> explorableList, File file) throws IOException {
 
         mapper.writeValue(file, explorableList);
 
     }
 
+   
     @Override
-    public void saveDatasets(List<? extends Taggable> taggable, String folder, String suffix) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void save(Taggable taggable, File target) throws IOException {
+    public void saveOne(Explorable taggable, File target) throws IOException {
 
         mapper.writeValue(target, taggable);
     }
 
     @Override
-    public Taggable loadTaggable(File file) throws IOException {
-        return mapper.readValue(file, Taggable.class);
+    public Explorable loadOne(File file) throws IOException {
+        return mapper.readValue(file, Explorable.class);
     }
 
 }
