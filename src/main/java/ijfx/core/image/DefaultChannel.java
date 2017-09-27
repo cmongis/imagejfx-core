@@ -19,6 +19,8 @@
  */
 package ijfx.core.image;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
@@ -33,6 +35,8 @@ import net.imglib2.display.ColorTable;
  *
  * @author Cyril MONGIS
  */
+
+
 public class DefaultChannel implements Channel {
     
     StringProperty nameProperty = new SimpleStringProperty();
@@ -45,50 +49,62 @@ public class DefaultChannel implements Channel {
     
     BooleanProperty active = new SimpleBooleanProperty();
     
+
+    
     @Override
+    @JsonGetter("min")
     public double getChannelMin() {
         return minProperty.doubleValue();
     }
 
     @Override
+    @JsonGetter("max")
     public double getChannelMax() {
         return maxProperty.doubleValue();
     }
 
     @Override
+    @JsonSetter("min")
     public void setChannelMin(double min) {
         minProperty.setValue(min);
     }
 
     @Override
+    @JsonSetter("max")
     public void setChannelMax(double max) {
         maxProperty.setValue(max);
     }
 
     @Override
+    @JsonGetter("name")
     public String getChannelName() {
        return nameProperty.getValue();
     }
 
     @Override
+    @JsonSetter("name")
     public void setChannelName(String name) {
         nameProperty.setValue(name);
     }
     
     @Override
+    @JsonSetter("colorTable")
     public void setColorTable(ColorTable table) {
         colorTableProperty.setValue(table);
     }
     
     @Override
+    @JsonGetter("colorTable")
     public ColorTable getColorTable() {
         return colorTableProperty.getValue();
     }
     
+    @JsonGetter("active")
     public boolean isActive() {
         return active.getValue();
     }
     
+    @JsonSetter("active")
     public void setActive(boolean active) {
         this.active.setValue(active);
     }

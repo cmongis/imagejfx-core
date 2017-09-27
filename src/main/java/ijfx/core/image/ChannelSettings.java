@@ -19,6 +19,11 @@
  */
 package ijfx.core.image;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.util.List;
 import net.imagej.Dataset;
 import net.imagej.display.DatasetView;
@@ -27,12 +32,16 @@ import net.imagej.display.DatasetView;
  *
  * @author Cyril MONGIS
  */
+@JsonDeserialize(as = DefaultChannelSettings.class)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public interface ChannelSettings {
 
     public int getChannelCount();
 
+    @JsonGetter("channels")
     public List<Channel> getChannelSettings();
-
+    
+    @JsonSetter("channels")
     public void setChannels(List<Channel> settings);
 
     public default Channel get(int i) {

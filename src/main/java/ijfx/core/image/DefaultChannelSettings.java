@@ -43,6 +43,22 @@ public class DefaultChannelSettings implements ChannelSettings {
     public List<Channel> getChannelSettings() {
         return channelSettings;
     }
+    
+    
+    public DefaultChannelSettings addChannel(Channel channel) {
+        getChannelSettings().add(channel);
+        return this;
+    }
+    
+    public DefaultChannelSettings addSetting(String name,double min, double max,ColorTable colorTable) {
+        Channel channel = new DefaultChannel();
+        channel.setChannelMin(min);
+        channel.setChannelMax(max);
+        channel.setColorTable(colorTable);
+        channel.setChannelName(name);
+        addChannel(channel);
+        return this;
+    }
 
     @Override
     public void setChannels(List<Channel> settings) {
