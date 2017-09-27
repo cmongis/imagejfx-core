@@ -19,6 +19,10 @@
  */
 package ijfx.explorer.datamodel.wrappers;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import ijfx.commands.io.OpenImageFX;
 import ijfx.core.activity.ActivityService;
 import ijfx.core.image.DatasetUtilsService;
@@ -27,13 +31,13 @@ import ijfx.core.imagedb.ImageRecord;
 import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataSet;
 import ijfx.core.metadata.MetaDataSetType;
-import ijfx.explorer.datamodel.Explorable;
+import ijfx.explorer.datamodel.AbstractExplorable;
 import ijfx.explorer.datamodel.Tag;
+import static ijfx.explorer.datamodel.Taggable.injectSafe;
 import ijfx.ui.activity.DisplayContainer;
 import io.scif.services.DatasetIOService;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
@@ -54,9 +58,10 @@ import org.scijava.plugin.Parameter;
  *
  * @author Cyril MONGIS, 2016
  */
-public class ImageRecordIconizer implements Explorable {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class ImageRecordIconizer extends AbstractExplorable {
 
-    private final ImageRecord imageRecord;
+    private ImageRecord imageRecord;
 
     @Parameter
     ThumbService thumbService;
@@ -74,10 +79,7 @@ public class ImageRecordIconizer implements Explorable {
     DatasetUtilsService datasetUtilsService;
 
     Dataset dataset;
-    
-    Set<Tag> tagList = new HashSet<>();
-    
-
+       
     private final BooleanProperty visibleProperty = new SimpleBooleanProperty(false);
     
     private final static String SERIE_NAME_FORMAT = "%s - Serie %d";
@@ -89,14 +91,30 @@ public class ImageRecordIconizer implements Explorable {
 
     boolean series = false;
 
-    final MetaDataSet set;
+    private MetaDataSet set;
 
-    public ImageRecordIconizer(Context context, ImageRecord imageRecord) {
-        context.inject(this);
+    @JsonCreator
+    public ImageRecordIconizer() {
+        
+    }
+    
+    
+    @JsonSetter(value="imageRecord")
+    public void setImageRecord(ImageRecord imageRecord) {
         this.imageRecord = imageRecord;
         set = new MetaDataSet(MetaDataSetType.FILE);
         set.merge(imageRecord.getMetaDataSet());
         set.putGeneric(MetaData.SAVE_NAME, imageRecord.getFile().getName());
+    }
+    
+    @JsonGetter(value ="imageRecord")
+    public ImageRecord getImageRecord() {
+        return imageRecord;
+    }
+    
+    public ImageRecordIconizer(Context context, ImageRecord imageRecord) {
+        context.inject(this);
+        setImageRecord(imageRecord);
     }
 
     public ImageRecordIconizer(Context context, ImageRecord imageRecord, int imageId) {
@@ -159,11 +177,7 @@ public class ImageRecordIconizer implements Explorable {
 
         return set;
     }
-
-    public ImageRecord getImageRecord() {
-        return imageRecord;
-    }
-
+    
     /*
     @Override
     public BooleanProperty selectedProperty() {
@@ -177,6 +191,7 @@ public class ImageRecordIconizer implements Explorable {
         dataset = getDataset();
     }
     
+
     @Override
     public Dataset getDataset() {
         
@@ -197,32 +212,17 @@ public class ImageRecordIconizer implements Explorable {
     
     public void dispose() {
         dataset = null;
+        super.dispose();
     }
     
-   
+    @Override
+    public void inject(Context context) {
+        if(thumbService == null) {
+            injectSafe(this,context);
+            injectSafe(imageRecord, context);
+        }
+    }
+
     
-    public BooleanProperty visibleProperty() {
-        return visibleProperty;
-    }
-
-    @Override
-    public void addTag(Tag tag) {
-        tagList.add(tag);
-    }
-
-    @Override
-    public void deleteTag(Tag tag) {
-        tagList.remove(tag);
-    }
-
-    @Override
-    public Set<Tag> getTagList() {
-        return tagList;
-    }
-
-    @Override
-    public boolean has(Tag tag) {
-        return tagList.contains(tag);
-    }
 
 }

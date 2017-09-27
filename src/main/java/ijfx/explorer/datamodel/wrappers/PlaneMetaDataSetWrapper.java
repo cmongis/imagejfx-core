@@ -19,6 +19,8 @@
  */
 package ijfx.explorer.datamodel.wrappers;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import ijfx.core.activity.ActivityService;
 import ijfx.core.image.ImagePlaneService;
 import ijfx.core.image.ThumbService;
@@ -65,8 +67,15 @@ public class PlaneMetaDataSetWrapper extends AbstractExplorable{
         
       
         public PlaneMetaDataSetWrapper(Context context, MetaDataSet m) {
+            
+            this(m);
             context.inject(this);
-            this.m = m;
+        }
+        
+        @JsonCreator
+        public PlaneMetaDataSetWrapper(@JsonProperty("metadataset") MetaDataSet set) {
+            
+            this.m = set;
             m.setType(MetaDataSetType.PLANE);
             m.putGeneric(MetaData.SAVE_NAME, m.get(MetaData.SAVE_NAME)+" - "+getSubtitle());
         }
