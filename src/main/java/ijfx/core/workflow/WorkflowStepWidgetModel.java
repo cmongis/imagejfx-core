@@ -41,16 +41,23 @@ public class WorkflowStepWidgetModel<T> extends SuppliedWidgetModel<T> {
 
     private ModuleInfo moduleInfo;
 
-    public WorkflowStepWidgetModel(WorkflowStep step, Class<T> type, String key) {
-        super(type);
+    
+    
+    public WorkflowStepWidgetModel(WorkflowStep step, String key) {
+        
         this.step = step;
 
         parameterName = key;
 
+        setType(step.getParameterTypes().get(key));
         setGetter(this::getValueFromStep);
         setSetter(this::setValueInStep);
 
     }
+    
+   
+    
+    
 
     public ModuleInfo getModuleInfo() {
         if (moduleInfo == null) {
