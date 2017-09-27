@@ -22,6 +22,7 @@ package ijfx.core.workflow;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import ijfx.core.datamodel.LongInterval;
 import ijfx.core.image.ChannelSettings;
@@ -49,6 +50,7 @@ import org.scijava.Context;
  *
  * @author Cyril MONGIS, 2015
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DefaultWorkflowStep implements WorkflowStep {
 
     protected String id;
@@ -71,7 +73,8 @@ public class DefaultWorkflowStep implements WorkflowStep {
     @Parameter
     protected WorkflowIOService workflowIOService;
 
-    Logger logger = ImageJFX.getLogger();
+    @JsonIgnore
+    private Logger logger = ImageJFX.getLogger();
 
     public DefaultWorkflowStep() {
 
@@ -151,7 +154,16 @@ public class DefaultWorkflowStep implements WorkflowStep {
         moduleType = module.getInfo().getDelegateClassName();
     }
 
-    @JsonSetter("parameters")
+    @JsonSetter(value = "parameters")
+    protected void loadParameter(Map<String, Object> parameters) {
+        parameters.forEach((key, value) -> {
+            if (value == null) {
+                return;
+            }
+            this.parameters.put(key, value);
+        });
+    }
+
     public void setParameters(Map<String, Object> parameters) {
 
         parameters.forEach((key, value) -> {
@@ -162,9 +174,8 @@ public class DefaultWorkflowStep implements WorkflowStep {
             boolean canSave = workflowIOService.canSave(value);
             if (canSave) {
 
-               
                 this.parameters.put(key, value);
-               
+
             }
         });
     }
@@ -182,7 +193,7 @@ public class DefaultWorkflowStep implements WorkflowStep {
         this.moduleType = moduleType;
     }
 
-    @JsonSetter(value = "parameters")
+    // @JsonSetter(value = "parameters")
     public void setParameter(String alpha, Object object) {
         getParameters().put(alpha, object);
 

@@ -19,6 +19,7 @@
  */
 package ijfx.core.workflow;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
@@ -91,6 +92,7 @@ public class WorkflowIOService extends AbstractService implements IjfxService {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         //mapper.getSubtypeResolver().registerSubtypes(ThresholdMethod.class);
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        //mapper.setSerializationInclusion(Include.NON_NULL);
         //mapper.disable(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE);
         // generateModule(ThresholdMethod.class, new ThresholdMethodSerializer<>(getContext()), new ThresholdMethodDeserializer<>(getContext()));
 //mapper.registerModule(new ThresholdMethodModule(getContext()));

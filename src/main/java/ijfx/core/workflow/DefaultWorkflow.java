@@ -21,6 +21,7 @@
 package ijfx.core.workflow;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import java.util.List;
  *
  * @author Cyril MONGIS, 2015
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DefaultWorkflow implements Workflow {
 
    
