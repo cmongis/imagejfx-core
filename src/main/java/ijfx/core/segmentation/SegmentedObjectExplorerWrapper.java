@@ -19,15 +19,15 @@
  */
 package ijfx.core.segmentation;
 
-import com.sun.deploy.uitoolkit.impl.fx.ui.FXAboutDialog;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import ijfx.core.image.ImagePlaneService;
 import ijfx.core.image.PreviewService;
 import ijfx.core.metadata.MetaData;
-import ijfx.core.metadata.MetaDataSet;
 import ijfx.core.metadata.MetaDataSetUtils;
 import ijfx.core.overlay.OverlayDrawingService;
 import ijfx.core.overlay.OverlayUtilsService;
-import ijfx.explorer.datamodel.AbstractExplorable;
 import ijfx.ui.loading.LoadingScreenService;
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +42,6 @@ import net.imagej.Dataset;
 import net.imagej.display.ImageDisplay;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.display.ColorTable8;
-import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 import org.scijava.plugin.Parameter;
 
@@ -50,9 +49,8 @@ import org.scijava.plugin.Parameter;
  *
  * @author Cyril MONGIS, 2016
  */
-public class SegmentedObjectExplorerWrapper extends AbstractExplorable {
-
-    private final SegmentedObject object;
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class SegmentedObjectExplorerWrapper extends AbstractTaggableWrapper<SegmentedObject> {
 
     @Parameter
     private ImagePlaneService imagePlaneService;
@@ -72,25 +70,25 @@ public class SegmentedObjectExplorerWrapper extends AbstractExplorable {
     @Parameter
     private Dataset extractedObject;
 
-    private Dataset source;
-
     private WeakReference<ImageDisplay> imageDisplay = new WeakReference<>(null);
 
     Image image;
 
-    public SegmentedObjectExplorerWrapper(SegmentedObject object) {
-        this.object = object;
-        object.getOverlay().context().inject(this);
+    
+    @JsonCreator
+    public SegmentedObjectExplorerWrapper(@JsonProperty("taggable") SegmentedObject object) {
+        super(object);
+        taggable().getOverlay().context().inject(this);
     }
 
     @Override
     public String getTitle() {
-        return object.getOverlay().getName();
+        return taggable().getOverlay().getName();
     }
 
     @Override
     public String getSubtitle() {
-        return object.getMetaDataSet().get(MetaData.FILE_NAME).getStringValue();
+        return taggable().getMetaDataSet().get(MetaData.FILE_NAME).getStringValue();
     }
 
     @Override
@@ -98,9 +96,7 @@ public class SegmentedObjectExplorerWrapper extends AbstractExplorable {
         return "";
     }
 
-    public void setSource(Dataset source) {
-        this.source = source;
-    }
+
 
     public void setImageDisplay(ImageDisplay imageDisplay) {
         this.imageDisplay = new WeakReference<>(imageDisplay);
@@ -120,8 +116,8 @@ public class SegmentedObjectExplorerWrapper extends AbstractExplorable {
         if (image == null) {
             try {
                 if(extractedObject == null) getDataset();
-                double min = object.getMetaDataSet().get(MetaData.STATS_PIXEL_MIN).getDoubleValue();
-                double max = object.getMetaDataSet().get(MetaData.STATS_PIXEL_MAX).getDoubleValue();
+                double min = taggable().getMetaDataSet().get(MetaData.STATS_PIXEL_MIN).getDoubleValue();
+                double max = taggable().getMetaDataSet().get(MetaData.STATS_PIXEL_MAX).getDoubleValue();
                 Image image = previewService.datasetToImage((RandomAccessibleInterval<? extends RealType>) extractedObject, new ColorTable8(), min, max);
                 Double sampleFactor = 100 * 100 / image.getWidth() / image.getHeight();
                 sampleFactor = sampleFactor < 1 ? 1 : sampleFactor;
@@ -169,7 +165,7 @@ public class SegmentedObjectExplorerWrapper extends AbstractExplorable {
         new CallbackTask<File, Void>()
                 .setInput(getFile())
                 .callback(f -> {
-                    overlayUtilsService.openOverlay(f, object.getOverlay());
+                    overlayUtilsService.openOverlay(f, taggable().getOverlay());
                     return null;
                 })
                 .submit(loadingScreenService)
@@ -185,9 +181,9 @@ public class SegmentedObjectExplorerWrapper extends AbstractExplorable {
         
         if(extractedObject != null) return extractedObject;
         
-        if (object.getPixelSource() != null) {
+        if (taggable().getPixelSource() != null) {
 
-            extractedObject = overlayDrawingService.extractObject(object.getOverlay(), object.getPixelSource());
+            extractedObject = overlayDrawingService.extractObject(taggable().getOverlay(), taggable().getPixelSource());
 
         } else {
 
@@ -195,11 +191,11 @@ public class SegmentedObjectExplorerWrapper extends AbstractExplorable {
             long[] nonPlanarPosition = MetaDataSetUtils.getNonPlanarPosition(getMetaDataSet());
 
             // we open the image virtually just in case
-            File imageFile = new File(object.getMetaDataSet().get(MetaData.ABSOLUTE_PATH).getStringValue());
+            File imageFile = new File(taggable().getMetaDataSet().get(MetaData.ABSOLUTE_PATH).getStringValue());
             try {
             Dataset dataset = imagePlaneService.openVirtualDataset(imageFile);
             // the pixels are extracted
-            extractedObject = overlayDrawingService.extractObject(object.getOverlay(), dataset, nonPlanarPosition);
+            extractedObject = overlayDrawingService.extractObject(taggable().getOverlay(), dataset, nonPlanarPosition);
             }
             catch(IOException ioe) {
                 logger.log(Level.SEVERE,"Couldn't load object dataset",ioe);
@@ -209,14 +205,14 @@ public class SegmentedObjectExplorerWrapper extends AbstractExplorable {
 
     }
 
-    @Override
-    public MetaDataSet getMetaDataSet() {
-        return object.getMetaDataSet();
-    }
 
-    public SegmentedObject getObject() {
-        return object;
+
+    
+   protected File getFile() {
+        return new File(getMetaDataSet().get(MetaData.ABSOLUTE_PATH).getStringValue());
     }
+    
+    
 
     public void dispose() {
         extractedObject = null;
