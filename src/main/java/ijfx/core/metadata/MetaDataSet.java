@@ -38,7 +38,11 @@ import java.util.Map;
 public class MetaDataSet extends HashMap<String, MetaData> {
     
     
+    
+    
     private MetaDataSetType type = MetaDataSetType.UNKNOWN;
+    
+    public final static String TYPE_JSON_KEY = "@setType";
     
     public MetaDataSet() {
         super();

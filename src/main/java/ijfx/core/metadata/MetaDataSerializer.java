@@ -23,6 +23,7 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import java.io.IOException;
 
 /**
@@ -33,8 +34,15 @@ public class MetaDataSerializer extends JsonSerializer<MetaDataSet> {
 
    
     @Override
+    public void serializeWithType(MetaDataSet t, JsonGenerator jg, SerializerProvider sp, TypeSerializer tp) throws IOException, JsonGenerationException {
+    
+        serialize(t, jg, sp);
+    }
+    @Override
     public void serialize(MetaDataSet t, JsonGenerator jg, SerializerProvider sp) throws IOException, JsonGenerationException {
         jg.writeStartObject();
+        jg.writeStringField("@class", MetaDataSet.class.getName());
+        jg.writeStringField(MetaDataSet.TYPE_JSON_KEY, t.getType().toString());
         for (MetaData m : t.values()) {
             jg.writeObjectField(m.getName(), m.getValue());
         }

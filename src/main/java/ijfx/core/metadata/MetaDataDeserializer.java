@@ -30,21 +30,36 @@ import java.io.IOException;
  *
  * @author Cyril MONGIS, 2016
  */
-public class MetaDataDeserializer extends JsonDeserializer<MetaDataSet>{
+public class MetaDataDeserializer extends JsonDeserializer<MetaDataSet> {
 
-   
     @Override
     public MetaDataSet deserialize(JsonParser jp, DeserializationContext dc) throws IOException, JsonProcessingException {
         MetaDataSet m = new MetaDataSet();
-        while(jp.nextToken() != JsonToken.END_OBJECT) {
+
+        JsonToken next = jp.nextToken();
+
+        String type = jp.getCurrentName();
+        if (!MetaDataSet.TYPE_JSON_KEY.equals(type)) {
+            throw new IllegalArgumentException("Invalid JSON format");
+        }
+
+        //next = jp.nextToken();
+
+        m.setType(MetaDataSetType.valueOf(jp.getText()));
+
+        while (next != JsonToken.END_OBJECT) {
+            next = jp.nextToken();
+            if (next == JsonToken.END_OBJECT) {
+                break;
+            }
             String fileName = jp.getCurrentName();
-            jp.nextToken();
+            //next = jp.nextToken();
             String value = jp.getText();
-            
+
             m.putGeneric(fileName, value);
-            
+
         }
         return m;
     }
-    
+
 }
