@@ -19,6 +19,7 @@
  */
 package ijfx.ui.inputharvesting;
 
+import ijfx.ui.main.ImageJFX;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -33,11 +34,11 @@ import org.scijava.widget.WidgetModel;
  *
  * @author Cyril MONGIS
  */
-public abstract class AbstractWidgetModel<T> implements WidgetModel {
+public abstract class AbstractWidgetModel implements WidgetModel {
 
     private static InputPanel<?, ?> panel = new DummyFXInputPanel();
 
-    private final Class<T> type;
+    private Class<?> type;
     
     private String label;
 
@@ -65,11 +66,41 @@ public abstract class AbstractWidgetModel<T> implements WidgetModel {
     
     private String text;
     
-    public AbstractWidgetModel(Class<T> type) {
+    
+    public AbstractWidgetModel() {
+        
+    }
+    
+    protected void setType(String type) {
+        try {
+            setType(Class.forName(type));
+        }
+        catch(Exception e) {
+            ImageJFX.getLogger().warning("Couldn't find type :"+type);
+        }
+    }
+    
+    protected void setType(Class<?> type) {
+        this.type = type;
+    }
+    
+    protected Class<?> type() {
+        if(this.type == null && getValue()!=null) {
+            this.type = getValue().getClass();
+        }
+        return this.type;
+    }
+    
+    public AbstractWidgetModel(Object value) {
+        type = value.getClass();
+    }
+    
+    
+    public AbstractWidgetModel(Class<?> type) {
         this.type = type;
     }
 
-    public AbstractWidgetModel<T> setWidgetLabel(String label) {
+    public AbstractWidgetModel setWidgetLabel(String label) {
         this.label = label;
         return this;
     }
@@ -106,7 +137,7 @@ public abstract class AbstractWidgetModel<T> implements WidgetModel {
     
   
 
-    public AbstractWidgetModel<T> setStyle(String style) {
+    public AbstractWidgetModel setStyle(String style) {
         this.style = style;
         return this;
     }
@@ -115,12 +146,12 @@ public abstract class AbstractWidgetModel<T> implements WidgetModel {
     
     
     
-    public AbstractWidgetModel<T> setCallback(Runnable callback) {
+    public AbstractWidgetModel setCallback(Runnable callback) {
         this.callback = callback;
         return this;
     }
 
-    public AbstractWidgetModel<T> setPanel(InputPanel<?, ?> panel) {
+    public AbstractWidgetModel setPanel(InputPanel<?, ?> panel) {
         this.panel = panel;
         return this;
     }
@@ -176,7 +207,7 @@ public abstract class AbstractWidgetModel<T> implements WidgetModel {
 
     @Override
     public boolean isText() {
-        return type == String.class;
+        return type() == String.class;
     }
 
     @Override
@@ -192,7 +223,7 @@ public abstract class AbstractWidgetModel<T> implements WidgetModel {
 
     @Override
     public boolean isBoolean() {
-        return type == boolean.class || type == Boolean.class;
+        return type() == boolean.class || type() == Boolean.class;
     }
 
     @Override
@@ -202,7 +233,12 @@ public abstract class AbstractWidgetModel<T> implements WidgetModel {
 
     @Override
     public boolean isType(Class<?> type) {
-        return this.type.isAssignableFrom(type);
+        
+        if(type() == null) {
+            new IllegalArgumentException("Impossible to initialize WidgetModel type");
+        }
+        
+        return type().isAssignableFrom(type);
     }
 
     @Override
