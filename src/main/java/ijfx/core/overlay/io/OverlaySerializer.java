@@ -23,10 +23,9 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import java.io.IOException;
-import java.util.function.IntFunction;
 import java.util.stream.IntStream;
-import javafx.util.Callback;
 import net.imagej.overlay.LineOverlay;
 import net.imagej.overlay.Overlay;
 import net.imagej.overlay.PolygonOverlay;
@@ -39,6 +38,19 @@ import org.scijava.util.ColorRGB;
  */
 public class OverlaySerializer extends JsonSerializer<Overlay> {
 
+    public OverlaySerializer() {
+        
+        
+    }
+
+    
+    @Override
+    public void serializeWithType(Overlay overlay, JsonGenerator jg, SerializerProvider sp, TypeSerializer ts) throws IOException, JsonProcessingException {
+        
+        serialize(overlay, jg, sp);
+            
+    }
+    
     @Override
     public void serialize(Overlay overlay, JsonGenerator jg, SerializerProvider sp) throws IOException, JsonProcessingException {
 
@@ -81,8 +93,14 @@ public class OverlaySerializer extends JsonSerializer<Overlay> {
         jg.writeEndArray();
     }
 
+    private void writeType(JsonGenerator jg) throws IOException {
+        jg.writeStringField("@class",Overlay.class.getName());
+        //jg.writeTypeId();
+    }
+    
     private void saveRectangleOverlay(RectangleOverlay rectangleOverlay, JsonGenerator jg) throws IOException {
         jg.writeStartObject();
+        writeType(jg);
         jg.writeStringField(JsonOverlayToken.OVERLAY_TYPE, JsonOverlayToken.RECTANGLE_OVERLAY);
         int dimensionCount = rectangleOverlay.numDimensions();
 
@@ -115,7 +133,7 @@ public class OverlaySerializer extends JsonSerializer<Overlay> {
         // {
         jg.writeStartObject();
         int numDimension = overlay.numDimensions();
-
+        writeType(jg);
         // "ovl_type":"polygon"
         jg.writeStringField(JsonOverlayToken.OVERLAY_TYPE, JsonOverlayToken.POLYGON_OVERLAY);
 
@@ -157,8 +175,9 @@ public class OverlaySerializer extends JsonSerializer<Overlay> {
     private void saveLineOverlay(LineOverlay overlay, JsonGenerator jg) throws IOException {
 
         jg.writeStartObject();
+        writeType(jg);
         jg.writeStringField(JsonOverlayToken.OVERLAY_TYPE, JsonOverlayToken.LINE_OVERLAY);
-
+        
         Double[] lineStart = Utils.extractArray(overlay::getLineStart, overlay.numDimensions());
         Double[] lineEnd = Utils.extractArray(overlay::getLineEnd, overlay.numDimensions());
 
