@@ -31,6 +31,7 @@ import net.imagej.display.ImageDisplay;
  *
  * @author Cyril MONGIS, 2016
  */
+//TODO: change plane extraction methods to an other service
 public interface FolderManagerService extends IjfxService {
 
     public Folder addFolder(File file);
