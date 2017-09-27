@@ -112,5 +112,20 @@ public class DefaultInterval implements LongInterval{
        return lowValue;
    }
    
-    
+    @Override
+    public boolean equals(Object o) {
+        
+        try {
+            LongInterval other = (LongInterval)o;
+            
+            return other.getMinValue() == getMinValue()
+                    && other.getMaxValue() == getMaxValue()
+                    && other.getHighValue() == getHighValue()
+                    && other.getLowValue() == getLowValue();
+        }
+        catch(Exception e) {
+            return false;
+        }
+        
+    }
 }
