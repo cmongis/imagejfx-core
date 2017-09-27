@@ -19,19 +19,31 @@
  */
 package ijfx.explorer.datamodel;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeId;
+import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
+
 /**
  *
  * @author Cyril MONGIS
  */
+
+
 public class DefaultTag implements Tag {
 
     final String name;
 
-    public DefaultTag(String name) {
+    @JsonCreator
+    public DefaultTag(@JsonProperty("name") String name) {
         this.name = name;
     }
 
+    @JsonGetter(value="name")
     @Override
+   
     public String getName() {
         return name;
     }
