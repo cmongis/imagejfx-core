@@ -21,8 +21,9 @@ package ijfx.explorer.datamodel;
 
 import ijfx.core.datamodel.DatasetHolder;
 import ijfx.core.datamodel.Iconazable;
-import ijfx.core.datamodel.Selectable;
 import ijfx.core.metadata.MetaDataOwner;
+import ijfx.ui.main.ImageJFX;
+import org.scijava.Context;
 
 /**
  *
@@ -47,5 +48,7 @@ public interface Explorable extends Iconazable, MetaDataOwner, DatasetHolder, Ta
                         .sum();
 
     }
+    
+   
 
 }

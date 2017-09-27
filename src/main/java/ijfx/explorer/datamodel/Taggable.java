@@ -20,7 +20,9 @@
 package ijfx.explorer.datamodel;
 
 import ijfx.core.metadata.MetaDataOwner;
+import ijfx.ui.main.ImageJFX;
 import java.util.Set;
+import org.scijava.Context;
 
 /**
  *
@@ -36,4 +38,20 @@ public interface Taggable extends MetaDataOwner{
     
     boolean has(Tag tag);
   
+     /**
+     * Utility method mainly used when loaded Explorables from JSON
+     * @param context 
+     */
+    public default void inject(Context context) {
+        injectSafe(this,context);
+    }
+    
+    public static void injectSafe(Object taggable, Context context) {
+        try {
+            context.inject(taggable);
+        }catch(Exception e) {
+            ImageJFX.getLogger().warning("Context already injected in "+taggable);
+        }
+    }
+    
 }

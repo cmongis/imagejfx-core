@@ -19,8 +19,11 @@
  */
 package ijfx.explorer.datamodel;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import ijfx.core.metadata.MetaDataSet;
 import ijfx.ui.main.ImageJFX;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -30,14 +33,15 @@ import java.util.logging.Logger;
  * @author Cyril MONGIS
  */
 public abstract class AbstractTaggable implements Taggable{
-      private MetaDataSet metadataSet;
+    private MetaDataSet metadataSet;
 
     protected static final Logger logger = ImageJFX.getLogger();
 
     protected Set<Tag> tagList = new HashSet<>();
-
+    
 
     @Override
+    @JsonGetter("metadataset")
     public MetaDataSet getMetaDataSet() {
         if(metadataSet == null) {
             metadataSet = new MetaDataSet();
@@ -55,14 +59,30 @@ public abstract class AbstractTaggable implements Taggable{
         getTagList().remove(tag);
     }
 
-    @Override
+    
     public Set<Tag> getTagList() {
         return tagList;
+    }
+    
+    @JsonGetter("tagList")
+    protected Set<Tag> tagList() {
+        return tagList;
+    }
+    
+    @JsonSetter("tagList")
+    protected void setTagList(Collection<Tag> tags) {
+        tagList.clear();
+        tagList.addAll(tags);
     }
     
     
     @Override
     public boolean has(Tag tag) {
         return tagList.contains(tag);
+    }
+    
+    @JsonSetter("metadataset")
+    protected void setMetaDataSet(MetaDataSet set) {
+        this.metadataSet = set;
     }
 }
