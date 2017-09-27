@@ -76,6 +76,9 @@ public class DefaultWorkflowStep implements WorkflowStep {
     @JsonIgnore
     private Logger logger = ImageJFX.getLogger();
 
+    @JsonIgnore
+    private Map<String,String> parameterTypes = new HashMap();
+    
     public DefaultWorkflowStep() {
 
     }
@@ -160,7 +163,7 @@ public class DefaultWorkflowStep implements WorkflowStep {
             if (value == null) {
                 return;
             }
-            this.parameters.put(key, value);
+            setParameter(key, value);
         });
     }
 
@@ -174,7 +177,7 @@ public class DefaultWorkflowStep implements WorkflowStep {
             boolean canSave = workflowIOService.canSave(value);
             if (canSave) {
 
-                this.parameters.put(key, value);
+                setParameter(key, value);
 
             }
         });
@@ -196,6 +199,7 @@ public class DefaultWorkflowStep implements WorkflowStep {
     // @JsonSetter(value = "parameters")
     public void setParameter(String alpha, Object object) {
         getParameters().put(alpha, object);
+        getParameterTypes().put(alpha,object.getClass().getName());
 
     }
 
@@ -203,5 +207,18 @@ public class DefaultWorkflowStep implements WorkflowStep {
     public Object getParameter(String alpha) {
         return getParameters().get(alpha);
     }
+
+    @JsonGetter(value = "parameterTypes")
+    public Map<String, String> getParameterTypes() {
+        return parameterTypes;
+    }
+    
+    @JsonSetter(value="parameterTypes")
+    protected void setParameterTypes(Map<String,String> set) {
+        parameterTypes = set;
+    }
+    
+    
+    
 
 }
