@@ -19,8 +19,8 @@
  */
 package ijfx.core.io;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ijfx.core.IjfxService;
-import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.datamodel.Taggable;
 import java.io.File;
 import java.io.IOException;
@@ -33,12 +33,17 @@ import java.util.List;
 public interface ExplorableIOService extends IjfxService{
     
     
+    Taggable loadTaggable(File file) throws IOException;
+    
     List<? extends Taggable> load(File file) throws IOException;
     
-    void save(List<? extends Taggable> explorableList);
+    void save(List<? extends Taggable> explorableList, File file) throws IOException;
     
-    void saveDatasets(String folder, String suffix, List<? extends Taggable> taggable);
+    void saveDatasets(List<? extends Taggable> taggable, String folder, String suffix) throws IOException;
     
+    void save(Taggable taggable, File target) throws IOException;
+    
+     ObjectMapper getJsonMapper();
     
    // List<? extends Taggable> loadTaggables(File file) throws IOException;
     

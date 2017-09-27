@@ -19,10 +19,87 @@
  */
 package ijfx.core.io;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import ijfx.core.metadata.MetaDataJsonModule;
+import ijfx.core.overlay.io.OverlayIOService;
+import ijfx.core.prefs.JsonPreferenceService;
+import ijfx.explorer.datamodel.Taggable;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
+
 /**
  *
  * @author Cyril MONGIS
  */
-public class DefaultExplorableIOService {
-    
+@Plugin(type = Service.class)
+public class DefaultExplorableIOService extends AbstractService implements ExplorableIOService {
+
+    @Parameter
+    JsonPreferenceService prefService;
+
+    ObjectMapper mapper = new ObjectMapper();
+
+    @Parameter
+    OverlayIOService overlayIOService;
+
+    @Override
+    public void initialize() {
+
+        mapper.setVisibility(PropertyAccessor.ALL, Visibility.NONE);
+       
+        mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
+
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        mapper.registerModule(overlayIOService.getOverlayJsonModule());
+        mapper.registerModule(new MetaDataJsonModule());
+
+    }
+
+    public ObjectMapper getJsonMapper() {
+        return mapper;
+    }
+
+    @Override
+    public List<? extends Taggable> load(File file) throws IOException {
+
+        List<? extends Taggable> readValue = mapper.readValue(file, mapper.getTypeFactory().constructCollectionType(List.class, Taggable.class));
+
+        readValue.forEach(tag -> tag.inject(getContext()));
+
+        return readValue;
+    }
+
+    @Override
+    public void save(List<? extends Taggable> explorableList, File file) throws IOException {
+
+        mapper.writeValue(file, explorableList);
+
+    }
+
+    @Override
+    public void saveDatasets(List<? extends Taggable> taggable, String folder, String suffix) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void save(Taggable taggable, File target) throws IOException {
+
+        mapper.writeValue(target, taggable);
+    }
+
+    @Override
+    public Taggable loadTaggable(File file) throws IOException {
+        return mapper.readValue(file, Taggable.class);
+    }
+
 }
