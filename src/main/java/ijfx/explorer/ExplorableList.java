@@ -22,6 +22,7 @@ package ijfx.explorer;
 import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataSet;
 import ijfx.explorer.datamodel.Explorable;
+import ijfx.explorer.datamodel.Taggable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -146,6 +147,12 @@ public class ExplorableList extends ArrayList<Explorable> {
        
     }
     
-    
+     public static List<Explorable> cast(List<? extends Taggable> loaded) {
+        return loaded
+                .stream()
+                .map(taggable->(Explorable)taggable)
+                .collect(Collectors.toList());
+    }
+
 
 }
