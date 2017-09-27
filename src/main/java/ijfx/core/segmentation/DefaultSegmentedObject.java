@@ -19,15 +19,16 @@
  */
 package ijfx.core.segmentation;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataSet;
 import ijfx.core.metadata.MetaDataSetType;
 import ijfx.core.overlay.OverlayStatService;
 import ijfx.core.overlay.OverlayStatistics;
 import ijfx.explorer.datamodel.AbstractTaggable;
-import jdk.nashorn.internal.objects.annotations.Getter;
-import jdk.nashorn.internal.objects.annotations.Setter;
 import net.imagej.overlay.Overlay;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.RealType;
@@ -36,6 +37,7 @@ import org.scijava.plugin.Parameter;
  *
  * @author Cyril MONGIS, 2016
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DefaultSegmentedObject extends AbstractTaggable implements SegmentedObject {
 
     
@@ -54,26 +56,27 @@ public class DefaultSegmentedObject extends AbstractTaggable implements Segmente
     
     
 
-    @Setter(name = "overlay")
+    @JsonSetter(value = "overlay")
     public void setOverlay(Overlay overlay) {
         this.overlay = overlay;
         set.putGeneric(MetaData.NAME, overlay.getName());
     }
     
     @Override
-    @Getter(name = "overlay")
+    @JsonGetter(value = "overlay")
     public Overlay getOverlay() {
         return overlay;
     }
     
     
-    @Setter(name = "metadataset")
+    @JsonSetter(value = "metadataset")
     public void setMetaDataSet(MetaDataSet set) {
         this.set = set;
     }
     
     
     @Override
+    @JsonSetter("metadataset")
     public MetaDataSet getMetaDataSet() {
         return set;
     }
