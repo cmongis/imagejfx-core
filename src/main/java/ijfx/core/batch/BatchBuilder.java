@@ -22,6 +22,7 @@ package ijfx.core.batch;
 import ijfx.core.datamodel.DatasetHolder;
 import ijfx.core.workflow.DefaultWorkflow;
 import ijfx.core.workflow.DefaultWorkflowStep;
+import ijfx.core.workflow.Workflow;
 import ijfx.explorer.ExplorerService;
 import ijfx.ui.main.ImageJFX;
 import ijfx.ui.utils.NamingUtils;
@@ -184,6 +185,10 @@ public class BatchBuilder {
             logger.log(Level.SEVERE, "Error when saving "+dataset.getName(), e);
         }
 
+    }
+
+    public Workflow getWorkflow() {
+        return workflow;
     }
 
 }
