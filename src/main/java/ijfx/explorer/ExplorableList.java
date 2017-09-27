@@ -19,11 +19,12 @@
  */
 package ijfx.explorer;
 
+import ijfx.core.metadata.MetaData;
+import ijfx.core.metadata.MetaDataSet;
 import ijfx.explorer.datamodel.Explorable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.IntUnaryOperator;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -112,6 +113,17 @@ public class ExplorableList extends ArrayList<Explorable> {
 
     }
 
+    public static int contentHash(MetaDataSet set) {
+        
+        return
+                set
+                .values()
+                .stream()
+                .mapToInt(MetaData::hashCode)
+                .sum();
+        
+    }
+    
     public static int contentHashWidthOrder(List<? extends Explorable> list) {
 
         if (list == null) {
