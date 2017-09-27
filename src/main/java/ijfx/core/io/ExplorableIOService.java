@@ -21,6 +21,7 @@ package ijfx.core.io;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ijfx.core.IjfxService;
+import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.datamodel.Taggable;
 import java.io.File;
 import java.io.IOException;
@@ -33,20 +34,45 @@ import java.util.List;
 public interface ExplorableIOService extends IjfxService{
     
     
-    Taggable loadTaggable(File file) throws IOException;
+    /**
+     * Loads one explorable from a JSON file that should contain only one Explorable
+     * @param file
+     * @return a single explorable
+     * @throws IOException 
+     */
+    Explorable loadOne(File file) throws IOException;
     
-    List<? extends Taggable> load(File file) throws IOException;
+    /**
+     * Loads a list of explorable contained in a single JSON file
+     * @param file 
+     * @return 
+     * @throws IOException 
+     */
+    List<? extends Explorable> loadAll(File file) throws IOException;
     
-    void save(List<? extends Taggable> explorableList, File file) throws IOException;
+    /**
+     * Saves a list of explorable into a single JSON file
+     * @param explorableList
+     * @param file
+     * @throws IOException 
+     */
+    void saveAll(List<? extends Explorable> explorableList, File file) throws IOException;
     
-    void saveDatasets(List<? extends Taggable> taggable, String folder, String suffix) throws IOException;
+    /**
+     * Saves a single Explorable into a single JSON file
+     * @param explorable
+     * @param target destination file
+     * @throws IOException 
+     */
+    void saveOne(Explorable explorable, File target) throws IOException;
     
-    void save(Taggable taggable, File target) throws IOException;
-    
+     /**
+      * Returns the ObjectMapper used for generating JSON files.
+      * The ObjectMapper can be used on Taggables and Overlays.
+      * @return Json Jackson Object Mapper
+      */
      ObjectMapper getJsonMapper();
     
-   // List<? extends Taggable> loadTaggables(File file) throws IOException;
     
-    //void saveTaggables(List<? extends Taggable> taggables);
     
 }
