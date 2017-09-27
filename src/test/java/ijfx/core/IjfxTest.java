@@ -19,14 +19,18 @@
  */
 package ijfx.core;
 
+import java.io.File;
+import java.io.IOException;
 import net.imagej.ImageJ;
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
-import org.junit.Test;
+import org.scijava.Context;
+import org.scijava.plugin.Parameter;
 
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 
 public abstract class IjfxTest {
@@ -34,6 +38,9 @@ public abstract class IjfxTest {
     private static ImageJ imageJ;
     
     private static boolean injected = false;
+    
+    @Parameter
+    Context context;
     
     protected ImageJ getImageJ() {
         
@@ -53,4 +60,13 @@ public abstract class IjfxTest {
         }
     }
     
+    public Context getContext() {
+        return context;
+    }
+    
+    
+     public void displayFile(File file) throws IOException{
+        System.out.println(file.toString());
+         System.out.println(FileUtils.readFileToString(file));
+    }
 }

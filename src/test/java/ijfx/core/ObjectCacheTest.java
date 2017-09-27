@@ -26,7 +26,7 @@ import org.junit.Test;
 
 /**
  *
- * @author cyril
+ * @author Cyril MONGIS
  */
 public class ObjectCacheTest {
 

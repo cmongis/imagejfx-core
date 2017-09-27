@@ -130,10 +130,7 @@ public class ExplorableIOTest extends IjfxTest{
     }
     
     
-    public void displayFile(File file) throws IOException{
-        System.out.println(file.toString());
-         System.out.println(FileUtils.readFileToString(file));
-    }
+   
     
     @Test
     public void saveFolder() throws Exception{
