@@ -31,7 +31,6 @@ import java.util.Date;
 @JsonSerialize(as = DefaultImageRecord.class)
 public interface ImageRecord extends MetaDataOwner{
     File getFile();
-  
     public RecordStatus getLastStatus();
     public Date getLastStatusChange();
     

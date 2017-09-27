@@ -19,7 +19,7 @@
  */
 package ijfx.core.imagedb;
 
-import ch.systemsx.cisd.base.annotation.JsonObject;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import ijfx.core.metadata.MetaDataSet;
@@ -34,9 +34,10 @@ public class DefaultImageRecord implements ImageRecord {
 
     private File file;
     private MetaDataSet metadataset;
-    private RecordStatus status;
-    private Date lastStatusChange;
+    private RecordStatus status = RecordStatus.ADDED;
+    private Date lastStatusChange = new Date(System.currentTimeMillis());
 
+    @JsonCreator
     public DefaultImageRecord() {
         
     }
@@ -80,7 +81,7 @@ public class DefaultImageRecord implements ImageRecord {
         return this;
     }
 
-    @JsonGetter("metadataset")
+    @JsonSetter("metadataset")
     public void setMetadataset(MetaDataSet metadataset) {
         this.metadataset = metadataset;
     }
