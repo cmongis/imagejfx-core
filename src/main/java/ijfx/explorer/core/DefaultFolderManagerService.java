@@ -48,6 +48,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import mongis.utils.CallbackTask;
 import mongis.utils.ProgressHandler;
 import mongis.utils.SilentProgressHandler;
@@ -367,6 +368,15 @@ public class DefaultFolderManagerService extends AbstractService implements Fold
 
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Stream<Explorable> extractPlanes(Explorable exp) {
+        return  metaDataExtractionService
+                            .extractPlaneMetaData(exp.getMetaDataSet())
+                            .stream()
+                            .map(m -> new PlaneMetaDataSetWrapper(getContext(), m));
+                            
     }
 
 }
