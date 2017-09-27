@@ -34,6 +34,7 @@ import com.fasterxml.jackson.databind.util.ClassUtil;
 import ijfx.core.IjfxService;
 import ijfx.core.datamodel.LongInterval;
 import ijfx.core.image.ChannelSettings;
+import ijfx.core.image.ColorTableJsonModule;
 import ijfx.plugins.projection.ProjectionMethod;
 import java.io.File;
 import java.io.IOException;
@@ -92,7 +93,8 @@ public class WorkflowIOService extends AbstractService implements IjfxService {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         //mapper.getSubtypeResolver().registerSubtypes(ThresholdMethod.class);
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        //mapper.setSerializationInclusion(Include.NON_NULL);
+        mapper.registerModule(new ColorTableJsonModule());
+    //mapper.setSerializationInclusion(Include.NON_NULL);
         //mapper.disable(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE);
         // generateModule(ThresholdMethod.class, new ThresholdMethodSerializer<>(getContext()), new ThresholdMethodDeserializer<>(getContext()));
 //mapper.registerModule(new ThresholdMethodModule(getContext()));
@@ -151,6 +153,10 @@ public class WorkflowIOService extends AbstractService implements IjfxService {
 
     }
 
+    public ObjectMapper getObjectMapper() {
+        return mapper;
+    }
+    
     private class MyTypeResolver extends TypeIdResolverBase {
 
         @Override
@@ -184,6 +190,8 @@ public class WorkflowIOService extends AbstractService implements IjfxService {
             return JsonTypeInfo.Id.CUSTOM;
 
         }
+        
+        
 
     }
 }
