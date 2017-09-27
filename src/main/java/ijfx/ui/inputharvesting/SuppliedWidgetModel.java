@@ -26,15 +26,22 @@ import java.util.function.Consumer;
  *
  * @author Cyril MONGIS
  */
-public class SuppliedWidgetModel<T> extends AbstractWidgetModel<T> {
+public class SuppliedWidgetModel<T> extends AbstractWidgetModel {
 
     private Callable<T> getter;
 
     private Consumer<T> setter;
 
+    public SuppliedWidgetModel() {
+        
+    }
+    
+   
+    
     public SuppliedWidgetModel(Class<T> type) {
         super(type);
     }
+    
 
     public SuppliedWidgetModel<T> setSetter(Consumer<T> setter) {
         this.setter = setter;

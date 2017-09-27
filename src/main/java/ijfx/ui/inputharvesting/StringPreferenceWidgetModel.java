@@ -25,7 +25,7 @@ import java.util.prefs.Preferences;
  *
  * @author Cyril MONGIS
  */
-public class StringPreferenceWidgetModel extends AbstractWidgetModel<String>{
+public class StringPreferenceWidgetModel extends AbstractWidgetModel{
     
     final Preferences prefs;
     
