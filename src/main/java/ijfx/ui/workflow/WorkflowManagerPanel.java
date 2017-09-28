@@ -30,6 +30,7 @@ import javafx.scene.layout.BorderPane;
 import org.scijava.plugin.Parameter;
 import mongis.utils.FXUtilities;
 import ijfx.ui.main.ImageJFX;
+import ijfx.ui.widgets.TextPromptDialog;
 import java.io.File;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -97,5 +98,29 @@ public class WorkflowManagerPanel extends BorderPane {
     public ReadOnlyObjectProperty<Workflow> selectedWorkflowProperty() {
         return listView.getSelectionModel().selectedItemProperty();
     }
+
+    protected Workflow getSelectedWorkflow() {
+        return selectedWorkflowProperty().getValue();
+    }
+    
+    public void editSelected() {
+        
+        
+        if(getSelectedWorkflow() == null) {
+            return;
+        }
+        TextPromptDialog prompter = new TextPromptDialog();
+        prompter.setHeaderText("Rename workflow");
+        prompter.setContentText("How would you like to rename this workflow ? ");
+        prompter.setDefaultText(getSelectedWorkflow().getName());
+        
+        String title = prompter.showAndWait().orElse(getSelectedWorkflow().getName());
+        
+        getSelectedWorkflow().setName(title);
+
+        listView.refresh();
+    }
+
+   
     
 }

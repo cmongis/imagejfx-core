@@ -19,10 +19,14 @@
  */
 package ijfx.ui.workflow;
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import ijfx.core.workflow.Workflow;
 import ijfx.ui.main.ImageJFX;
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
+import mongis.utils.FXUtilities;
 import org.scijava.Context;
 
 /**
@@ -33,6 +37,8 @@ public class WorkflowSelectionDialog extends Dialog<Workflow> {
 
     WorkflowManagerPanel panel;
 
+    ButtonType EDIT = new ButtonType("Edit");
+
     public WorkflowSelectionDialog(Context context) {
 
         super();
@@ -40,10 +46,24 @@ public class WorkflowSelectionDialog extends Dialog<Workflow> {
         getDialogPane().getStylesheets().add(ImageJFX.STYLESHEET_ADDR);
         panel = new WorkflowManagerPanel(context);
         getDialogPane().setContent(panel);
-        
+
+        getDialogPane().getButtonTypes().add(EDIT);
         getDialogPane().getButtonTypes().add(ButtonType.OK);
         getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
+
         getDialogPane().lookupButton(ButtonType.OK).disableProperty().bind(panel.selectedWorkflowProperty().isNull());
+        
+        // setting the edit button
+        Button editButton = (Button) getDialogPane().lookupButton(EDIT);
+        editButton.setOnMouseClicked(event -> panel.editSelected());
+
+        // de activate any action event which will prevent the dialog to close on click
+        editButton.addEventFilter(ActionEvent.ANY, event->event.consume());
+        
+        // styling the buttons
+        FXUtilities.styleDialogButtons(this);
+        FXUtilities.styleDialogButton(this, EDIT, "warning", FontAwesomeIcon.COG);
+
         setResultConverter(this::convert);
 
     }

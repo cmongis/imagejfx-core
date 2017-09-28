@@ -99,7 +99,7 @@ public class WorkflowStepController extends BorderPane implements ListCellContro
             popover.setArrowLocation(PopOver.ArrowLocation.RIGHT_TOP);
         }*/
         
-        if(step == step || step == null) return;
+        if(this.step == step || step == null) return;
         inputPanel = new InputPanelFX();
 
         
@@ -109,6 +109,7 @@ public class WorkflowStepController extends BorderPane implements ListCellContro
                 .keySet()
                 .stream()
                 .map(str -> new WorkflowStepWidgetModel(step,str))
+                .peek(context::inject)
                 .map((WidgetModel m)->{
                    InputWidget<? ,Node> widget = (InputWidget<?,Node>) widgetService.find(m);
                    if(widget != null) {
@@ -126,9 +127,13 @@ public class WorkflowStepController extends BorderPane implements ListCellContro
         
         inputPanel.refresh();
         popover.setContentNode(inputPanel.getComponent());
-
+        inputPanel.setName(
+                step.getId() == null
+                ? step.getModule().getInfo().getTitle()
+                : step.getModule().getInfo().getTitle()
+        );
         this.step = step;
-
+        
         //configPane.configure(step);
         titleLabel.setText(step.getModule().getInfo().getTitle());
     }
