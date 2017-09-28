@@ -138,7 +138,7 @@ public class DefaultTextArea extends AnchorPane{
     
     public void setAutocompletion(List<CommandInfo> entriesList, ScriptLanguage language){
         this.autocompletion = new DefaultAutocompletion(this);
-        if (language.getLanguageName().equals("Python")){
+        if ("Python".equals(language.getLanguageName())){
             this.listProvider = new PythonAtocompletionListProvider(entriesList);
         }
         else {
