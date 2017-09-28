@@ -34,6 +34,9 @@ import java.util.List;
 public interface ExplorableIOService extends IjfxService{
     
     
+    public final String DB_EXTENSION = "jdb.gz";
+    
+    
     /**
      * Loads one explorable from a JSON file that should contain only one Explorable
      * @param file
