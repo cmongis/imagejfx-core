@@ -22,7 +22,8 @@ package mongis.utils;
 
 import com.github.rjeschke.txtmark.Processor;
 import com.sun.javafx.tk.Toolkit;
-import ijfx.core.metadata.MetaDataOwner;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import ijfx.ui.main.ImageJFX;
 import ijfx.ui.RichMessageDisplayer;
 import java.io.File;
@@ -42,15 +43,16 @@ import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import javafx.css.Styleable;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
@@ -602,7 +604,36 @@ public class FXUtilities {
         });
 
     }
+    
+    public static void styleDialogButton(Dialog dialog, ButtonType buttonType, String styleClass, FontAwesomeIcon icon) {
+        
+        
+        Button button = (Button)dialog.getDialogPane().lookupButton(buttonType);
+    
+        if(button == null) return;
+    
+        button.getStyleClass().add(styleClass);
+        button.setGraphic(new FontAwesomeIconView(icon));
+        
+    }
 
+    public static void styleDialogButtons(Dialog dialog, String styleClass, FontAwesomeIcon icon, ButtonType... buttonTypes) {
+        for(ButtonType type : buttonTypes) {
+            styleDialogButton(dialog, type, styleClass, icon);
+        }
+    }
+    
+    public static void styleDialogButtons(Dialog dialog) {
+        
+        styleDialogButtons(dialog,BUTTON_DANGER_CLASS, FontAwesomeIcon.CLOSE,ButtonType.NO,ButtonType.CANCEL);
+        
+        styleDialogButtons(dialog, "warning", FontAwesomeIcon.EXCLAMATION, ButtonType.CANCEL);
+        
+        styleDialogButtons(dialog, BUTTON_SUCCESS_CLASS,FontAwesomeIcon.CHECK,ButtonType.APPLY,ButtonType.NEXT,ButtonType.OK,ButtonType.YES);
+    }
+                
+    
+    
     public static Image colorTableToImage(ColorTable table, int width, int height) {
         return colorTableToImage(table, width, height, 2);
     }
