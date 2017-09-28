@@ -78,17 +78,17 @@ public class SegmentedObjectExplorerWrapper extends AbstractTaggableWrapper<Segm
     @JsonCreator
     public SegmentedObjectExplorerWrapper(@JsonProperty("taggable") SegmentedObject object) {
         super(object);
-        taggable().getOverlay().context().inject(this);
+        getWrappedTaggable().getOverlay().context().inject(this);
     }
 
     @Override
     public String getTitle() {
-        return taggable().getOverlay().getName();
+        return getWrappedTaggable().getOverlay().getName();
     }
 
     @Override
     public String getSubtitle() {
-        return taggable().getMetaDataSet().get(MetaData.FILE_NAME).getStringValue();
+        return getWrappedTaggable().getMetaDataSet().get(MetaData.FILE_NAME).getStringValue();
     }
 
     @Override
@@ -116,8 +116,8 @@ public class SegmentedObjectExplorerWrapper extends AbstractTaggableWrapper<Segm
         if (image == null) {
             try {
                 if(extractedObject == null) getDataset();
-                double min = taggable().getMetaDataSet().get(MetaData.STATS_PIXEL_MIN).getDoubleValue();
-                double max = taggable().getMetaDataSet().get(MetaData.STATS_PIXEL_MAX).getDoubleValue();
+                double min = getWrappedTaggable().getMetaDataSet().get(MetaData.STATS_PIXEL_MIN).getDoubleValue();
+                double max = getWrappedTaggable().getMetaDataSet().get(MetaData.STATS_PIXEL_MAX).getDoubleValue();
                 Image image = previewService.datasetToImage((RandomAccessibleInterval<? extends RealType>) extractedObject, new ColorTable8(), min, max);
                 Double sampleFactor = 100 * 100 / image.getWidth() / image.getHeight();
                 sampleFactor = sampleFactor < 1 ? 1 : sampleFactor;
@@ -165,7 +165,7 @@ public class SegmentedObjectExplorerWrapper extends AbstractTaggableWrapper<Segm
         new CallbackTask<File, Void>()
                 .setInput(getFile())
                 .callback(f -> {
-                    overlayUtilsService.openOverlay(f, taggable().getOverlay());
+                    overlayUtilsService.openOverlay(f, getWrappedTaggable().getOverlay());
                     return null;
                 })
                 .submit(loadingScreenService)
@@ -181,9 +181,9 @@ public class SegmentedObjectExplorerWrapper extends AbstractTaggableWrapper<Segm
         
         if(extractedObject != null) return extractedObject;
         
-        if (taggable().getPixelSource() != null) {
+        if (getWrappedTaggable().getPixelSource() != null) {
 
-            extractedObject = overlayDrawingService.extractObject(taggable().getOverlay(), taggable().getPixelSource());
+            extractedObject = overlayDrawingService.extractObject(getWrappedTaggable().getOverlay(), getWrappedTaggable().getPixelSource());
 
         } else {
 
@@ -191,11 +191,11 @@ public class SegmentedObjectExplorerWrapper extends AbstractTaggableWrapper<Segm
             long[] nonPlanarPosition = MetaDataSetUtils.getNonPlanarPosition(getMetaDataSet());
 
             // we open the image virtually just in case
-            File imageFile = new File(taggable().getMetaDataSet().get(MetaData.ABSOLUTE_PATH).getStringValue());
+            File imageFile = new File(getWrappedTaggable().getMetaDataSet().get(MetaData.ABSOLUTE_PATH).getStringValue());
             try {
             Dataset dataset = imagePlaneService.openVirtualDataset(imageFile);
             // the pixels are extracted
-            extractedObject = overlayDrawingService.extractObject(taggable().getOverlay(), dataset, nonPlanarPosition);
+            extractedObject = overlayDrawingService.extractObject(getWrappedTaggable().getOverlay(), dataset, nonPlanarPosition);
             }
             catch(IOException ioe) {
                 logger.log(Level.SEVERE,"Couldn't load object dataset",ioe);
