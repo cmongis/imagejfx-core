@@ -28,10 +28,15 @@ import ijfx.core.metadata.MetaDataJsonModule;
 import ijfx.core.overlay.io.OverlayIOService;
 import ijfx.core.prefs.JsonPreferenceService;
 import ijfx.explorer.datamodel.Explorable;
-import ijfx.explorer.datamodel.Taggable;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
@@ -72,7 +77,7 @@ public class DefaultExplorableIOService extends AbstractService implements Explo
     @Override
     public List<? extends Explorable> loadAll(File file) throws IOException {
 
-        List<? extends Explorable> readValue = mapper.readValue(file, mapper.getTypeFactory().constructCollectionType(List.class, Explorable.class));
+        List<? extends Explorable> readValue = mapper.readValue(getInputStream(file), mapper.getTypeFactory().constructCollectionType(List.class, Explorable.class));
 
         readValue.forEach(tag -> tag.inject(getContext()));
 
@@ -82,7 +87,7 @@ public class DefaultExplorableIOService extends AbstractService implements Explo
     @Override
     public void saveAll(List<? extends Explorable> explorableList, File file) throws IOException {
 
-        mapper.writeValue(file, explorableList);
+        mapper.writeValue(getOuputStream(file), explorableList);
 
     }
 
@@ -90,12 +95,37 @@ public class DefaultExplorableIOService extends AbstractService implements Explo
     @Override
     public void saveOne(Explorable taggable, File target) throws IOException {
 
-        mapper.writeValue(target, taggable);
+        mapper.writeValue(getOuputStream(target), taggable);
     }
 
     @Override
     public Explorable loadOne(File file) throws IOException {
-        return mapper.readValue(file, Explorable.class);
+        return mapper.readValue(getInputStream(file), Explorable.class);
     }
 
+    protected InputStream getInputStream(File file) throws IOException {
+        
+        
+        FileInputStream fis = new FileInputStream(file);
+        
+        GZIPInputStream gis = new GZIPInputStream(fis);
+        
+        return gis;
+        
+        
+    }
+    
+    protected OutputStream getOuputStream(File file) throws IOException{
+        
+        FileOutputStream fos = new FileOutputStream(file);
+        
+        GZIPOutputStream gos = new GZIPOutputStream(fos);
+        
+        return gos;
+        
+        
+    }
+    
+    
+    
 }
