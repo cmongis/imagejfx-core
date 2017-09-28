@@ -54,16 +54,23 @@ class OverlayDeserializer extends JsonDeserializer<Overlay> {
     public Overlay deserialize(JsonParser jp, DeserializationContext dc) throws IOException, JsonProcessingException {
         JsonNode node = jp.getCodec().readTree(jp);
         String type = node.get(JsonOverlayToken.OVERLAY_TYPE).asText();
+        String name = node.get("name").asText();
+        
+        
+        Overlay overlay = null;
         
         if (type.equals(JsonOverlayToken.RECTANGLE_OVERLAY)) {
             
-            return loadRectangle(node);
+            overlay =  loadRectangle(node);
         }
         if (type.equals(JsonOverlayToken.POLYGON_OVERLAY)) {
-            return loadPolygon(node);
+            overlay =  loadPolygon(node);
         }
         if (type.equals(JsonOverlayToken.LINE_OVERLAY)) {
-            return loadLine(node);
+            overlay =  loadLine(node);
+        }
+        if(overlay != null) {
+            overlay.setName(name);
         }
         return null;
     }

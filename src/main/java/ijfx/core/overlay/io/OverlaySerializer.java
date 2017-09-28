@@ -53,7 +53,7 @@ public class OverlaySerializer extends JsonSerializer<Overlay> {
     
     @Override
     public void serialize(Overlay overlay, JsonGenerator jg, SerializerProvider sp) throws IOException, JsonProcessingException {
-
+        
         if (overlay instanceof LineOverlay) {
             saveLineOverlay((LineOverlay) overlay, jg);
         }
@@ -93,14 +93,15 @@ public class OverlaySerializer extends JsonSerializer<Overlay> {
         jg.writeEndArray();
     }
 
-    private void writeType(JsonGenerator jg) throws IOException {
+    private void writeType(JsonGenerator jg,Overlay overlay) throws IOException {
         jg.writeStringField("@class",Overlay.class.getName());
+        //jg.writeStringField("name",overlay.getName());
         //jg.writeTypeId();
     }
     
     private void saveRectangleOverlay(RectangleOverlay rectangleOverlay, JsonGenerator jg) throws IOException {
         jg.writeStartObject();
-        writeType(jg);
+        writeType(jg,rectangleOverlay);
         jg.writeStringField(JsonOverlayToken.OVERLAY_TYPE, JsonOverlayToken.RECTANGLE_OVERLAY);
         int dimensionCount = rectangleOverlay.numDimensions();
 
@@ -125,6 +126,8 @@ public class OverlaySerializer extends JsonSerializer<Overlay> {
         jg.writeFieldName(JsonOverlayToken.LINE_WIDTH);
         jg.writeNumber(width);        
 
+        writeEnd(rectangleOverlay, jg);
+        
         jg.writeEndObject();
 
     }
@@ -133,7 +136,7 @@ public class OverlaySerializer extends JsonSerializer<Overlay> {
         // {
         jg.writeStartObject();
         int numDimension = overlay.numDimensions();
-        writeType(jg);
+        writeType(jg,overlay);
         // "ovl_type":"polygon"
         jg.writeStringField(JsonOverlayToken.OVERLAY_TYPE, JsonOverlayToken.POLYGON_OVERLAY);
 
@@ -168,6 +171,8 @@ public class OverlaySerializer extends JsonSerializer<Overlay> {
         jg.writeFieldName(JsonOverlayToken.LINE_WIDTH);
         jg.writeNumber(width);         
         
+        writeEnd(overlay,jg);
+        
         jg.writeEndObject();
 
     }
@@ -175,7 +180,7 @@ public class OverlaySerializer extends JsonSerializer<Overlay> {
     private void saveLineOverlay(LineOverlay overlay, JsonGenerator jg) throws IOException {
 
         jg.writeStartObject();
-        writeType(jg);
+        writeType(jg,overlay);
         jg.writeStringField(JsonOverlayToken.OVERLAY_TYPE, JsonOverlayToken.LINE_OVERLAY);
         
         Double[] lineStart = Utils.extractArray(overlay::getLineStart, overlay.numDimensions());
@@ -198,8 +203,14 @@ public class OverlaySerializer extends JsonSerializer<Overlay> {
         jg.writeFieldName(JsonOverlayToken.LINE_WIDTH);
         jg.writeNumber(width);          
 
+        writeEnd(overlay, jg);
+        
         jg.writeEndObject();
 
+    }
+
+    private void writeEnd(Overlay overlay, JsonGenerator jg) throws IOException{
+        jg.writeStringField("name", overlay.getName());
     }
 
 }
