@@ -22,6 +22,7 @@ package ijfx.ui.widgets;
 import ijfx.ui.main.ImageJFX;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
+import mongis.utils.FXUtilities;
 
 /**
  *
@@ -42,8 +43,9 @@ public class TextPromptDialog extends Dialog<String> {
         getDialogPane().getButtonTypes().add(ButtonType.OK);
         getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
         getDialogPane().lookupButton(ButtonType.OK).disableProperty().bind(content.validProperty().not());
-        getDialogPane().lookupButton(ButtonType.OK).getStyleClass().add("success");
-        getDialogPane().lookupButton(ButtonType.CANCEL).getStyleClass().add("danger");
+        
+        FXUtilities.styleDialogButtons(this);
+        
         setResultConverter(this::convert);
 
     }
@@ -64,4 +66,10 @@ public class TextPromptDialog extends Dialog<String> {
             return null;
         }
     }
+
+    public void setDefaultText(String name) {
+        content.setText(name);
+    }
+
+    
 }
