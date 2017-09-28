@@ -40,12 +40,12 @@
                   </Button>
                   <MenuButton alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Manage history" textAlignment="CENTER">
                     <items>
-                      <MenuItem mnemonicParsing="false" onAction="#saveWorkflow" text="Import from file...">
+                      <MenuItem mnemonicParsing="false" onAction="#loadWorkflow" text="Import from file...">
                            <graphic>
                                       <FontAwesomeIconView glyphName="SAVE" styleClass="save-workflow-button" text="" />
                            </graphic>
                         </MenuItem>
-                      <MenuItem mnemonicParsing="false" onAction="#loadWorkflow" text="Export to file...">
+                      <MenuItem mnemonicParsing="false" onAction="#saveWorkflow" text="Export to file...">
                            <graphic>
                                       <FontAwesomeIconView glyphName="FOLDER_OPEN" styleClass="open-workflow-button" />
                            </graphic>
