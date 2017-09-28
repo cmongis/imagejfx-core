@@ -20,6 +20,8 @@
 package ijfx.ui.inputharvesting;
 
 import java.io.File;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import mongis.utils.FileButtonBinding;
@@ -40,6 +42,13 @@ public class FileWidgetFX extends AbstractFXInputWidget<File> implements FileWid
 
     FileButtonBinding binding;
 
+    public static String style(String style, String... extension) {
+        return new StringBuilder()
+                .append(style)
+                .append(Stream.of(extension).collect(Collectors.joining( " ")))
+                .toString();
+    }
+    
     @Override
     public void set(WidgetModel model) {
         super.set(model);
