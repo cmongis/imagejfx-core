@@ -19,8 +19,13 @@
  */
 package ijfx.ui.workflow;
 
+import ijfx.core.batch.BatchService;
+import ijfx.core.workflow.Workflow;
 import ijfx.ui.utils.IjfxUITester;
 import javafx.scene.Node;
+import net.imagej.plugins.commands.assign.InvertDataValues;
+import net.imagej.plugins.commands.imglib.GaussianBlur;
+import org.scijava.plugin.Parameter;
 
 /**
  *
@@ -28,11 +33,24 @@ import javafx.scene.Node;
  */
 public class WorkflowStepEditorTester extends IjfxUITester{
 
+    @Parameter
+    BatchService batchService;
+    
     @Override
     public Node initApp() {
         
         
+        Workflow workflow = batchService
+                .builder()
+                .addStep(GaussianBlur.class,"sigma",4.0)
+                .addStep(InvertDataValues.class)
+                .getWorkflow();
+                
+        
         WorkflowPanel panel = new WorkflowPanel(getContext());
+        
+        panel.stepListProperty().addAll(workflow.getStepList());
+        
         return panel;
         
         
