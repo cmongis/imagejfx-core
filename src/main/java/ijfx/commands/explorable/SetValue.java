@@ -30,7 +30,7 @@ import org.scijava.plugin.Plugin;
  *
  * @author Cyril MONGIS
  */
-@Plugin(type = ExplorableDisplayCommand.class, label="Set to value...",iconPath="fa:edit",initializer = "init")
+@Plugin(type = ExplorableDisplayCommand.class, label="Set to value...",iconPath="fa:edit",initializer = "init",priority = 99)
 public class SetValue extends AbstractExplorableDisplayCommand{
 
     @Parameter(label = "Key to set")

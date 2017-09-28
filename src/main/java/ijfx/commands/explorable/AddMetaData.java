@@ -31,7 +31,7 @@ import org.scijava.plugin.Plugin;
  *
  * @author Cyril MONGIS
  */
-@Plugin(type = ExplorableDisplayCommand.class, label="Add",iconPath="fa:plus",initializer = "init")
+@Plugin(type = ExplorableDisplayCommand.class, label="Add",iconPath="fa:plus",initializer = "init",priority = 100)
 public class AddMetaData extends AbstractExplorableDisplayCommand{
 
    

@@ -33,7 +33,7 @@ import org.scijava.plugin.Plugin;
  *
  * @author sapho
  */
-@Plugin(type = ExplorableDisplayCommand.class, label = "Set to annotation...", iconPath = "fa:edit")
+@Plugin(type = ExplorableDisplayCommand.class, label = "Set to annotation...", iconPath = "fa:edit",priority = 97)
 public class SetAnnotation extends AbstractExplorableDisplayCommand {
 
     private AnnotationDialog<Mapper> annot;
