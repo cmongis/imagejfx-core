@@ -30,7 +30,6 @@ import ijfx.ui.dialog.FxPromptDialog;
 import ijfx.ui.display.image.DisplayWindowFX;
 import ijfx.ui.main.ImageJFX;
 import static ijfx.ui.main.ImageJFX.getStylesheet;
-import ijfx.ui.plugin.console.ConsoleUIPlugin;
 import ijfx.ui.plugin.statusbar.DefaultFXStatusBar;
 import ijfx.ui.plugin.statusbar.FXStatusBar;
 import java.io.File;
@@ -71,7 +70,9 @@ import org.scijava.ui.viewer.DisplayViewer;
 import ijfx.core.uiplugin.UiCommandService;
 import ijfx.ui.loading.ForegroundTaskSubmitted;
 import ijfx.ui.loading.LoadingScreenService;
+import java.util.concurrent.ExecutionException;
 import javafx.stage.DirectoryChooser;
+import mongis.utils.ProgressHandler;
 import org.scijava.widget.FileWidget;
 
 /**
@@ -146,9 +147,11 @@ public class FXUserInterface extends Application implements UserInterface {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        
-        if(SCENE != null) return;
-        
+
+        if (SCENE != null) {
+            return;
+        }
+
         SCENE = new Scene(new BorderPane());
         SCENE.getStylesheets().add(getClass().getResource("/ijfx/ui/fonts.css").toExternalForm());
         SCENE.getStylesheets().add(getStylesheet());
@@ -198,7 +201,7 @@ public class FXUserInterface extends Application implements UserInterface {
 
     public void onAllUiPluginLoaded(Collection<UiPlugin> plugins) {
         uiContextService.enter("imagej", "visualize", "always");
-        
+
         activityService.open(DisplayContainer.class);
         ImageJFX.getThreadPool().submit(uiContextService::update);
         logger.info("Initialization finished");
@@ -371,11 +374,44 @@ public class FXUserInterface extends Application implements UserInterface {
     @Override
     public void show(Display<?> display) {
 
+        if(Platform.isFxApplicationThread()) {
+            throw new IllegalThreadStateException("this command shouldn't be accessed from the FX Thread.");
+        }
+          displayService.setActiveDisplay(display);
+        //try {
+          new CallbackTask<Display<?>,Boolean>()
+                    .setInput(display)
+                    .callback(this::showDisplay)
+                     .then(result->{
+                         if(!result) {
+                             uiService.showDialog("Error when creaing display !");
+                         }
+                     })
+                    .start()
+                    .submit(loadingScreenService);
+            //progress.setProgress(1.0);
+            // })
+            // .error(thr->System.out.println(thr))
+            //.start()
+            //.submit(loadingScreenService);
+       // } catch (InterruptedException ex) {
+         //   Logger.getLogger(FXUserInterface.class.getName()).log(Level.SEVERE, null, ex);
+        //} catch (ExecutionException ex) {
+         //   Logger.getLogger(FXUserInterface.class.getName()).log(Level.SEVERE, null, ex);
+       // }
+
+    }
+    
+    public Boolean showDisplay(ProgressHandler progress, Display<?> display) {
+        
+        progress.setProgress(0.5);
+        progress.setStatus("Creating window...");
+        
         Logger log = ImageJFX.getLogger();
 
         if (uiService.getDisplayViewer(display) != null) {
             // display is already being shown
-            return;
+            return false;
         }
 
         final List<PluginInfo<DisplayViewer<?>>> viewers
@@ -400,39 +436,29 @@ public class FXUserInterface extends Application implements UserInterface {
         if (displayViewer == null) {
             log.warning("For UI '" + getClass().getName()
                     + "': no suitable viewer for display: " + display);
-            return;
+            return false;
         }
 
         final DisplayViewer<?> finalViewer = displayViewer;
 
-        new CallbackTask<Void, Void>()
-                .run(progress -> {
-                    progress.setProgress(0.5);
-                    progress.setStatus("Creating window...");
-                     activityService.open(DisplayContainer.class);
-                    
-                   
-                    
-                    final DisplayWindowFX displayWindow = createDisplayWindow(display);
-                    finalViewer.view(displayWindow, display);
-                    finalViewer.setPanel(displayWindow.getDisplayPanel());
-                    
-                    
-                    displayWindow.setTitle(display.getName());
-                    uiService.addDisplayViewer(finalViewer);
-                    displayWindow.showDisplay(true);
-                    progress.setProgress(0.7,"Updating display...");
-                  
-                    displayService.setActiveDisplay(display);
-                    activityService.getActivity(DisplayContainer.class).addWindow(displayWindow);
-                    display.update();
-                    progress.setProgress(1.0);
-                })
-                .error(thr->System.out.println(thr))
-                .start()
-                .submit(loadingScreenService);
-              
+        // new CallbackTask<Void, Void>()
+        //     .run(progress -> {
+        
+        activityService.open(DisplayContainer.class);
 
+        final DisplayWindowFX displayWindow = createDisplayWindow(display);
+        finalViewer.view(displayWindow, display);
+        finalViewer.setPanel(displayWindow.getDisplayPanel());
+
+        displayWindow.setTitle(display.getName());
+        uiService.addDisplayViewer(finalViewer);
+        displayWindow.showDisplay(true);
+        progress.setProgress(0.7,"Updating display...");
+
+      
+        activityService.getActivity(DisplayContainer.class).addWindow(displayWindow);
+        display.update();
+        return true;
     }
 
     @Override
