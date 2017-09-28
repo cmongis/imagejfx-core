@@ -40,7 +40,7 @@ public abstract class AbstractTaggableWrapper<T extends Taggable> implements Exp
     final protected Logger logger = ImageJFX.getLogger();
     
     @JsonGetter("taggable")
-    protected T taggable() {
+    public T getWrappedTaggable() {
         return taggable;
     }
     
