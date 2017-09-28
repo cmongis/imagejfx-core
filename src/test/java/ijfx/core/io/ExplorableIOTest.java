@@ -94,7 +94,7 @@ public class ExplorableIOTest extends IjfxTest{
         
         System.out.println("### Creating tmp file");
         
-        File tmpFile = File.createTempFile("saveSegmentedObject", ".json");
+        File tmpFile = File.createTempFile("saveSegmentedObject", ExplorableIOService.DB_EXTENSION);
         
         
         
@@ -106,7 +106,7 @@ public class ExplorableIOTest extends IjfxTest{
                 .addVertex(1,5)
                 
                 .build();
-                
+        polygon.setName("hello");
         original.setOverlay(polygon);
         original.addTag(new DefaultTag("hello"));
         original.getMetaDataSet().merge(overlayStatsService.getShapeStatisticsAsMap(polygon));
@@ -115,9 +115,9 @@ public class ExplorableIOTest extends IjfxTest{
         
         explorableIOService.saveOne(wrapper, tmpFile);
         
-        System.out.println(FileUtils.readFileToString(tmpFile));
+        displayFile(tmpFile);
         
-        Explorable loaded =  explorableIOService.loadOne(tmpFile);
+        SegmentedObjectExplorerWrapper loaded =  (SegmentedObjectExplorerWrapper) explorableIOService.loadOne(tmpFile);
         
         Assert.assertNotNull("taggable not null",loaded);
         
@@ -125,7 +125,7 @@ public class ExplorableIOTest extends IjfxTest{
         
         
         assertTrue("taggable instanceof DefaultSegmentedObject",loaded instanceof  ijfx.core.segmentation.SegmentedObjectExplorerWrapper);
-        
+        assertEquals("overlay name",original.getOverlay().getName(),loaded.getWrappedTaggable().getOverlay().getName());
         
     }
     
@@ -156,7 +156,7 @@ public class ExplorableIOTest extends IjfxTest{
                 .indexDirectory(ProgressHandler.NONE, TEST_DIRECTORY)
                 .collect(Collectors.toList());
         
-        File tmpFile = File.createTempFile("saveSegmentedObject", ".json");
+        File tmpFile = File.createTempFile("saveSegmentedObject", ExplorableIOService.DB_EXTENSION);
         
         
         explorableIOService.saveAll(initial, tmpFile);
@@ -191,7 +191,7 @@ public class ExplorableIOTest extends IjfxTest{
     @Test
     public void savePlaneMetaData() throws IOException{
         
-        File tmpFile = File.createTempFile("planes", ".json");
+        File tmpFile = File.createTempFile("planes", ExplorableIOService.DB_EXTENSION);
         
         List<Explorable> planes = explorerService
                 .indexDirectory(ProgressHandler.NONE, TEST_DIRECTORY)
