@@ -80,7 +80,7 @@ import org.scijava.ui.UIService;
  * @author Cyril MONGIS
  */
 @Plugin(type = UiPlugin.class)
-@UiConfiguration(id = "segmentation-panel", localization = Localization.RIGHT, context = "image-display-open+segment explore+segment -overlay-selected")
+@UiConfiguration(id = "segmentation-panel", localization = Localization.RIGHT, context = "image-open+segment explore+segment -overlay-selected")
 public class DefaultInteractiveSegmentationPanel extends BorderPane implements UiPlugin, InteractiveSegmentationPanel {
 
     /*
