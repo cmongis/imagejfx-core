@@ -68,8 +68,8 @@ public class DefaultChannelSettings implements ChannelSettings {
     public String toString() {
         return getChannelSettings()
                 .stream()
-                .map(channel->channel.toString())
-                .collect(Collectors.joining(","));
+                .map(channel->(channelSettings.indexOf(channel)+ 1) + channel.toString())
+                .collect(Collectors.joining(" | "));
     }
 
     public void importFromDataset(Dataset dataset) {
@@ -116,6 +116,7 @@ public class DefaultChannelSettings implements ChannelSettings {
         return this;
     }
     
+   
     
     
 

@@ -109,6 +109,8 @@ public class DefaultChannel implements Channel {
         this.active.setValue(active);
     }
     
-    
+    public String toString() {
+        return String.format("(%.0f - %.0f)", getChannelMin(),getChannelMax());
+    }
     
 }
