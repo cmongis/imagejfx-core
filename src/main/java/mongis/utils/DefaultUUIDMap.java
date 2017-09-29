@@ -22,6 +22,7 @@ package mongis.utils;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
@@ -31,7 +32,17 @@ import java.util.logging.Logger;
  *
  * @author Cyril MONGIS
  */
-public class DefaultUUIDMap<T> extends HashMap<UUID,T> implements UUIDMap{
+public class DefaultUUIDMap<T>  implements UUIDMap{
+    
+    
+    protected Map<UUID,T> map;
+
+    public DefaultUUIDMap() {
+        
+        map = new HashMap<UUID,T>();
+        
+    }
+    
     
     
     
@@ -59,8 +70,7 @@ public class DefaultUUIDMap<T> extends HashMap<UUID,T> implements UUIDMap{
     
     protected class DefaultPutter implements UUIDMap.Accessor<T> {
         final UUID uuid;
-        final DefaultUUIDMap<T> parent;
-        
+        final UUIDMap<T> parent;
         
         public DefaultPutter(DefaultUUIDMap<T> parent, UUID uuid) {
             this.uuid = uuid;
@@ -68,20 +78,20 @@ public class DefaultUUIDMap<T> extends HashMap<UUID,T> implements UUIDMap{
         }
 
         public T get(){
-            return parent.get(id());
+            return map.get(id());
         }
         
         public T getOrPut(T t) {          
-            if(containsKey(uuid) == false)  {
-                parent.put(uuid,t);
+            if(map.containsKey(uuid) == false)  {
+                map.put(uuid,t);
             }
             
-            return parent.get(uuid);
+            return map.get(uuid);
         }
         
         public T getOrPutFrom(Callable<T> getter){
             
-            if(parent.containsKey(uuid) == false || parent.get(uuid) == null) {
+            if(map.containsKey(uuid) == false || map.get(uuid) == null) {
                 try {
                     put(getter.call());
                    
@@ -92,18 +102,18 @@ public class DefaultUUIDMap<T> extends HashMap<UUID,T> implements UUIDMap{
                 
             }
             
-            return parent.get(uuid);
+            return map.get(uuid);
         }
         
         @Override
         public UUIDMap<T> put(T t) {
-           parent.put(uuid,t);
+           map.put(uuid,t);
            return parent;
         }
 
         @Override
         public boolean has() {
-           return containsKey(uuid);
+           return map.containsKey(uuid);
         }
         
         public UUID id() {
