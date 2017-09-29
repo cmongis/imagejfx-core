@@ -76,7 +76,8 @@ public abstract class AbstractTaggableWrapper<T extends Taggable> implements Exp
 
     @Override
     public void inject(Context context) {
-        taggable.inject(context); 
+        Taggable.injectSafe(this, context);
+        Taggable.injectSafe(taggable, context);
     }
     
     
