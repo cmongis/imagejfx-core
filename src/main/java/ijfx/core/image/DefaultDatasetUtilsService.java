@@ -25,8 +25,6 @@ import ijfx.core.metadata.MetaDataOwner;
 import ijfx.core.stats.ImageStatisticsService;
 import ijfx.core.timer.Timer;
 import ijfx.core.timer.TimerService;
-import ijfx.core.utils.AxisUtils;
-import ijfx.core.utils.DimensionUtils;
 import ijfx.ui.main.ImageJFX;
 import io.scif.MetadataLevel;
 import io.scif.config.SCIFIOConfig;
@@ -42,6 +40,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
+import mongis.utils.UUIDWeakHashMap;
 import net.imagej.Dataset;
 import net.imagej.DatasetService;
 import net.imagej.ImgPlus;
@@ -105,12 +104,17 @@ public class DefaultDatasetUtilsService extends AbstractService implements Datas
     private TimerService timerService;
 
     @Parameter
+    private ImagePlaneService imagePlaneService;
+    
+    @Parameter
     private OpService opService;
     
     private final Logger logger = ImageJFX.getLogger();
 
     public final static String DEFAULT_SEPARATOR = " - ";
 
+    private UUIDWeakHashMap<Dataset> virtualDatasetMap = new UUIDWeakHashMap<>();
+    
     @Override
     public Dataset extractPlane(ImageDisplay imageDisplay) throws NullPointerException {
         CalibratedAxis[] calibratedAxises = new CalibratedAxis[imageDisplay.numDimensions()];
@@ -358,6 +362,11 @@ public class DefaultDatasetUtilsService extends AbstractService implements Datas
         Dataset dataset = null;
         SCIFIOConfig config = new SCIFIOConfig();
 
+        if(virtual && virtualDatasetMap.key(file.getAbsolutePath(),imageId).has()) {
+            return virtualDatasetMap.key(file.getAbsolutePath(),imageId).get();
+        }
+        
+        
         config.parserSetLevel(MetadataLevel.MINIMUM);
 
         if (virtual) {
@@ -382,6 +391,10 @@ public class DefaultDatasetUtilsService extends AbstractService implements Datas
         } catch (Exception e) {
             ImageJFX.getLogger().log(Level.SEVERE, "Error when opening " + file.getName(), e);
             throw new IOException();
+        }
+        
+        if(virtual && dataset != null) {
+            virtualDatasetMap.key(file.getAbsolutePath(),imageId).put(dataset);
         }
         //Dataset dataset = datasetIOService.open(file.getAbsolutePath(), config);
         timer.elapsed(String.format("Dataset opening (%s) (virtual = %s)", file.getName(), virtual));
@@ -461,7 +474,13 @@ public class DefaultDatasetUtilsService extends AbstractService implements Datas
                 .getMetaDataSet()
                 .getOrDefault(MetaData.SERIE, MetaData.create(MetaData.SERIE, 0))
                 .getIntegerValue();
-
+        
+        if(explorable.getMetaDataSet().containsKey(MetaData.PLANE_NON_PLANAR_POSITION)) {
+            Dataset dataset =  imagePlaneService.openVirtualDataset(new File(source));
+            
+            
+        }
+        
         return open(new File(source), serie, virtual);
 
     }
