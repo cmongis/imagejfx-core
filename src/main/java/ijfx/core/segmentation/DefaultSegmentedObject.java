@@ -23,12 +23,16 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import ijfx.core.image.DatasetUtilsService;
 import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataSet;
 import ijfx.core.metadata.MetaDataSetType;
 import ijfx.core.overlay.OverlayStatService;
 import ijfx.core.overlay.OverlayStatistics;
 import ijfx.explorer.datamodel.AbstractTaggable;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.imagej.overlay.Overlay;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.RealType;
@@ -40,6 +44,8 @@ import org.scijava.plugin.Parameter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DefaultSegmentedObject extends AbstractTaggable implements SegmentedObject {
 
+    @Parameter
+    DatasetUtilsService datasetUtilsService;
     
     RandomAccessibleInterval<? extends RealType> source;
     private Overlay overlay;
@@ -92,6 +98,15 @@ public class DefaultSegmentedObject extends AbstractTaggable implements Segmente
 
     @JsonIgnore
     public RandomAccessibleInterval<? extends RealType> getPixelSource() {
+        
+        if(source == null) {
+            try {
+                source = datasetUtilsService.openSource(this, true);
+            } catch (IOException ex) {
+                Logger.getLogger(DefaultSegmentedObject.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
         return source;
     }
     
