@@ -19,7 +19,10 @@
  */
 package ijfx.core.overlay.io;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +45,6 @@ import org.scijava.service.Service;
  *
  * @author Cyril MONGIS, 2016
  */
-
 @Plugin(type = Service.class)
 public class DefaultOverlayIOService extends AbstractService implements OverlayIOService {
 
@@ -56,12 +58,12 @@ public class DefaultOverlayIOService extends AbstractService implements OverlayI
     Context context;
 
     @Override
-    public void saveOverlays(List<Overlay> overlay, File ovlFile) throws IOException{
+    public void saveOverlays(List<Overlay> overlay, File ovlFile) throws IOException {
         new OverlaySaver().save(overlay, ovlFile);
     }
 
     @Override
-    public void saveOverlays(List<Overlay> overlay, Dataset dataset) throws NoSourceFileException,IOException {
+    public void saveOverlays(List<Overlay> overlay, Dataset dataset) throws NoSourceFileException, IOException {
         if (dataset.getSource() == null) {
             throw new NoSourceFileException();
         }
@@ -71,7 +73,7 @@ public class DefaultOverlayIOService extends AbstractService implements OverlayI
     }
 
     @Override
-    public void saveOverlays(ImageDisplay display) throws NoSourceFileException,IOException {
+    public void saveOverlays(ImageDisplay display) throws NoSourceFileException, IOException {
         List<Overlay> overlays = overlayService.getOverlays(display);
         saveOverlays(overlays, imageDisplayService.getActiveDataset(display));
     }
@@ -91,11 +93,18 @@ public class DefaultOverlayIOService extends AbstractService implements OverlayI
     @Override
     public Module getOverlayJsonModule() {
         SimpleModule module = new SimpleModule();
-        module.addSerializer(Overlay.class,new OverlaySerializer());
-        module.addDeserializer(Overlay.class,new OverlayDeserializer(context));
+        module.addSerializer(Overlay.class, new OverlaySerializer());
+        module.addDeserializer(Overlay.class, new OverlayDeserializer(context));
         return module;
     }
-    
-    
+
+    @Override
+    public ObjectMapper getJsonMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(getOverlayJsonModule());
+        mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        return mapper;
+    }
 
 }
