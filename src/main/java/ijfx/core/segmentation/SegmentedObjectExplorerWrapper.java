@@ -43,6 +43,7 @@ import net.imagej.display.ImageDisplay;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.type.numeric.RealType;
+import org.scijava.Context;
 import org.scijava.plugin.Parameter;
 
 /**
@@ -95,7 +96,6 @@ public class SegmentedObjectExplorerWrapper extends AbstractTaggableWrapper<Segm
     public String getInformations() {
         return "";
     }
-
 
 
     public void setImageDisplay(ImageDisplay imageDisplay) {
