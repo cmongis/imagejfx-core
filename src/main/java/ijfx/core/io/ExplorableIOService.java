@@ -22,9 +22,10 @@ package ijfx.core.io;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ijfx.core.IjfxService;
 import ijfx.explorer.datamodel.Explorable;
-import ijfx.explorer.datamodel.Taggable;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -76,6 +77,10 @@ public interface ExplorableIOService extends IjfxService{
       */
      ObjectMapper getJsonMapper();
     
+     
+     InputStream getCompressedInputStream(File file) throws IOException;
+     
+     OutputStream getCompressedOutputStream(File file) throws IOException;
     
     
 }

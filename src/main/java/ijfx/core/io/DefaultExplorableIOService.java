@@ -77,17 +77,17 @@ public class DefaultExplorableIOService extends AbstractService implements Explo
     @Override
     public List<? extends Explorable> loadAll(File file) throws IOException {
 
-        List<? extends Explorable> readValue = mapper.readValue(getInputStream(file), mapper.getTypeFactory().constructCollectionType(List.class, Explorable.class));
+        List<? extends Explorable> readValue = mapper.readValue(getCompressedInputStream(file), mapper.getTypeFactory().constructCollectionType(List.class, Explorable.class));
 
         readValue.forEach(tag -> tag.inject(getContext()));
-
+        
         return readValue;
     }
 
     @Override
     public void saveAll(List<? extends Explorable> explorableList, File file) throws IOException {
 
-        mapper.writeValue(getOuputStream(file), explorableList);
+        mapper.writeValue(getCompressedOutputStream(file), explorableList);
 
     }
 
@@ -95,15 +95,17 @@ public class DefaultExplorableIOService extends AbstractService implements Explo
     @Override
     public void saveOne(Explorable taggable, File target) throws IOException {
 
-        mapper.writeValue(getOuputStream(target), taggable);
+        mapper.writeValue(getCompressedOutputStream(target), taggable);
     }
 
     @Override
     public Explorable loadOne(File file) throws IOException {
-        return mapper.readValue(getInputStream(file), Explorable.class);
+        Explorable expl =  mapper.readValue(getCompressedInputStream(file), Explorable.class);
+        expl.inject(getContext());
+        return expl;
     }
 
-    protected InputStream getInputStream(File file) throws IOException {
+    public InputStream getCompressedInputStream(File file) throws IOException {
         
         
         FileInputStream fis = new FileInputStream(file);
@@ -115,7 +117,7 @@ public class DefaultExplorableIOService extends AbstractService implements Explo
         
     }
     
-    protected OutputStream getOuputStream(File file) throws IOException{
+    public OutputStream getCompressedOutputStream(File file) throws IOException{
         
         FileOutputStream fos = new FileOutputStream(file);
         
