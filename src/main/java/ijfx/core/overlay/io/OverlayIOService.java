@@ -20,6 +20,7 @@
 package ijfx.core.overlay.io;
 
 import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ijfx.core.IjfxService;
 import java.io.File;
 import java.io.IOException;
@@ -92,5 +93,7 @@ public interface OverlayIOService extends IjfxService{
     public  Module getOverlayJsonModule();
     
     public List<Overlay> loadOverlays(File overlayJsonFile);
+
+    public ObjectMapper getJsonMapper();
     
 }

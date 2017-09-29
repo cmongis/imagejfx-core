@@ -72,7 +72,7 @@ class OverlayDeserializer extends JsonDeserializer<Overlay> {
         if(overlay != null) {
             overlay.setName(name);
         }
-        return null;
+        return overlay;
     }
 
     private Overlay loadRectangle(JsonNode node) {
