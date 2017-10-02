@@ -19,12 +19,26 @@
  */
 package ijfx.core.metadata;
 
+import java.util.Optional;
+
 /**
  *
  * @author Cyril MONGIS, 2016
  */
 public interface MetaDataOwner {
-     public MetaDataSet getMetaDataSet();
-     
+
+    public MetaDataSet getMetaDataSet();
+
+    public default Boolean hasMetaData(String key) {
+        return getMetaDataSet().containsKey(key);
+    }
     
+    public default MetaData getMetaData(String key) {
+        return getMetaDataSet().get(key);
+    }
+    
+    public default MetaData getMetaData(String key, MetaData def) {
+        return getMetaDataSet().getOrDefault(def, def);
+    }
+
 }
