@@ -82,7 +82,7 @@ public class DefaultUUIDMap<T>  implements UUIDMap{
         }
         
         public T getOrPut(T t) {          
-            if(map.containsKey(uuid) == false)  {
+            if(map.containsKey(uuid) == false || map.get(uuid) == null)  {
                 map.put(uuid,t);
             }
             
@@ -113,7 +113,7 @@ public class DefaultUUIDMap<T>  implements UUIDMap{
 
         @Override
         public boolean has() {
-           return map.containsKey(uuid);
+           return map.containsKey(uuid) && map.get(uuid) != null;
         }
         
         public UUID id() {
