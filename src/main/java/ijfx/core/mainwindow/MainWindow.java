@@ -43,6 +43,8 @@ public interface MainWindow extends SciJavaPlugin {
 
     void displayActivity(Activity activity);
 
+    void displayDescription(String description);
+    
     void displayNotification(Notification notification);
 
     void displaySideMenuAction(UiCommand<MainWindow> action);

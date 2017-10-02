@@ -65,13 +65,15 @@ import ijfx.core.uiplugin.UiCommandService;
 import ijfx.ui.main.ImageJFX;
 import java.io.File;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.TransferMode;
 import mongis.utils.FXUtilities;
-import org.scijava.ui.dnd.DragAndDropHandler;
+import mongis.utils.transition.TransitionBinding;
 import org.scijava.ui.dnd.DragAndDropService;
 
 /**
@@ -127,6 +129,9 @@ public class DefaultMainWindow implements MainWindow {
     @FXML
     private VBox bottomTopVBox;
 
+    @FXML
+    private Label descriptionLabel;
+
     private SideBar sideBar;
 
     List<ContextualContainer<Node>> contextualContainer = new ArrayList<>();
@@ -155,6 +160,10 @@ public class DefaultMainWindow implements MainWindow {
 
     @Parameter
     DragAndDropService dragAndDropService;
+
+    StringProperty currentDescription = new SimpleStringProperty(null);
+
+    TransitionBinding descriptionTransisiontBinding;
 
     @Override
     public void init() {
@@ -191,6 +200,13 @@ public class DefaultMainWindow implements MainWindow {
                     .closeOnFinished();
 
             registerWidgetControllers();
+
+            // configuring the description label
+            descriptionLabel.textProperty().bind(currentDescription);
+
+            descriptionTransisiontBinding = new TransitionBinding<Number>(0, 70)
+                    .bind(currentDescription.isNull(), descriptionLabel.translateYProperty());
+            descriptionTransisiontBinding.onValueChanged(currentDescription, Boolean.FALSE, Boolean.FALSE);
 
             configureSideBar(new SideBar());
 
@@ -430,6 +446,13 @@ public class DefaultMainWindow implements MainWindow {
     @FXML
     public void onMouseDragReleased(MouseDragEvent event) {
         FXUtilities.toggleCssStyle(mainBorderPane, "drag-over", false);
+    }
+
+    @Override
+    public void displayDescription(String description) {
+        Platform.runLater(() -> {
+            currentDescription.setValue(description);
+        });
     }
 
 }
