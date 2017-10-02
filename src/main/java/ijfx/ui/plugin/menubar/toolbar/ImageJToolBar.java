@@ -23,6 +23,8 @@ package ijfx.ui.plugin.menubar.toolbar;
 import ijfx.core.icon.FXIconService;
 import ijfx.core.module.ModuleWrapper;
 import ijfx.core.uicontext.UiContextService;
+import ijfx.core.uiextra.UIExtraService;
+import ijfx.core.uiplugin.FXUiCommandService;
 import ijfx.core.uiplugin.Localization;
 import ijfx.core.uiplugin.UiPluginService;
 import ijfx.ui.UiPlugin;
@@ -40,7 +42,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import jfxtras.scene.control.ToggleGroupValue;
@@ -87,6 +88,13 @@ public class ImageJToolBar extends VBox implements UiPlugin {
     @Parameter
     EventService eventService;
 
+    @Parameter
+    UIExtraService uiExtraService;
+    
+    @Parameter
+    FXUiCommandService fXUiCommandService;
+    
+
     //ToggleGroup toggleGroup = new ToggleGroup();
     ToggleGroupValue<Tool> currentTool = new ToggleGroupValue<>();
 
@@ -120,31 +128,31 @@ public class ImageJToolBar extends VBox implements UiPlugin {
     }
 
     public ToggleButton createButton(Tool tool) {
-        
+
         StackPane iconPane = new StackPane();
         iconPane.getStyleClass().add("icon-pane");
         iconPane.getChildren().add(fxIconService.getIconAsNode(tool));
         ToggleButton button = new ToggleButton("", iconPane);
-        button.setTooltip(new Tooltip(
-                tool.getClass().getSimpleName()
-                + " ("
-                + tool.getDescription()
-                + " )"
-        ));
+        
+        String description = new StringBuilder()
+                .append(tool.getClass().getSimpleName())
+                .append(("( "))
+                .append(tool.getDescription())
+                .append(" )")
+                .toString();
         
         
 
         button.setContextMenu(createContextMenu(tool));
-
+        fXUiCommandService.attacheDescription(button, description);
         currentTool.add(button, tool);
-        
+
         ToolListener listener = new ToolListener(tool);
-        
-        button.addEventFilter(MouseEvent.MOUSE_PRESSED,listener );
-        button.addEventFilter(MouseEvent.MOUSE_PRESSED,listener);
+
+        button.addEventFilter(MouseEvent.MOUSE_PRESSED, listener);
+        button.addEventFilter(MouseEvent.MOUSE_PRESSED, listener);
         
         //toggleGroup.getToggles().add(button);
-
         button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         //button.selectedProperty().addListener(new ToolListener(tool));
         return button;
