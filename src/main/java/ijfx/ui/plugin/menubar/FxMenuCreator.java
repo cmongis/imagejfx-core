@@ -21,10 +21,12 @@
 package ijfx.ui.plugin.menubar;
 
 import ijfx.core.icon.FXIconService;
+import ijfx.core.uiplugin.FXUiCommandService;
 import ijfx.core.usage.Usage;
 import ijfx.ui.main.ImageJFX;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -56,6 +58,9 @@ public class FxMenuCreator extends AbstractMenuCreator<MenuBar, Menu> {
     @Parameter
     FXIconService fxIconService;
 
+    @Parameter
+    FXUiCommandService fxUiCommandService;
+
     UUIDMap<MenuItem> menuMap = new DefaultUUIDMap<>();
 
     Logger logger = ImageJFX.getLogger();
@@ -66,31 +71,31 @@ public class FxMenuCreator extends AbstractMenuCreator<MenuBar, Menu> {
 
     @Override
     protected void addLeafToMenu(ShadowMenu sm, Menu m) {
-        MenuItem item = new MenuItem(sm.getName());
 
-        Node iconAsNode = fxIconService.getIconAsNode(sm.getModuleInfo().getIconPath());
-        if (iconAsNode != null) {
-            item.setGraphic(iconAsNode);
-        }
-        menuMap
-                .key(new Integer(sm.getMenuDepth()),sm.getName())
-                .put(item);
-
-        item.addEventHandler(ActionEvent.ANY, event -> {
+        final String label = sm.getName();
+        final String iconPath = sm.getModuleInfo().getIconPath();
+        final String description = sm.getModuleInfo().getDescription();
+        final EventHandler onAction = event -> {
             Usage
                     .factory()
                     .createUsageLog(UsageType.CLICK, sm.getName(), Usage.MENUBAR)
                     .setValue(sm.getName())
                     .send();
-        });
+            
+            
+           threadService.run(sm);
 
-        item.setOnAction(event -> {
-            //ImageJFX.getThreadPool().submit(sm);
+        };
+        
+        Node icon = fxIconService.getIconAsNode(iconPath);
 
-//            context.inject(sm);
-            threadService.run(sm);
+        MenuItem item = fxUiCommandService.createMenuItem(label, description, icon, onAction);
+        
+        menuMap
+                .key(new Integer(sm.getMenuDepth()), sm.getName())
+                .put(item);
 
-        });
+       
         m.getItems().add(item);
     }
 
@@ -101,11 +106,16 @@ public class FxMenuCreator extends AbstractMenuCreator<MenuBar, Menu> {
     }
 
     @Override
-    protected Menu addNonLeafToMenu(ShadowMenu sm, Menu m) {    
-        Menu newMenu = new Menu(sm.getName());
+    protected Menu addNonLeafToMenu(ShadowMenu sm, Menu m) {
+        
+        final String label = sm.getName();
+     
+        final Node icon = fxIconService.getIconAsNode("fa:ellipsis_v");
+        MenuItem menuItem = fxUiCommandService.createMenuItem(label, null, icon, null);
+        Menu newMenu = new Menu(null,menuItem.getGraphic());
         m.getItems().add(newMenu);
-         menuMap
-                .key(new Integer(sm.getMenuDepth()),sm.getName())
+        menuMap
+                .key(new Integer(sm.getMenuDepth()), sm.getName())
                 .put(m);
         return newMenu;
 
@@ -115,11 +125,10 @@ public class FxMenuCreator extends AbstractMenuCreator<MenuBar, Menu> {
     protected Menu addNonLeafToTop(ShadowMenu sm, MenuBar t) {
 
         Menu newMenu = new Menu(sm.getName());
-       
-         //menuMap
-           //     .key(new Integer(sm.getMenuDepth()),sm.getName())
-             //   .put(t);
-        
+
+        //menuMap
+        //     .key(new Integer(sm.getMenuDepth()),sm.getName())
+        //   .put(t);
         t.getMenus().add(newMenu);
         return newMenu;
 
@@ -138,7 +147,7 @@ public class FxMenuCreator extends AbstractMenuCreator<MenuBar, Menu> {
     public void removeMenu(ShadowMenu sm) {
         logger.info("Removing " + sm.getName());
         MenuItem item = menuMap
-                .key(new Integer(sm.getMenuDepth()),sm.getName())
+                .key(new Integer(sm.getMenuDepth()), sm.getName())
                 .get();
         if (item == null) {
             return;
@@ -150,12 +159,14 @@ public class FxMenuCreator extends AbstractMenuCreator<MenuBar, Menu> {
     }
 
     public void addMenu(ShadowMenu sm) {
-        Menu menu = (Menu)  menuMap
-                .key(new Integer(sm.getMenuDepth()),sm.getName())
+        Menu menu = (Menu) menuMap
+                .key(new Integer(sm.getMenuDepth()), sm.getName())
                 .get();
-        
-        if(menu == null) return;
-        
+
+        if (menu == null) {
+            return;
+        }
+
         if (sm.isLeaf()) {
             addLeafToMenu(sm, menu);
         } else {
