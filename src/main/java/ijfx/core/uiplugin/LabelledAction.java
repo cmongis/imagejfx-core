@@ -34,6 +34,8 @@ public interface LabelledAction<T> {
         Consumer<T> runner();
         double priority();
         
-        
+        static public <T> int compare(LabelledAction<T> a1, LabelledAction<T> a2) {
+           return Double.compare(a2.priority(), a1.priority());
+        }
       
 }

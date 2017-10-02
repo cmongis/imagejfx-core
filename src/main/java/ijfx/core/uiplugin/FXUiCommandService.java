@@ -21,15 +21,23 @@ package ijfx.core.uiplugin;
 
 import ijfx.core.IjfxService;
 import ijfx.core.icon.FXIconService;
+import ijfx.core.uiextra.UIExtraService;
 import ijfx.core.usage.Usage;
 import ijfx.core.utils.SciJavaUtils;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import javafx.collections.SetChangeListener;
+import javafx.css.PseudoClass;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import net.mongis.usage.UsageLocation;
 import org.scijava.Priority;
 import org.scijava.command.CommandInfo;
@@ -53,87 +61,126 @@ public class FXUiCommandService extends DefaultUiCommandService implements IjfxS
     @Parameter
     CommandService commandService;
 
+    @Parameter
+    UIExtraService uiExtraService;
+
     public <T> MenuItem createMenuItem(UiCommand<T> action) {
         return createMenuItem(action, null);
     }
 
     public <T> MenuItem createMenuItem(UiCommand<T> action, T object) {
-        MenuItem item = new MenuItem(SciJavaUtils.getLabel(action), fxIconService.getIconAsNode(action));
 
-        item.setOnAction(event -> {
-            action.run(object);
+        return createMenuItem(new UiCommandWrapper(action, action));
+
+    }
+
+    public MenuItem createMenuItem(LabelledAction action) {
+
+        
+        return createMenuItem(action.label(), action.description(), fxIconService.getIconAsNode(action.iconPath()), event->action.runner().accept(action.data()));
+        
+        /*
+        MenuItem menuItem = new MenuItem(action.label(), fxIconService.getIconAsNode(action.iconPath()));
+       
+        
+        
+        menuItem.getPseudoClassStates().addListener((Observable change) -> {
+            System.out.println(change);
+        });
+        menuItem.getPseudoClassStates().addListener(new DescriptAttachedToPseudoClass(action.description()));
+        
+        //button.setTooltip(new Tooltip(action.description()));
+        menuItem.setOnAction(event -> {
+            action.runner().accept(action.data());
         });
 
-        return item;
+        return menuItem;*/
 
     }
 
     public Button createButton(LabelledAction action) {
-
+        
+        
+        
         Button button = new Button(action.label(), fxIconService.getIconAsNode(action.iconPath()));
 
         button.setTooltip(new Tooltip(action.description()));
+
+        attacheDescription(button, action.description());
 
         button.setOnAction(event -> {
             action.runner().accept(action.data());
         });
 
         return button;
-
-    }
-
-    public MenuItem createMenuItem(LabelledAction action) {
-
-        MenuItem menuItem = new MenuItem(action.label(), fxIconService.getIconAsNode(action.iconPath()));
-
-        //button.setTooltip(new Tooltip(action.description()));
-
-        menuItem.setOnAction(event -> {
-            action.runner().accept(action.data());
-        });
-
-        return menuItem;
 
     }
 
     public Button createButton(SciJavaPlugin plugin) {
         Button button = new Button(SciJavaUtils.getLabel(plugin), fxIconService.getIconAsNode(plugin));
         button.setTooltip(new Tooltip(SciJavaUtils.getDescription(plugin)));
+        attacheDescription(button, SciJavaUtils.getDescription(plugin));
         return button;
     }
 
     public Button createButton(PluginInfo<?> infos) {
         Button button = new Button(infos.getLabel(), fxIconService.getIconAsNode(infos.getIconPath()));
-        button.setTooltip(new Tooltip(infos.getDescription()));
+
+        attacheDescription(button, infos.getDescription());
+
+        //button.setTooltip(new Tooltip(infos.getDescription()));
         return button;
     }
 
     public <T> Button createButton(UiCommand<T> action, T object) {
-        Button button = createButton(action);
-
-        button.setOnAction(event -> {
-            action.run(object);
-        });
-
-        return button;
+        return createButton(new UiCommandWrapper(action, action));
     }
-    
-    public <T> List<LabelledAction> wrap(List<UiCommand<T>> actions,T acceptor) {
+
+    public MenuItem createMenuItem(String label, final String description, Node icon, EventHandler event) {
+
+        BorderPane borderPane = new BorderPane();
+        borderPane.getStyleClass().add("fx-menu-item");
+       
+        borderPane.setCenter(new Label(label));
+        
+        StackPane iconContainer = new StackPane();
+        iconContainer.getStyleClass().add("icon");
+        if(icon != null) {
+            iconContainer.getChildren().add(icon);
+        }
+        
+        borderPane.setLeft(iconContainer);
+        
+        borderPane.addEventHandler(MouseEvent.MOUSE_ENTERED, ev -> {
+            uiExtraService.showDescriptoin(description);
+
+        });
+        borderPane.addEventHandler(MouseEvent.MOUSE_EXITED, ev -> {
+            uiExtraService.showDescriptoin(null);
+        });
+        MenuItem menuItem = new MenuItem(null, borderPane);
+        menuItem.setOnAction(event);
+        return menuItem;
+
+    }
+
+    public <T> List<LabelledAction> wrap(List<UiCommand<T>> actions, T acceptor) {
         return actions
                 .stream()
-                .map(action->new UiAcommandWrapper<>(action, acceptor))
+                .map(action -> new UiCommandWrapper<>(action, acceptor))
                 .collect(Collectors.toList());
     }
-    
+
     public <T> List<LabelledAction> wrap(List<CommandInfo> commandInfoList) {
         return commandInfoList
                 .stream()
-                .map(info->new CommandInfoWrapper(info))
+                .map(info -> new CommandInfoWrapper(info))
                 .collect(Collectors.toList());
     }
-    
 
     public void generateButtonBar(String acceptorUsageId, List<LabelledAction> actionLIst, List<Node> buttonAcceptor, List<MenuItem> itemAcceptor) {
+
+        actionLIst.sort(LabelledAction::compare);
 
         int len = actionLIst.size();
         int limit = len > 3 ? 3 : len;
@@ -164,6 +211,8 @@ public class FXUiCommandService extends DefaultUiCommandService implements IjfxS
         int len = actionLIst.size();
         int limit = len > 3 ? 3 : len;
 
+        actionLIst.sort(UiCommand::compare);
+
         List<Button> buttons = actionLIst
                 .subList(0, limit)
                 .stream()
@@ -191,14 +240,28 @@ public class FXUiCommandService extends DefaultUiCommandService implements IjfxS
         Usage.listenButton(item, new UsageLocation(location), item.getText());
     }
 
-    public class UiAcommandWrapper<T> implements LabelledAction<T> {
+    public void attacheDescription(Node node, String description) {
+        if (description != null) {
+            node.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> {
+                uiExtraService.showDescriptoin(description);
+            });
+
+            node.addEventHandler(MouseEvent.MOUSE_EXITED, event -> {
+                uiExtraService.showDescriptoin(null);
+            });
+        }
+    }
+
+    public class UiCommandWrapper<T> implements LabelledAction<T> {
 
         final private UiCommand<T> command;
         final T acceptor;
+        final double priority;
 
-        public UiAcommandWrapper(UiCommand<T> t, T acceptor) {
+        public UiCommandWrapper(UiCommand<T> t, T acceptor) {
             this.command = t;
             this.acceptor = acceptor;
+            priority = SciJavaUtils.getPriority(t);
         }
 
         @Override
@@ -228,7 +291,7 @@ public class FXUiCommandService extends DefaultUiCommandService implements IjfxS
 
         @Override
         public double priority() {
-            return SciJavaUtils.getPriority(command);
+            return priority;
         }
     }
 
@@ -274,6 +337,34 @@ public class FXUiCommandService extends DefaultUiCommandService implements IjfxS
             commandService.run(info, true);
         }
 
+    }
+    
+    static final PseudoClass HOVER = PseudoClass.getPseudoClass("hover");
+    
+    private class DescriptAttachedToPseudoClass implements SetChangeListener<PseudoClass> {
+
+        
+        
+        final String description;
+
+        public DescriptAttachedToPseudoClass(String description) {
+            this.description = description;
+        }
+        
+        
+        
+        @Override
+        public void onChanged(Change<? extends PseudoClass> change) {
+            
+           if(change.getSet().contains(HOVER)) {
+               uiExtraService.showDescriptoin(description);
+           }
+           else {
+               uiExtraService.showDescriptoin(null);
+           }
+
+        }
+        
     }
 
 }

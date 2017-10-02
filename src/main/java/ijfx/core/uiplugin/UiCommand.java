@@ -19,6 +19,7 @@
  */
 package ijfx.core.uiplugin;
 
+import ijfx.core.utils.SciJavaUtils;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.SciJavaPlugin;
 import org.scijava.plugin.TypedPlugin;
@@ -34,5 +35,10 @@ public interface UiCommand<T> extends SciJavaPlugin{
     void run(T t);
     
     boolean canHandle(Class<?> object);
+    
+    
+    public static <T> int compare(UiCommand<T> c1, UiCommand<T> c2) {
+        return Double.compare(SciJavaUtils.getPriority(c2), SciJavaUtils.getPriority(c1));
+    }
     
 }

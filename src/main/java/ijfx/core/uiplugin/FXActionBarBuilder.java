@@ -19,6 +19,7 @@
  */
 package ijfx.core.uiplugin;
 
+import com.sun.javafx.scene.control.skin.ContextMenuContent;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import ijfx.core.usage.Usage;
@@ -29,6 +30,8 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Skin;
+import javafx.scene.control.Skinnable;
 import mongis.utils.CallbackTask;
 import mongis.utils.FXUtilities;
 import net.mongis.usage.UsageLocation;
@@ -62,6 +65,7 @@ public class FXActionBarBuilder {
     public FXActionBarBuilder(Context context) {
 
         context.inject(this);
+        
 
     }
 
@@ -110,11 +114,11 @@ public class FXActionBarBuilder {
     
     public FXActionBarBuilder build() {
 
-        menuButton.setText(moreButtonText);
-
+        menuButton.setText(moreButtonText);                
+        
         menuButton.setGraphic(new FontAwesomeIconView(moreIcon));
 
-        actionList.sort((o1, o2) -> Double.compare(o1.priority(), o2.priority()));
+        actionList.sort((o1, o2) -> Double.compare(o2.priority(), o1.priority()));
 
         int len = actionList.size();
         int limit = len > this.limit ? this.limit : len;

@@ -26,6 +26,7 @@ import java.util.List;
  *
  * @author Cyril MONGIS
  */
+
 public interface UiCommandService extends IjfxService{
     
     
