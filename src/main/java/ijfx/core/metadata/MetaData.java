@@ -104,6 +104,7 @@ public interface MetaData {
     public final static String FILE_NAME = "File Name";
     public final static String FOLDER_NAME = "Folder Name";
     public final static String ABSOLUTE_PATH = "Absolute path";
+    public final static String SOURCE_PATH = "*Source path";
     public final static String CHANNEL_NAME = "Channel name";
     public final static String SEQUENCE_NUMBER = "Seq";
 
