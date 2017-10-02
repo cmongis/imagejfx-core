@@ -582,9 +582,15 @@ h1,h2,h3,h4 {
 
 .menu-item {
     -fx-background-color:transparent;
-    -fx-padding: 0em 0.5em 0.5em 2em;
+    -fx-padding: 0em 0.5em 0.5em 1em;
     -fx-text-fill:-txt-normal;
    
+}
+.fx-menu-item .label {
+    -fx-padding:0
+}
+.fx-menu-item .icon {
+    -fx-pref-width:24px;
 }
 .menu-button .arrow {
     -fx-background-color:-txt-normal;
@@ -604,6 +610,7 @@ h1,h2,h3,h4 {
 .menu-item:focused .label {
     -fx-fill:white;
     -fx-text-fill:white;
+   
 }
 .menu-item .glyph-icon{
     -fx-stroke-fill:-txt-highlight;  
@@ -978,6 +985,14 @@ h1,h2,h3,h4 {
 
 #mainBorderPane.drag-over {
     -fx-background-color:-bg-darker;
+}
+
+#mainAnchorPane > #descriptionLabel {
+    -fx-background-color:-bg-darker;
+    -fx-padding:20;
+    -fx-font-size:1.1em;
+    -fx-text-alignment:center;
+    -fx-alignment:center;
 }
 
 /*
