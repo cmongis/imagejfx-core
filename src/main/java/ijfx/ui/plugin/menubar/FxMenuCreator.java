@@ -125,10 +125,7 @@ public class FxMenuCreator extends AbstractMenuCreator<MenuBar, Menu> {
     protected Menu addNonLeafToTop(ShadowMenu sm, MenuBar t) {
 
         Menu newMenu = new Menu(sm.getName());
-
-        //menuMap
-        //     .key(new Integer(sm.getMenuDepth()),sm.getName())
-        //   .put(t);
+      
         t.getMenus().add(newMenu);
         return newMenu;
 
