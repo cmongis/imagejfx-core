@@ -78,7 +78,7 @@ public class WorkflowSegmentation extends AbstractSegmentation {
     }
 
     @Override
-    public  <T extends RealType<?>> void preview(RandomAccessibleInterval<T> exmplae ) {
+    public  <T extends RealType<?>> void preview(RandomAccessibleInterval<T> example ) {
         setExample(example);
         reprocess(stepList);
     }
@@ -89,7 +89,7 @@ public class WorkflowSegmentation extends AbstractSegmentation {
     }
 
     public void reprocess(List<WorkflowStep> steps) {
-       
+       if(example == null) return;
         segmentationService
                 .createSegmentation()
                 .setWorkflow(steps)
