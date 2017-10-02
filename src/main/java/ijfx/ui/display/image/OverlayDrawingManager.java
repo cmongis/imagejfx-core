@@ -39,86 +39,75 @@ import org.scijava.plugin.Parameter;
  * @author Cyril MONGIS
  */
 public class OverlayDrawingManager {
- 
-    
-    
+
     private final ImageDisplay display;
-    
+
     private final Canvas canvas;
 
-    
     private final Map<Overlay, OverlayModifier> modifierMap = new HashMap<>();
-    
+
     private final static Logger logger = ImageJFX.getLogger();
-   
-    
+
     @Parameter
     OverlayDisplayService overlayDisplayService;
-    
-    
-    
+
     public OverlayDrawingManager(ImageDisplay display, Canvas canvas) {
-        
+
         display.getContext().inject(this);
         this.display = display;
         this.canvas = canvas;
-       
+
     }
-    
-   /**
-    * Returns all the modifiers that don't belong to the supplied list.
-    * It is useful to check which overlay has been deleted.
-    * @param listOverlay
-    * @return 
-    */
+
+    /**
+     * Returns all the modifiers that don't belong to the supplied list. It is
+     * useful to check which overlay has been deleted.
+     *
+     * @param listOverlay
+     * @return
+     */
     public List<OverlayModifier> checkDeletedOverlay(List<Overlay> listOverlay) {
-        
+
         return modifierMap
                 .keySet()
                 .stream()
-                .filter(overlay->listOverlay.contains(overlay) == false)
+                .filter(overlay -> listOverlay.contains(overlay) == false)
                 .map(modifierMap::get)
                 .collect(Collectors.toList());
-        
-        
+
     }
-   
+
     public void delete(OverlayModifier modifier) {
-        modifierMap.remove(modifier.getOverlay());
+        if (modifier != null) {
+            modifierMap.remove(modifier.getOverlay());
+        }
     }
-    
+
     public void delete(Overlay overlay) {
         modifierMap.remove(overlay);
     }
-    
 
     protected OverlayModifier getModifier(Overlay overlay) {
-        if(modifierMap.containsKey(overlay) == false) {
+        if (modifierMap.containsKey(overlay) == false) {
             modifierMap.put(overlay, overlayDisplayService.createModifier(overlay));
         }
         return modifierMap.get(overlay);
     }
-    
+
     public void redraw() {
-     display
+        display
                 .stream()
-                .filter(view->view instanceof OverlayView)
-                .map(view->(OverlayView)view)
+                .filter(view -> view instanceof OverlayView)
+                .map(view -> (OverlayView) view)
                 .forEach(this::draw);
-    
-     
-     
-     
+
     }
-    
+
     private void draw(OverlayView view) {
-        
+
         overlayDisplayService.getDrawer(view.getData())
-                .update(new DefaultOverlayViewConfiguration(view, view.getData()), display, canvas);    
-        
-        
+                .update(new DefaultOverlayViewConfiguration(view, view.getData()), display, canvas);
+
     }
-    
-    
-    
+
 }
