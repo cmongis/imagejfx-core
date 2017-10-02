@@ -22,6 +22,7 @@ package ijfx.core.segmentation;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import ijfx.core.image.DatasetUtilsService;
 import ijfx.core.image.ImagePlaneService;
 import ijfx.core.image.PreviewService;
 import ijfx.core.metadata.MetaData;
@@ -43,7 +44,6 @@ import net.imagej.display.ImageDisplay;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.type.numeric.RealType;
-import org.scijava.Context;
 import org.scijava.plugin.Parameter;
 
 /**
@@ -71,6 +71,9 @@ public class SegmentedObjectExplorerWrapper extends AbstractTaggableWrapper<Segm
     @Parameter
     private Dataset extractedObject;
 
+    @Parameter
+    DatasetUtilsService datasetUtilsService;
+    
     private WeakReference<ImageDisplay> imageDisplay = new WeakReference<>(null);
 
     Image image;
@@ -193,7 +196,10 @@ public class SegmentedObjectExplorerWrapper extends AbstractTaggableWrapper<Segm
             // we open the image virtually just in case
             File imageFile = new File(getWrappedTaggable().getMetaDataSet().get(MetaData.ABSOLUTE_PATH).getStringValue());
             try {
-            Dataset dataset = imagePlaneService.openVirtualDataset(imageFile);
+            Dataset dataset = datasetUtilsService.openSource(this, true);
+            
+            
+            
             // the pixels are extracted
             extractedObject = overlayDrawingService.extractObject(getWrappedTaggable().getOverlay(), dataset, nonPlanarPosition);
             }
