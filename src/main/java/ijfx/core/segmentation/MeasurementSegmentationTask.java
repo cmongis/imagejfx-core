@@ -158,11 +158,11 @@ public class MeasurementSegmentationTask extends AbstractSegmentationTask<Segmen
             for (long[] position : DimensionUtils.allPossibilities(original)) {
                 MetaDataSet planeMetaDataSet = new MetaDataSet(MetaDataSetType.PLANE);
                 planeMetaDataSet.merge(set);
-
+                
                 metaDataService.fillPositionMetaData(planeMetaDataSet, axes, position);
 
                 List<? extends SegmentedObject> measureOverlays = measurementService.measureOverlays(overlays, original, position);
-
+                planeMetaDataSet.putGeneric(MetaData.SOURCE_PATH, original.getSource());
                 measureOverlays.forEach(obj -> obj.getMetaDataSet().merge(planeMetaDataSet));
 
                 handler.increment(1);
