@@ -138,7 +138,7 @@ public class SegmentationTaskBuilder {
         // String source = imageDisplayService.getActiveDataset(display).getSource();
         MetaDataSet set = new MetaDataSet();
         set.put(MetaData.create(MetaData.NAME, display.getName()));
-
+        set.putGeneric(MetaData.SOURCE_PATH, dataset.getSource());
         if (mask == null) {
             Dataset maskDataset = datasetService.create((RandomAccessibleInterval) imagePlaneService.planeView(display));
 
