@@ -19,6 +19,7 @@
  */
 package ijfx.core.uiextra;
 
+import ijfx.core.FXUserInterface;
 import ijfx.ui.dialog.FXChoiceDialog;
 import ijfx.ui.dialog.FXChoiceDialogFactory;
 import ijfx.ui.dialog.FXRichTextDialog;
@@ -27,9 +28,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
+import org.scijava.ui.UIService;
 
 /**
  *
@@ -39,6 +42,8 @@ import org.scijava.service.Service;
 public class DefaultUIExtraService extends AbstractService implements UIExtraService {
 
     
+    @Parameter
+    UIService uiService;
     
     
     @Override
@@ -74,4 +79,18 @@ public class DefaultUIExtraService extends AbstractService implements UIExtraSer
         }
     }
 
+    @Override
+    public void showDescriptoin(String description) {
+        //if(description == null) return;
+        if(description != null && "".equals(description.trim()))  {
+            description = null;
+        };
+        //FXUserInterface defaultUI = (FXUserInterface) uiService.getDefaultUI();
+        FXUserInterface.getMainWindow().displayDescription(description);
+    }
+
+    
+    
+    
+    
 }

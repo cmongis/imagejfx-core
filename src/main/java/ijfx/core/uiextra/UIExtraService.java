@@ -45,4 +45,8 @@ public interface UIExtraService extends IjfxService{
     public RichTextDialog createRichTextDialog();
     
     
+    public void showDescriptoin(String description);
+    
+    
+    
 }
