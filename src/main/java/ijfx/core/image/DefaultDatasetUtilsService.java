@@ -22,6 +22,7 @@ package ijfx.core.image;
 import ijfx.core.image.sampler.DatasetSamplerService;
 import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataOwner;
+import ijfx.core.metadata.MetaDataSetUtils;
 import ijfx.core.stats.ImageStatisticsService;
 import ijfx.core.timer.Timer;
 import ijfx.core.timer.TimerService;
@@ -468,21 +469,24 @@ public class DefaultDatasetUtilsService extends AbstractService implements Datas
 
     @Override
     public Dataset openSource(MetaDataOwner explorable, boolean virtual) throws IOException {
-        String source = explorable.getMetaDataSet().get(MetaData.ABSOLUTE_PATH).getStringValue();
-
+        String source = explorable.getMetaDataSet().get(MetaData.SOURCE_PATH).getStringValue();
+        if(source == null || "null".equals(source)) {
+            source = explorable.getMetaData(MetaData.ABSOLUTE_PATH).getStringValue();
+        }
+        
+        if(source == null) {
+            throw new IllegalArgumentException("The explorable has no source");
+        }
+        
         Integer serie = explorable
                 .getMetaDataSet()
                 .getOrDefault(MetaData.SERIE, MetaData.create(MetaData.SERIE, 0))
                 .getIntegerValue();
+       
         
-        if(explorable.getMetaDataSet().containsKey(MetaData.PLANE_NON_PLANAR_POSITION)) {
-            Dataset dataset =  imagePlaneService.openVirtualDataset(new File(source));
-            
-            
-        }
-        
-        return open(new File(source), serie, virtual);
-
+        Dataset dataset = open(new File(source), serie, virtual);
+       
+        return dataset;
     }
 
     @Override
