@@ -32,7 +32,7 @@ import org.scijava.plugin.Plugin;
  *
  * @author Cyril MONGIS
  */
-@Plugin(type = ExplorerActivityCommand.class,label = "Export to...",iconPath="fa:save")
+@Plugin(type = ExplorerActivityCommand.class,label = "Export images to...",iconPath="fa:save")
 public class SaveInFolder extends ExplorerActivityCommand{
 
     @Parameter

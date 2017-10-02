@@ -34,7 +34,7 @@ import org.scijava.widget.FileWidget;
  *
  * @author cyril
  */
-@Plugin(type = ExplorableDisplayCommand.class, label = "Save database",iconPath = "fa:save")
+@Plugin(type = ExplorableDisplayCommand.class, label = "Save...",iconPath = "fa:save",description="Saves the data in a form of a database file that can be reopened by ImageJ-FX for further annotation. Images are not exported.")
 public class SaveAsDatabase extends AbstractExplorableDisplayCommand{
 
     
