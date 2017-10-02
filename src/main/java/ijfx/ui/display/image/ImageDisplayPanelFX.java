@@ -594,6 +594,8 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
         
         
         // checking modifiers of overlay that has been deleted
+        
+        try {
         List<Node> points = overlayDrawingManager
                 .checkDeletedOverlay(overlayService.getOverlays(display))
                 .stream()
@@ -610,6 +612,11 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
                 .filter((view) -> view instanceof OverlayView)
                 .map(o -> (OverlayView) o)
                 .forEach(this::checkModifier);
+        
+        }
+        catch(Exception e) {
+            logger.log(Level.WARNING,"Error when deleting modifier",e);
+        }
 
     }
 
