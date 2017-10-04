@@ -236,19 +236,18 @@ public class ImageDisplayAdjuster extends BorderPane {
         
         int len = actions.size();
         int limit = len > 3 ? 3 : len;
-        
+        final ImageDisplayAdjuster me = this;
         actions
                     .subList(0, limit)
                     .stream()
-                    .map(action->fxUiActionService.createButton(action, this))
-                    .peek(this::listenButton)
+                    .map(action->fxUiActionService.createButton(action, me))
                     .collect(Collectors.toCollection(toolbar::getItems));
         
         if(len > limit) {
             actions
                     .subList(limit, len)
                     .stream()
-                    .map(action->fxUiActionService.createMenuItem(action, this))
+                    .map(action->fxUiActionService.createMenuItem(action, me))
                     
                     .collect(Collectors.toCollection(moreMenuButton::getItems));
 

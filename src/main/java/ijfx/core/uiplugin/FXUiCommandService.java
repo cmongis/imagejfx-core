@@ -70,14 +70,14 @@ public class FXUiCommandService extends DefaultUiCommandService implements IjfxS
 
     public <T> MenuItem createMenuItem(UiCommand<T> action, T object) {
 
-        return createMenuItem(new UiCommandWrapper(action, action));
+        return createMenuItem(new UiCommandWrapper<T>(action, object));
 
     }
 
     public MenuItem createMenuItem(LabelledAction action) {
 
         
-        return createMenuItem(action.label(), action.description(), fxIconService.getIconAsNode(action.iconPath()), event->action.runner().accept(action.data()));
+        return createMenuItem(action.label(), action.description(), fxIconService.getIconAsNode(action.iconPath()), action);
         
         /*
         MenuItem menuItem = new MenuItem(action.label(), fxIconService.getIconAsNode(action.iconPath()));
@@ -108,9 +108,7 @@ public class FXUiCommandService extends DefaultUiCommandService implements IjfxS
 
         attacheDescription(button, action.description());
 
-        button.setOnAction(event -> {
-            action.runner().accept(action.data());
-        });
+        button.setOnAction(action);
 
         return button;
 
@@ -127,16 +125,17 @@ public class FXUiCommandService extends DefaultUiCommandService implements IjfxS
         Button button = new Button(infos.getLabel(), fxIconService.getIconAsNode(infos.getIconPath()));
 
         attacheDescription(button, infos.getDescription());
-
+        button.setOnAction(event->{
+        });
         //button.setTooltip(new Tooltip(infos.getDescription()));
         return button;
     }
 
     public <T> Button createButton(UiCommand<T> action, T object) {
-        return createButton(new UiCommandWrapper(action, action));
+        return createButton(new UiCommandWrapper(action, object));
     }
 
-    public MenuItem createMenuItem(String label, final String description, Node icon, EventHandler event) {
+    public MenuItem createMenuItem(String label, final String description, Node icon, EventHandler handler) {
 
         BorderPane borderPane = new BorderPane();
         borderPane.getStyleClass().add("fx-menu-item");
@@ -159,7 +158,7 @@ public class FXUiCommandService extends DefaultUiCommandService implements IjfxS
             uiExtraService.showDescriptoin(null);
         });
         MenuItem menuItem = new MenuItem(null, borderPane);
-        menuItem.setOnAction(event);
+        menuItem.setOnAction(handler);
         return menuItem;
 
     }
@@ -255,12 +254,12 @@ public class FXUiCommandService extends DefaultUiCommandService implements IjfxS
     public class UiCommandWrapper<T> implements LabelledAction<T> {
 
         final private UiCommand<T> command;
-        final T acceptor;
+        final T data;
         final double priority;
 
-        public UiCommandWrapper(UiCommand<T> t, T acceptor) {
+        public UiCommandWrapper(UiCommand<T> t, T data) {
             this.command = t;
-            this.acceptor = acceptor;
+            this.data = data;
             priority = SciJavaUtils.getPriority(t);
         }
 
@@ -271,7 +270,7 @@ public class FXUiCommandService extends DefaultUiCommandService implements IjfxS
 
         @Override
         public T data() {
-            return acceptor;
+            return data;
         }
 
         @Override
@@ -284,14 +283,16 @@ public class FXUiCommandService extends DefaultUiCommandService implements IjfxS
             return SciJavaUtils.getIconPath(command);
         }
 
-        @Override
-        public Consumer<T> runner() {
-            return command::run;
-        }
-
+       
+        
         @Override
         public double priority() {
             return priority;
+        }
+
+        @Override
+        public void accept(T t) {
+            command.run(t);
         }
     }
 
@@ -323,17 +324,14 @@ public class FXUiCommandService extends DefaultUiCommandService implements IjfxS
             return info.getIconPath();
         }
 
-        @Override
-        public Consumer<CommandInfo> runner() {
-            return this::run;
-        }
+       
 
         @Override
         public double priority() {
             return info.getPriority();
         }
 
-        public void run(CommandInfo info) {
+        public void accept(CommandInfo info) {
             commandService.run(info, true);
         }
 

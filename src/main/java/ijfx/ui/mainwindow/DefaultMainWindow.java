@@ -64,6 +64,7 @@ import ijfx.core.uiplugin.UiCommand;
 import ijfx.core.uiplugin.UiCommandService;
 import ijfx.ui.main.ImageJFX;
 import java.io.File;
+import java.time.Duration;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -74,6 +75,8 @@ import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.TransferMode;
 import mongis.utils.FXUtilities;
 import mongis.utils.transition.TransitionBinding;
+import org.reactfx.Change;
+import org.reactfx.EventStreams;
 import org.scijava.ui.dnd.DragAndDropService;
 
 /**
@@ -160,10 +163,17 @@ public class DefaultMainWindow implements MainWindow {
 
     @Parameter
     DragAndDropService dragAndDropService;
-
-    StringProperty currentDescription = new SimpleStringProperty(null);
-
-    TransitionBinding descriptionTransisiontBinding;
+    
+    /**
+     * Represents the displayed description
+     */
+    private final StringProperty currentDescription = new SimpleStringProperty(null);
+    
+    /**
+     * Represents temporary displayed description
+     */
+    private final StringProperty temporaryDescription = new SimpleStringProperty(null);
+    private TransitionBinding descriptionTransisiontBinding;
 
     @Override
     public void init() {
@@ -203,11 +213,24 @@ public class DefaultMainWindow implements MainWindow {
 
             // configuring the description label
             descriptionLabel.textProperty().bind(currentDescription);
-
+            
+            
+            
             descriptionTransisiontBinding = new TransitionBinding<Number>(0, 70)
                     .bind(currentDescription.isNull(), descriptionLabel.translateYProperty());
             descriptionTransisiontBinding.onValueChanged(currentDescription, Boolean.FALSE, Boolean.FALSE);
-
+            
+            // now we want to buffer fast change so only the last value is taken account
+            // Only went the temporary description stop changing for 500 milliseconds,
+            // the current description is updated with the last value
+            EventStreams
+                    .changesOf(temporaryDescription)
+                    .successionEnds(Duration.ofMillis(150))
+                    .subscribe((Change<String> ch)->{
+                       currentDescription.setValue(ch.getNewValue());
+                    });
+            
+            currentDescription.setValue(null);
             configureSideBar(new SideBar());
 
         } catch (IOException ex) {
@@ -451,7 +474,7 @@ public class DefaultMainWindow implements MainWindow {
     @Override
     public void displayDescription(String description) {
         Platform.runLater(() -> {
-            currentDescription.setValue(description);
+            temporaryDescription.setValue(description);
         });
     }
 
