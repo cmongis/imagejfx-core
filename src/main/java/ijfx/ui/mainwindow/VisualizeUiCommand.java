@@ -19,9 +19,11 @@
  */
 package ijfx.ui.mainwindow;
 
+import ijfx.core.mainwindow.MainWindow;
 import ijfx.ui.activity.DisplayContainer;
 import org.scijava.plugin.Plugin;
 import ijfx.core.uiplugin.UiCommand;
+import ijfx.ui.UiContexts;
 
 /**
  * Launch the activity that contains all the ImageJ displays
@@ -32,4 +34,13 @@ public class VisualizeUiCommand extends AbstractActivityLauncher{
     public VisualizeUiCommand() {
         super(DisplayContainer.class);
     }
+    
+    @Override
+    public void run(MainWindow a) {
+        enter(UiContexts.VISUALIZE);
+        super.run(a);
+        
+        
+    }
+    
 }
