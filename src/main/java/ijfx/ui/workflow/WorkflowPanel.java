@@ -56,6 +56,8 @@ import org.scijava.menu.ShadowMenu;
 import org.scijava.module.ModuleInfo;
 import org.scijava.module.ModuleService;
 import org.scijava.plugin.Parameter;
+import org.scijava.ui.DialogPrompt;
+import org.scijava.ui.UIService;
 
 /**
  *
@@ -75,6 +77,9 @@ public class WorkflowPanel extends GridPane {
     @Parameter
     Context context;
 
+    @Parameter
+    UIService uiService;
+
     @FXML
     private ListView<WorkflowStep> stepListView;
 
@@ -90,8 +95,6 @@ public class WorkflowPanel extends GridPane {
     @Parameter
     private HistoryService historyService;
 
-   
-    
     Logger logger = ImageJFX.getLogger();
 
     private List<WeakReference<Consumer<WorkflowStep>>> listeners = new ArrayList<>();
@@ -155,7 +158,6 @@ public class WorkflowPanel extends GridPane {
         menuService.createMenus(menuCreator, menuButton);
 
         //addEventHandler(ModuleInputEvent.ALL, this::onModuleInputChanged);
-
     }
 
     public void addChangeListener(Consumer<WorkflowStep> listener) {
@@ -188,8 +190,18 @@ public class WorkflowPanel extends GridPane {
 
     @FXML
     public void importFromHistory() {
-        stepList.clear();
-        stepList.addAll(historyService.getStepList().filtered(step -> step.getModule().getDelegateObject().getClass().getSimpleName().contains("OpenFile") == false));
+
+        DialogPrompt.Result result = uiService.showDialog(
+                "This action will delete your current workflow.\nAre you sure"
+                + "you want to continue ?",
+                 DialogPrompt.MessageType.QUESTION_MESSAGE,
+                 DialogPrompt.OptionType.YES_NO_OPTION);
+
+        if (DialogPrompt.Result.YES_OPTION.equals(result)) {
+
+            stepList.clear();
+            stepList.addAll(historyService.getStepList().filtered(step -> step.getModule().getDelegateObject().getClass().getSimpleName().contains("OpenFile") == false));
+        }
     }
 
     // handler used when clicked on a action in the menu list
@@ -214,17 +226,16 @@ public class WorkflowPanel extends GridPane {
     //public void onModuleInputChanged(ModuleInputEvent event) {
     //    notifyChange(null);
     //}
-
     public void addStep(ModuleInfo moduleInfo) {
 
-        stepList.add(new DefaultWorkflowStep(context,moduleInfo.getDelegateClassName())
+        stepList.add(new DefaultWorkflowStep(context, moduleInfo.getDelegateClassName())
                 .prefill());
     }
 
     public void addStep(Class<?> moduleClass) {
         try {
             stepList.add(
-                    new DefaultWorkflowStep(context,moduleClass.getName())
+                    new DefaultWorkflowStep(context, moduleClass.getName())
                             .prefill()
             );
         } catch (Exception e) {
