@@ -65,7 +65,7 @@ import org.scijava.plugin.Plugin;
     @Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
             mnemonic = MenuConstants.EDIT_MNEMONIC)
     ,
-	@Menu(label = "Invert all planes", weight = 30, accelerator = "shift ^I")},
+	@Menu(label = "Invert all the planes", weight = 30, accelerator = "shift ^I")},
         headless = true, attrs = {
             @Attr(name = "no-legacy")}
         , description = "The inversion is relative to the"
@@ -81,7 +81,7 @@ public class InvertDataValues<T extends RealType<T>> extends ContextCommand {
     @Parameter(type = ItemIO.BOTH)
     private Dataset dataset;
 
-    @Parameter
+    @Parameter(required = false)
     private Overlay overlay;
 
     // -- other instance variables --
