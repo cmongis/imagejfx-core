@@ -19,20 +19,23 @@
  */
 package ijfx.ui.widgets.actions;
 
-import ijfx.commands.axis.SeparateChannels;
+import ijfx.commands.axis.SpreadChannelSettings;
 import ijfx.core.uiplugin.UiCommand;
 import ijfx.ui.widgets.AbstractAdjusterUIAction;
 import org.scijava.plugin.Plugin;
 
 /**
  *
- * @author Cyril MONGIS
+ * @author cyril
  */
-@Plugin(type = UiCommand.class, label = "Split channels",description = "Separate all the channels in N differents images (N the orignal number of channel)")
-public class SplitChannelsUiAction  extends AbstractAdjusterUIAction{
-
-    public SplitChannelsUiAction() {
-        super(SeparateChannels.class);
+@Plugin(
+        type = UiCommand.class
+        ,label = "Spread channel settings"
+        ,description = "Applies the LUT settings of this image to all other images currently open. (Workflow compatible)")
+public class SpreadChannelSettingsUIAction extends AbstractAdjusterUIAction{
+    
+    public SpreadChannelSettingsUIAction() {
+        super(SpreadChannelSettings.class);
     }
     
 }
