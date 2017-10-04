@@ -55,6 +55,7 @@ import net.imagej.display.ImageDisplayService;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.type.logic.BitType;
+import net.imglib2.type.numeric.RealType;
 import org.scijava.Context;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
@@ -213,7 +214,8 @@ public class SegmentationTaskBuilder {
     }
 
     public SegmentationTaskBuilder addInterval(RandomAccessibleInterval<?> interval) {
-        itemBuilder.from(interval);
+        Dataset dataset = datasetService.create((RandomAccessibleInterval<? extends RealType>)interval);
+        opList.add(new DefaultSegmentationOp(dataset, dataset,workflow, null));
         return this;
     }
 
