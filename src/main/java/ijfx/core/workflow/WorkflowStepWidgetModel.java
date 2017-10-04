@@ -41,10 +41,8 @@ public class WorkflowStepWidgetModel<T> extends SuppliedWidgetModel<T> {
 
     private ModuleInfo moduleInfo;
 
-    
-    
     public WorkflowStepWidgetModel(WorkflowStep step, String key) {
-        
+
         this.step = step;
 
         parameterName = key;
@@ -53,16 +51,28 @@ public class WorkflowStepWidgetModel<T> extends SuppliedWidgetModel<T> {
         setGetter(this::getValueFromStep);
         setSetter(this::setValueInStep);
 
+        ModuleInfo moduleInfo = getModuleInfo();
+
+        if (moduleInfo != null) {
+
+            ModuleItem<?> inputInfo = moduleInfo.getInput(key);
+            this
+                    .setWidgetStyle(inputInfo.getWidgetStyle())
+                    .setLabel(key)
+                    .setMin((Number) inputInfo.getMinimumValue())
+                    .setMax((Number) inputInfo.getMaximumValue())
+                    .setSoftMin((Number) inputInfo.getSoftMinimum())
+                    .setSoftMax((Number) inputInfo.getSoftMaximum())
+                    .setStepSize(inputInfo.getStepSize());
+
+        }
+
     }
-    
-   
-    
-    
 
     public ModuleInfo getModuleInfo() {
         if (moduleInfo == null) {
             if (moduleService != null) {
-                
+
                 moduleInfo = moduleService.getIndex()
                         .getAll()
                         .stream()
@@ -77,7 +87,7 @@ public class WorkflowStepWidgetModel<T> extends SuppliedWidgetModel<T> {
     public String getWidgetLabel() {
         return getItem().getLabel();
     }
-    
+
     @Override
     public ModuleItem<?> getItem() {
 
