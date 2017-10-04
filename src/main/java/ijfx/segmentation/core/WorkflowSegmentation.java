@@ -59,7 +59,7 @@ public class WorkflowSegmentation extends AbstractSegmentation {
     @Parameter
     SegmentationService segmentationService;
     
-    public List<WorkflowStep> stepList = new ArrayList<>();
+    public List<WorkflowStep> stepList;
 
     public WorkflowSegmentation() {
 
