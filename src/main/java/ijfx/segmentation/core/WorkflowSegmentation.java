@@ -19,17 +19,14 @@
  */
 package ijfx.segmentation.core;
 
+import ijfx.commands.assign.InvertDataValues;
 import ijfx.core.segmentation.SegmentationService;
 import ijfx.core.workflow.DefaultWorkflow;
 import ijfx.core.workflow.Workflow;
 import ijfx.core.workflow.WorkflowBuilder;
 import ijfx.core.workflow.WorkflowStep;
 import ijfx.ui.loading.LoadingScreenService;
-import java.util.ArrayList;
 import java.util.List;
-import javafx.concurrent.Task;
-import net.imagej.Dataset;
-import net.imagej.plugins.commands.assign.InvertDataValues;
 import net.imagej.plugins.commands.binary.Binarize;
 import net.imagej.plugins.commands.binary.DilateBinaryImage;
 import net.imagej.plugins.commands.binary.ErodeBinaryImage;
@@ -58,7 +55,7 @@ public class WorkflowSegmentation extends AbstractSegmentation {
 
     @Parameter
     SegmentationService segmentationService;
-    
+
     public List<WorkflowStep> stepList;
 
     public WorkflowSegmentation() {
@@ -78,9 +75,9 @@ public class WorkflowSegmentation extends AbstractSegmentation {
     }
 
     @Override
-    public  <T extends RealType<?>> void preview(RandomAccessibleInterval<T> example ) {
+    public <T extends RealType<?>> void preview(RandomAccessibleInterval<T> example) {
         setExample(example);
-        reprocess(stepList);
+        reprocess(getStepList());
     }
 
     @Override
@@ -89,19 +86,34 @@ public class WorkflowSegmentation extends AbstractSegmentation {
     }
 
     public void reprocess(List<WorkflowStep> steps) {
-       if(example == null) return;
+        if (example == null) {
+            return;
+        }
         segmentationService
                 .createSegmentation()
                 .setWorkflow(steps)
                 .addInterval(example)
                 .getAsMask()
                 .executeAsync()
-                .then(list->maskProperty().setValue(list.get(0)));
-        
+                .submit(loadingService)
+                .then(this::onProcessedFinished);
+
     }
-    
+
+    private void onProcessedFinished(List<Img<BitType>> masks) {
+
+        if (masks.size() == 0) {
+            uiService.showDialog("Your workflow should produce a binary image.");
+
+        } else {
+            Img<BitType> get = masks.get(0);
+            maskProperty().setValue(get);
+        }
+
+    }
+
     public void refresh() {
-        reprocess(stepList);
+        reprocess(getStepList());
     }
 
 }
