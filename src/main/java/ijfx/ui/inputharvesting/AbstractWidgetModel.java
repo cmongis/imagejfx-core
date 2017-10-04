@@ -42,7 +42,7 @@ public abstract class AbstractWidgetModel implements WidgetModel {
     
     private String label;
 
-    private String style = "";
+    private String widgetStyle = "";
 
     private Runnable callback;
 
@@ -132,13 +132,13 @@ public abstract class AbstractWidgetModel implements WidgetModel {
 
     @Override
     public boolean isStyle(String style) {
-        return this.style.equals(style);
+        return this.widgetStyle.equals(style);
     }
     
   
 
-    public AbstractWidgetModel setStyle(String style) {
-        this.style = style;
+    public AbstractWidgetModel setWidgetStyle(String style) {
+        this.widgetStyle = style;
         return this;
     }
 
@@ -266,8 +266,44 @@ public abstract class AbstractWidgetModel implements WidgetModel {
         this.context = context;
     }
     
-    public void addChoice(String choice){
+    public AbstractWidgetModel addChoice(String choice){
         this.choices.add(choice);
+        return this;
     }
+
+    public AbstractWidgetModel setMin(Number min) {
+        this.min = min;
+        return this;
+    }
+
+    public AbstractWidgetModel setMax(Number max) {
+        this.max = max;
+        return this;
+    }
+
+    public AbstractWidgetModel setSoftMin(Number softMin) {
+        this.softMin = softMin;
+        return this;
+    }
+
+    public AbstractWidgetModel setSoftMax(Number softMax) {
+        this.softMax = softMax;
+        return this;
+    }
+
+    public AbstractWidgetModel setLabel(String label) {
+        this.label = label;
+        return this;
+    }
+
+    public AbstractWidgetModel setStepSize(Number stepSize) {
+        this.stepSize = stepSize;
+        return this;
+    }
+    
+    
+    
+    
+    
 
 }
