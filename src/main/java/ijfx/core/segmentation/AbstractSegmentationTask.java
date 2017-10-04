@@ -97,7 +97,10 @@ public abstract class AbstractSegmentationTask<T> implements SegmentationTask<T>
     public CallbackTask<?, List<T>> executeAsync() {
 
         return new CallbackTask<Void, List<T>>()
-                .run(this::execute)
+                .call((progress) -> {
+                    execute(progress);
+                    return getResults();
+                })
                 .start();
 
     }
