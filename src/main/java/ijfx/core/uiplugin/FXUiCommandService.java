@@ -25,7 +25,6 @@ import ijfx.core.uiextra.UIExtraService;
 import ijfx.core.usage.Usage;
 import ijfx.core.utils.SciJavaUtils;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javafx.collections.SetChangeListener;
 import javafx.css.PseudoClass;
@@ -44,7 +43,6 @@ import org.scijava.command.CommandInfo;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.SciJavaPlugin;
 import org.scijava.service.Service;
 
@@ -75,27 +73,7 @@ public class FXUiCommandService extends DefaultUiCommandService implements IjfxS
     }
 
     public MenuItem createMenuItem(LabelledAction action) {
-
-        
-        return createMenuItem(action.label(), action.description(), fxIconService.getIconAsNode(action.iconPath()), action);
-        
-        /*
-        MenuItem menuItem = new MenuItem(action.label(), fxIconService.getIconAsNode(action.iconPath()));
-       
-        
-        
-        menuItem.getPseudoClassStates().addListener((Observable change) -> {
-            System.out.println(change);
-        });
-        menuItem.getPseudoClassStates().addListener(new DescriptAttachedToPseudoClass(action.description()));
-        
-        //button.setTooltip(new Tooltip(action.description()));
-        menuItem.setOnAction(event -> {
-            action.runner().accept(action.data());
-        });
-
-        return menuItem;*/
-
+        return createMenuItem(action.label(), action.description(), fxIconService.getIconAsNode(action.iconPath()), action);        
     }
 
     public Button createButton(LabelledAction action) {
@@ -121,14 +99,8 @@ public class FXUiCommandService extends DefaultUiCommandService implements IjfxS
         return button;
     }
 
-    public Button createButton(PluginInfo<?> infos) {
-        Button button = new Button(infos.getLabel(), fxIconService.getIconAsNode(infos.getIconPath()));
-
-        attacheDescription(button, infos.getDescription());
-        button.setOnAction(event->{
-        });
-        //button.setTooltip(new Tooltip(infos.getDescription()));
-        return button;
+    public Button createButton(CommandInfo infos) {
+        return createButton(new CommandInfoWrapper(infos));
     }
 
     public <T> Button createButton(UiCommand<T> action, T object) {
