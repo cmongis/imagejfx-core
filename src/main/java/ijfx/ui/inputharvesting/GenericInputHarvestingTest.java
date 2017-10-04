@@ -69,7 +69,7 @@ public class GenericInputHarvestingTest extends ContextCommand{
                 new SuppliedWidgetModel<>(String.class)
                 .setGetter(this::getValue)
                 .setSetter(this::setValue)
-                .setStyle(TextWidget.FIELD_STYLE)
+                .setWidgetStyle(TextWidget.FIELD_STYLE)
         );
         
         
@@ -77,7 +77,7 @@ public class GenericInputHarvestingTest extends ContextCommand{
                 new SuppliedWidgetModel<>(Number.class)
                 .setGetter(doubleProperty::getValue)
                 .setSetter(doubleProperty::setValue)
-                .setStyle(NumberWidget.SPINNER_STYLE)
+                .setWidgetStyle(NumberWidget.SPINNER_STYLE)
             );
         
         InputWidget<?,Node> booleanWidget = (InputWidget<?, Node>) widgetService.create(

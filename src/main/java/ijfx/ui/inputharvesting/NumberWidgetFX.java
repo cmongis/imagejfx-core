@@ -50,21 +50,33 @@ public class NumberWidgetFX extends AbstractFXInputWidget<Number> implements Num
             .forward(Number::doubleValue)
             .backward(Double::new);
 
-   
-
     private SpinnerValueFactory factory;
-    
+
     public NumberWidgetFX() {
 
+    }
+
+    public Number check(Number number, Number def) {
+
+        if (number.intValue() == Integer.MIN_VALUE
+                || number.intValue() == Integer.MAX_VALUE
+                || number.doubleValue() == Double.MIN_VALUE
+                || number.doubleValue() == Double.MIN_VALUE) {
+            return def;
+        } else {
+            return number;
+        }
     }
 
     @Override
     public void set(WidgetModel model) {
         super.set(model);
 
-        Number min = model.getSoftMin();
-        Number max = model.getSoftMax();
-        Number stepSize = model.getStepSize();
+        Number min = check(model.getMin(),0);
+        Number max = check(model.getMax(),100);
+
+       
+        Number stepSize = check(model.getStepSize(),1);
 
         if (model.isStyle((SLIDER_STYLE))) {
             Slider slider = new Slider();
@@ -88,7 +100,6 @@ public class NumberWidgetFX extends AbstractFXInputWidget<Number> implements Num
 
         } else {
 
-            
             if (model.isType(Double.class) || model.isType(double.class)) {
                 factory = new SpinnerValueFactory.DoubleSpinnerValueFactory(min.doubleValue(), max.doubleValue(), min.doubleValue(), stepSize.doubleValue());
             } else if (model.isType(long.class) || model.isType(Long.class)) {
@@ -100,7 +111,7 @@ public class NumberWidgetFX extends AbstractFXInputWidget<Number> implements Num
             //factory = new NumberSpinnerValueFactory(min, max, 0, stepSize, (Class<? extends Number>) model.getItem().getType());
             Spinner spinner = new Spinner(factory);
             spinner.setEditable(true);
-            
+
             bindProperty(factory.valueProperty());
 
             //bindProperty(converter.frontProperty());
@@ -123,12 +134,12 @@ public class NumberWidgetFX extends AbstractFXInputWidget<Number> implements Num
     public boolean supports(WidgetModel model) {
         return super.supports(model)
                 && isOneOf(model,
-                         Double.class,
-                         double.class,
-                         int.class,
-                         Integer.class,
-                         Long.class,
-                         long.class);
+                        Double.class,
+                        double.class,
+                        int.class,
+                        Integer.class,
+                        Long.class,
+                        long.class);
     }
 
     private class LongSpinnerValueFactory extends SpinnerValueFactory<Long> {

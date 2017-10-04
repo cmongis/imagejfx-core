@@ -37,9 +37,7 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = Command.class, menuPath = "Image > Color > Isolate channel", initializer = "findCurrentChannel")
 public class IsolateChannel extends ContextCommand {
 
-    @Parameter
-    Context context;
-
+  
     @Parameter(type = ItemIO.INPUT)
     Dataset input;
 
@@ -60,7 +58,7 @@ public class IsolateChannel extends ContextCommand {
             return;
         }
 
-        output = new CommandRunner(context)
+        output = new CommandRunner(getContext())
                 .set("input", input)
                 .set("position", channel)
                 .set("axisType", Axes.CHANNEL)
