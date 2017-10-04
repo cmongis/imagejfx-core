@@ -19,15 +19,20 @@
  */
 package ijfx.ui.display.metadataowner;
 
+import ijfx.commands.explorable.SaveMetaDataSetAsCsv;
 import ijfx.core.metadata.MetaDataOwner;
+import ijfx.core.uiplugin.FXUiCommandService;
 import ijfx.explorer.datamodel.MetaDataOwnerDisplay;
 import ijfx.ui.display.image.AbstractFXDisplayPanel;
 import ijfx.ui.display.image.FXDisplayPanel;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableView;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import mongis.utils.FXUtilities;
+import org.scijava.command.CommandService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -37,11 +42,21 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = FXDisplayPanel.class)
 public class MetaDataOwnerDisplayPanel extends AbstractFXDisplayPanel<MetaDataOwnerDisplay> {
 
-    AnchorPane pane;
+    BorderPane pane;
 
     TableView<MetaDataOwner> tableView;
 
     MetaDataOwnerHelper helper;
+
+    HBox hbox;
+
+    Button saveButton;
+
+    @Parameter
+    FXUiCommandService uiCommandService;
+
+    @Parameter
+    CommandService commandService;
 
     public MetaDataOwnerDisplayPanel() {
         super(MetaDataOwnerDisplay.class);
@@ -49,13 +64,25 @@ public class MetaDataOwnerDisplayPanel extends AbstractFXDisplayPanel<MetaDataOw
 
     @Override
     public void pack() {
-        pane = new AnchorPane();
+        // main pane
+        pane = new BorderPane();
+        pane.getStyleClass().add("metadataowner-display-panel");
+        
+        // initializing the TableView
         tableView = new TableView<>();
-        pane.getChildren().add(tableView);
-
-        FXUtilities.setAnchors(tableView, 10);
-
         helper = new MetaDataOwnerHelper(tableView);
+        pane.setCenter(tableView);
+
+        // initializing the button box
+        hbox = new HBox();
+        hbox.getStyleClass().add("button-box");
+        pane.setBottom(hbox);
+        
+        
+        // initializing the save button
+        saveButton = uiCommandService.createButton(commandService.getCommand(SaveMetaDataSetAsCsv.class));
+        hbox.getChildren().add(saveButton);
+
 
     }
 
@@ -71,10 +98,12 @@ public class MetaDataOwnerDisplayPanel extends AbstractFXDisplayPanel<MetaDataOw
 
     @Override
     public void redraw() {
-        if(getDisplay().size() == 0) return;
+        if (getDisplay().size() == 0) {
+            return;
+        }
         helper.setPriority(getDisplay().getKeyOrder());
         helper.setColumnsFromItems(getDisplay().get(0));
-        
+
         helper.setItem(getDisplay().get(0));
     }
 
