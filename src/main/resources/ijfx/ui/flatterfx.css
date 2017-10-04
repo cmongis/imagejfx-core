@@ -2509,6 +2509,19 @@ Label.chart-legend-item{
 }
 
 /*
+    MetaDataOwner Display
+*/
+
+.metadataowner-display-panel {
+    -fx-padding: 10px;
+    -fx-vgap:10px;
+}
+.metadataowner-display-panel .button-box{
+    -fx-padding: 10 0 0 0px;
+    -fx-alignment:CENTER_RIGHT;
+}
+
+/*
     Preference UI
 */
 .metadata-bar > .label{
