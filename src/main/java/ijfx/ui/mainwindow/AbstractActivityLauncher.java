@@ -22,6 +22,7 @@ package ijfx.ui.mainwindow;
 import ijfx.core.activity.Activity;
 import ijfx.core.activity.ActivityService;
 import ijfx.core.mainwindow.MainWindow;
+import ijfx.core.uicontext.UiContextService;
 import ijfx.core.uiplugin.AbstractUiCommand;
 import org.scijava.plugin.Parameter;
 
@@ -29,31 +30,30 @@ import org.scijava.plugin.Parameter;
  *
  * @author Cyril MONGIS
  */
-public abstract class AbstractActivityLauncher<T extends Activity> extends AbstractUiCommand<MainWindow>{
+public abstract class AbstractActivityLauncher<T extends Activity> extends AbstractUiCommand<MainWindow> {
 
-    
     @Parameter
     private ActivityService activityService;
-    
+
+    @Parameter
+    private UiContextService uiContextService;
+
     private final Class<? extends T> activityType;
-    
+
     public AbstractActivityLauncher(Class<? extends T> type) {
         super(MainWindow.class);
         activityType = type;
     }
 
-    
-    
-    
-    
     @Override
     public void run(MainWindow t) {
-        
+
         activityService.open(activityType);
-        
+
     }
 
-    
-    
-    
+    public void enter(String... uiContext) {
+        uiContextService.enter(uiContext);
+    }
+
 }
