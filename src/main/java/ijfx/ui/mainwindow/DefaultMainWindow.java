@@ -143,6 +143,8 @@ public class DefaultMainWindow implements MainWindow {
 
     private LoadingPopup loadingPopup;
 
+    private HintDisplayer hintDisplayer;
+    
     @Parameter
     UiContextService uiContextService;
 
@@ -232,6 +234,9 @@ public class DefaultMainWindow implements MainWindow {
             
             currentDescription.setValue(null);
             configureSideBar(new SideBar());
+            
+            hintDisplayer = new HintDisplayer(mainAnchorPane);
+            
 
         } catch (IOException ex) {
             Logger.getLogger(DefaultMainWindow.class.getName()).log(Level.SEVERE, "Error when loading the DefaultMainWindow FXML", ex);
@@ -339,7 +344,7 @@ public class DefaultMainWindow implements MainWindow {
      */
     @Override
     public void displayHint(Hint hint) {
-
+        hintDisplayer.queue(hint);
     }
 
     @Override
@@ -371,7 +376,7 @@ public class DefaultMainWindow implements MainWindow {
 
     @Override
     public void displayNotification(Notification notification) {
-
+        
     }
 
     @Override
