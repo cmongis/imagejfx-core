@@ -59,15 +59,14 @@ public class FXRichTextDialog extends Dialog<RichTextDialog.Answer> implements R
     @FXML
     private Label titleLabel;
 
-
     private WebView webView;
 
     private RichMessageDisplayer displayer = new RichMessageDisplayer();
 
     boolean wereButtonsAdded = false;
-    
+
     List<AnswerType> buttonTypes = new ArrayList<>();
-    
+
     public FXRichTextDialog() throws IOException {
 
         FXMLLoader loader = new FXMLLoader();
@@ -78,26 +77,24 @@ public class FXRichTextDialog extends Dialog<RichTextDialog.Answer> implements R
 
         loader.load();
         getDialogPane().getStylesheets().add(ImageJFX.STYLESHEET_ADDR);
-        
+
         this.getDialogPane().setContent(borderPane);
-          getDialogPane().setPadding(new Insets(15));
+        getDialogPane().setPadding(new Insets(15));
         FXUtilities.createWebView().then(this::onWebViewCreated);
-        
+
         this.setResultConverter(this::convertAnswer);
-        
+
     }
 
     private void onWebViewCreated(WebView view) {
         webView = view;
-         
+
         displayer.addCss("ul li { list-style-type:round;text-indent:0px;margin-left:30px;margin-top:7px;margin-bottom:7px;}; h4 { margin-top:10px; } body {font-size:14px;}");
         displayer.setWebView(view);
-        
+
         borderPane.setCenter(view);
-     
 
     }
-    
 
     @Override
     public RichTextDialog setDialogTitle(String title) {
@@ -109,8 +106,8 @@ public class FXRichTextDialog extends Dialog<RichTextDialog.Answer> implements R
 
     @Override
     public RichTextDialog setDialogContent(String context) {
-       displayer.setMessage(context);
-       return this;
+        displayer.setMessage(context);
+        return this;
     }
 
     @Override
@@ -125,14 +122,20 @@ public class FXRichTextDialog extends Dialog<RichTextDialog.Answer> implements R
     }
 
     @Override
-    public RichTextDialog loadContent(Class<?> clazz,String path) {
+    public RichTextDialog loadContent(Class<?> clazz, String path) {
         try {
             displayer.setContent(clazz, path);
         } catch (IOException ex) {
             displayer.setMessage("Couldn't load content");
             Logger.getLogger(FXRichTextDialog.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NullPointerException ex) {
+            displayer.setMessage("Couldn't load content");
+            Logger.getLogger(FXRichTextDialog.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return this;
+        finally {
+            return this;
+        }
+        
     }
 
     @Override
@@ -141,61 +144,55 @@ public class FXRichTextDialog extends Dialog<RichTextDialog.Answer> implements R
         switch (buttonType) {
             case VALIDATE:
                 ButtonType type = new ButtonType(text, ButtonData.OK_DONE);
-                
+
                 this.getDialogPane().getButtonTypes().add(type);
-                
+
                 break;
             case CANCEL:
                 this.getDialogPane().getButtonTypes().add(new javafx.scene.control.ButtonType(text, ButtonBar.ButtonData.CANCEL_CLOSE));
         }
         buttonTypes.add(buttonType);
         wereButtonsAdded = true;
-        
+
         return this;
 
     }
 
-    
-    
-    
     @Override
     public Answer showDialog() {
-        
-        if(!wereButtonsAdded) {
+
+        if (!wereButtonsAdded) {
             addAnswerButton(AnswerType.VALIDATE, "OK");
         }
         System.out.println("Styling buttons !");
-            
+
         ButtonBar bar = (ButtonBar) getDialogPane().lookup(".button-bar");
-        
-        for(int i = 0; i != bar.getButtons().size(); i++) {
-            
-            
-            Button button = (Button)bar.getButtons().get(i);
-            
+
+        for (int i = 0; i != bar.getButtons().size(); i++) {
+
+            Button button = (Button) bar.getButtons().get(i);
+
             AnswerType answerType = buttonTypes.get(i);
-            
-            styleButton(button,answerType);
-            
+
+            styleButton(button, answerType);
+
         }
-        
-        return showAndWait().orElse(new Answer(AnswerType.CANCEL,"NULL"));
+
+        return showAndWait().orElse(new Answer(AnswerType.CANCEL, "NULL"));
     }
 
-    
     private Answer convertAnswer(ButtonType type) {
-        return new Answer(type.getButtonData() == ButtonData.OK_DONE ? AnswerType.VALIDATE : AnswerType.CANCEL,type.getText());
+        return new Answer(type.getButtonData() == ButtonData.OK_DONE ? AnswerType.VALIDATE : AnswerType.CANCEL, type.getText());
     }
-    
-    private void styleButton(Button button,AnswerType answerType) {
-        if(answerType == AnswerType.VALIDATE) {
+
+    private void styleButton(Button button, AnswerType answerType) {
+        if (answerType == AnswerType.VALIDATE) {
             button.getStyleClass().add("success");
             button.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.CHECK));
-        }
-        else {
+        } else {
             button.getStyleClass().add("danger");
             button.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.REMOVE));
         }
-        
+
     }
 }

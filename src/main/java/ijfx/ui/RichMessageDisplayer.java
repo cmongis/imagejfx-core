@@ -70,9 +70,13 @@ public class RichMessageDisplayer {
      * @throws IOException 
      */
     public void setContent(Class clazz,String path) throws IOException {
-        
+        try {
         setMessage(TextFileUtils.readFileFromJar(clazz, path));
-        
+        }
+        catch (IOException e){
+            ImageJFX.getLogger().log(Level.SEVERE,"Error when loading jar file",e);
+            setMessage("Error when loading "+path);
+        }
     }
     
     private void onWebViewChanged(Observable obs, WebView oldValue, WebView newValue) {
