@@ -390,6 +390,9 @@ public class ImageDisplayAdjuster extends BorderPane {
 
         return this;
     }
+    public int getCurrentChannel() {
+        return imageDisplayProperty.getValue().getCurrentChannel();
+    }
 
     
     /**

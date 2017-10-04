@@ -30,10 +30,10 @@ import org.scijava.plugin.Parameter;
  */
 public abstract class AbstractAdjusterUIAction extends AbstractUiCommand<ImageDisplayAdjuster> {
 
-    Class<? extends Command> command;
+    protected Class<? extends Command> command;
 
     @Parameter
-    CommandService commandService;
+    protected CommandService commandService;
 
     public AbstractAdjusterUIAction(Class<? extends Command> com) {
         super(ImageDisplayAdjuster.class);
