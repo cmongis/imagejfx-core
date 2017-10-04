@@ -20,6 +20,7 @@
  */
 package ijfx.ui.workflow;
 
+import com.squareup.okhttp.internal.Internal;
 import ijfx.core.workflow.WorkflowStep;
 import ijfx.core.workflow.WorkflowStepWidgetModel;
 import ijfx.ui.inputharvesting.InputPanelFX;
@@ -109,7 +110,13 @@ public class WorkflowStepController extends BorderPane implements ListCellContro
                 .keySet()
                 .stream()
                 .map(str -> new WorkflowStepWidgetModel(step,str))
-                .peek(context::inject)
+                .peek(obj->{
+                    try {
+                        context.inject(obj);
+                    }
+                    catch(IllegalStateException e) {
+                    }
+                })
                 .map((WidgetModel m)->{
                    InputWidget<? ,Node> widget = (InputWidget<?,Node>) widgetService.find(m);
                    if(widget != null) {
@@ -146,6 +153,7 @@ public class WorkflowStepController extends BorderPane implements ListCellContro
 
     @FXML
     public void toggleConfigPane() {
+        popover.setArrowLocation(PopOver.ArrowLocation.RIGHT_TOP);
         popover.show(configButton);
     }
 
