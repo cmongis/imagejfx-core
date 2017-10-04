@@ -19,23 +19,27 @@
  */
 package ijfx.core.uiplugin;
 
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import java.util.function.Consumer;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 
 /**
  *
  * @author Cyril MONGIS
  */
-public interface LabelledAction<T> {
+public interface LabelledAction<T> extends Consumer<T>, EventHandler<ActionEvent>{
         T data();
         String label();
         String description();
         String iconPath();
-        Consumer<T> runner();
         double priority();
         
         static public <T> int compare(LabelledAction<T> a1, LabelledAction<T> a2) {
            return Double.compare(a2.priority(), a1.priority());
+        }
+        
+        public default void handle(ActionEvent event) {
+            accept(data());
         }
       
 }
