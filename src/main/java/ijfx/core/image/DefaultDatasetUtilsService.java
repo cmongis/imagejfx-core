@@ -22,7 +22,6 @@ package ijfx.core.image;
 import ijfx.core.image.sampler.DatasetSamplerService;
 import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataOwner;
-import ijfx.core.metadata.MetaDataSetUtils;
 import ijfx.core.stats.ImageStatisticsService;
 import ijfx.core.timer.Timer;
 import ijfx.core.timer.TimerService;
@@ -52,6 +51,7 @@ import net.imagej.display.ImageDisplayService;
 import net.imagej.ops.OpService;
 import net.imagej.plugins.commands.assign.DivideDataValuesBy;
 import net.imglib2.Cursor;
+import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.converter.RealLUTConverter;
@@ -106,16 +106,16 @@ public class DefaultDatasetUtilsService extends AbstractService implements Datas
 
     @Parameter
     private ImagePlaneService imagePlaneService;
-    
+
     @Parameter
     private OpService opService;
-    
+
     private final Logger logger = ImageJFX.getLogger();
 
     public final static String DEFAULT_SEPARATOR = " - ";
 
     private UUIDWeakHashMap<Dataset> virtualDatasetMap = new UUIDWeakHashMap<>();
-    
+
     @Override
     public Dataset extractPlane(ImageDisplay imageDisplay) throws NullPointerException {
         CalibratedAxis[] calibratedAxises = new CalibratedAxis[imageDisplay.numDimensions()];
@@ -363,11 +363,10 @@ public class DefaultDatasetUtilsService extends AbstractService implements Datas
         Dataset dataset = null;
         SCIFIOConfig config = new SCIFIOConfig();
 
-        if(virtual && virtualDatasetMap.key(file.getAbsolutePath(),imageId).has()) {
-            return virtualDatasetMap.key(file.getAbsolutePath(),imageId).get();
+        if (virtual && virtualDatasetMap.key(file.getAbsolutePath(), imageId).has()) {
+            return virtualDatasetMap.key(file.getAbsolutePath(), imageId).get();
         }
-        
-        
+
         config.parserSetLevel(MetadataLevel.MINIMUM);
 
         if (virtual) {
@@ -393,9 +392,9 @@ public class DefaultDatasetUtilsService extends AbstractService implements Datas
             ImageJFX.getLogger().log(Level.SEVERE, "Error when opening " + file.getName(), e);
             throw new IOException();
         }
-        
-        if(virtual && dataset != null) {
-            virtualDatasetMap.key(file.getAbsolutePath(),imageId).put(dataset);
+
+        if (virtual && dataset != null) {
+            virtualDatasetMap.key(file.getAbsolutePath(), imageId).put(dataset);
         }
         //Dataset dataset = datasetIOService.open(file.getAbsolutePath(), config);
         timer.elapsed(String.format("Dataset opening (%s) (virtual = %s)", file.getName(), virtual));
@@ -470,41 +469,52 @@ public class DefaultDatasetUtilsService extends AbstractService implements Datas
     @Override
     public Dataset openSource(MetaDataOwner explorable, boolean virtual) throws IOException {
         String source = explorable.getMetaDataSet().get(MetaData.SOURCE_PATH).getStringValue();
-        if(source == null || "null".equals(source)) {
+        if (source == null || "null".equals(source)) {
             source = explorable.getMetaData(MetaData.ABSOLUTE_PATH).getStringValue();
         }
-        
-        if(source == null) {
+
+        if (source == null) {
             throw new IllegalArgumentException("The explorable has no source");
         }
-        
+
         Integer serie = explorable
                 .getMetaDataSet()
                 .getOrDefault(MetaData.SERIE, MetaData.create(MetaData.SERIE, 0))
                 .getIntegerValue();
-       
-        
+
         Dataset dataset = open(new File(source), serie, virtual);
-       
+
         return dataset;
     }
 
     @Override
     public Dataset copy(Dataset dataset) {
-        
-        
-       
-       
+
         Dataset result = copyDataset(dataset);
         copyInfos(dataset, result);
         return result;
     }
-    
-    
-    
-    
+
     private <T extends RealType<T>> Dataset copyDataset(Dataset dataset) {
-        return datasetService.create((ImgPlus<T>)dataset.getImgPlus().copy());
+        try {
+            return datasetService.create((ImgPlus<T>) dataset.getImgPlus().copy());
+        } catch (NullPointerException e) {
+            Dataset copy = imagePlaneService.createEmptyPlaneDataset(dataset);
+
+            IterableInterval<T> iterable = Views.iterable((RandomAccessibleInterval<T>) dataset);
+
+            Cursor<T> cursor = iterable.cursor();
+            RandomAccess<T> out = (RandomAccess<T>) copy.randomAccess();
+            cursor.reset();
+            while (cursor.hasNext()) {
+                cursor.fwd();
+                out.setPosition(cursor);
+                out.get().set(cursor.get());
+            }
+
+            return copy;
+
+        }
     }
 
 }
