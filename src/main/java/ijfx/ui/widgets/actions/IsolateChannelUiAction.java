@@ -23,6 +23,7 @@ import ijfx.commands.axis.IsolateChannel;
 import ijfx.ui.widgets.AbstractAdjusterUIAction;
 import org.scijava.plugin.Plugin;
 import ijfx.core.uiplugin.UiCommand;
+import ijfx.ui.widgets.ImageDisplayAdjuster;
 
 /**
  *
@@ -35,4 +36,7 @@ public class IsolateChannelUiAction extends AbstractAdjusterUIAction{
         super(IsolateChannel.class);
     }
     
+    public void run(ImageDisplayAdjuster adjuster) {
+        commandService.run(IsolateChannel.class, true, "channel",adjuster.getCurrentChannel());
+    }
 }
