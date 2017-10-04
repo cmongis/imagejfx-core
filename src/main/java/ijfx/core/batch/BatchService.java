@@ -66,6 +66,7 @@ import org.scijava.module.ModuleService;
 import org.scijava.module.process.InitPreprocessor;
 import org.scijava.module.process.PostprocessorPlugin;
 import org.scijava.module.process.PreprocessorPlugin;
+import org.scijava.module.process.SaveInputsPreprocessor;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
@@ -109,6 +110,7 @@ public class BatchService extends AbstractService implements ImageJService {
         WorkflowRecorderPreprocessor.class,
         DatasetArrayPostprocessor.class
             ,InputHarversterFX.class
+            ,SaveInputsPreprocessor.class
     };
 
     public BatchService() {
