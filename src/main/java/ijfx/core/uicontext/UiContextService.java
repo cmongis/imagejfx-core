@@ -212,7 +212,7 @@ public class UiContextService extends AbstractService implements UiContextManage
 
         view
                 .getWidgetList()
-                .parallelStream()
+                .stream()
                 .forEach(widget -> {
                     boolean shouldShow = shouldShow(widget);
                     boolean shouldHide = !shouldShow;
@@ -256,11 +256,11 @@ public class UiContextService extends AbstractService implements UiContextManage
 
          //check
          isPresentInAContext.add(linkSet.contains(link));*/
-        linkSet.parallelStream().filter(link -> link.getWidgetName().equals(widget.getName())).forEach(link -> {
+        linkSet.stream().filter(link -> link.getWidgetName().equals(widget.getName())).forEach(link -> {
             isPresentInAContext.add(link.fullFill(currentContextList));
         });
 
-        linkSet.parallelStream().filter(link -> link.getWidgetName().equals(widget.getName())).forEach(link -> {
+        linkSet.stream().filter(link -> link.getWidgetName().equals(widget.getName())).forEach(link -> {
             isNegatedByAContext.add(link.negate(currentContextList));
         });
 
