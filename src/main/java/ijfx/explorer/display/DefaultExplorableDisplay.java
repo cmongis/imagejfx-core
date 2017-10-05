@@ -22,7 +22,6 @@ package ijfx.explorer.display;
 import ijfx.explorer.ExplorableDisplay;
 import ijfx.explorer.ExplorableList;
 import ijfx.explorer.datamodel.Explorable;
-import ijfx.ui.utils.SelectableManager;
 import ijfx.ui.utils.SelectionChange;
 import java.util.ArrayList;
 import java.util.List;
