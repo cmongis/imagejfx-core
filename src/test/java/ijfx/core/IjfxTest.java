@@ -58,7 +58,6 @@ public abstract class IjfxTest {
     @Before
     public void injectFirst() {
         if (injected == false) {
-            System.out.println("Injecting SciJava Context");
             getImageJ().context().inject(this);
         }
     }
