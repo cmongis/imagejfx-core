@@ -30,11 +30,11 @@ import java.util.logging.Logger;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import javax.swing.SwingUtilities;
 import net.imagej.ImageJ;
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
-import org.scijava.ui.swing.SwingUI;
+import rx.Scheduler;
+import rx.schedulers.Schedulers;
 
 /**
  *
@@ -88,7 +88,9 @@ public final class ImageJFX  {
 
     public static final int CORE_NUMBER = getCoreNumber() > 1 ? getCoreNumber() - 1 : getCoreNumber();
     
-    private static final ExecutorService service = Executors.newFixedThreadPool(CORE_NUMBER);
+    private static final ExecutorService service = Executors.newCachedThreadPool();
+    
+    private static final Scheduler publishSubjectScheduler = Schedulers.from(Executors.newSingleThreadExecutor());
     
     public static double getAnimationDurationAsDouble() {
         return ANIMATION_DURATION.toMillis();
@@ -161,6 +163,10 @@ public final class ImageJFX  {
         return scheduleThreadPool;
     }
 
+    public static Scheduler getPublishSubjectScheduler() {
+        return publishSubjectScheduler;
+    }
+    
     public static ResourceBundle getResourceBundle() {
         if (resourceBundle == null) {
             resourceBundle = ResourceBundle.getBundle(RESSOURCE_BUNDLE_ADDR);
