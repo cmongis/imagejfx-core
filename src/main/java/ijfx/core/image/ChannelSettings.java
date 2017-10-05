@@ -20,13 +20,14 @@
 package ijfx.core.image;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.util.List;
 import net.imagej.Dataset;
 import net.imagej.display.DatasetView;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
 
 /**
  *
@@ -58,6 +59,16 @@ public interface ChannelSettings {
 
     }
 
+    public default void apply(ImageDisplay imageDisplay) {
+        
+        
+        ImageDisplayService service = imageDisplay.getContext().getService(ImageDisplayService.class);
+        
+        apply(service.getActiveDataset(imageDisplay));
+        apply(service.getActiveDatasetView(imageDisplay));
+        
+    }
+    
     public default void apply(DatasetView datasetView) {
 
         for (int i = 0; i != datasetView.getChannelCount(); i++) {

@@ -51,6 +51,7 @@ public interface Channel {
     public default void apply(DatasetView view, int channel){
         view.setChannelRange(channel, getChannelMin(), getChannelMax());
         view.setColorTable(getColorTable(), channel);
+        
         view.getProjector().setComposite(channel, isActive());
     }
     

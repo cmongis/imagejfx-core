@@ -50,8 +50,6 @@ public class ChannelSettingsPreprocessor extends AbstractPreprocessorPlugin  {
         if(singleInput != null) {
             if(!module.isInputResolved(singleInput.getName())) {
                 DefaultChannelSettings settings = new DefaultChannelSettings().importFromDatasetView(imageDisplayService.getActiveDatasetView());
-                
-                
                 module.setInput(singleInput.getName(), settings);
                 module.resolveInput(singleInput.getName());
             }
