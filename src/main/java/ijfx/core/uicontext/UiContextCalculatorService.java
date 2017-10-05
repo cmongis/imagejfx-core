@@ -98,7 +98,7 @@ public class UiContextCalculatorService extends AbstractService implements Image
     public void initialize() {
 
         taskStream
-                .observeOn(Schedulers.from(ImageJFX.getThreadPool()))
+                .observeOn(ImageJFX.getPublishSubjectScheduler())
                 // buffers request for 100 MS
                 .buffer(500, TimeUnit.MILLISECONDS)
                 .filter(list -> list.isEmpty() == false)
