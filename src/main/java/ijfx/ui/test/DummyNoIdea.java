@@ -46,7 +46,7 @@ import org.scijava.plugin.Plugin;
  *
  * @author sapho
  */
-@Plugin(type = Command.class, menuPath = "Plugins > Test > Generate Dummy Categories")
+@Plugin(type = Command.class, menuPath = "Plugins > Test > Generate Dummy Categories 2")
 public class DummyNoIdea extends ContextCommand {
 
     public CategorizedExplorableController ctrl = new CategorizedExplorableController();
