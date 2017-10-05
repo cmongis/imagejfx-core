@@ -108,9 +108,9 @@ public class BatchService extends AbstractService implements ImageJService {
         DisplayPostprocessor.class,
         InitPreprocessor.class,
         WorkflowRecorderPreprocessor.class,
-        DatasetArrayPostprocessor.class
-            ,InputHarversterFX.class
-            ,SaveInputsPreprocessor.class
+        DatasetArrayPostprocessor.class,
+         InputHarversterFX.class,
+         SaveInputsPreprocessor.class
     };
 
     public BatchService() {
@@ -364,6 +364,7 @@ public class BatchService extends AbstractService implements ImageJService {
     }
 
     public Dataset applyWorkflow(ProgressHandler handler, Dataset dataset, Workflow workflow) {
+        setRunning(true);
 
         for (WorkflowStep step : workflow.getStepList()) {
 
@@ -395,15 +396,15 @@ public class BatchService extends AbstractService implements ImageJService {
             List<PreprocessorPlugin> preProcessors = getPreProcessors(
                     ActiveDisplayPreprocessor.class,
                     ActiveDatasetPreprocessor.class,
-                    ActiveDataViewPreprocessor.class
-            ,ActiveDatasetViewPreprocessor.class
-            ,ActiveImageDisplayPreprocessor.class
+                    ActiveDataViewPreprocessor.class,
+                     ActiveDatasetViewPreprocessor.class,
+                     ActiveImageDisplayPreprocessor.class
             );
             // running
             run = moduleService.run(module,
                     preProcessors,
-                     getPostprocessors(), step.getParameters());
-            
+                    getPostprocessors(), step.getParameters());
+
             logger.info(String.format("[%s] module started", moduleName));
 
             // waiting and extracting
@@ -416,8 +417,11 @@ public class BatchService extends AbstractService implements ImageJService {
                 }
             } catch (Exception ex) {
                 logger.log(Level.SEVERE, "Error when extracting ouput from module module " + moduleName, ex);;
+                setRunning(false);
                 return dataset;
 
+            } finally {
+                setRunning(false);
             }
 
         }
@@ -597,7 +601,7 @@ public class BatchService extends AbstractService implements ImageJService {
                 .createInstancesOfType(PreprocessorPlugin.class)
                 .stream()
                 .sequential()
-                .filter(p -> Stream.of(blacklist).filter(cl->cl.equals(p.getClass())).count() == 0)
+                .filter(p -> Stream.of(blacklist).filter(cl -> cl.equals(p.getClass())).count() == 0)
                 .filter(p -> !processorBlackList.contains(p.getClass()))
                 .sequential()
                 .map(p -> {
