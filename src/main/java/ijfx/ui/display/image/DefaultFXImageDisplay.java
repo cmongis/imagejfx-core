@@ -89,6 +89,7 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
         super();
 
         publishSubject
+                .observeOn(ImageJFX.getPublishSubjectScheduler())
                 .buffer(1, TimeUnit.SECONDS)
                 .subscribe(list -> Platform.runLater(() -> refreshPerSecond.setValue(list.size())));
 
@@ -115,7 +116,7 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
     public void setCurrentLUT(ColorTable table) {
 
         table = displayRangeService.getEquivalentTable(table);
-
+        getDataset().setColorTable(table, getCurrentChannel());
         getDatasetView().setColorTable(table, getCurrentChannel());
         updateAsync();
         currentLUTProperty.fireValueChangedEvent();
@@ -360,13 +361,9 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
 
     @Override
     public void update() {
-
-       
-
         publishSubject.onNext(1);
         checkLUProperties();
-        
-         super.update();
+        super.update();
     }
 
     public void checkProperties() {
