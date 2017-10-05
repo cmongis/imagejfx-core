@@ -216,7 +216,6 @@ public class DefaultFolderManagerService extends AbstractService implements Fold
             }
             task.then(this::setItems);
             task.start();
-            System.out.println(ImageJFX.getThreadPool());
             loadingScreenService.frontEndTask(task, false);
         }
         if (mode != null) {
