@@ -192,12 +192,12 @@ public class DefaultScriptDisplay extends AbstractDisplay<Script> implements Scr
 
     @Override
     public void undo() {
-        eventService.publish(new UndoEvent());
+        eventService.publishLater(new UndoEvent());
     }
 
     @Override
     public void redo() {
-        eventService.publish(new RedoEvent());
+        eventService.publishLater(new RedoEvent());
     }
 
     @Override

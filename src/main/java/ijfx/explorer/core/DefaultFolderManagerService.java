@@ -186,7 +186,7 @@ public class DefaultFolderManagerService extends AbstractService implements Fold
             return;
         }
         currentExplorationMode = mode;
-        eventService.publish(new ExplorationModeChangeEvent().setObject(mode));
+        eventService.publishLater(new ExplorationModeChangeEvent().setObject(mode));
         updateExploredElements();
     }
 
@@ -302,12 +302,12 @@ public class DefaultFolderManagerService extends AbstractService implements Fold
 
     private void onStatisticComputingEnded(Integer computedImages) {
         notificationService.publish(new DefaultNotification("Statistic Computation", String.format("%d images where computed.", computedImages)));
-        eventService.publish(new FolderUpdatedEvent().setObject(getCurrentFolder()));
+        eventService.publishLater(new FolderUpdatedEvent().setObject(getCurrentFolder()));
     }
 
     public void removeFolder(Folder folder) {
         folderList.remove(folder);
-        eventService.publish(new FolderDeletedEvent().setObject(folder));
+        eventService.publishLater(new FolderDeletedEvent().setObject(folder));
     }
 
     @Override

@@ -64,7 +64,7 @@ public class IjfxRecentFileService extends AbstractService implements RecentFile
         else {
             remove(path);
             listPath.add(path);
-            eventService.publish(new RecentFileAddedEvent().setObject(path));
+            eventService.publishLater(new RecentFileAddedEvent().setObject(path));
         };
         
         ImageJFX.getThreadQueue().execute(this::save);
@@ -74,14 +74,14 @@ public class IjfxRecentFileService extends AbstractService implements RecentFile
     @Override
     public boolean remove(String path) {
         listPath.remove(path);
-        eventService.publish(new RecentFileRemovedEvent().setObject(path));
+        eventService.publishLater(new RecentFileRemovedEvent().setObject(path));
         return true;
     }
 
     @Override
     public void clear() {
         listPath.clear();
-        eventService.publish(new RecentFileListClearedEvent());
+        eventService.publishLater(new RecentFileListClearedEvent());
     }
 
     @Override

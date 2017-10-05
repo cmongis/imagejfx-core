@@ -83,7 +83,7 @@ public class OverlaySelectionService extends AbstractService implements ImageJSe
             }
         }
 
-        eventService.publish(new OverlayAllSelectedEvent(imageDisplay));
+        eventService.publishLater(new OverlayAllSelectedEvent(imageDisplay));
     }
 
     public void select(ImageDisplay display, List<Overlay> overlay) {
@@ -100,7 +100,7 @@ public class OverlaySelectionService extends AbstractService implements ImageJSe
         for (DataView view : imageDisplay) {
             if (view instanceof OverlayView && view.isSelected() == true) {
                 ((OverlayView) view).setSelected(false);
-                eventService.publish(new DataViewUpdatedEvent(view));
+                eventService.publishLater(new DataViewUpdatedEvent(view));
             }
         }
     }

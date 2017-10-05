@@ -74,7 +74,7 @@ public abstract class AbstractOverlayModifier<T extends Overlay> implements Over
     }
     
     protected void fireOverlayChange() {
-        eventService.publish(new OverlayUpdatedEvent(overlay));
+        eventService.publishLater(new OverlayUpdatedEvent(overlay));
     }
     
 }

@@ -51,21 +51,21 @@ public class DefaultAnnotationService extends AbstractService implements Annotat
     @Override
     public void addTag(Taggable taggable, Tag tag) {
         taggable.addTag(tag);
-        eventService.publish(new AddTagEvent(tag));
+        eventService.publishLater(new AddTagEvent(tag));
 
     }
 
     @Override
     public void removeTag(Taggable taggable, Tag tag) {
         taggable.deleteTag(tag);
-        eventService.publish(new RemoveTagEvent(taggable));
+        eventService.publishLater(new RemoveTagEvent(taggable));
     }
 
     @Override
     public void addMetaData(MetaDataOwner owner, MetaData m) {
         if (m != null) {
             owner.getMetaDataSet().put(m);
-            eventService.publish(new AddMetaDataEvent(owner, m));
+            eventService.publishLater(new AddMetaDataEvent(owner, m));
         }
 
     }
@@ -75,7 +75,7 @@ public class DefaultAnnotationService extends AbstractService implements Annotat
         if (matchValue) {
             if (owner.getMetaDataSet().containMetaData(m)) {
                 owner.getMetaDataSet().remove(m.getName());
-                eventService.publish(new RemoveMetaDataEvent(owner));
+                eventService.publishLater(new RemoveMetaDataEvent(owner));
             } else {
             }
 
@@ -87,7 +87,7 @@ public class DefaultAnnotationService extends AbstractService implements Annotat
     public void addMetaData(List<? extends MetaDataOwner> list, MetaData m) {
         if (m != null) {
             list.stream().map(c -> c.getMetaDataSet().put(m));
-            eventService.publish(new AddMetaDataListEvent(list, m));
+            eventService.publishLater(new AddMetaDataListEvent(list, m));
         }
     }
 
@@ -95,14 +95,14 @@ public class DefaultAnnotationService extends AbstractService implements Annotat
     public void removeMetaData(List<? extends MetaDataOwner> list, MetaData m) {
         if (m != null) {
             list.stream().filter(c -> c.getMetaDataSet().containMetaData(m)).forEach((c) -> removeMetaData(c, m, true));
-            eventService.publish(new RemoveMetaDataListEvent(list));
+            eventService.publishLater(new RemoveMetaDataListEvent(list));
         }
 
     }
 
     @Override
     public void addMapper(MetaData m, Mapper mapper) {
-        eventService.publish(new AddMapperEvent(m, mapper.map(m)));
+        eventService.publishLater(new AddMapperEvent(m, mapper.map(m)));
     }
 
 }

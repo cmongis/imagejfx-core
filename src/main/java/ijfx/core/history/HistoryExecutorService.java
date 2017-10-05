@@ -115,12 +115,12 @@ public class HistoryExecutorService extends AbstractService implements ImageJSer
                 run.get();
                 logger.info(String.format("[%s] module finished", moduleName));
             } catch (InterruptedException ex) {
-                eventService.publish(new WorkflowEndedEvent(WorkflowEnd.ERROR));
+                eventService.publishLater(new WorkflowEndedEvent(WorkflowEnd.ERROR));
                 ImageJFX.getLogger().log(Level.SEVERE,"Error when running workflow",ex);;
                
 
             } catch (ExecutionException ex) {
-                eventService.publish(new WorkflowEndedEvent(WorkflowEnd.ERROR));
+                eventService.publishLater(new WorkflowEndedEvent(WorkflowEnd.ERROR));
                 ImageJFX.getLogger().log(Level.SEVERE,null,ex);;
             }
             
