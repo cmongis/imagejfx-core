@@ -62,7 +62,7 @@ public class DisplayWindowFX extends Window implements DisplayWindow {
 
     public DisplayWindowFX(Display<?> display) {
 
-        setWidth(400);
+        setWidth(500);
         setHeight(300);
         this.display = display;
         display.getContext().inject(this);
