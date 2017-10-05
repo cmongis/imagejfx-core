@@ -67,7 +67,6 @@ public class DeleteChannel extends ContextCommand {
 
             ImageDisplay display = imageDisplayService.getActiveImageDisplay();
             channel = display.getIntPosition(Axes.CHANNEL);
-            System.out.println(channel);
         }
 
         deleteData.setInput("axisName", axisType.toString());
