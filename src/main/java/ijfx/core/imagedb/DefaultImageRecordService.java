@@ -87,7 +87,9 @@ public class DefaultImageRecordService extends AbstractService implements ImageR
         super.initialize();
         
         saveQueue
+                .observeOn(ImageJFX.getPublishSubjectScheduler())
                 .filter(imageRecord->getRecordMap().containsValue(imageRecord) == false)
+                
                 .buffer(10,TimeUnit.SECONDS)
                 .filter(list->list.isEmpty() == false)
                 .subscribe(list->save());
