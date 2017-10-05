@@ -119,7 +119,6 @@ public class SideBar {
 
         double progress = 1.0 * (used) / max;
 
-        // System.out.println(progress);
         memoryProgressBar.setProgress(progress);
         memoryLabel.setText(String.format("%d / %d MB", used, max));
 

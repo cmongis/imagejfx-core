@@ -261,7 +261,6 @@ public class DefaultAnnotationDialog extends Dialog<Mapper> implements Annotatio
                 mapper.associatedValues(item.getValue(), item.getNewValue());
             }
         }
-        System.out.println("mapper" + mapper.getMapObject());
 
         return mapper;
 

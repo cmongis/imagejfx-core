@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -100,8 +101,9 @@ public class TextEditorPreferencies implements Preferencies {
         File newCss = new File(newCssPath.replaceAll("/", File.separator));
         try {
             copyFile(customCSS, newCss);
-        } catch (IOException IOException) {
-            System.out.println("Error while copying imported CSS");
+        } catch (IOException ex) {
+             ImageJFX.getLogger().log(Level.SEVERE,"nanorc file not found",ex);
+
         }
         String[] themeName = newCssName[newCssName.length-1].split("\\.");
         if (!listOfTheme.contains(themeName[0])){

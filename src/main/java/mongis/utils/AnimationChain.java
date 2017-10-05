@@ -64,9 +64,7 @@ public class AnimationChain {
             Launchable l = launchables
                     .poll()
                     .setOnFinished(this::next);
-            System.out.println(l.getClass().getSimpleName());
             l.launch();
-            System.out.println(System.currentTimeMillis() - millis);
             millis = System.currentTimeMillis();
 
         }
@@ -100,7 +98,6 @@ public class AnimationChain {
         public Launchable setOnFinished(Runnable runnable) {
 
             timeline.setOnFinished(event -> {
-                System.out.println("Animaition finished");
                 runnable.run();
             });
             return this;

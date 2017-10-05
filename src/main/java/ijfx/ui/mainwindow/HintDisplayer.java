@@ -230,12 +230,8 @@ public class HintDisplayer {
                 hint.setRead();
             });
 
-            //if(isHintDisplaying) {
             Animations.APPEARS_LEFT.configure(highligther, ImageJFX.getAnimationDurationAsDouble()).play();
-            //}
 
-            // gotItButton.setTranslateY(label.getTranslateY()+label.getBoundsInLocal().getHeight()+hintWidth/2);
-            System.out.println(highligther.getLayoutBounds().getHeight());
         } catch (Exception e) {
 
             isHintDisplaying = false;

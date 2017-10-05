@@ -254,7 +254,6 @@ public class FXChoiceDialog<T> implements ChoiceDialog<T> {
                 setGraphic(null);
             } else {
                 setGraphic(borderPane);
-                System.out.println("hello");
                 titleLabel.setText(choice.getTitle());
                 descriptionLabel.setText(choice.getDescription());
                 

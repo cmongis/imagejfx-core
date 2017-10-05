@@ -92,9 +92,7 @@ public class SpreadChannelSettings extends ContextCommand{
         channelSettings.apply(datasetView);
         channelSettings.apply(datasetView.getData());
         datasetView.getProjector().map();
-        System.out.println(datasetView.getChannelMax(0));
         view.update();
-        //view.update();
         
     }
 }

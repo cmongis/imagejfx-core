@@ -235,7 +235,6 @@ public class OverlayPanel extends BorderPane implements UiPlugin {
                 .map(event -> event.getView())
                 .cast(DatasetView.class)
                 .map(view -> {
-                    System.out.println(view);
                     return view;
                 })
                 .filter(view -> currentDisplay().contains(view))
@@ -281,7 +280,6 @@ public class OverlayPanel extends BorderPane implements UiPlugin {
     }
 
     public void updateStats() {
-        System.out.println("Updating stats");
         if (overlayProperty.getValue() == null) {
             return;
         }
@@ -371,7 +369,6 @@ public class OverlayPanel extends BorderPane implements UiPlugin {
         boolean isLineOverlay = overlay instanceof LineOverlay;
 
         if (isLineOverlay) {
-            System.out.println("Updateing line chart");
             chartBorderPane.setCenter(lineChart);
         } else {
             chartBorderPane.setCenter(areaChart);
@@ -466,7 +463,6 @@ public class OverlayPanel extends BorderPane implements UiPlugin {
     }
 
     protected XYChart.Series<Double, Double> getLineChartSerie(Overlay overlay) {
-        System.out.println("Doing things ;-)");
         Double[] valueList = statsService.getValueListFromImageDisplay(currentDisplay(), overlay);
 
         ArrayList<Data<Double, Double>> data = new ArrayList<>(valueList.length);

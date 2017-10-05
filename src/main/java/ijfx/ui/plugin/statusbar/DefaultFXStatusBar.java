@@ -170,8 +170,6 @@ public class DefaultFXStatusBar implements FXStatusBar, UiPlugin {
 
     @Override
     public void setStatus(String message) {
-        System.out.println(message);
-        System.out.println(pane.getOpacity());
         //Platform.runLater(() -> ijStatus.setValue(message));
     }
 

@@ -77,7 +77,6 @@ public class DefaultAnnotationService extends AbstractService implements Annotat
                 owner.getMetaDataSet().remove(m.getName());
                 eventService.publish(new RemoveMetaDataEvent(owner));
             } else {
-                System.out.println("Message");
             }
 
         }

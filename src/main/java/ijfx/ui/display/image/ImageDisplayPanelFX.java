@@ -523,7 +523,6 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
         double stackWidth = stackPane.getWidth();
         double displayedWidth = 1.0 * getDisplay().dimension(0) * (0 + getDisplay().getCanvas().getZoomFactor());
 
-        System.out.println(displayedWidth);
 
         if (stackWidth > displayedWidth) {
             return displayedWidth;

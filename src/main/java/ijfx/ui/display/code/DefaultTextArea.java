@@ -308,7 +308,7 @@ public class DefaultTextArea extends AnchorPane{
         try {
             changeCss(cssPath);
         } catch (NullPointerException e) {
-            System.out.println("Css file not found");
+            ImageJFX.getLogger().warning("Css file not found");
         }
         /*
         if (preferencies.getTheme().equals("darkTheme")){

@@ -159,7 +159,6 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
         columnList.sort(prioritizer);
 
         if (!columnList.equals(currentColumns)) {
-            System.out.println("The columns are not the same, updating");
             setColumnNumber(columnList.size());
             currentColumns = new HashSet(columnList);
             IntStream.range(0, columnList.size()).forEach(n -> {
@@ -171,7 +170,6 @@ public class MetaDataOwnerHelper<T extends MetaDataOwner> {
 
     private void setColumnNumber(Integer number) {
         int actualSize = tableView.getColumns().size() - additionalColumns.size();
-        System.out.println(String.format("Changing the number of column from %d to %d", actualSize, number));
 
         if (number == 0) {
             tableView.getColumns().clear();

@@ -93,8 +93,6 @@ public final class DefaultMapper implements Mapper {
      */
     public void associatedValues(Object oldValue, Object newValue) {
         if (oldValue != null && newValue != null) {
-            System.out.println("oldvalue " + oldValue);
-            System.out.println("newvalue " + newValue);
             mapValue.put(oldValue.toString(), newValue);
         }
     }
@@ -112,12 +110,10 @@ public final class DefaultMapper implements Mapper {
                 return mapValue.get(oldValue.toString());
 
             }
-            System.out.println("Value not match");
             return null;
 
         }
 
-        System.out.println("Key null");
         return null;
 
     }

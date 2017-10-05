@@ -51,7 +51,6 @@ public class ExplorableSegmentationTask extends DefaultSegmentationOp {
     @Override
     public void load() {
         
-        System.out.println(explorable.getMetaDataSet());
         setInput(explorable.getDataset());
         
         try {
@@ -60,7 +59,6 @@ public class ExplorableSegmentationTask extends DefaultSegmentationOp {
             ImageJFX.getLogger().log(Level.SEVERE, "Couldn't open the source.", e);
             setMeasuredDataset(explorable.getDataset());
         }
-        System.out.println("Datasets loaded");
     }
 
     public void dispose() {

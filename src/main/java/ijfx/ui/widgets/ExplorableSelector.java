@@ -258,7 +258,6 @@ public class ExplorableSelector extends BorderPane {
 
         } // filtering the files
         else {
-            System.out.println("Filtering");
             List<Explorable> filteredFiles = addedFiles
                     .parallelStream()
                     .filter(explorable -> {

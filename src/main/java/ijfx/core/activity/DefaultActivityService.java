@@ -147,7 +147,6 @@ public class DefaultActivityService extends AbstractService implements ActivityS
 
                         Class<? extends Activity> clazz = (Class<? extends Activity>) Class.forName(info.getClassName());
 
-                        System.out.println(clazz.getName());
 
                         return getActivity(clazz);
                     } catch (ClassNotFoundException exception) {
@@ -216,7 +215,6 @@ public class DefaultActivityService extends AbstractService implements ActivityS
             logger.warning("The Current activity is null");
             return;
         }
-        System.out.println("setting the current activity");
         currentActivity = activity;
         uiContextService.enter(activity.getActivityId());
         uiContextService.update();

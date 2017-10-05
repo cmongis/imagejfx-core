@@ -63,7 +63,6 @@ public class FileChoice implements Choice<File> {
     public PixelRaster getPixelRaster() {
         if (file.getName().endsWith("png")) {
 
-            System.out.println(file.getAbsolutePath());
             return PixelRasterUtils.fromImage(new Image(file.getAbsolutePath(),false));
         } else {
             return null;

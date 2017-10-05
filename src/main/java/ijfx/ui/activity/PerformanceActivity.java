@@ -108,7 +108,6 @@ public class PerformanceActivity extends BorderPane implements Activity {
         Collection<? extends Timer> timers = timerService.getTimers();
         timerListView.getItems().clear();
         timerListView.getItems().addAll(timers);
-        System.out.println("timers "+timers.size());
         if(timers.size() > 0) {
             timerListView.getSelectionModel().select(timers.iterator().next());
         }
@@ -142,7 +141,6 @@ public class PerformanceActivity extends BorderPane implements Activity {
 
     private <T, R> ObservableValue<R> readOnly(TableColumn.CellDataFeatures<T, R> feature) {
         String propertyName = feature.getTableColumn().getId().replace("Column", "");
-        System.out.println("Property name : "+propertyName);
         T bean = feature.getValue();
         
         
@@ -165,8 +163,6 @@ public class PerformanceActivity extends BorderPane implements Activity {
     private void onTimerChanged(Observable obs, Timer oldValue, Timer newValue) {
         
         
-        System.out.println(newValue.getName());
-        System.out.println(newValue.getStats().size());
         timerEntryTableView.getItems().clear();
         timerEntryTableView.getItems().addAll(
                 newValue
@@ -215,7 +211,6 @@ public class PerformanceActivity extends BorderPane implements Activity {
         }
         
         public Long getCount() {
-            System.out.println("gettting n");
             return getStats().getN();
         }
         

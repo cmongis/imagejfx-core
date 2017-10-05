@@ -391,7 +391,6 @@ public class FXUserInterface extends Application implements UserInterface {
                     .submit(loadingScreenService);
             //progress.setProgress(1.0);
             // })
-            // .error(thr->System.out.println(thr))
             //.start()
             //.submit(loadingScreenService);
        // } catch (InterruptedException ex) {

@@ -49,7 +49,6 @@ public class BatchInputWrapper implements BatchSingleInput {
     
     @Override
     public DatasetView getDatasetView() {
-        System.out.println("getting the dataset view");
         return singleInput.getDatasetView();
     }
 
@@ -60,7 +59,6 @@ public class BatchInputWrapper implements BatchSingleInput {
 
     @Override
     public void load() {
-        System.out.println("loading");
         singleInput.load();
     }
 
@@ -76,19 +74,16 @@ public class BatchInputWrapper implements BatchSingleInput {
 
     @Override
     public Dataset getDataset() {
-        System.out.println("Getting the dataset");
         return singleInput.getDataset();
     }
 
     @Override
     public ImageDisplay getDisplay() {
-        System.out.println("Getting the display");
         return singleInput.getDisplay();
     }
 
     @Override
     public void save() {
-        System.out.println("It's not finished");
          whenFinished.accept(singleInput);
         singleInput.save();
        

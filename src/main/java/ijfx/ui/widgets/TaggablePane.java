@@ -125,7 +125,6 @@ public class TaggablePane {
 
     private void onTagAdded(List<? extends Tag> tagList) {
 
-        System.out.println(String.format("### %d tags added", tagList.size()));
 
         List<Button> collect = tagList
                 .stream()
@@ -138,7 +137,6 @@ public class TaggablePane {
 
     private void onTagRemoved(List<? extends Tag> tagList) {
 
-        System.out.println(String.format("### %d tags removed", tagList.size()));
 
         List<Node> collect = tagFlowPane
                 .getChildren()
@@ -173,7 +171,6 @@ public class TaggablePane {
 
     public void setTags(Collection<Tag> tags) {
 
-        System.out.println(String.format("!!! Synchronizing %d to %d", tags.size(), this.tags.size()));
         CollectionsUtils.synchronize(tags, this.tags);
     }
 

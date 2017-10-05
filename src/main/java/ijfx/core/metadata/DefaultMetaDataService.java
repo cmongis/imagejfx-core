@@ -172,7 +172,6 @@ public class DefaultMetaDataService extends AbstractService implements MetaDataS
 
         List<MetaDataSet> planes = new ArrayList<>(1000);
         String dimensionLengthesString = metadataset.get(MetaData.DIMENSION_LENGHS).getStringValue();
-        System.out.println(dimensionLengthesString);
         if (dimensionLengthesString == null || dimensionLengthesString.equals("null") || dimensionLengthesString.equals("[]")) {
             planes.add(new MetaDataSet().merge(metadataset));
             return planes;

@@ -37,7 +37,6 @@ public class ChangeLanguage extends ContextCommand implements ScriptCommand{
     @Override
     public void run() {
         
-        System.out.println("Changement de langue");
         
     }
     

@@ -164,7 +164,6 @@ public class FXRichTextDialog extends Dialog<RichTextDialog.Answer> implements R
         if (!wereButtonsAdded) {
             addAnswerButton(AnswerType.VALIDATE, "OK");
         }
-        System.out.println("Styling buttons !");
 
         ButtonBar bar = (ButtonBar) getDialogPane().lookup(".button-bar");
 

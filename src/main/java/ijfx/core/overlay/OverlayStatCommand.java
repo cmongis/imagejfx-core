@@ -89,7 +89,6 @@ public class OverlayStatCommand implements Command{
                 final int finalRowNumber = rowNumber;
                 resultTable.insertRow(finalRowNumber);
                 map.get(rowNumber).forEach((key, value) -> {
-                    System.out.println(String.format("Setting the value %s to %.3f (%d)", key, value, finalRowNumber));
 
                     resultTable.set(key, finalRowNumber, value);
                 });

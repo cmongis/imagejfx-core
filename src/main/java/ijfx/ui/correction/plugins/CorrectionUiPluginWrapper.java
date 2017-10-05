@@ -144,7 +144,6 @@ public class CorrectionUiPluginWrapper extends TitledPane {
     }
 
     public void onHeaderBorderPaneChanged(Observable obs, Number oldValue, Number newValue) {
-        System.out.println(newValue);
     }
     
     public CorrectionUiPlugin getPlugin() {

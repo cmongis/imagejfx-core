@@ -66,7 +66,6 @@ public abstract class AbstractOverlayModifier<T extends Overlay> implements Over
     
     public AbstractOverlayModifier(Class<? extends Overlay> handledType) {
         this.handledType = handledType;
-        System.out.println("Click :Creating modifier !");
     }
     
     @Override

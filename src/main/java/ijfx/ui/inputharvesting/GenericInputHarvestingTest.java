@@ -112,7 +112,6 @@ public class GenericInputHarvestingTest extends ContextCommand{
     
     public void setValue(String value) {
         this.value = value;
-        System.out.println("the value has changed to "+value);
     }
     
 }

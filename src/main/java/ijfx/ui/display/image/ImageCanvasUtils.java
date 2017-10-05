@@ -147,8 +147,6 @@ public class ImageCanvasUtils {
         // calculating the difference bettween the viewport edge on the image
         dx = viewport.getDisplay().dimension(0) - bottomRightCorner.x;
         dy = viewport.getDisplay().dimension(1) - bottomRightCorner.y;
-        System.out.println("offset : " + topLeftCorner.x);
-        System.out.println("dx : " + dx);
 
         dx = dx < 0 ? dx : 0;
         dy = dy < 0 ? dy : 0;

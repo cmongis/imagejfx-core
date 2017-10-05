@@ -98,7 +98,6 @@ public class DefaultMetaDataFilterFactory<T extends MetaDataOwner> implements Me
 
     public int checktype(Collection<? extends MetaDataOwner> ownerList, String keyName) {
 
-        System.out.println(String.format("Checking the type for %s (%d)", keyName, ownerList.size()));
         if (ownerList.isEmpty()) {
             return MetaData.TYPE_NOT_SET;
         }

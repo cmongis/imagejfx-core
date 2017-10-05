@@ -146,7 +146,6 @@ public class LoadingPopupSkinBase extends StackPane implements Skin<LoadingPopup
     }
     
     private double getFinishButtonX() {
-        System.out.println(" ??? ");
         return 0;
     }
     

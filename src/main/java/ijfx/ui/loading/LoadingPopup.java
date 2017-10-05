@@ -197,7 +197,6 @@ public class LoadingPopup extends PopupControl {
         boolean isTaskRunning = taskRunningProperty.getValue();
         boolean isPopupShowing = isShowing();
 
-        System.out.println(String.format("Window showign = %s, Popup showing = %s, Task runnign = %s", isWindowShowing, isPopupShowing, isTaskRunning));
 
         if (isWindowShowing && isTaskRunning && !isPopupShowing) {
             showOnScene(lastScene);
@@ -285,11 +284,9 @@ public class LoadingPopup extends PopupControl {
 
     public void onRunningPropertyChanged(Observable obs, Boolean oldValue, Boolean newValue) {
 
-        System.out.println("Task property changed : " + newValue);
 
         if (oldValue == true && newValue == false) { // task is finished
             taskRunningProperty.unbind();
-            System.out.println("close on finished ? " + closeOnFinished.getValue());
             if (closeOnFinished.getValue()) {
                 hide();
             }

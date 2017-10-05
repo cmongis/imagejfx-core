@@ -151,7 +151,6 @@ public class ImageJ1PluginService extends AbstractService implements ImageJServi
             final ImagePlus activeImagePlus = imageMap.lookupImagePlus(activeDisplay);
             
            if(activeDisplay != null && activeImagePlus == null) {
-//            System.out.println(activeImagePlus.getWindow());
                
             legacyService.getImageMap().registerDisplay(activeDisplay);
            }

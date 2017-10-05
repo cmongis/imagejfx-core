@@ -72,7 +72,6 @@ public class HarvestTest extends ContextCommand{
     public void increment() {
         number++;
         
-        System.out.println(number);
         
         
     }

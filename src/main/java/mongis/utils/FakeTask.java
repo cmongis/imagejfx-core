@@ -74,7 +74,6 @@ public class FakeTask<T> extends Task<T> {
 
              updateMessage(message);
         }
-        System.out.println("Fake task stopped");
        return fakeResult;
     }
     

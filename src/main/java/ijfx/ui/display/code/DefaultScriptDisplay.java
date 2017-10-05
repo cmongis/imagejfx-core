@@ -225,7 +225,6 @@ public class DefaultScriptDisplay extends AbstractDisplay<Script> implements Scr
                 String newLine = line.replaceFirst("    ", "\t");
                 String newText = get(0).getCode().replace(line, newLine);
                 editText(newText);
-                System.out.println("prout");
             }
         }
          

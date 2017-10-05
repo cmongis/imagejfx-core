@@ -109,7 +109,6 @@ public class DefaultExplorableDisplay extends AbstractDisplay<ExplorableList> im
     public void setSelected(List<Explorable> explorable) {
 
         clearSelection();
-        System.out.println(explorable.get(0).getMetaDataSet());
         selected.addAll(explorable);
 
     }

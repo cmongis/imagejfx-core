@@ -200,10 +200,7 @@ public class DefaultMainWindow implements MainWindow {
             mainBorderPane.setOpacity(1.0);
             mainBorderPane.setCenter(new Label("Loading..."));
 
-            mainBorderPane.addEventHandler(DragEvent.ANY, event -> {
-                System.out.println(event.getEventType());
-                System.out.println(event);
-            });
+            
 
             getLoadingPopup().taskProperty().bind(taskList.foregroundTaskProperty());
             getLoadingPopup()

@@ -55,7 +55,6 @@ public class OverlayLoader {
 
     public static void main(String... args) throws IOException {
         OverlayLoader loader = new OverlayLoader();
-        System.out.println(new File("./").getAbsolutePath());
         loader.load(new File("./src/test/resources/multidim.ovl.json")).forEach(System.out::println);
     }
 

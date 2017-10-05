@@ -60,7 +60,6 @@ public class ExplorableTableHelper extends MetaDataOwnerHelper<Explorable> {
         columnList.sort(prioritizer());
         final int offset = getOffset();
         if (!columnList.equals(currentColumns)) {
-            System.out.println("The columns are not the same, updating");
             setColumnNumber(columnList.size());
             currentColumns = new HashSet(columnList);
             IntStream.range(0, columnList.size()).forEach(n -> {
@@ -99,7 +98,6 @@ public class ExplorableTableHelper extends MetaDataOwnerHelper<Explorable> {
             actualSize = tableView.getColumns().size() - offset;
         }
 
-        System.out.println(String.format("Changing the number of column from %d to %d", actualSize, number));
         if (number == 0) {
             tableView.getColumns().clear();
             return;
@@ -180,7 +178,6 @@ public class ExplorableTableHelper extends MetaDataOwnerHelper<Explorable> {
             } else {
                 list.remove(object);
             }
-            System.out.println(list.size());
             super.set(bool);
         }
 

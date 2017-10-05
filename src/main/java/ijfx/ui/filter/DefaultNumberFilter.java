@@ -238,8 +238,6 @@ public class DefaultNumberFilter extends BorderPane implements NumberFilter {
         double k = min;
         for (SummaryStatistics st : distribution.getBinStats()) {
             data.add(new Data<>(k, new Double(st.getN())));
-            System.out.println(k);
-            System.out.println(st.getN());
             k += binSize;
         }
 

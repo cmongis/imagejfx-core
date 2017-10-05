@@ -53,7 +53,6 @@ public class RequestBufferTester extends BaseTester{
     }
     
     public void showSomething() {
-        System.out.println("I'm the only one ?");
     }
     
     public static void main(String[] args) {

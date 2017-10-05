@@ -51,8 +51,6 @@ public class RectangleDrawer implements OverlayDrawer<RectangleOverlay> {
         
         double extentX = overlay.getExtent(0) + originX;
         double extentY = overlay.getExtent(1) + originY;
-        System.out.println("Viewport width");
-        System.out.println(viewport.getViewportWidth());
         
         RealCoords minEdge = ImageCanvasUtils.dataToPanelCoords(viewport,new RealCoords(originX,originY));
         RealCoords maxEdge = ImageCanvasUtils.dataToPanelCoords(viewport,new RealCoords(extentX,extentY));

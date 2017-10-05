@@ -36,10 +36,8 @@ public interface Activity extends SciJavaPlugin {
     }
     
     public default String getActivityId() {
-        System.out.println("getting the id");
         Plugin declaredAnnotation = getClass().getAnnotation(Plugin.class);
         String id = declaredAnnotation.name();
-        System.out.println(id);
         return declaredAnnotation.name();
     }
     

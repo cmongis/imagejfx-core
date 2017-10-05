@@ -30,6 +30,7 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.logging.Level;
 import net.imagej.ImageJService;
 import org.scijava.Priority;
 import org.scijava.plugin.Parameter;
@@ -78,9 +79,9 @@ public class ScriptEditorPreferenciesService extends AbstractService implements 
         File source = new File(getClass().getResource("/ijfx/ui/display/code").getPath());
         try {
             copyFolder(source, target);
-        } catch (Exception IOException) {
-            System.out.println(IOException);
-            System.out.println("Error: nanorcFiles not found");
+        } catch (Exception ex) {
+            
+            ImageJFX.getLogger().log(Level.SEVERE,"nanorc file not found",ex);
         }
         
     }
