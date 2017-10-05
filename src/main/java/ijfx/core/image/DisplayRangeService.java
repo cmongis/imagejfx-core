@@ -87,7 +87,6 @@ public class DisplayRangeService extends AbstractService implements IjfxService 
         if (dataset.getType().getBitsPerPixel() <= 8) {
             return 0;
         }
-        System.out.printf("DatasetMinMax : Minimum : %s,%d,%s\n", dataset.toString(), channel, datasetChannelMin.key(dataset, channel, MINIMUM).id().toString());
         return datasetChannelMin.key(dataset, channel, MINIMUM).getOrPut(dataset.getChannelMinimum(channel));
     }
 
@@ -101,8 +100,6 @@ public class DisplayRangeService extends AbstractService implements IjfxService 
         if (dataset.getType().getBitsPerPixel() == 8) {
             return 255;
         }
-
-        System.out.printf("DatasetMinMax : Maximum : %s,%d,%s\n", dataset.toString(), channel, datasetChannelMin.key(dataset, channel, MAXIMUM).id().toString());
         return datasetChannelMin.key(dataset, channel, MAXIMUM).getOrPut(dataset.getChannelMaximum(channel));
     }
 

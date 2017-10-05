@@ -126,7 +126,6 @@ public class OverlayStatService extends AbstractService implements ImageJService
             values.add(randomAccess.get().getRealDouble());
             c++;
         }
-        System.out.printf("%d values retrieved\n", c);
         return values.toArray(new Double[values.size()]);
 
     }
@@ -145,9 +144,6 @@ public class OverlayStatService extends AbstractService implements ImageJService
     protected Double[] getValueList(ImageDisplay imageDisplay, LineOverlay overlay) {
 
         final Dataset ds = datasetService.getDatasets(imageDisplay).get(0);
-
-        System.out.printf("Num dimensions %d\n", overlay.numDimensions());
-
         RandomAccess<RealType<?>> randomAccess = ds.randomAccess();
 
         int x0 = new Double(overlay.getLineStart(0)).intValue();
