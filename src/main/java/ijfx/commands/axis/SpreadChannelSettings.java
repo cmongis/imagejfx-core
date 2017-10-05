@@ -19,7 +19,9 @@
  */
 package ijfx.commands.axis;
 
+import ijfx.core.batch.BatchService;
 import ijfx.core.image.ChannelSettings;
+import net.imagej.Dataset;
 import net.imagej.display.DatasetView;
 import net.imagej.display.ImageDisplay;
 import net.imagej.display.ImageDisplayService;
@@ -37,36 +39,62 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = Command.class,menuPath="Image > Color > Spread channel setting")
 public class SpreadChannelSettings extends ContextCommand{
 
-    @Parameter(type=ItemIO.BOTH)
-    ImageDisplay imageDisplay;
+    //@Parameter(type=ItemIO.INPUT)
+    //private ImageDisplay imageDisplay;
     
-    
-    
-    
-    @Parameter
-    ImageDisplayService imageDisplayService;
+    @Parameter(type = ItemIO.BOTH)
+    Dataset dataset;
     
     @Parameter
-    ChannelSettings channelSettings;
+    private ImageDisplayService imageDisplayService;
     
     @Parameter
-    LUTService lutService;
+    private ChannelSettings channelSettings;
+    
+    @Parameter
+    private LUTService lutService;
+    
+    @Parameter
+    private BatchService batchService;
+    
+  
     
     @Override
     public void run() {
         
+        channelSettings.apply(dataset);;
+        
+        if(batchService.isRunning()) {
+            return;
+        }
+        
         imageDisplayService
                 .getImageDisplays()
                 .stream()
-                .map(imageDisplayService::getActiveDatasetView)
-                .parallel()
                 .forEach(this::apply);
         
     }
     
-    private void apply(DatasetView view) {
+    private ImageDisplay associatedDisplay(Dataset dataset) {
+        
+        return imageDisplayService
+                .getImageDisplays()
+                .stream()
+                .filter(display->imageDisplayService.getActiveDataset(display) == dataset)
+                .findAny()
+                .orElse(null);
+        
+    }
+    
+    private void apply(ImageDisplay view) {
         channelSettings.apply(view);
-        view.getProjector().map();
+        DatasetView datasetView = imageDisplayService.getActiveDatasetView(view);
+        channelSettings.apply(datasetView);
+        channelSettings.apply(datasetView.getData());
+        datasetView.getProjector().map();
+        System.out.println(datasetView.getChannelMax(0));
         view.update();
+        //view.update();
+        
     }
 }
