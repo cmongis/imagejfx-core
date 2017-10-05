@@ -70,9 +70,10 @@ import org.scijava.ui.viewer.DisplayViewer;
 import ijfx.core.uiplugin.UiCommandService;
 import ijfx.ui.loading.ForegroundTaskSubmitted;
 import ijfx.ui.loading.LoadingScreenService;
-import java.util.concurrent.ExecutionException;
+import javafx.scene.Node;
 import javafx.stage.DirectoryChooser;
 import mongis.utils.ProgressHandler;
+import org.scijava.console.OutputEvent;
 import org.scijava.widget.FileWidget;
 
 /**
@@ -158,9 +159,6 @@ public class FXUserInterface extends Application implements UserInterface {
 
         SCENE.setRoot(getMainWindow().getUiComponent());
 
-        // scene.getStylesheets().add("http://fonts.googleapis.com/css?family=Open+Sans");
-        //scene.getStylesheets().add("http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css");
-        //Font.loadFont(FontAwesomeIconView.class.getResource("fontawesome-webfont.ttf").toExternalForm().toString(), 0);
         primaryStage.setTitle("ImageJ FX");
         primaryStage.setScene(SCENE);
 
@@ -229,8 +227,8 @@ public class FXUserInterface extends Application implements UserInterface {
 
     @Override
     public ConsolePane<?> getConsolePane() {
-
-        return null; //uiPluginService.getUiPlugin(ConsoleUIPlugin.class);
+        
+        return DUMMY_CONSOLE; //uiPluginService.getUiPlugin(ConsoleUIPlugin.class);
 
     }
 
@@ -389,16 +387,7 @@ public class FXUserInterface extends Application implements UserInterface {
                      })
                     .start()
                     .submit(loadingScreenService);
-            //progress.setProgress(1.0);
-            // })
-            //.start()
-            //.submit(loadingScreenService);
-       // } catch (InterruptedException ex) {
-         //   Logger.getLogger(FXUserInterface.class.getName()).log(Level.SEVERE, null, ex);
-        //} catch (ExecutionException ex) {
-         //   Logger.getLogger(FXUserInterface.class.getName()).log(Level.SEVERE, null, ex);
-       // }
-
+          
     }
     
     public Boolean showDisplay(ProgressHandler progress, Display<?> display) {
@@ -537,6 +526,35 @@ public class FXUserInterface extends Application implements UserInterface {
 
         logger.info("CSS reloaded.");
 
+    }
+    
+    private final DummyConsolePane DUMMY_CONSOLE = new DummyConsolePane();
+    
+    private class DummyConsolePane implements ConsolePane<Node>{
+
+        @Override
+        public void append(OutputEvent event) {
+        }
+
+        @Override
+        public void show() {
+        }
+
+        @Override
+        public Node getComponent() {
+            return null;
+        }
+
+        @Override
+        public Class<Node> getComponentType() {
+            return Node.class;
+        }
+
+        @Override
+        public void outputOccurred(OutputEvent event) {
+
+        }
+        
     }
 
 }
