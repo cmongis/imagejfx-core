@@ -199,13 +199,9 @@ public class AxisSlider extends BorderPane {
 
         }
 
-        //datasetView.setPosition(position.longValue(), axisId);
         display.setPosition(position.longValue(), axis.type());
         ImageJFX
                 .getThreadPool().execute(new ViewUpdate(display));
-        //ImageJFX.getThreadPool().execute(display::update);
-        //eventService.publish(new AxisPositionEvent(display, axis.type()));
-        //ImageJFX.getThreadQueue().execute(new ViewUpdate(datasetView));
     }
 
     Boolean lock = Boolean.TRUE;
