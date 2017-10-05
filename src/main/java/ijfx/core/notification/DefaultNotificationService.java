@@ -105,7 +105,7 @@ public class DefaultNotificationService extends AbstractService implements Notif
         getSocket().emit(REQUEST_SUBSCRIBE);
         getSocket().emit(REQUEST_USER_NUMBER);
 
-        eventService.publish(new SocketConnectedEvent().setObject(getSocket()));
+        eventService.publishLater(new SocketConnectedEvent().setObject(getSocket()));
 
     }
 
