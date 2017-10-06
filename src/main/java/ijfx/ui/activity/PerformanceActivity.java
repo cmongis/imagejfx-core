@@ -23,8 +23,10 @@ import ijfx.core.activity.Activity;
 import ijfx.core.activity.ActivityService;
 import ijfx.core.timer.Timer;
 import ijfx.core.timer.TimerService;
+import ijfx.ui.main.ImageJFX;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import javafx.beans.Observable;
 import javafx.beans.property.adapter.JavaBeanObjectPropertyBuilder;
@@ -154,7 +156,7 @@ public class PerformanceActivity extends BorderPane implements Activity {
                     .name(propertyName)
                     .build();
         } catch (Exception e) {
-            e.printStackTrace();
+            ImageJFX.getLogger().log(Level.SEVERE,null,e);
             return null;
         }
     }
