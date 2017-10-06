@@ -254,7 +254,7 @@ public class PreviewService extends AbstractService implements ImageJService {
             int minChannel = (int) activeDataview.getChannelMin(activePosition.getIntPosition(0));
             view.setChannelRange(0, minChannel, maxChannel);
         } catch (Exception e) {
-            e.printStackTrace();
+            ImageJFX.getLogger().log(Level.SEVERE,null,e);
         }
         view.rebuild();
         BufferedImage bufferedImage = view.getScreenImage().image();
