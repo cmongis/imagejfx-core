@@ -169,7 +169,7 @@ public class DefaultDatasetUtilsService extends AbstractService implements Datas
 
                 resultRandomAccess.get().set(numeratorCursor.get());
             } catch (Exception e) {
-                e.printStackTrace();
+                ImageJFX.getLogger().log(Level.SEVERE,null,e);
             }
             Float f = numeratorCursor.get().getRealFloat() / denominatorRandomAccess.get().getRealFloat();
             resultRandomAccess.get().setReal(f);
