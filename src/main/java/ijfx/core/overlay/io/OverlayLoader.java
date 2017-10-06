@@ -21,10 +21,12 @@ package ijfx.core.overlay.io;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import ijfx.ui.main.ImageJFX;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import net.imagej.overlay.Overlay;
 import org.scijava.Context;
 import org.scijava.plugin.Parameter;
@@ -37,7 +39,7 @@ public class OverlayLoader {
 
     @Parameter
     Context context;
-    
+
     public List<Overlay> load(File f) throws IOException {
 
         ObjectMapper mapper = new ObjectMapper();
@@ -45,12 +47,11 @@ public class OverlayLoader {
         module.addDeserializer(Overlay.class, new OverlayDeserializer(context));
         mapper.registerModule(module);
         try {
-        return mapper.readValue(f, mapper.getTypeFactory().constructCollectionType(List.class, Overlay.class));
+            return mapper.readValue(f, mapper.getTypeFactory().constructCollectionType(List.class, Overlay.class));
+        } catch (Exception e) {
+            ImageJFX.getLogger().log(Level.SEVERE, null, e);
+            return new ArrayList<>();
         }
-        catch(Exception e) {
-            e.printStackTrace();
-                return new ArrayList<>();
-                }
     }
 
     public static void main(String... args) throws IOException {
