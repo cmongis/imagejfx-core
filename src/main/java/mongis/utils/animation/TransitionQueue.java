@@ -20,8 +20,10 @@
  */
 package mongis.utils.animation;
 
+import ijfx.ui.main.ImageJFX;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.logging.Level;
 import javafx.animation.Transition;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -47,7 +49,7 @@ public class TransitionQueue {
                     
                 handler.handle(event);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    ImageJFX.getLogger().log(Level.SEVERE,null,e);
                 }
 
             }
@@ -57,18 +59,6 @@ public class TransitionQueue {
 
         queue.add(transition);
         playNext();
-
-        /*
-        final EventHandler handler = transition.getOnFinished();
-        transition.setOnFinished(event->{
-            if(handler !=null)
-            handler.handle(event); 
-            playNext();
-             
-        });
-        
-        queue.add(transition);
-        if(queue.size() == 1) playNext();*/
     }
 
     public void pop() {
