@@ -144,7 +144,7 @@ public class FXUtilities {
                     try {
                         displayer.setContent(root.getClass(), input);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        ImageJFX.getLogger().log(Level.SEVERE,null,e);
                     }
                     return webView;
                 }).submit(Platform::runLater);
@@ -351,7 +351,7 @@ public class FXUtilities {
                 try {
                     injectFXML(controller);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    ImageJFX.getLogger().log(Level.SEVERE,null,e);
                 }
             });
         } catch (Exception e) {

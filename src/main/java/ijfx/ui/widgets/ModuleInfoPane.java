@@ -25,6 +25,7 @@ import com.google.common.collect.Maps;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import ijfx.ui.RichMessageDisplayer;
+import ijfx.ui.main.ImageJFX;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
@@ -108,7 +109,7 @@ public class ModuleInfoPane extends BorderPane{
         try {
             messageDispayer.setMessage(render(moduleProperty.getValue()));
         } catch (Exception e) {
-            e.printStackTrace();
+            ImageJFX.getLogger().log(Level.SEVERE,null,e);
         }
 
     }
