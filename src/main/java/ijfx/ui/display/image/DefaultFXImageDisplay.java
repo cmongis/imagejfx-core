@@ -23,6 +23,7 @@ import ijfx.core.image.DisplayRangeService;
 import ijfx.core.utils.AxisUtils;
 import ijfx.ui.main.ImageJFX;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.stream.IntStream;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
@@ -100,7 +101,7 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
         return imageDisplayService.getActiveDatasetView(this);
 
     }
-    
+
     private Dataset getDataset() {
         return getDatasetView().getData();
     }
@@ -276,7 +277,7 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
     }
 
     public int[] getCompositeChannels() {
-        if(getDatasetView().getProjector() == null) {
+        if (getDatasetView().getProjector() == null) {
             return new int[0];
         }
         return IntStream
@@ -328,7 +329,7 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
                     .name(name)
                     .build();
         } catch (Exception e) {
-            e.printStackTrace();
+            ImageJFX.getLogger().log(Level.SEVERE, null, e);
         }
         return null;
     }
@@ -341,7 +342,7 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
                     .name(name)
                     .build();
         } catch (Exception e) {
-            e.printStackTrace();
+            ImageJFX.getLogger().log(Level.SEVERE, null, e);
         }
         return null;
     }
@@ -354,7 +355,7 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
                     .name(name)
                     .build();
         } catch (Exception e) {
-            e.printStackTrace();
+            ImageJFX.getLogger().log(Level.SEVERE, null, e);
         }
         return null;
     }
@@ -369,7 +370,7 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
     public void checkProperties() {
         currentLUTProperty().fireValueChangedEvent();
     }
-    
+
     private void checkLUProperties() {
 
         currentLUTMinProperty().fireValueChangedEvent();
