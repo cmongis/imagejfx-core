@@ -20,6 +20,7 @@
 package ijfx.ui.filter.string;
 
 import ijfx.ui.filter.StringFilter;
+import ijfx.ui.main.ImageJFX;
 import ijfx.ui.utils.CollectionsUtils;
 import java.io.IOException;
 import java.net.URL;
@@ -31,6 +32,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.function.Predicate;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.Observable;
@@ -123,9 +125,8 @@ public class DefaultStringFilter extends BorderPane implements Initializable, St
             showAll.bind(moreButton.selectedProperty());
             showAll.addListener(this::onShowAllPropertyChange);
         } catch (IOException e) {
-            e.printStackTrace();
+            ImageJFX.getLogger().log(Level.SEVERE,null,e);
         }
-//        predicateProperty().addListener();
     }
 
     
@@ -145,10 +146,7 @@ public class DefaultStringFilter extends BorderPane implements Initializable, St
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        textField.onKeyPressedProperty();
-        //Generate Array
-
-       
+        textField.onKeyPressedProperty();     
 
     }
 
@@ -162,8 +160,6 @@ public class DefaultStringFilter extends BorderPane implements Initializable, St
 
     @Override
     public synchronized void setAllPossibleValues(Collection<? extends String> list) {
-
-        //allItems.clear();
 
         Map<String, Integer> itemCount;
         itemCount = new HashMap<>();
@@ -238,8 +234,6 @@ public class DefaultStringFilter extends BorderPane implements Initializable, St
                 .map(e -> e.getName())
                 .collect(Collectors.toList());
         predicate.setValue(new ContainStringPredicate(listBuffer));
-        //getStylesheets().remove(CSS_FILE);
-        //getStylesheets().add(CSS_FILE);
     }
 
     @Override
@@ -267,7 +261,6 @@ public class DefaultStringFilter extends BorderPane implements Initializable, St
 
         @Override
         public boolean test(String t) {
-            //System.out.println(String.format("Testing %s against %d terms",t,strings.size()));
             return strings.contains(t);
         }
 
