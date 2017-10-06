@@ -340,7 +340,7 @@ public class BatchService extends AbstractService implements ImageJService {
             module.initialize();
         } catch (Exception e) {
             logger.info("Context already injected.");
-            //   e.printStackTrace();
+            //   ImageJFX.getLogger().log(Level.SEVERE,null,e);
         }
         run = moduleService.run(module, getPreProcessors(), getPostprocessors(), parameters);
         // } else {
@@ -576,7 +576,7 @@ public class BatchService extends AbstractService implements ImageJService {
         try {
             getContext().inject(p);
         } catch (Exception e) {
-            e.printStackTrace();
+            ImageJFX.getLogger().log(Level.SEVERE,null,e);
         } finally {
             return p;
         }
