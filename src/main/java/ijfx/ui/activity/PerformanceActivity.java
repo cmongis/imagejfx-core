@@ -49,7 +49,7 @@ import org.scijava.plugin.Plugin;
  *
  * @author Cyril MONGIS, 2016
  */
-@Plugin(type = Activity.class,label="performance-activity")
+@Plugin(type = Activity.class, label = "performance-activity")
 public class PerformanceActivity extends BorderPane implements Activity {
 
     @FXML
@@ -78,10 +78,10 @@ public class PerformanceActivity extends BorderPane implements Activity {
 
     @FXML
     TableColumn<TimerEntry, Long> countColumn;
-    
+
     @Parameter
     ActivityService activityService;
-    
+
     public PerformanceActivity() throws IOException {
         FXUtilities.injectFXML(this);
 
@@ -94,7 +94,6 @@ public class PerformanceActivity extends BorderPane implements Activity {
         minColumn.setCellValueFactory(this::readOnly);
         maxColumn.setCellValueFactory(this::readOnly);
         countColumn.setCellValueFactory(this::readOnly);
-        
 
     }
 
@@ -110,14 +109,14 @@ public class PerformanceActivity extends BorderPane implements Activity {
         Collection<? extends Timer> timers = timerService.getTimers();
         timerListView.getItems().clear();
         timerListView.getItems().addAll(timers);
-        if(timers.size() > 0) {
+        if (timers.size() > 0) {
             timerListView.getSelectionModel().select(timers.iterator().next());
         }
-        
+
         return null;
 
     }
-    
+
     @FXML
     public void reset() {
         timerService.resetTimers();
@@ -135,8 +134,9 @@ public class PerformanceActivity extends BorderPane implements Activity {
         }
 
         public void onItemChanged(Observable obs, Timer oldValue, Timer newvalue) {
-            if(newvalue != null)
-            setText(newvalue.getName());
+            if (newvalue != null) {
+                setText(newvalue.getName());
+            }
         }
 
     }
@@ -144,42 +144,37 @@ public class PerformanceActivity extends BorderPane implements Activity {
     private <T, R> ObservableValue<R> readOnly(TableColumn.CellDataFeatures<T, R> feature) {
         String propertyName = feature.getTableColumn().getId().replace("Column", "");
         T bean = feature.getValue();
-        
-        
-        
+
         try {
-            //return new SimpleObjectProperty(bean,propertyName);
-            
             return new JavaBeanObjectPropertyBuilder<>()
-                    
                     .bean(bean)
                     .name(propertyName)
                     .build();
         } catch (Exception e) {
-            ImageJFX.getLogger().log(Level.SEVERE,null,e);
+            ImageJFX.getLogger().log(Level.SEVERE, null, e);
             return null;
         }
     }
-    
-    
+
     private void onTimerChanged(Observable obs, Timer oldValue, Timer newValue) {
-        
-        
+
         timerEntryTableView.getItems().clear();
         timerEntryTableView.getItems().addAll(
                 newValue
                         .getStats()
                         .entrySet()
                         .stream()
-                        .map(entry->new TimerEntry(entry.getKey(),entry.getValue()))
+                        .map(entry -> new TimerEntry(entry.getKey(), entry.getValue()))
                         .collect(Collectors.toList())
-         );
-        
+        );
+
     }
 
     public class TimerEntry {
+
         private final String id;
         private final SummaryStatistics stats;
+
         public TimerEntry(String id, SummaryStatistics stats) {
             this.id = id;
 
@@ -189,9 +184,7 @@ public class PerformanceActivity extends BorderPane implements Activity {
         public String getId() {
             return id;
         }
-        
-        
-        
+
         public SummaryStatistics getStats() {
             return stats;
         }
@@ -211,19 +204,30 @@ public class PerformanceActivity extends BorderPane implements Activity {
         public Long getStdDev() {
             return Math.round((getStats().getStandardDeviation()));
         }
-        
+
         public Long getCount() {
             return getStats().getN();
         }
-        
-       public void setId(String s) {}
-       public void setMean(Long d) {}
-       public void setMin(Long d) {}
-       public void setMax(Long d) {}
-       public void setStdDev(Long d) {}
-       public void setCount(Long l) {};
-       
-    }
-    
-    
+
+        public void setId(String s) {
+        }
+
+        public void setMean(Long d) {
+        }
+
+        public void setMin(Long d) {
+        }
+
+        public void setMax(Long d) {
+        }
+
+        public void setStdDev(Long d) {
+        }
+
+        public void setCount(Long l) {
+        }
+    ;
+
+}
+
 }
