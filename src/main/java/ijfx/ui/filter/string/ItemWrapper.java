@@ -19,8 +19,9 @@
  */
 package ijfx.ui.filter.string;
 
+import ijfx.ui.main.ImageJFX;
+import java.util.logging.Level;
 import javafx.beans.property.Property;
-import javafx.beans.property.adapter.JavaBeanObjectProperty;
 import javafx.beans.property.adapter.JavaBeanObjectPropertyBuilder;
 import javafx.beans.property.adapter.JavaBeanStringPropertyBuilder;
 
@@ -28,7 +29,7 @@ import javafx.beans.property.adapter.JavaBeanStringPropertyBuilder;
  *
  * @author Tuan anh TRINH
  */
-public class ItemWrapper implements Item{
+public class ItemWrapper implements Item {
 
     private Item item;
     private Property<String> nameProperty;
@@ -40,10 +41,10 @@ public class ItemWrapper implements Item{
             this.stateProperty = new JavaBeanObjectPropertyBuilder<>().bean(this.item).name("state").build();
             this.nameProperty = new JavaBeanStringPropertyBuilder().bean(this.item).name("name").build();
         } catch (Exception e) {
-            e.printStackTrace();
+            ImageJFX.getLogger().log(Level.SEVERE, null, e);
         }
     }
-    
+
     @Override
     public String getName() {
         return item.getName();
@@ -65,6 +66,7 @@ public class ItemWrapper implements Item{
     public void setName(String name) {
         nameProperty.setValue(name);
     }
+
     public Item getItem() {
         return item;
     }
@@ -86,10 +88,10 @@ public class ItemWrapper implements Item{
     public void setNumber(int n) {
         item.setNumber(n);
     }
-    
+
     @Override
     public int hashCode() {
         return getName().hashCode();
     }
-    
+
 }
