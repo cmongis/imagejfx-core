@@ -21,16 +21,15 @@ package ijfx.core.overlay;
 
 import ij.blob.RotatingCalipers;
 
-import java.awt.Point;
+import ijfx.ui.main.ImageJFX;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.logging.Level;
 
 import javafx.scene.shape.Polygon;
 import javafx.geometry.Point2D;
 
-import net.imagej.display.ImageDisplay;
 import net.imagej.overlay.Overlay;
-import net.imagej.overlay.PolygonOverlay;
 
 import net.imglib2.roi.PolygonRegionOfInterest;
 import org.scijava.Context;
@@ -44,29 +43,7 @@ public class PolygonOverlayStatistics extends AbstractOverlayShapeStatistics {
     java.awt.Polygon shape;
     Polygon convexHull;
 
-    /*
-    public PolygonOverlayStatistics(ImageDisplay display, Overlay overlay, Context context){
-        
-        
-      
-        
-        
-        this.shape = getShape(getOverlay());
-        this.convexHull = getConvexHull();
-        
-        super.area = setArea();
-        super.minimumBoundingRectangle = setMinimumBoundingRectangle();
-        super.centerOfGravity = setCenterOfGravity();
-        super.feretDiameter = setFeretDiameter();
-        super.minFeretDiameter = setMinFeretDiameter();
-        super.longSideMBR = setLongSideMBR();
-        super.shortSideMBR = setShortSideMBR();
-        super.aspectRatio = super.setAspectRatio();
-        super.convexity = setConvexity();
-        super.solidity = setSolidity();
-        super.circularity = setCircularity();
-        super.thinnesRatio = setThinnesRatio();
-    }*/
+   
     public PolygonOverlayStatistics(Overlay overlay, Context context) {
 
         super(overlay, context);
@@ -98,7 +75,6 @@ public class PolygonOverlayStatistics extends AbstractOverlayShapeStatistics {
         int[] ypoints = new int[npoints];
 
         for (int i = 0; i < npoints; i++) {
-//            Point currentPoint = new Point((int)roi.getVertex(i).getDoublePosition(0), (int)roi.getVertex(i).getDoublePosition(1));
             xpoints[i] = (int) roi.getVertex(i).getDoublePosition(0);
             ypoints[i] = (int) roi.getVertex(i).getDoublePosition(1);
 
@@ -203,7 +179,7 @@ public class PolygonOverlayStatistics extends AbstractOverlayShapeStatistics {
             mbr = RotatingCalipers.getMinimumBoundingRectangle(shape.xpoints, shape.ypoints);
         } catch (IllegalArgumentException e) {
             mbr = null;
-            e.printStackTrace();
+            ImageJFX.getLogger().log(Level.SEVERE,null,e);
         }
 
         double dxWidth = mbr[1].x - mbr[0].x;
@@ -261,7 +237,7 @@ public class PolygonOverlayStatistics extends AbstractOverlayShapeStatistics {
             mbr = RotatingCalipers.getMinimumBoundingRectangle(shape.xpoints, shape.ypoints);
         } catch (IllegalArgumentException e) {
             mbr = null;
-            e.printStackTrace();
+            ImageJFX.getLogger().log(Level.SEVERE,null,e);
         }
 
         double firstSide = Math.sqrt(Math.pow(mbr[1].x - mbr[0].x, 2) + Math.pow(mbr[1].y - mbr[0].y, 2));
@@ -277,7 +253,7 @@ public class PolygonOverlayStatistics extends AbstractOverlayShapeStatistics {
             mbr = RotatingCalipers.getMinimumBoundingRectangle(shape.xpoints, shape.ypoints);
         } catch (IllegalArgumentException e) {
             mbr = null;
-            e.printStackTrace();
+            ImageJFX.getLogger().log(Level.SEVERE,null,e);
         }
 
         double firstSide = Math.sqrt(Math.pow(mbr[1].x - mbr[0].x, 2) + Math.pow(mbr[1].y - mbr[0].y, 2));
