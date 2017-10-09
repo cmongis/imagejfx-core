@@ -148,7 +148,7 @@ public class FXUserInterface extends Application implements UserInterface {
 
     public void launchFXThread() {
         launch();
-        fxThreadService.setJavaFXMode(true);
+        
     }
 
     @Override
@@ -179,6 +179,7 @@ public class FXUserInterface extends Application implements UserInterface {
 
         FXUserInterface ui = (FXUserInterface) context.getService(UIService.class).getUI(ImageJFX.UI_NAME);
         ui.initialize();
+        fxThreadService.setJavaFXMode(true);
     }
 
     /**
