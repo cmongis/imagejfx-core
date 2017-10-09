@@ -57,10 +57,18 @@ public class ActivateImageJFX extends ContextCommand {
         
        
         
-        uiService.showDialog("ImageJ-FX activated.");
+        //uiService.showDialog("ImageJ-FX activated.");
+        try {
+            IJ.run("Switch to Modern Mode");
+        }
+        catch(Exception e) {
+            
+        }
+        finally {
+             uiService.showUI(ImageJFX.UI_NAME);
+        }
         
-        IJ.run("Switch to Modern Mode");
-        
+       
         
         
     } 

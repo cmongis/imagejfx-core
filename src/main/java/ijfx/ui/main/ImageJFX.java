@@ -117,12 +117,11 @@ public final class ImageJFX {
         /*
             Code for Fiji integration testing
          */
-        //imagej.ui().setDefaultUI(imagej.ui().getUI(SwingUI.NAME));
-        //imagej.ui().showUI();
-        //disposeSwingUI(imagej);
+        imagej.ui().setDefaultUI(imagej.ui().getUI(SwingUI.NAME));
+        imagej.ui().showUI();
+        disposeSwingUI(imagej);
         imagej.ui().setDefaultUI(imagej.ui().getUI(UI_NAME));
         imagej.ui().showUI(UI_NAME);
-        imagej.ui().setDefaultUI(imagej.ui().getUI(SwingUI.NAME));
 
     }
     
