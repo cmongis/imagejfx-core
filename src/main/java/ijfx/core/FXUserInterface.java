@@ -22,6 +22,7 @@ package ijfx.core;
 import ijfx.core.activity.ActivityChangedEvent;
 import ijfx.core.activity.ActivityService;
 import ijfx.core.mainwindow.MainWindow;
+import ijfx.core.thread.FXThreadService;
 import ijfx.core.uicontext.UiContextService;
 import ijfx.core.uiplugin.UiPluginService;
 import ijfx.ui.UiPlugin;
@@ -122,6 +123,9 @@ public class FXUserInterface extends Application implements UserInterface {
     LoadingScreenService loadingScreenService;
 
     @Parameter
+    private FXThreadService fxThreadService;
+    
+    @Parameter
     private static UiCommandService uiCommandService;
 
     public static Stage STAGE;
@@ -144,6 +148,7 @@ public class FXUserInterface extends Application implements UserInterface {
 
     public void launchFXThread() {
         launch();
+        fxThreadService.setJavaFXMode(true);
     }
 
     @Override
