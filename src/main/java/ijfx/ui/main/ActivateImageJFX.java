@@ -24,10 +24,10 @@ import org.scijava.app.AppService;
 import org.scijava.command.Command;
 import org.scijava.command.CommandService;
 import org.scijava.command.ContextCommand;
+import org.scijava.console.ConsoleService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.UIService;
-import org.scijava.ui.swing.SwingUI;
 
 /**
  *
@@ -45,14 +45,17 @@ public class ActivateImageJFX extends ContextCommand {
     @Parameter
     AppService appService;
     
+    @Parameter
+    ConsoleService consoleService;
   
     
     @Override
     public void run() {
         
-        uiService.getUI(SwingUI.NAME).dispose();
-        
+        ImageJFX.disposeSwingUI(consoleService,uiService);
         uiService.setDefaultUI(uiService.getUI(ImageJFX.UI_NAME));
+        
+       
         
         uiService.showDialog("ImageJ-FX activated.");
         

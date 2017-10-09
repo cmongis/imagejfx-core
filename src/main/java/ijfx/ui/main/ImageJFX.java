@@ -20,7 +20,10 @@
  */
 package ijfx.ui.main;
 
-
+import java.awt.Frame;
+import java.awt.Toolkit;
+import java.awt.Window;
+import java.awt.event.AWTEventListener;
 import java.io.File;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
@@ -33,6 +36,9 @@ import javafx.util.Duration;
 import net.imagej.ImageJ;
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
+import org.scijava.console.ConsoleService;
+import org.scijava.ui.UIService;
+import org.scijava.ui.swing.SwingUI;
 import rx.Scheduler;
 import rx.schedulers.Schedulers;
 
@@ -40,11 +46,9 @@ import rx.schedulers.Schedulers;
  *
  * @author Cyril MONGIS, 2015
  */
-public final class ImageJFX  {
+public final class ImageJFX {
 
     public static final double MARGIN = 10;
-
-   
 
     private static Logger logger;
 
@@ -57,14 +61,13 @@ public final class ImageJFX  {
     public static Logger getLogger() {
         if (logger == null) {
             logger = Logger.getLogger("ImageJFX");
-            
-           // System.setProperty("java.util.logging.SimpleFormatter.format", 
+
+            // System.setProperty("java.util.logging.SimpleFormatter.format", 
             //"%1$tF %1$tT %4$s %2$s %5$s%6$s%n");
             System.setProperty("java.util.logging.SimpleFormatter.format", "[%4$s][%2$s] %5$s [%1$tc]%n%7");
-            
-            
+
         }
-        
+
         return logger;
     }
 
@@ -77,7 +80,7 @@ public final class ImageJFX  {
     public static final String VBOX_CLASS = "vbox";
 
     public static final String UI_NAME = "ImageJ-FX";
-    
+
     public static final String IJFX_FOLDER_NAME = ".imagejfx";
     public static final String FILE_FAVORITES = "favorites.json";
 
@@ -87,11 +90,11 @@ public final class ImageJFX  {
     public static final ScheduledExecutorService scheduleThreadPool = Executors.newScheduledThreadPool(2);
 
     public static final int CORE_NUMBER = getCoreNumber() > 1 ? getCoreNumber() - 1 : getCoreNumber();
-    
+
     private static final ExecutorService service = Executors.newCachedThreadPool();
-    
+
     private static final Scheduler publishSubjectScheduler = Schedulers.from(Executors.newSingleThreadExecutor());
-    
+
     public static double getAnimationDurationAsDouble() {
         return ANIMATION_DURATION.toMillis();
     }
@@ -103,33 +106,53 @@ public final class ImageJFX  {
     private static ResourceBundle resourceBundle;
 
     public static final String RESSOURCE_BUNDLE_ADDR = "ijfx/ui/res/MenuBundle";
-    
-    
-     /**
+
+    /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) { 
-        
-        
-        
-        ImageJ imagej = new ImageJ();
-       // imagej.ui().setDefaultUI(imagej.ui().getUI(SwingUI.NAME));
-        //imagej.ui().showUI();
-       // imagej.ui().getDefaultUI();
-        //SwingUtilities.
-        //imagej.ui().getDefaultUI().dispose();
+    public static void main(String[] args) {
 
+        ImageJ imagej = new ImageJ();
+
+        /*
+            Code for Fiji integration testing
+         */
+        //imagej.ui().setDefaultUI(imagej.ui().getUI(SwingUI.NAME));
+        //imagej.ui().showUI();
+        //disposeSwingUI(imagej);
         imagej.ui().setDefaultUI(imagej.ui().getUI(UI_NAME));
         imagej.ui().showUI(UI_NAME);
-        //imagej.ui().setDefaultUI(imagej.ui().getUI(SwingUI.NAME));
-       
-        
+        imagej.ui().setDefaultUI(imagej.ui().getUI(SwingUI.NAME));
+
     }
     
+    public static void disposeSwingUI(ImageJ imagej) {
+        disposeSwingUI(imagej.console(),imagej.ui());
+    }
+
+    public static void disposeSwingUI(ConsoleService consoleService, UIService uiService) {
+       uiService.getDefaultUI().dispose();
+
+        consoleService.removeOutputListener(uiService.getDefaultUI().getConsolePane());
+
+        for (Window d : Window.getWindows()) {
+            d.dispose();
+        }
+        for (Frame f : Frame.getFrames()) {
+            f.dispose();
+        }
+
+        Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
+
+        for (AWTEventListener listener : defaultToolkit.getAWTEventListeners()) {
+            defaultToolkit.removeAWTEventListener(listener);
+        }
+    }
+
     public static void applyBaseCss(Parent parent) {
-       parent.getStylesheets().add(getStylesheet());
+        parent.getStylesheets().add(getStylesheet());
     }
-    
+
     public static String getStylesheet() {
         return STYLESHEET_ADDR;
     }
@@ -166,7 +189,7 @@ public final class ImageJFX  {
     public static Scheduler getPublishSubjectScheduler() {
         return publishSubjectScheduler;
     }
-    
+
     public static ResourceBundle getResourceBundle() {
         if (resourceBundle == null) {
             resourceBundle = ResourceBundle.getBundle(RESSOURCE_BUNDLE_ADDR);
@@ -178,6 +201,4 @@ public final class ImageJFX  {
         return Runtime.getRuntime().availableProcessors();
     }
 
-    
-    
 }
