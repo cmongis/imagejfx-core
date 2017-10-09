@@ -19,7 +19,6 @@
  */
 package ijfx.explorer;
 
-
 import ijfx.core.datamodel.Iconazable;
 import ijfx.core.imagedb.ImageRecord;
 import ijfx.core.imagedb.ImageRecordService;
@@ -74,40 +73,48 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
 
     @Parameter
     private TimerService timerService;
-    
+
     @Parameter
     private ImageRecordService imageRecordService;
-    
+
     private final Logger logger = ImageJFX.getLogger();
-    
+
     @Parameter
     private Context context;
-  
+
     private Predicate<Explorable> lastFilter;
     private Predicate<Explorable> optionalFilter;
 
     private final IntegerProperty selected = new SimpleIntegerProperty(0);
 
     private List<Explorable> selectedItems = new ArrayList<>();
-    
-    //private SelectableManager<Explorable> selectionManager = new SelectableManager<>();
-   
-   
+
+    int displayedItemState = 0;
+
+    int filteredItemState = 0;
+
     @Override
     public void initialize() {
-       
-      // selectionManager.getChangeBuffer()
-             //  .subscribe(this::notifySelectionChange);
 
+        // selectionManager.getChangeBuffer()
+        //  .subscribe(this::notifySelectionChange);
     }
 
     @Override
     public void setItems(List<? extends Explorable> items) {
 
+        int newState = ExplorableList.contentHashWithOrder(items);
+
+        if (newState == displayedItemState) {
+            return;
+        }
+
+        displayedItemState = newState;
+
         explorableList.clear();
         explorableList.addAll(items);
         setFilter(lastFilter);
-       
+
     }
 
     @Override
@@ -145,8 +152,19 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     }
 
     protected void setFilteredItems(List<Explorable> filteredItems) {
-        this.filteredList = filteredItems;
-        update();
+
+        // testing the filter state
+        int newState = ExplorableList.contentHashWithOrder(filteredItems);
+
+        // aborting if no changes
+        if (newState == filteredItemState) {
+            return;
+        } else {
+            filteredItemState = newState;
+            this.filteredList = filteredItems;
+            update();
+        }
+
     }
 
     @Override
@@ -162,15 +180,16 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
 
     @Override
     public void select(Explorable explorable) {
-        if(selectedItems.contains(explorable) == false)
-        selectedItems.add(explorable);
+        if (selectedItems.contains(explorable) == false) {
+            selectedItems.add(explorable);
+        }
     }
+
     @Override
     public void setSelected(List<Explorable> selectedList) {
         selectedItems.clear();
         selectedItems.addAll(selectedList);
     }
-    
 
     @Override
     public ArrayList<String> getMetaDataKey(List<? extends Explorable> items) {
@@ -187,7 +206,6 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
         return keyList;
     }
 
-   
     public void open(Iconazable explorable) {
 
         new CallbackTask<Void, Boolean>()
@@ -222,22 +240,17 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     @Override
     public void toggleSelection(Explorable explorable) {
 
-        if(selectedItems.contains(explorable)) {
+        if (selectedItems.contains(explorable)) {
             selectedItems.remove(explorable);
-        }
-        else {
+        } else {
             selectedItems.add(explorable);
         }
     }
-    
-    
 
-    
     public IntegerProperty selectedCountProperty() {
         return selected;
     }
-    
-    
+
     public Stream<Explorable> indexDirectory(ProgressHandler origProgress, File directory) {
 
         //if(progress == null) progress = new SilentProgressHandler();
@@ -276,14 +289,12 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
         }
     }
 
-    
     public void publishSelectionEvent() {
         eventService.publishLater(new ExplorerSelectionChangedEvent());
     }
-    
+
     public void update() {
-       eventService.publishLater(new DisplayedListChanged());
+        eventService.publishLater(new DisplayedListChanged());
     }
 
-    
 }

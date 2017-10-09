@@ -125,7 +125,7 @@ public class ExplorableList extends ArrayList<Explorable> {
         
     }
     
-    public static int contentHashWidthOrder(List<? extends Explorable> list) {
+    public static int contentHashWithOrder(List<? extends Explorable> list) {
 
         if (list == null) {
             return 0;
