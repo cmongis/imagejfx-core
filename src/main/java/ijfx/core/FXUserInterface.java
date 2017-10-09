@@ -378,11 +378,11 @@ public class FXUserInterface extends Application implements UserInterface {
     }
 
     @Override
-    public void show(Display<?> display) {
+    public synchronized void show(Display<?> display) {
 
-        if(Platform.isFxApplicationThread()) {
-            throw new IllegalThreadStateException("this command shouldn't be accessed from the FX Thread.");
-        }
+        //if(Platform.isFxApplicationThread()) {
+        //    throw new IllegalThreadStateException("this command shouldn't be accessed from the FX Thread.");
+        //}
           displayService.setActiveDisplay(display);
         //try {
           new CallbackTask<Display<?>,Boolean>()
@@ -417,7 +417,7 @@ public class FXUserInterface extends Application implements UserInterface {
         for (final PluginInfo<DisplayViewer<?>> info : viewers) {
             // check that viewer can actually handle the given display
             final DisplayViewer<?> viewer = pluginService.createInstance(info);
-            if (viewer == null) {
+            if (viewer == null || viewer.getClass().getName().toLowerCase().contains("swing")) {
                 continue;
             }
             if (!viewer.canView(display)) {

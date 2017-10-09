@@ -38,7 +38,8 @@ import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
 import org.scijava.console.ConsoleService;
 import org.scijava.ui.UIService;
-import org.scijava.ui.swing.SwingUI;
+import org.scijava.ui.UserInterface;
+import org.scijava.ui.swing.sdi.SwingSDIUI;
 import rx.Scheduler;
 import rx.schedulers.Schedulers;
 
@@ -117,11 +118,12 @@ public final class ImageJFX {
         /*
             Code for Fiji integration testing
          */
-        imagej.ui().setDefaultUI(imagej.ui().getUI(SwingUI.NAME));
+        imagej.ui().setDefaultUI(imagej.ui().getUI(SwingSDIUI.NAME));
         imagej.ui().showUI();
         disposeSwingUI(imagej);
         imagej.ui().setDefaultUI(imagej.ui().getUI(UI_NAME));
-        imagej.ui().showUI(UI_NAME);
+        imagej.ui().showUI();
+        
 
     }
     
@@ -130,8 +132,18 @@ public final class ImageJFX {
     }
 
     public static void disposeSwingUI(ConsoleService consoleService, UIService uiService) {
-       uiService.getDefaultUI().dispose();
-
+       
+        uiService.dispose();
+        //uiService.getDefaultUI().dispose();
+       uiService.getAvailableUIs()
+               .stream()
+               .filter(ui->ui.isVisible())
+               .peek(ui->{
+                   System.out.println(ui.getClass());
+                  
+               })
+               .forEach(UserInterface::dispose);
+       
         consoleService.removeOutputListener(uiService.getDefaultUI().getConsolePane());
 
         for (Window d : Window.getWindows()) {

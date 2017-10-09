@@ -69,6 +69,8 @@ public class FXThreadService extends AbstractService implements
 
     private boolean javaFXMode = false;
 
+    private ExecutorService eventThread = Executors.newFixedThreadPool(1);
+
     // -- ThreadService methods --
     @Override
     public <V> Future<V> run(final Callable<V> code) {
@@ -111,6 +113,8 @@ public class FXThreadService extends AbstractService implements
                     code.run();
                 } else {
                     Platform.runLater(code);
+
+                    //eventThread.execute(code);
                 }
             } else {
 
@@ -134,7 +138,8 @@ public class FXThreadService extends AbstractService implements
     }
 
     @Override
-    public void queue(final Runnable code) {
+    public void queue(final Runnable code
+    ) {
 
         if (isJavaFXMode()) {
             Platform.runLater(code);
@@ -144,12 +149,14 @@ public class FXThreadService extends AbstractService implements
     }
 
     @Override
-    public Thread getParent(final Thread thread) {
+    public Thread getParent(final Thread thread
+    ) {
         return parents.get(thread != null ? thread : Thread.currentThread());
     }
 
     @Override
-    public ThreadService.ThreadContext getThreadContext(final Thread thread) {
+    public ThreadService.ThreadContext getThreadContext(final Thread thread
+    ) {
         final String name = thread.getName();
 
         // check for same context
@@ -181,12 +188,13 @@ public class FXThreadService extends AbstractService implements
 
     // -- ThreadFactory methods --
     @Override
-    public Thread newThread(final Runnable r) {
+    public Thread newThread(final Runnable r
+    ) {
         final String threadName = contextThreadPrefix() + nextThread++;
         return new Thread(r, threadName);
     }
-
     // -- Helper methods --
+
     private ExecutorService executor() {
         if (executor == null) {
             executor = Executors.newCachedThreadPool(this);
