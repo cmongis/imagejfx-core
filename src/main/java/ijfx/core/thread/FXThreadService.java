@@ -128,7 +128,7 @@ public class FXThreadService extends AbstractService implements
     @Override
     public void queue(final Runnable code) {
 
-        if (true) {
+        if (isJavaFXMode()) {
             Platform.runLater(code);
         } else {
             EventQueue.invokeLater(wrap(code));
