@@ -165,7 +165,6 @@ public class DefaultFolderManagerService extends AbstractService implements Fold
 
             logger.info("Setting current folder " + folder.getName());
 
-            //explorerService.setItems(currentFolder.getFileList(ProgressHandler.NONE));
             uiContextService.enter("explore-files");
             uiContextService.update();
             updateExploredElements();
@@ -215,7 +214,7 @@ public class DefaultFolderManagerService extends AbstractService implements Fold
                 }
             }
             task.then(this::setItems);
-            task.start();
+            task.startIn(executorService);
             loadingScreenService.frontEndTask(task, false);
         }
         if (mode != null) {
@@ -274,8 +273,7 @@ public class DefaultFolderManagerService extends AbstractService implements Fold
 
     private synchronized void load() {
 
-        //recentFileFolder = new RecentFileFolder(getContext());
-        //folderList.add(recentFileFolder);
+       
         Map<String, String> folderMap = jsonPrefService.loadMapFromJson(FOLDER_PREFERENCE_FILE, String.class, String.class);
         folderMap.forEach((name, folderPath) -> {
             File file = new File(folderPath);

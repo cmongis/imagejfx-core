@@ -151,33 +151,7 @@ public class DefaultFolder implements Folder, FileChangeListener {
         
         setStatus("Fetching files...");
         
-        /*
-        //if(progress == null) progress = new SilentProgressHandler();
-        final ProgressHandler finalProgress = ProgressHandler.check(progress);
-
-        Timer timer = timerService.getTimer(this.getClass());
-        timer.start();
-        Collection<? extends ImageRecord> records = imageRecordService.getRecordsFromDirectory(progress, file);
-        timer.elapsed("record fetching");
-        progress.setStatus("Reading folder...");
-
-        progress.setTotal(records.size());
-
-        List<Explorable> explorables = records
-                .stream()
-                .parallel()
-                .map(record -> {
-                    progress.increment(1);
-                    return addFile(record);
-                })
-                .flatMap(self -> self)
-                .map(this::addPlanes)
-                .collect(Collectors
-                        .toList());
-
-        logger.info(String.format("%d records fetched", records.size()));
-        imageRecordService.forceSave();
-        */
+       
         
         List<Explorable> explorables = explorerService.indexDirectory(progress,file)
                 .map(this::addPlanes)
