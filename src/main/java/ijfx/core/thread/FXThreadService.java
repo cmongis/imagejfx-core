@@ -22,11 +22,14 @@ package ijfx.core.thread;
 import ijfx.ui.main.ImageJFX;
 import java.awt.EventQueue;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
 import javafx.application.Platform;
 import org.scijava.Priority;
 import org.scijava.log.LogService;
@@ -54,6 +57,11 @@ public class FXThreadService extends AbstractService implements
     private LogService log;
 
     private ExecutorService executor;
+
+    /**
+     * Mapping from ID to single-thread {@link ExecutorService} queue.
+     */
+    private Map<String, ExecutorService> queues;
 
     private int nextThread = 0;
 
@@ -186,6 +194,29 @@ public class FXThreadService extends AbstractService implements
         return executor;
     }
 
+    private synchronized ExecutorService executor(final String id) {
+        if (disposed) {
+            return null;
+        }
+        if (queues == null) {
+            queues = new HashMap<>();
+        }
+        if (!queues.containsKey(id)) {
+            final ThreadFactory factory = new ThreadFactory() {
+
+                @Override
+                public Thread newThread(final Runnable r) {
+                    final String threadName = contextThreadPrefix() + id;
+                    return new Thread(r, threadName);
+                }
+
+            };
+            final ExecutorService queue = Executors.newSingleThreadExecutor(factory);
+            queues.put(id, queue);
+        }
+        return queues.get(id);
+    }
+
     private Runnable wrap(final Runnable r) {
         final Thread parent = Thread.currentThread();
         return new Runnable() {
@@ -239,4 +270,13 @@ public class FXThreadService extends AbstractService implements
         return javaFXMode;
     }
 
+    @Override
+    public Future<?> queue(final String id, final Runnable code) {
+        return executor(id).submit(wrap(code));
+    }
+
+    @Override
+    public <V> Future<V> queue(final String id, final Callable<V> code) {
+        return executor(id).submit(wrap(code));
+    }
 }
