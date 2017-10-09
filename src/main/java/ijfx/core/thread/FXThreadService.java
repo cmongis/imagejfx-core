@@ -96,16 +96,25 @@ public class FXThreadService extends AbstractService implements
     @Override
     public void invoke(final Runnable code) throws InterruptedException,
             InvocationTargetException {
+        try {
+            if (isJavaFXMode()) {
 
-        if (isJavaFXMode()) {
-
-            if (Platform.isFxApplicationThread()) {
-                code.run();
+                if (Platform.isFxApplicationThread()) {
+                    code.run();
+                } else {
+                    Platform.runLater(code);
+                }
             } else {
-                Platform.runLater(code);
-            }
-        } else {
 
+                if (isDispatchThread()) {
+                    // just call the code
+                    code.run();
+                } else {
+                    // invoke on the EDT
+                    EventQueue.invokeAndWait(wrap(code));
+                }
+            }
+        } catch (IllegalStateException e) {
             if (isDispatchThread()) {
                 // just call the code
                 code.run();
