@@ -179,7 +179,7 @@ public class FXUserInterface extends Application implements UserInterface {
 
         FXUserInterface ui = (FXUserInterface) context.getService(UIService.class).getUI(ImageJFX.UI_NAME);
         ui.initialize();
-        fxThreadService.setJavaFXMode(true);
+       
     }
 
     /**
@@ -187,11 +187,13 @@ public class FXUserInterface extends Application implements UserInterface {
      */
     public void initialize() {
 
+        fxThreadService.setJavaFXMode(true);
+        
         // registering the ui slots of the MainWindow
         getMainWindow()
                 .getContextualContainerList()
                 .forEach(uiContextService::addContextualView);
-
+        
         // loading the plugins
         Task task = new CallbackTask<Object, Collection<UiPlugin>>()
                 .call(uiPluginService::loadAll)
