@@ -54,7 +54,7 @@ public class OpenInWindow extends AbstractUiCommand<ExplorerActivity>{
     @Override
     public void run(ExplorerActivity t) {
         
-        ExplorableList list = new ExplorableList(explorerService.getItems());
+        ExplorableList list = new ExplorableList(explorerService.getDisplayedItems());
         displayService.show(list);
         uiContextService.update();
     }
