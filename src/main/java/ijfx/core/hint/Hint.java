@@ -19,12 +19,15 @@
  */
 package ijfx.core.hint;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.scijava.event.SciJavaEvent;
 
 /**
  *
  * @author Cyril MONGIS, 2016
  */
+@JsonDeserialize(as = DefaultHint.class)
 public interface Hint {
     
     public String getTarget();    
