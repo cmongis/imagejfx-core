@@ -33,7 +33,8 @@ import org.scijava.plugin.Plugin;
  *
  * @author Cyril MONGIS
  */
-@Plugin(type = UiCommand.class,label = "Segment",iconPath="fa:dot_circle",priority = 0.6)
+@Plugin(type = UiCommand.class,label = "Segment",iconPath="fa:map_marker",priority = 0.6
+,description="Work on the current images using ImageJFX segmentation tools")
 public class SegmentSideMenuCommand extends AbstractUiCommand<MainWindow>{
 
     

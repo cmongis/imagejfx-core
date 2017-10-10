@@ -29,6 +29,7 @@ import ijfx.core.mainwindow.MainWindow;
 import ijfx.core.uicontext.ContextualContainer;
 import ijfx.core.uicontext.ContextualWidget;
 import ijfx.core.uicontext.UiContextService;
+import ijfx.core.uiplugin.FXUiCommandService;
 import ijfx.core.uiplugin.UiPluginService;
 import ijfx.core.utils.SciJavaUtils;
 import ijfx.ui.UiPlugin;
@@ -61,7 +62,6 @@ import mongis.utils.animation.Animations;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import ijfx.core.uiplugin.UiCommand;
-import ijfx.core.uiplugin.UiCommandService;
 import ijfx.ui.main.ImageJFX;
 import java.io.File;
 import java.time.Duration;
@@ -161,7 +161,7 @@ public class DefaultMainWindow implements MainWindow {
     FXIconService fxIconService;
 
     @Parameter
-    UiCommandService uiActionService;
+    FXUiCommandService uiCommandService;
 
     @Parameter
     DragAndDropService dragAndDropService;
@@ -382,11 +382,14 @@ public class DefaultMainWindow implements MainWindow {
         final FontAwesomeIcon icon = fxIconService.getIcon(SciJavaUtils.getIconPath(action));
 
         final String label = SciJavaUtils.getLabel(action);
-
+        final String description = SciJavaUtils.getDescription(action);
+        
         SideMenuButton sideMenuButton = new SideMenuButton(label, icon);
         sideMenuButton.setOnMouseClicked(event -> {
             action.run(this);
         });
+        
+        uiCommandService.attacheDescription(sideMenuButton, description);
         sideBar.addButton(sideMenuButton);
     }
 

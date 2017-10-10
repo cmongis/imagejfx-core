@@ -19,8 +19,8 @@
  */
 package ijfx.ui.mainwindow;
 
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -28,6 +28,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.input.MouseEvent;
@@ -106,7 +107,7 @@ public class SideBar {
     protected Pane getNode() {
         return sideMenu;
     }
-
+    
     protected void onMemoryUsageChanged() {
 
         if (memoryLabel == null) {

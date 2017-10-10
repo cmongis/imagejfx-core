@@ -29,7 +29,9 @@ import ijfx.ui.UiContexts;
  * Launch the activity that contains all the ImageJ displays
  * @author Cyril MONGIS
  */
-@Plugin(type = UiCommand.class,label = "Visiualize", priority= 100,iconPath = "fa:picture_alt")
+@Plugin(type = UiCommand.class
+        ,label = "Visiualize", priority= 100,iconPath = "fa:picture_alt"
+,description="Mode equivalent to the normal ImageJ")
 public class VisualizeUiCommand extends AbstractActivityLauncher{
     public VisualizeUiCommand() {
         super(DisplayContainer.class);
