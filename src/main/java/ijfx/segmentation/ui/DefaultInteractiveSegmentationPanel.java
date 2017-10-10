@@ -32,6 +32,7 @@ import ijfx.core.uicontext.UiContextProperty;
 import ijfx.core.uicontext.UiContextService;
 import ijfx.core.uiplugin.Localization;
 import ijfx.explorer.ExplorableList;
+import ijfx.explorer.ExplorerService;
 import ijfx.explorer.core.FolderManagerService;
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.segmentation.commands.AnalyseParticles;
@@ -90,10 +91,10 @@ public class DefaultInteractiveSegmentationPanel extends BorderPane implements U
     private Accordion accordion;
 
     @FXML
-    private SplitMenuButton analyseParticlesButton;
+    private Button analyseParticlesButton;
 
     @FXML
-    private SplitMenuButton countObjectsButton;
+    private Button countObjectsButton;
 
     @FXML
     private VBox actionVBox;
@@ -101,12 +102,10 @@ public class DefaultInteractiveSegmentationPanel extends BorderPane implements U
     @FXML
     private Button segmentMoreButton;
 
-  
     /*
         SciJava services
      */
-    
-      @Parameter
+    @Parameter
     private SegmentationService segmentationService;
 
     @Parameter
@@ -120,11 +119,10 @@ public class DefaultInteractiveSegmentationPanel extends BorderPane implements U
 
     @Parameter
     private CommandService commandService;
-    
+
     @Parameter
     private Context context;
-    
-    
+
     @Parameter
     private LoadingScreenService loadingScreenService;
 
@@ -140,15 +138,16 @@ public class DefaultInteractiveSegmentationPanel extends BorderPane implements U
     @Parameter
     private FolderManagerService folderManagerService;
 
-    
+    @Parameter
+    ExplorerService explorerService;
+
     /*
         Attributes
-    */
-    
+     */
     private Map<Class<?>, TitledPane> paneMap = new HashMap<>();
-    
+
     private UiContextProperty uiContextProperty;
-   
+
 
     /*
         Constants
@@ -161,8 +160,6 @@ public class DefaultInteractiveSegmentationPanel extends BorderPane implements U
         FXUtilities.injectFXML(this);
         setPrefWidth(200);
 
-        addAction(FontAwesomeIcon.COPY, ALL_PLANE_ONE_MASK, this::analyseParticlesFromAllPlanes, analyseParticlesButton);
-        addAction(FontAwesomeIcon.TASKS, SEGMENT_AND_MEASURE, this::segmentAndAnalyseEachPlane, analyseParticlesButton);
     }
 
     @Override
@@ -185,8 +182,10 @@ public class DefaultInteractiveSegmentationPanel extends BorderPane implements U
         accordion.expandedPaneProperty().addListener(this::onExpanded);
 
         uiContextProperty = new UiContextProperty(context, UiContexts.EXPLORE);
-        
+
         segmentMoreButton.textProperty().bind(Bindings.createStringBinding(this::getSegmentMoreButtonText, uiContextProperty));
+        
+        
         
         refresh();
         return this;
@@ -239,15 +238,6 @@ public class DefaultInteractiveSegmentationPanel extends BorderPane implements U
 
     }
 
-    private void analyseParticlesFromAllPlanes(ProgressHandler event) {
-
-    }
-
-    private void segmentAndAnalyseEachPlane(ProgressHandler event) {
-       
-
-    }
-
     @Override
     public Node getUiElement() {
         return this;
@@ -277,13 +267,11 @@ public class DefaultInteractiveSegmentationPanel extends BorderPane implements U
 
     @FXML
     public void analyseParticles() {
-         if(isExplorer()) {
-            commandService.run(BatchMeasurement.class,true,"workflow",segUISrv.getWorkflow());
-        }
-        else {
+        if (isExplorer()) {
+            commandService.run(BatchMeasurement.class, true, "workflow", segUISrv.getWorkflow());
+        } else {
             commandService.run(AnalyseParticles.class, true);
         }
-      
 
     }
 
@@ -303,32 +291,36 @@ public class DefaultInteractiveSegmentationPanel extends BorderPane implements U
         if (!isExplorer()) {
             folderManagerService.openImageFolder(imageDisplayService.getActiveImageDisplay());
         } else {
-             
+            if (explorerService.getSelectedItems().size() == 0) {
+                uiService.showDialog("Please select an item for test");
+                return;
+            }
+            
+            Explorable get = explorerService.getSelectedItems().get(0);
+            explorerService.open(get);
+
         }
     }
 
     @FXML
     public void countObjects() {
-        
-        if(isExplorer()) {
-            commandService.run(BatchCount.class, true,"workflow",segUISrv.getWorkflow());
-        }
-        else {
-            commandService.run(CountObject.class,true);
+
+        if (isExplorer()) {
+            commandService.run(BatchCount.class, true, "workflow", segUISrv.getWorkflow());
+        } else {
+            commandService.run(CountObject.class, true);
         }
 
     }
 
     private String getSegmentMoreButtonText() {
-        if(isExplorer()) {
-            return "Test";
-        }
-        else {
-            return "Batch";
+        if (isExplorer()) {
+            return "Test mode";
+        } else {
+            return "Batch mode";
         }
     }
-    
-    
+
     private void displayCount(List<MetaDataSet> metaDataSet) {
         metadataDisplaySrv.addMetaDataSetToDisplay("Object count", metaDataSet);
     }
