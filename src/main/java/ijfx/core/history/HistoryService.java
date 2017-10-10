@@ -30,6 +30,9 @@ import ijfx.core.workflow.DefaultWorkflow;
 import ijfx.core.workflow.Workflow;
 import ijfx.core.workflow.WorkflowStep;
 import ijfx.core.workflow.json.WorkflowMapperModule;
+import ijfx.explorer.ExplorerActivity;
+import ijfx.explorer.core.FolderManagerService;
+import ijfx.ui.UiContexts;
 import ijfx.ui.main.ImageJFX;
 import java.io.File;
 import java.io.IOException;
@@ -74,17 +77,29 @@ public class HistoryService extends AbstractService implements IjfxService {
     @Parameter
     private ModuleService moduleService;
 
-
     @Parameter
     private Context context;
-
 
     @Parameter
     private UIExtraService uiExtraService;
 
-    
     @Parameter
     private UIService uiService;
+
+    @Parameter
+    private UiContextService uiContextService;
+
+    @Parameter
+    private ActivityService activityService;
+
+    @Parameter
+    private EventService eventService;
+
+    @Parameter
+    private FolderManagerService folderManagerService;
+
+    @Parameter
+    private ImageDisplayService imageDisplayService;
 
     private boolean enabled;
 
@@ -239,24 +254,23 @@ public class HistoryService extends AbstractService implements IjfxService {
                 .addAnswerButton(RichTextDialog.AnswerType.VALIDATE, "Process files")
                 .addAnswerButton(RichTextDialog.AnswerType.CANCEL, "Cancel")
                 .showDialog();
-        /*
+
         if (answer.contains("segment")) {
             uiContextService.enter(UiContexts.SEGMENT);
-            activityService.openByType(ExplorerActivity.class);
+            activityService.open(ExplorerActivity.class);
 
         } else if (answer.contains("process")) {
             uiContextService.enter(UiContexts.BATCH);
-            activityService.openByType(ExplorerActivity.class);
-            eventService.publish(
+            activityService.open(ExplorerActivity.class);
+            /*eventService.publish(
                     new WorkflowRequest()
                             .setGoal(WorkflowRequest.WorkflowGoal.PROCESSING)
                             .setObject(new DefaultWorkflow(toExecute))
-            );
+            );*/
             folderManagerService.openImageFolder(imageDisplayService.getActiveImageDisplay());
-       
-       
-        } */
-         uiService.showDialog("The rest is not implemented yet !!!");
+
+        }
+        uiService.showDialog("The rest is not implemented yet !!!");
     }
 
     public void setEnabled(boolean enabled) {
