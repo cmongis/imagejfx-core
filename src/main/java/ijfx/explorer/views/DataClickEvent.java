@@ -52,6 +52,10 @@ public class DataClickEvent<T> {
         return event;
     }
     
+    public boolean isCtrlDown() {
+        return event.isControlDown();
+    }
+    
     
     
     
