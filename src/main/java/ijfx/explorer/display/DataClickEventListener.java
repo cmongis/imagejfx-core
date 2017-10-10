@@ -47,7 +47,12 @@ public class DataClickEventListener implements Consumer<DataClickEvent<Explorabl
         }
         boolean isShiftDown = event.getEvent() != null ? event.getEvent().isShiftDown() : false;
         boolean isAlreadySelected = model.getSelectedItems().contains(clicked);
-        if (isShiftDown && selected > 0) {
+        boolean isCtrlDown = event.isCtrlDown();
+        if(isCtrlDown) {
+            model.select(clicked);
+        }
+        
+        else if (isShiftDown && selected > 0) {
             model.selectUntil(clicked);
         } else if (isAlreadySelected && selected == 1) {
             model.getSelectedItems().remove(clicked);
