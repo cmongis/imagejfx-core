@@ -1,0 +1,16 @@
+{
+    "descriptions":{
+        "eminem":"there"
+    }
+    ,"hints":[
+        {
+            "target":"eminem"
+            ,"text":"Here are some text with the keyword eminem"
+        }
+        ,{
+            "target":"eminem"
+            ,"text":"an other one"
+        }
+    ]
+    
+}
