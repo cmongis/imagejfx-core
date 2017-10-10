@@ -28,29 +28,29 @@
          <bottom>
             <VBox styleClass="vbox" BorderPane.alignment="CENTER">
                <children>
-                  <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#repeatAll" styleClass="warning" text="Replay...">
+                  <Button fx:id="repeatAllButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#repeatAll" styleClass="warning" text="Replay...">
                      <graphic>
                         <FontAwesomeIconView glyphName="REPEAT" />
                      </graphic>
                   </Button>
-                  <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#useWorkflow" styleClass="success" text="Use workflow for batch...">
+                  <Button fx:id="useWorkflowButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#useWorkflow" styleClass="success" text="Use workflow for batch...">
                      <graphic>
                         <FontAwesomeIconView glyphName="MAGIC" />
                      </graphic>
                   </Button>
                   <MenuButton alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Manage history" textAlignment="CENTER">
                     <items>
-                      <MenuItem mnemonicParsing="false" onAction="#loadWorkflow" text="Import from file...">
+                      <MenuItem fx:id="importFileMenuItem" mnemonicParsing="false" onAction="#loadWorkflow" text="Import from file...">
                            <graphic>
                                       <FontAwesomeIconView glyphName="SAVE" styleClass="save-workflow-button" text="" />
                            </graphic>
                         </MenuItem>
-                      <MenuItem mnemonicParsing="false" onAction="#saveWorkflow" text="Export to file...">
+                      <MenuItem fx:id="exportFileMenuItem" mnemonicParsing="false" onAction="#saveWorkflow" text="Export to file...">
                            <graphic>
                                       <FontAwesomeIconView glyphName="FOLDER_OPEN" styleClass="open-workflow-button" />
                            </graphic>
                         </MenuItem>
-                        <MenuItem mnemonicParsing="false" onAction="#deleteAll" text="Delete all">
+                        <MenuItem fx:id="deleteAllMenuItem" mnemonicParsing="false" onAction="#deleteAll" text="Delete all">
                            <graphic>
                                       <FontAwesomeIconView glyphName="TRASH" />
                            </graphic>

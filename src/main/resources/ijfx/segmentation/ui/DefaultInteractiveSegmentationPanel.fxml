@@ -26,16 +26,16 @@
                   <String fx:value="warning" />
                </styleClass>
             </Label>
-            <SplitMenuButton fx:id="analyseParticlesButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#analyseParticles" text="Analyse particles">
+            <Button fx:id="analyseParticlesButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#analyseParticles" text="Analyse particles">
                <graphic>
                   <FontAwesomeIconView glyphName="BAR_CHART" />
                </graphic>
-            </SplitMenuButton>
-            <SplitMenuButton fx:id="countObjectsButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#countObjects" text="Count objects">
+            </Button>
+            <Button fx:id="countObjectsButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#countObjects" text="Count objects">
                <graphic>
                   <FontAwesomeIconView glyphName="CHILD" text="" />
                </graphic>
-            </SplitMenuButton>
+            </Button>
             <HBox styleClass="toggle-group">
                <children>
                   <Button fx:id="segmentMoreButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#segmentMore" prefWidth="120.0" text="Batch">
