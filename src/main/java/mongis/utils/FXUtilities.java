@@ -20,12 +20,14 @@
  */
 package mongis.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.rjeschke.txtmark.Processor;
 import com.sun.javafx.tk.Toolkit;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import ijfx.ui.main.ImageJFX;
 import ijfx.ui.RichMessageDisplayer;
+import ijfx.ui.utils.HelpConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -52,7 +54,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
@@ -70,6 +75,10 @@ import net.imglib2.display.ColorTable;
  * @author Cyril MONGIS
  */
 public class FXUtilities {
+
+    private static final ObjectMapper mapper = new ObjectMapper();
+
+    private static final Logger logger = Logger.getLogger(FXUtilities.class.getName());
 
     public static Node loadView(URL url, Object controller, boolean setRoot) {
         FXMLLoader loader = setLoaderController(createLoader(), controller);
@@ -144,7 +153,7 @@ public class FXUtilities {
                     try {
                         displayer.setContent(root.getClass(), input);
                     } catch (Exception e) {
-                        ImageJFX.getLogger().log(Level.SEVERE,null,e);
+                        ImageJFX.getLogger().log(Level.SEVERE, null, e);
                     }
                     return webView;
                 }).submit(Platform::runLater);
@@ -200,12 +209,12 @@ public class FXUtilities {
         AnchorPane.setTopAnchor(node, top);
         AnchorPane.setRightAnchor(node, right);
         AnchorPane.setBottomAnchor(node, bottom);
-        AnchorPane.setLeftAnchor(node,left);
-        
+        AnchorPane.setLeftAnchor(node, left);
+
     }
-    
+
     public static void setAnchors(Node node, double anchors) {
-        setAnchors(node,anchors, anchors, anchors, anchors);
+        setAnchors(node, anchors, anchors, anchors, anchors);
     }
 
     private static class ThrowableWrapper {
@@ -299,6 +308,61 @@ public class FXUtilities {
         }
     }
 
+    public static HelpConfiguration getHelpConfiguration(Object object) {
+        String file = object.getClass().getSimpleName() + ".json";
+
+        URL resource = object.getClass().getResource(file);
+        if (resource != null) {
+            try {
+                HelpConfiguration readValue = mapper.readValue(resource.openStream(), HelpConfiguration.class);
+                return readValue;
+
+            } catch (Exception e) {
+                logger.log(Level.WARNING, "Error when loading " + file, e);
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public static Node lookup(String id, Node node) {
+
+        if (id.equals(node.getId())) {
+            return node;
+        } else if (node instanceof TitledPane) {
+
+            return lookup(id, ((TitledPane) node).getContent());
+
+        } else if (node instanceof MenuButton) {
+            return lookupItems(id, ((MenuButton) node).getItems());
+        } else if (node instanceof Parent) {
+
+            return lookup(id, ((Parent) node)
+                    .getChildrenUnmodifiable());
+
+        } else {
+            return null;
+        }
+
+    }
+
+    private static Node lookupItems(String id, Collection<? extends MenuItem> list) {
+        return list.stream()
+                .map(child -> lookup(id, child.getGraphic()))
+                .filter(child -> child != null)
+                .findFirst()
+                .orElse(null);
+    }
+    
+    private static Node lookup(String id, Collection<? extends Node> list) {
+        return list.stream()
+                .map(child -> lookup(id, child))
+                .filter(child -> child != null)
+                .findFirst()
+                .orElse(null);
+    }
+
     private static FXMLLoader loader = new FXMLLoader();
 
     public static void injectFXML(Object rootController, String location) throws IOException {
@@ -351,7 +415,7 @@ public class FXUtilities {
                 try {
                     injectFXML(controller);
                 } catch (Exception e) {
-                    ImageJFX.getLogger().log(Level.SEVERE,null,e);
+                    ImageJFX.getLogger().log(Level.SEVERE, null, e);
                 }
             });
         } catch (Exception e) {
@@ -574,7 +638,7 @@ public class FXUtilities {
     public static final String TOGGLE_GROUP_LAST = "last";
 
     public static void makeToggleGroup(Node parent, List<? extends Node> childen) {
-        toggleCssStyle(parent, TOGGLE_GROUP,true);
+        toggleCssStyle(parent, TOGGLE_GROUP, true);
         makeToogleGroup(childen);
     }
 
@@ -604,36 +668,35 @@ public class FXUtilities {
         });
 
     }
-    
+
     public static void styleDialogButton(Dialog dialog, ButtonType buttonType, String styleClass, FontAwesomeIcon icon) {
-        
-        
-        Button button = (Button)dialog.getDialogPane().lookupButton(buttonType);
-    
-        if(button == null) return;
-    
+
+        Button button = (Button) dialog.getDialogPane().lookupButton(buttonType);
+
+        if (button == null) {
+            return;
+        }
+
         button.getStyleClass().add(styleClass);
         button.setGraphic(new FontAwesomeIconView(icon));
-        
+
     }
 
     public static void styleDialogButtons(Dialog dialog, String styleClass, FontAwesomeIcon icon, ButtonType... buttonTypes) {
-        for(ButtonType type : buttonTypes) {
+        for (ButtonType type : buttonTypes) {
             styleDialogButton(dialog, type, styleClass, icon);
         }
     }
-    
+
     public static void styleDialogButtons(Dialog dialog) {
-        
-        styleDialogButtons(dialog,BUTTON_DANGER_CLASS, FontAwesomeIcon.CLOSE,ButtonType.NO,ButtonType.CANCEL);
-        
+
+        styleDialogButtons(dialog, BUTTON_DANGER_CLASS, FontAwesomeIcon.CLOSE, ButtonType.NO, ButtonType.CANCEL);
+
         styleDialogButtons(dialog, "warning", FontAwesomeIcon.EXCLAMATION, ButtonType.CANCEL);
-        
-        styleDialogButtons(dialog, BUTTON_SUCCESS_CLASS,FontAwesomeIcon.CHECK,ButtonType.APPLY,ButtonType.NEXT,ButtonType.OK,ButtonType.YES);
+
+        styleDialogButtons(dialog, BUTTON_SUCCESS_CLASS, FontAwesomeIcon.CHECK, ButtonType.APPLY, ButtonType.NEXT, ButtonType.OK, ButtonType.YES);
     }
-                
-    
-    
+
     public static Image colorTableToImage(ColorTable table, int width, int height) {
         return colorTableToImage(table, width, height, 2);
     }
