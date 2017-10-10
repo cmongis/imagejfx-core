@@ -284,7 +284,9 @@ public class ExplorerActivity extends AnchorPane implements Activity {
         init();
 
         explorationModeToggleGroup.selectToggle(getToggleButton(folderManagerService.getCurrentExplorationMode()));
-
+        
+        updateFolderList();
+        
         return null;
     }
 
