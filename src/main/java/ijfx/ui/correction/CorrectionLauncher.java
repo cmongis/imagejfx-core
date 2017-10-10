@@ -28,7 +28,9 @@ import org.scijava.plugin.Plugin;
  *
  * @author Cyril MONGIS
  */
-@Plugin(type = UiCommand.class,label = "Correction", iconPath= "fa:fire_instinguisher")
+@Plugin(type = UiCommand.class,label = "Correction"
+        , iconPath= "fa:FIRE_EXTINGUISHER"
+,description="Correction wizard (experimental)")
 public class CorrectionLauncher extends AbstractActivityLauncher<Activity>{
     
     public CorrectionLauncher() {
