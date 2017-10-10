@@ -133,8 +133,6 @@ public final class ImageJFX {
 
     public static void disposeSwingUI(ConsoleService consoleService, UIService uiService) {
        
-        uiService.dispose();
-        //uiService.getDefaultUI().dispose();
        uiService.getAvailableUIs()
                .stream()
                .filter(ui->ui.isVisible())

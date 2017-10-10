@@ -55,9 +55,8 @@ public class ActivateImageJFX extends ContextCommand {
         ImageJFX.disposeSwingUI(consoleService,uiService);
         uiService.setDefaultUI(uiService.getUI(ImageJFX.UI_NAME));
         
-       
+        System.setProperty(UIService.UI_PROPERTY, ImageJFX.UI_NAME);
         
-        //uiService.showDialog("ImageJ-FX activated.");
         try {
             IJ.run("Switch to Modern Mode");
         }

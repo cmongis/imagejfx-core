@@ -27,6 +27,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.UIService;
 import org.scijava.ui.swing.SwingUI;
+import org.scijava.ui.swing.mdi.SwingMdiUI;
 
 /**
  *
@@ -50,12 +51,8 @@ public class DeactivateImageJFX extends ContextCommand{
         uiService.setDefaultUI(uiService.getUI(SwingUI.NAME));
         
         uiService.showDialog("ImageJ-FX is shutting down to apply the new changes.");
-        
+        System.setProperty(UIService.UI_PROPERTY, SwingMdiUI.NAME);
         commandService.run(QuitProgram.class, true);
-        
-        //uiService.showUI(ImageJFX.UI_NAME);
-        
-        
         
     }
     
