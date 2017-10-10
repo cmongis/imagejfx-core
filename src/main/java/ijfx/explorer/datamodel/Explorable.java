@@ -45,7 +45,12 @@ public interface Explorable extends Iconazable, MetaDataOwner, DatasetHolder, Ta
                         .stream()
                         .parallel()
                         .mapToInt(m -> m.hashCode())
-                        .sum();
+                        .sum()
+                + getTagList()
+                        .stream()
+                .parallel()
+                .mapToInt(s->s.hashCode())
+                .sum();
 
     }
     
