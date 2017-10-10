@@ -160,9 +160,11 @@ public class DefaultStringFilter extends BorderPane implements Initializable, St
 
     @Override
     public synchronized void setAllPossibleValues(Collection<? extends String> list) {
-
-        Map<String, Integer> itemCount;
-        itemCount = new HashMap<>();
+        
+        // map containing the item count
+        Map<String, Integer> itemCount = new HashMap<>();
+        
+        // for each string of the list, we count the number of items
         list.stream().forEach((s) -> {
             if (itemCount.get(s) == null) {
                 itemCount.put(s, 1);
@@ -170,20 +172,54 @@ public class DefaultStringFilter extends BorderPane implements Initializable, St
                 itemCount.put(s, itemCount.get(s) + 1);
             }
         });
-        List<ItemWrapper> items = new ArrayList<>();
-        itemCount.forEach((s, i) -> items.add(new ItemWrapper(s, i)));
-
+        
+        // after that, we create item wrapper that will contain the item and the count
+        List<ItemWrapper> items = 
+       
+        itemCount
+                .keySet()
+                .stream()
+                .map(key->{
+                    
+                    ItemWrapper item =  allItems
+                            .stream()
+                            .filter(existing->existing.getName().equals(key))
+                            .findFirst()
+                            .orElse(new ItemWrapper(key,itemCount.get(key)));
+                    
+                    item.setNumber(itemCount.get(key));
+                    
+                    return item;
+                    
+                })
+                .collect(Collectors.toList());
+        
+       
+        
+       
+        
+        
+        /*
+        CollectionsUtils.synchronize(items, allItems,this::compare,(i1,i2)->{
+            i2.setNumber(i1.getNumber());
+        });*/
+        
         CollectionsUtils.synchronize(items, allItems);
         
         // updating count
-        allItems.forEach(item->item.setNumber(itemCount.get(item.getName())));
-        allItems.forEach(item->item.setState(false));
+        //allItems.forEach(item->item.setNumber(itemCount.get(item.getName())));
+        //allItems.forEach(item->item.setState(false));
         Platform.runLater(this::updateDisplayedItems);
         
         predicateProperty().setValue(null);
 
     }
 
+    private int compare(Item i1, Item i2) {
+        return i1.getName().equals(i2.getName()) ? 0 : 1;
+    }
+    
+    
     private void onShowAllPropertyChange(Observable obs, Boolean oldValue, Boolean newValue) {
        
         updateDisplayedItems(textField.getText(),newValue,lotOfItems.getValue());

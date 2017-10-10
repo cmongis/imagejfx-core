@@ -88,7 +88,7 @@ public class DefaultTaggableFilter implements TaggableFilter {
                 .stream()
                 .flatMap(taggable->taggable.getTagList().stream())
                 .map(tag -> tag.getName())
-                .collect(Collectors.toSet()));
+                .collect(Collectors.toList()));
     }
 
 }
