@@ -71,17 +71,15 @@ public class HistoryPanel extends TitledPane implements UiPlugin {
 
     @Parameter
     WorkflowIOService workflowIOService;
-    
+
     @Parameter
     UIService uiService;
 
     @FXML
     StackPane stackPane;
 
-    
-    
     List<HistoryStep> cellList = new ArrayList<>();
-    
+
     private final static String SAVE_WORKFLOW = "Save workflow";
     private final static String LOAD_WORKFLOW = "Load workflow";
     private final static String ERROR_MESSAGE = "Error when reading the workflow.";
@@ -101,26 +99,20 @@ public class HistoryPanel extends TitledPane implements UiPlugin {
     @Override
     public UiPlugin init() {
 
-
         listView.setItems(historyService.getStepList());
-
-        
 
         listView.setCellFactory(this::createCell);
 
         return this;
 
     }
-    
-    
-    
+
     public ListCell<WorkflowStep> createCell(ListView<WorkflowStep> param) {
         HistoryStep cell = new HistoryStep();
         context.inject(cell);
         cellList.add(cell);
         return cell;
     }
-    
 
     FileChooser chooser;
 
@@ -142,7 +134,7 @@ public class HistoryPanel extends TitledPane implements UiPlugin {
 
         if (file != null) {
 
-            workflowIOService.saveWorkflow(new DefaultWorkflow(historyService.getStepList()),file);
+            workflowIOService.saveWorkflow(new DefaultWorkflow(historyService.getStepList()), file);
         }
 
     }
@@ -157,30 +149,26 @@ public class HistoryPanel extends TitledPane implements UiPlugin {
                     try {
 
                         updateMessage("Loading workflow...");
-                        updateProgress(0,3);
+                        updateProgress(0, 3);
                         Thread.sleep(500);
-                        //editService.loadWorkflow(new String(Files.readAllBytes(Paths.get(file.getAbsolutePath()))));
                         historyService.setCurrentWorkflow(workflowIOService.loadWorkflow(file));
-                        updateProgress(3,3);
+                        updateProgress(3, 3);
                     } catch (Exception ex) {
-                        ImageJFX.getLogger().log(Level.SEVERE,null,ex);;
+                        ImageJFX.getLogger().log(Level.SEVERE, null, ex);;
                         uiService.showDialog(ERROR_MESSAGE, DialogPrompt.MessageType.ERROR_MESSAGE);
                     }
                     return null;
                 }
             };
-            //LoadingScreen.getInstance().submitTask(task, false, stackPane);
             ImageJFX.getThreadQueue().submit(task);
-
         }
-
     }
 
     @FXML
     public void repeatAll() {
         historyService.repeatAll();
     }
-    
+
     @FXML
     public void useWorkflow() throws IOException {
         historyService.useWorkflow();
@@ -190,14 +178,14 @@ public class HistoryPanel extends TitledPane implements UiPlugin {
     void deleteAll() {
         historyService.getStepList().clear();
     }
-    
+
     @EventHandler
     public void onWorkflowStepModified(WorkflowStepModifiedEvent event) {
-        if(listView.getItems().contains(event.getObject())) {
+        if (listView.getItems().contains(event.getObject())) {
             cellList
                     .stream()
-                    .filter(cell->cell.getItem() == event.getObject())
-                    .forEach(cell-> Platform.runLater(cell::refresh));
+                    .filter(cell -> cell.getItem() == event.getObject())
+                    .forEach(cell -> Platform.runLater(cell::refresh));
         }
     }
 
