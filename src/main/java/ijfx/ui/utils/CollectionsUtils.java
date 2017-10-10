@@ -20,48 +20,94 @@
 package ijfx.ui.utils;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
+import javafx.util.Pair;
 
 /**
  *
  * @author Cyril MONGIS
  */
 public class CollectionsUtils {
+
     public static <T> List<T> toAdd(Collection<? extends T> source, Collection<? extends T> target) {
-        
+
         return source
                 .stream()
-                .filter(t->target.contains(t) == false)
+                .filter(t -> target.contains(t) == false)
                 .collect(Collectors.toList());
-        
-        
-        
-        
+
     }
-    
-    public static <T> List<T> toRemove(Collection<? extends T> source, Collection<? extends T> target) {
-        
+
+    public static <T> List<T> toAdd(Collection<? extends T> source, Collection<? extends T> target, Comparator<T> comparator) {
+
+        return source
+                .stream()
+                .filter(t1 -> target.stream().filter(t2 -> comparator.compare(t1, t2) == 0).count() == 0)
+                .collect(Collectors.toList());
+
+    }
+
+    public static <T> List<T> toRemove(Collection<? extends T> source, Collection<? extends T> target, Comparator<T> comparator) {
+
         return target
                 .stream()
-                .filter(t->source.contains(t) == false)
+                .filter(t1 -> source.stream().filter(t2 -> comparator.compare(t1, t2) == 0).count() == 0)
                 .collect(Collectors.toList());
-        
+
     }
-    
+
+    public static <T> List<T> toRemove(Collection<? extends T> source, Collection<? extends T> target) {
+
+        return target
+                .stream()
+                .filter(t -> source.contains(t) == false)
+                .collect(Collectors.toList());
+
+    }
+
     public static <T> void synchronize(Collection<? extends T> source, Collection<T> target) {
-        
-        List<T> toAdd = toAdd(source,target);
+
+        List<T> toAdd = toAdd(source, target);
         List<T> toRemove = toRemove(source, target);
-        
+
         target.addAll(toAdd);
         target.removeAll(toRemove);
     }
-    
-     public static <T> void syncronizeContent(Collection<T> source, Collection<T> dest) {
+
+    public static <T> void synchronize(Collection<? extends T> source, Collection<T> target, Comparator<T> comparator, BiConsumer<T, T> updater) {
+
+        List<T> toAdd = toAdd(source, target, comparator);
+        List<T> toRemove = toAdd(source, target, comparator);
         
-        dest.addAll(source.stream().filter(e->!dest.contains(e)).collect(Collectors.toList()));
-        dest.removeAll(dest.stream().filter(e->source.contains(e) == false).collect(Collectors.toList()));
+        target.addAll(toAdd);
+        target.removeAll(toRemove);
         
+        // updating
+        target
+                .stream()
+                .map(inTarget -> {
+                    T equivalent = source
+                            .stream()
+                            .filter(inSource -> comparator.compare(inTarget, inSource) == 0)
+                            .findFirst()
+                            .orElse(null);
+                    if (equivalent != null) {
+                        return new Pair<T, T>(equivalent, inTarget);
+                    } else {
+                        return null;
+                    }
+                })
+                .forEach(pair -> updater.accept(pair.getKey(), pair.getValue()));
+
+    }
+
+    public static <T> void syncronizeContent(Collection<T> source, Collection<T> dest) {
+
+        dest.addAll(source.stream().filter(e -> !dest.contains(e)).collect(Collectors.toList()));
+        dest.removeAll(dest.stream().filter(e -> source.contains(e) == false).collect(Collectors.toList()));
+
     }
 }
