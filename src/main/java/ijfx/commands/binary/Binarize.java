@@ -96,9 +96,6 @@ public class Binarize<T extends RealType<T>> extends DynamicCommand {
     @Parameter
     DatasetService datasetSrv;
 
-    @Parameter
-    CommandService commandService;
-
     ThresholdMethod method;
 
     String maskPixels = INSIDE;
