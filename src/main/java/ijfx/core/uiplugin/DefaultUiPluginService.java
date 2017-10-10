@@ -22,7 +22,6 @@ package ijfx.core.uiplugin;
 
 import ijfx.core.timer.Timer;
 import ijfx.core.timer.TimerService;
-import ijfx.core.uicontext.NodeContextualWidget;
 import ijfx.core.uicontext.UiContextService;
 import ijfx.core.uicontext.UiPluginContextualWidget;
 import ijfx.ui.UiPlugin;
@@ -42,9 +41,11 @@ import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 import ijfx.ui.UiConfiguration;
+import ijfx.ui.utils.HelpConfiguration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import mongis.utils.FXUtilities;
 import mongis.utils.ProgressHandler;
 
 /**
@@ -75,6 +76,9 @@ public final class DefaultUiPluginService extends AbstractService implements UiP
 
     @Parameter
     UiContextService contextService;
+
+    @Parameter
+    FXUiCommandService uiCommandService;
 
     Logger logger = ImageJFX.getLogger();
 
@@ -114,9 +118,7 @@ public final class DefaultUiPluginService extends AbstractService implements UiP
                         handler.increment(1.0);
 
                     });
-            
-            
-            
+
             logger.info(String.format("%d UiPlugins created", count));
         }
         handler.setProgress(1.0);
@@ -183,6 +185,23 @@ public final class DefaultUiPluginService extends AbstractService implements UiP
                 setOrder(pluginId, uiConfiguration.order());
                 setLocalization(pluginId, uiConfiguration.localization());
 
+                // attaching description
+                HelpConfiguration helpConfiguration = FXUtilities.getHelpConfiguration(uiPlugin);
+                if (helpConfiguration != null) {
+                    final Node root = uiPlugin.getUiElement();
+                    helpConfiguration
+                            .getDescriptions()
+                            .forEach((String key, String value) -> {
+
+                                Node lookup = FXUtilities.lookup(key,root);
+                                
+                                if (lookup != null) {
+                                    uiCommandService.attacheDescription(lookup, value);
+                                }
+
+                            });
+                }
+
             } catch (NullPointerException ne) {
 
                 logger.log(Level.SEVERE, null, ne);
@@ -213,8 +232,6 @@ public final class DefaultUiPluginService extends AbstractService implements UiP
 
             logger.log(Level.SEVERE, MSG_ERROR_WHEN_LAUNCHING, ex);
         }
-        
-       
 
         return uiPlugin;
     }
