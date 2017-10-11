@@ -44,7 +44,7 @@ public class SaveInFolder extends ExplorerActivityCommand{
     @Override
     protected void process(List<? extends Explorable> selected) {
 
-        File file = FXUtilities.openFolder("Open folder to save in...", "~/");
+        File file = FXUtilities.openFolder("Open folder to save in...", null);
         
         if(file == null) return;
         
