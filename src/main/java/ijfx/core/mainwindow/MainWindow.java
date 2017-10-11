@@ -29,6 +29,7 @@ import javax.management.Notification;
 import org.scijava.plugin.SciJavaPlugin;
 import ijfx.core.uicontext.ContextualContainer;
 import ijfx.core.uiplugin.UiCommand;
+import java.util.Collection;
 import javafx.scene.Node;
 
 /**
@@ -40,7 +41,11 @@ public interface MainWindow extends SciJavaPlugin {
     void init();
 
     void displayHint(Hint hint);
-
+    
+    default void displayHint(Collection<? extends Hint> hintList) {
+        hintList.forEach(this::displayHint);
+    }
+    
     void displayActivity(Activity activity);
 
     void displayDescription(String description);
@@ -58,7 +63,7 @@ public interface MainWindow extends SciJavaPlugin {
     void setReady(boolean ready);
 
     List<ContextualContainer<Node>> getContextualContainerList();
-
+    
     Parent getUiComponent();
 
 }
