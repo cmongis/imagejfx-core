@@ -21,6 +21,7 @@ package ijfx.core;
 
 import ijfx.core.activity.ActivityChangedEvent;
 import ijfx.core.activity.ActivityService;
+import ijfx.core.hint.HintRequestEvent;
 import ijfx.core.mainwindow.MainWindow;
 import ijfx.core.thread.FXThreadService;
 import ijfx.core.uicontext.UiContextService;
@@ -522,9 +523,12 @@ public class FXUserInterface extends Application implements UserInterface {
 
     @EventHandler
     public void onForegroundTaskSubmittedEvent(ForegroundTaskSubmitted event) {
-
         getMainWindow().addForegroundTask(event.getObject());
-
+    }
+    
+    @EventHandler
+    public void onHintRequested(HintRequestEvent event) {
+        getMainWindow().displayHint(event.getHintList());
     }
 
     public void reloadCss() {
