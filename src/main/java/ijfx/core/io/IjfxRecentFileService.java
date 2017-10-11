@@ -59,15 +59,14 @@ public class IjfxRecentFileService extends AbstractService implements RecentFile
     public void add(String path) {
         if(listPath.contains(path) == false) {
             listPath.add(path);
-            
         }
         else {
             remove(path);
             listPath.add(path);
-            eventService.publishLater(new RecentFileAddedEvent().setObject(path));
+           
         };
-        
-        ImageJFX.getThreadQueue().execute(this::save);
+        eventService.publishLater(new RecentFileAddedEvent().setObject(path));
+        save();
         
     }
 
