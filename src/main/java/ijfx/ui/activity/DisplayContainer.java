@@ -20,13 +20,26 @@
 package ijfx.ui.activity;
 
 import ijfx.core.activity.Activity;
+import ijfx.explorer.datamodel.wrappers.FileExplorableWrapper;
+import ijfx.ui.main.ImageJFX;
+import ijfx.ui.utils.CategorizedExplorableController;
+import java.io.File;
+import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import jfxtras.scene.control.window.Window;
+import mongis.utils.CallbackTask;
 import org.scijava.display.Display;
+import org.scijava.display.DisplayService;
+import org.scijava.display.event.DisplayCreatedEvent;
+import org.scijava.display.event.DisplayDeletedEvent;
+import org.scijava.event.EventHandler;
+import org.scijava.io.RecentFileService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -37,11 +50,22 @@ import org.scijava.plugin.Plugin;
 public class DisplayContainer extends StackPane implements Activity {
 
     public AnchorPane anchorPane = new AnchorPane();
-
+    
+    private boolean init = false;
+    
+    @Parameter
+    RecentFileService recentFileService;
+    
+    @Parameter
+    DisplayService displayService;
+    
+    CategorizedExplorableController ctrl;
+    
     public DisplayContainer() {
         getChildren().add(anchorPane);
+        
     }
-
+    
     public void addWindow(Window window) {
 
         Platform.runLater(() -> {
@@ -53,16 +77,62 @@ public class DisplayContainer extends StackPane implements Activity {
 
     @Override
     public Node getContent() {
+        
+        if(init == false) {
+            
+        }
+        
         return this;
     }
 
     @Override
     public Task updateOnShow() {
         return null;
+        /*return new CallbackTask<Void,Pane>()
+                .call(this::createController)
+                .then(this::updateRecentPaneVisibility);*/
     }
     
     public void showContextMenu(String menuRoot, Display<?> display, int x, int y) {
         
     }
+    /*
+    private synchronized void updateRecentPaneVisibility(Pane pane) {
+        
+        if(displayService.getDisplays().size() > 0 && ctrl != null) {
+            getChildren().remove(ctrl);
+        }
+        else if(displayService.getDisplays().size() == 0 && ctrl != null && getChildren().contains(ctrl) == false) {
+            getChildren().add(ctrl);
+        }
+        
+    }
+    
+    public synchronized Pane createController() {
+        
+        ctrl = new CategorizedExplorableController()
+                .addCategory("Recent files")
+                .setElements("Recent files",recentFileService
+                .getRecentFiles()
+                .stream()
+                .map(path->new FileExplorableWrapper(new File(path)))
+                .collect(Collectors.toList()))
+                ;
+        
+        ctrl.update();
+        
+        return ctrl;
+        
+    }
+    
+    @EventHandler
+    public void onDisplayCreated(DisplayCreatedEvent event) {
+         ImageJFX.getThreadPool().submit(updateOnShow());
+    }
+   
+    @EventHandler
+    public void onDisplayClosed(DisplayDeletedEvent event) {
+        ImageJFX.getThreadPool().submit(updateOnShow());
+    }*/
 
 }
