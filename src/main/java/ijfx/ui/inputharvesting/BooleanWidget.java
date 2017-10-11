@@ -34,11 +34,12 @@ import org.scijava.widget.WidgetModel;
 public class BooleanWidget extends AbstractFXInputWidget<Boolean> implements ToggleWidget<Node>{
 
     
-    CheckBox checkBox = new CheckBox();
+    CheckBox checkBox;
     
     @Override
     public void set(WidgetModel model) {
         super.set(model);
+        checkBox = new CheckBox();
         bindProperty(checkBox.selectedProperty());
         
     }
