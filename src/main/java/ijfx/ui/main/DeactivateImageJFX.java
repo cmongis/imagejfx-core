@@ -52,6 +52,7 @@ public class DeactivateImageJFX extends ContextCommand{
         
         uiService.showDialog("ImageJ-FX is shutting down to apply the new changes.");
         System.setProperty(UIService.UI_PROPERTY, SwingMdiUI.NAME);
+        //commandService.run(Switch, true, inputMap)
         commandService.run(QuitProgram.class, true);
         
     }

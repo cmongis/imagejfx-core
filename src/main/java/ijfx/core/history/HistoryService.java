@@ -45,6 +45,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import net.imagej.Dataset;
+import net.imagej.display.ImageDisplay;
 import net.imagej.display.ImageDisplayService;
 import org.scijava.Context;
 import org.scijava.Priority;
@@ -270,7 +271,6 @@ public class HistoryService extends AbstractService implements IjfxService {
             folderManagerService.openImageFolder(imageDisplayService.getActiveImageDisplay());
 
         }
-        uiService.showDialog("The rest is not implemented yet !!!");
     }
 
     public void setEnabled(boolean enabled) {
@@ -295,10 +295,12 @@ public class HistoryService extends AbstractService implements IjfxService {
     }
 
     public boolean isCompatible(WorkflowStep step) {
+        return (isIO(step, Dataset.class) || isIO(step, ImageDisplay.class));
+    }
 
-        return moduleService.getSingleInput(step.getModule(), Dataset.class) != null
-                && moduleService.getSingleOutput(step.getModule(), Dataset.class) != null;
-
+    public boolean isIO(WorkflowStep step, Class<?> cl) {
+        return moduleService.getSingleInput(step.getModule(), cl) != null
+                && moduleService.getSingleOutput(step.getModule(), cl) != null;
     }
 
 }

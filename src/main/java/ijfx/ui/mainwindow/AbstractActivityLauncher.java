@@ -55,5 +55,12 @@ public abstract class AbstractActivityLauncher<T extends Activity> extends Abstr
     public void enter(String... uiContext) {
         uiContextService.enter(uiContext);
     }
+    
+    public void leave(String... uiContext) {
+        uiContextService.leave(uiContext);
+    }
 
+    public UiContextService uiContextService() {
+        return uiContextService;
+    }
 }

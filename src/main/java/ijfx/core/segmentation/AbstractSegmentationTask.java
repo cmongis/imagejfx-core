@@ -98,6 +98,7 @@ public abstract class AbstractSegmentationTask<T> implements SegmentationTask<T>
 
         return new CallbackTask<Void, List<T>>()
                 .call((progress) -> {
+                    progress.setStatus("Segmenting...");
                     execute(progress);
                     return getResults();
                 })

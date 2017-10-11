@@ -40,8 +40,9 @@ public class VisualizeUiCommand extends AbstractActivityLauncher{
     @Override
     public void run(MainWindow a) {
         enter(UiContexts.VISUALIZE);
+        leave(UiContexts.SEGMENT);
         super.run(a);
-        
+        uiContextService().update();
         
     }
     

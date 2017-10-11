@@ -119,12 +119,14 @@ public class LinearSegmentationExecutor<T> implements SegmentationExecutor<T> {
             if (op.getOutput() == null) {
                 op.load();
                 segmentationHandler.increment(1.0);
+                segmentationHandler.setStatus(op.getInput().getName());
                 Dataset input = datasetUtilsService.copy(op.getInput());
                 Dataset output = batchService.applyWorkflow(segmentationHandler, input, op.getWorkflow());
                 
                 op.setOutput((Img<BitType>) output.getImgPlus().getImg());
                 segmentationHandler.increment(1.0);
             }
+            completionHandler.setStatus("Analyzing result...");
             T result = maskHandler.handle(completionHandler, op.getMetaDataSet(), op.getMeasuredDataset(), op.getOutput());
             op.dispose();
             return result;

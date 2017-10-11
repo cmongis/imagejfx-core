@@ -147,7 +147,7 @@ public class InteractiveSegmentationService extends AbstractService implements I
     }
 
     protected boolean isActive() {
-        return true;
+        return uiContextService.isCurrent(UiContexts.SEGMENT);
     }
 
     public void addPanel(InteractiveSegmentationPanel panel) {
