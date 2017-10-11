@@ -36,7 +36,7 @@ import org.scijava.widget.WidgetModel;
 @Plugin(type = InputWidget.class)
 public class ButtonWidgetFX extends AbstractInputWidget<org.scijava.widget.Button,Node> implements ButtonWidget<Node>{
  
-    Button button = new Button();
+    Button button; // = new Button();
 
     public ButtonWidgetFX() {
         super();
@@ -51,7 +51,7 @@ public class ButtonWidgetFX extends AbstractInputWidget<org.scijava.widget.Butto
     @Override
     public void set(WidgetModel model) {
         super.set(model);
-        
+        button = new Button();
         button.setText(model.getWidgetLabel());
         
         
@@ -78,6 +78,9 @@ public class ButtonWidgetFX extends AbstractInputWidget<org.scijava.widget.Butto
 
     @Override
     public Node getComponent() {
+        
+        
+            
        return button;
     }
 
