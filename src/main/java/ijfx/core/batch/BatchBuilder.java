@@ -134,13 +134,12 @@ public class BatchBuilder {
             }
 
             Dataset dataset = batchService.applyWorkflow(handler, input, workflow);
-
             if(dataset == null) {
                 logger.severe(input.getName() + " progress not complete. Skipping");
                 holder.dispose();
                 continue;
             }
-            
+            dataset.setName(input.getName());
             saver.accept(dataset);
             
             holder.dispose();
@@ -154,9 +153,6 @@ public class BatchBuilder {
                 .setInput(copy)
                 .consume(this::start)
                 .start();
-                
-        
-        
     }
 
     /*
@@ -168,16 +164,13 @@ public class BatchBuilder {
 
         if (suffix != null) {
             target = NamingUtils.addSuffix(target, suffix);
-            
-            
-            
         }
         
         if(target.getParentFile().exists() == false) {
             target.getParentFile().mkdirs();
         }
         
-        
+        logger.info("Saving "+target.getAbsolutePath()+"...");
         try {
             datasetIOService.save(dataset, target.getAbsolutePath());
 
@@ -189,6 +182,12 @@ public class BatchBuilder {
 
     public Workflow getWorkflow() {
         return workflow;
+    }
+
+    public BatchBuilder setWorkflow(Workflow workflow) {
+        this.workflow.setStepList(workflow.getStepList());
+        this.workflow.setName(workflow.getName());
+        return this;
     }
 
 }

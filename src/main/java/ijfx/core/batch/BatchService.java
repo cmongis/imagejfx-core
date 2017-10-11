@@ -20,6 +20,7 @@
  */
 package ijfx.core.batch;
 
+import ijfx.core.image.SilentImageDisplay;
 import ijfx.core.postprocessor.DatasetArrayPostprocessor;
 import ijfx.core.timer.Timer;
 import ijfx.core.timer.TimerService;
@@ -109,8 +110,8 @@ public class BatchService extends AbstractService implements ImageJService {
         InitPreprocessor.class,
         WorkflowRecorderPreprocessor.class,
         DatasetArrayPostprocessor.class,
-         InputHarversterFX.class,
-         SaveInputsPreprocessor.class
+        InputHarversterFX.class,
+        SaveInputsPreprocessor.class
     };
 
     public BatchService() {
@@ -365,11 +366,12 @@ public class BatchService extends AbstractService implements ImageJService {
 
     public Dataset applyWorkflow(ProgressHandler handler, Dataset dataset, Workflow workflow) {
         setRunning(true);
+        String source = dataset.getSource();
 
         for (WorkflowStep step : workflow.getStepList()) {
 
             handler.increment(1.0);
-
+            handler.setStatus(dataset.getName());
             Module module = moduleService.createModule(step.getModule().getInfo());
             String moduleName = module.getInfo().getName();
 
@@ -397,8 +399,8 @@ public class BatchService extends AbstractService implements ImageJService {
                     ActiveDisplayPreprocessor.class,
                     ActiveDatasetPreprocessor.class,
                     ActiveDataViewPreprocessor.class,
-                     ActiveDatasetViewPreprocessor.class,
-                     ActiveImageDisplayPreprocessor.class
+                    ActiveDatasetViewPreprocessor.class,
+                    ActiveImageDisplayPreprocessor.class
             );
             // running
             run = moduleService.run(module,
@@ -425,6 +427,7 @@ public class BatchService extends AbstractService implements ImageJService {
             }
 
         }
+        dataset.setSource(source);
         return dataset;
 
     }
@@ -446,19 +449,41 @@ public class BatchService extends AbstractService implements ImageJService {
                 return true;
             }
         } else {
-            return false;
+            item = moduleService.getSingleInput(module, ImageDisplay.class);
+
+            if (item != null) {
+                module.setInput(item.getName(), new SilentImageDisplay(getContext(), dataset));
+                logger.info("Injection done using an ImageDisplay " + item.getName() + " with " + dataset.toString());
+                return true;
+            } else {
+                return false;
+            }
         }
+
     }
 
     private Dataset extractOutput(Module module) {
 
-        return (Dataset) module
+        Dataset output = (Dataset) module
                 .getOutputs()
                 .values()
                 .stream()
                 .filter(object -> object != null && Dataset.class.isAssignableFrom(object.getClass()))
                 .findFirst()
                 .orElse(null);
+
+        if (output == null) {
+            output = module
+                    .getOutputs()
+                    .values()
+                    .stream()
+                    .filter(object -> object != null && ImageDisplay.class.isAssignableFrom(object.getClass()))
+                    .map(o -> imageDisplayService.getActiveDataset((ImageDisplay) o))
+                    .findFirst()
+                    .orElse(null);
+        }
+
+        return output;
 
     }
 
@@ -576,7 +601,7 @@ public class BatchService extends AbstractService implements ImageJService {
         try {
             getContext().inject(p);
         } catch (Exception e) {
-            ImageJFX.getLogger().log(Level.SEVERE,null,e);
+            ImageJFX.getLogger().log(Level.SEVERE, null, e);
         } finally {
             return p;
         }
