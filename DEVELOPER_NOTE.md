@@ -7,8 +7,15 @@
  - Display / DisplayViewer / DisplayPanel
  - UserInterface : ImageJ-FX is now a functional API
  - Tool API : ImageJ-FX discovers new ImageJ tool plugin and re-roots event
- 
+ - InputHarvesting
 
+
+## New features
+
+ - IO Features for script through the Script / ScriptDisplay API: scripts can
+now be edited through ImageJ-FX interface.
+ - Batch API : api allowing to quickly select multiple images from a folder
+and process them by chaining ImageJ2 plugins
 
 ## Issues with ImageJ Integration
 
