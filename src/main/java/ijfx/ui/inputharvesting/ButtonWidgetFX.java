@@ -28,44 +28,36 @@ import org.scijava.widget.ButtonWidget;
 import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
 
-
 /**
  *
  * @author Cyril MONGIS
  */
 @Plugin(type = InputWidget.class)
-public class ButtonWidgetFX extends AbstractInputWidget<org.scijava.widget.Button,Node> implements ButtonWidget<Node>{
- 
+public class ButtonWidgetFX extends AbstractInputWidget<org.scijava.widget.Button, Node> implements ButtonWidget<Node> {
+
     Button button; // = new Button();
 
     public ButtonWidgetFX() {
         super();
-        
-        button.setOnAction(this::onClick);
+
     }
 
-    
-    
-    
-    
     @Override
     public void set(WidgetModel model) {
         super.set(model);
         button = new Button();
+        button.setOnAction(this::onClick);
         button.setText(model.getWidgetLabel());
-        
-        
-        
+
     }
-    
-    
+
     private void onClick(ActionEvent event) {
         get().callback();
-        
+
         get().getPanel().refresh();
-        
+
     }
-    
+
     @Override
     public org.scijava.widget.Button getValue() {
         return (org.scijava.widget.Button) get().getValue();
@@ -73,29 +65,23 @@ public class ButtonWidgetFX extends AbstractInputWidget<org.scijava.widget.Butto
 
     @Override
     public void refreshWidget() {
-       button.setText(get().getWidgetLabel());
+        button.setText(get().getWidgetLabel());
     }
 
     @Override
     public Node getComponent() {
-        
-        
-            
-       return button;
+
+        return button;
     }
 
     @Override
     public Class<Node> getComponentType() {
-      return Node.class;
+        return Node.class;
     }
 
     @Override
     public boolean supports(WidgetModel model) {
         return super.supports(model) && model.isType(Button.class);
     }
-    
-    
-  
-    
-    
+
 }
