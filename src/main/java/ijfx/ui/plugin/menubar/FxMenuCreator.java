@@ -110,7 +110,7 @@ public class FxMenuCreator extends AbstractMenuCreator<MenuBar, Menu> {
         
         final String label = sm.getName();
      
-        final Node icon = fxIconService.getIconAsNode("fa:ellipsis_v");
+        final Node icon = null; //fxIconService.getIconAsNode("fa:ellipsis_v");
         MenuItem menuItem = fxUiCommandService.createMenuItem(label, null, icon, null);
         Menu newMenu = new Menu(null,menuItem.getGraphic());
         m.getItems().add(newMenu);
