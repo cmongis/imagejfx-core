@@ -28,8 +28,8 @@ import org.scijava.plugin.Plugin;
  * @author Cyril MONGIS
  */
 @Plugin(type = UiCommand.class,
-         label = "Database",
-         iconPath = "fa:database",
+         label = "Explorer",
+         iconPath = "fa:compass",
          description ="Explore and reference images from different folders")
 public class ExplorerLauncherCommand extends AbstractActivityLauncher<ExplorerActivity> {
 
