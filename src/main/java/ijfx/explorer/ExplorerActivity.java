@@ -517,7 +517,7 @@ public class ExplorerActivity extends AnchorPane implements Activity {
         explorerService.openSelection();
 
     }
-
+    /*
     @FXML
     public void explainMe() {
         uiService.showDialog("Function not implemented yet.");
@@ -549,7 +549,7 @@ public class ExplorerActivity extends AnchorPane implements Activity {
             }
         }
 
-    }
+    }*/
 
     private void onFolderListEmptyPropertyChange(Observable obs, Boolean oldV, Boolean isEmpty) {
         if (isEmpty) {
