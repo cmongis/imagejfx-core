@@ -41,6 +41,7 @@ import mongis.utils.ProgressHandler;
 import net.imagej.Dataset;
 import org.scijava.Context;
 import org.scijava.plugin.Parameter;
+import org.scijava.ui.UIService;
 
 /**
  *
@@ -62,6 +63,9 @@ public class BatchBuilder {
     @Parameter
     DatasetIOService datasetIOService;
 
+    @Parameter
+    UIService uiService;
+    
     List<DatasetHolder> holders = new ArrayList<>();
 
     String suffix = null;
@@ -70,18 +74,23 @@ public class BatchBuilder {
 
     Consumer<Dataset> saver = dataset -> {
     };
-    
+
     private static final Logger logger = ImageJFX.getLogger();
 
     public BatchBuilder(Context context) {
         context.inject(this);
     }
 
+    public BatchBuilder add(DatasetHolder holder) {
+        holders.add(holder);
+        return this;
+    }
+    
     public BatchBuilder add(Collection<? extends DatasetHolder> datasets) {
         holders.addAll(datasets);
         return this;
     }
-    
+
     public BatchBuilder addFolder(String folder) {
 
         holders.addAll(explorerService
@@ -107,16 +116,18 @@ public class BatchBuilder {
 
     public BatchBuilder saveIn(String folder) {
         saveIn = folder;
-
         return then(this::saveDataset);
-
+    }
+    
+    public BatchBuilder thenShow() {
+        return then(this::showDataset);
     }
 
     public BatchBuilder then(Consumer<Dataset> consumer) {
         this.saver = consumer;
         return this;
     }
-
+    
     public void start(ProgressHandler handler, boolean copy) {
 
         double total = holders.size() * workflow.getStepList().size();
@@ -134,22 +145,22 @@ public class BatchBuilder {
             }
 
             Dataset dataset = batchService.applyWorkflow(handler, input, workflow);
-            if(dataset == null) {
+            if (dataset == null) {
                 logger.severe(input.getName() + " progress not complete. Skipping");
                 holder.dispose();
                 continue;
             }
             dataset.setName(input.getName());
             saver.accept(dataset);
-            
+
             holder.dispose();
         }
 
     }
-    
-    public CallbackTask<Boolean,Void> startAsync(boolean copy) {
-        
-        return new CallbackTask<Boolean,Void>()
+
+    public CallbackTask<Boolean, Void> startAsync(boolean copy) {
+
+        return new CallbackTask<Boolean, Void>()
                 .setInput(copy)
                 .consume(this::start)
                 .start();
@@ -158,26 +169,29 @@ public class BatchBuilder {
     /*
         Handlers
      */
-    public void saveDataset(Dataset dataset) {
+    protected void saveDataset(Dataset dataset) {
 
         File target = NamingUtils.replaceWithExtension(new File(new File(saveIn), dataset.getName()), "tif");
 
         if (suffix != null) {
             target = NamingUtils.addSuffix(target, suffix);
         }
-        
-        if(target.getParentFile().exists() == false) {
+
+        if (target.getParentFile().exists() == false) {
             target.getParentFile().mkdirs();
         }
-        
-        logger.info("Saving "+target.getAbsolutePath()+"...");
+
+        logger.info("Saving " + target.getAbsolutePath() + "...");
         try {
             datasetIOService.save(dataset, target.getAbsolutePath());
 
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "Error when saving "+dataset.getName(), e);
+            logger.log(Level.SEVERE, "Error when saving " + dataset.getName(), e);
         }
 
+    }
+    protected void showDataset(Dataset dataset) {
+        uiService.show(dataset);
     }
 
     public Workflow getWorkflow() {
