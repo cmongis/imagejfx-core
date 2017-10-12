@@ -33,8 +33,8 @@ import org.scijava.ui.UIService;
  *
  * @author Cyril MONGIS
  */
-@Plugin(type = Command.class, menuPath="Help > Switch to ImageJ-FX")
-public class ActivateImageJFX extends ContextCommand {
+@Plugin(type = Command.class, menuPath="Edit > Options > User Interface > ImageJ-FX")
+public class ActivateImageJFX extends AbstractUISwitchCommand {
 
     @Parameter
     UIService uiService;
@@ -47,24 +47,26 @@ public class ActivateImageJFX extends ContextCommand {
     
     @Parameter
     ConsoleService consoleService;
+
+    public ActivateImageJFX() {
+        super(ImageJFX.UI_NAME);
+    }
   
     
     @Override
     public void run() {
         
         ImageJFX.disposeSwingUI(consoleService,uiService);
-        uiService.setDefaultUI(uiService.getUI(ImageJFX.UI_NAME));
-        
-        System.setProperty(UIService.UI_PROPERTY, ImageJFX.UI_NAME);
+        super.run();
         
         try {
             IJ.run("Switch to Modern Mode");
         }
         catch(Exception e) {
-            
+            e.printStackTrace();
         }
         finally {
-             uiService.showUI(ImageJFX.UI_NAME);
+            
         }
         
        
