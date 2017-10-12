@@ -12,6 +12,9 @@ var fiji = appService.getApp().getBaseDirectory();
 var FilesCollection = Java.type("net.imagej.updater.FilesCollection");
 var filesCollection = new FilesCollection(fiji);
 
+// reading the current configuration
+filesCollection.read();
+
 var repoName = "ImageJ-FX";
 var repoUrl = "http://site.imagejfx.net/";
 
