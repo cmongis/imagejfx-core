@@ -46,14 +46,18 @@ public class DeactivateImageJFX extends ContextCommand{
     @Override
     public void run() {
         
-        uiService.getUI(SwingUI.NAME).dispose();
         
-        uiService.setDefaultUI(uiService.getUI(SwingUI.NAME));
+        
+        uiService.getDefaultUI().dispose();
+        
+        uiService.setDefaultUI(uiService.getUI(SwingMdiUI.NAME));
         
         uiService.showDialog("ImageJ-FX is shutting down to apply the new changes.");
         System.setProperty(UIService.UI_PROPERTY, SwingMdiUI.NAME);
+        
+        uiService.getDefaultUI().dispose();;
         //commandService.run(Switch, true, inputMap)
-        commandService.run(QuitProgram.class, true);
+        //commandService.run(QuitProgram.class, true);
         
     }
     

@@ -36,14 +36,8 @@ import org.scijava.ui.UIService;
 @Plugin(type = Command.class, menuPath="Edit > Options > User Interface > ImageJ-FX")
 public class ActivateImageJFX extends AbstractUISwitchCommand {
 
-    @Parameter
-    UIService uiService;
     
-    @Parameter
-    CommandService commandService;
     
-    @Parameter
-    AppService appService;
     
     @Parameter
     ConsoleService consoleService;

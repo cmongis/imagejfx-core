@@ -19,37 +19,17 @@
  */
 package ijfx.ui.main;
 
-import org.scijava.command.ContextCommand;
-import org.scijava.plugin.Parameter;
-import org.scijava.ui.UIService;
+import org.scijava.command.Command;
+import org.scijava.plugin.Plugin;
+import org.scijava.ui.swing.SwingUI;
 
 /**
  *
  * @author cyril
  */
-public class AbstractUISwitchCommand extends ContextCommand{
-    
-    final private String UI_NAME;
-
-    @Parameter
-    protected UIService uiService;
-    
-    public AbstractUISwitchCommand(String UI_NAME) {
-        this.UI_NAME = UI_NAME;
+@Plugin(type = Command.class, menuPath = "Edit > Options > User Interface > Swing")
+public class ActivateSwingUI extends AbstractUISwitchCommand{
+    public ActivateSwingUI() {
+        super(SwingUI.NAME);
     }
-
-    @Override
-    public void run() {
-        if(uiService.isDefaultUI(UI_NAME)) return;
-        uiService.getDefaultUI().dispose();
-        uiService.setDefaultUI(uiService.getUI(UI_NAME));
-        System.setProperty(UIService.UI_PROPERTY, UI_NAME);
-        
-        uiService.showUI();
-        
-        
-    }
-    
-    
-    
 }
