@@ -20,7 +20,7 @@
 package ijfx.core.workflow;
 
 import ijfx.ui.inputharvesting.SuppliedWidgetModel;
-import org.scijava.module.Module;
+import org.scijava.Context;
 import org.scijava.module.ModuleInfo;
 import org.scijava.module.ModuleItem;
 import org.scijava.module.ModuleService;
@@ -41,8 +41,10 @@ public class WorkflowStepWidgetModel<T> extends SuppliedWidgetModel<T> {
 
     private ModuleInfo moduleInfo;
 
-    public WorkflowStepWidgetModel(WorkflowStep step, String key) {
-
+    public WorkflowStepWidgetModel(Context context,WorkflowStep step, String key) {
+        
+        context.inject(this);
+        
         this.step = step;
 
         parameterName = key;
@@ -52,9 +54,9 @@ public class WorkflowStepWidgetModel<T> extends SuppliedWidgetModel<T> {
         setSetter(this::setValueInStep);
 
         ModuleInfo moduleInfo = getModuleInfo();
-
+        
         if (moduleInfo != null) {
-
+            setType(moduleInfo.getInput(key).getType());
             ModuleItem<?> inputInfo = moduleInfo.getInput(key);
             this
                     .setWidgetStyle(inputInfo.getWidgetStyle())

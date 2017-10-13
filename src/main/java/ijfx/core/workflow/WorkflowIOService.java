@@ -19,7 +19,6 @@
  */
 package ijfx.core.workflow;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
@@ -35,6 +34,7 @@ import ijfx.core.IjfxService;
 import ijfx.core.datamodel.LongInterval;
 import ijfx.core.image.ChannelSettings;
 import ijfx.core.image.ColorTableJsonModule;
+import ijfx.core.workflow.json.AxisTypeDeserializer;
 import ijfx.plugins.projection.ProjectionMethod;
 import java.io.File;
 import java.io.IOException;
@@ -42,6 +42,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 import net.imagej.axis.AxisType;
+import net.imagej.axis.DefaultAxisType;
 import net.imagej.threshold.DefaultThresholdMethod;
 import net.imagej.threshold.ThresholdMethod;
 import net.imglib2.display.ColorTable8;
@@ -94,6 +95,12 @@ public class WorkflowIOService extends AbstractService implements IjfxService {
         //mapper.getSubtypeResolver().registerSubtypes(ThresholdMethod.class);
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         mapper.registerModule(new ColorTableJsonModule());
+        
+        SimpleModule module = new SimpleModule();
+        //module.addDeserializer(AxisType.class, new AxisTypeDeserializer());
+        module.addDeserializer(DefaultAxisType.class, new AxisTypeDeserializer());
+        mapper.registerModule(module);
+        
     //mapper.setSerializationInclusion(Include.NON_NULL);
         //mapper.disable(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE);
         // generateModule(ThresholdMethod.class, new ThresholdMethodSerializer<>(getContext()), new ThresholdMethodDeserializer<>(getContext()));
@@ -106,7 +113,7 @@ public class WorkflowIOService extends AbstractService implements IjfxService {
         m.addDeserializer(t, deserializer);
         m.addSerializer(t, serializer);
         m.registerSubtypes(DefaultThresholdMethod.class);
-
+        
         mapper.registerModule(m);
 
     }
