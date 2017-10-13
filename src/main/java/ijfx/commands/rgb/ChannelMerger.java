@@ -55,7 +55,10 @@ import org.scijava.ui.UIService;
  * 
  * @author Cyril MONGIS, 2016
  */
-@Plugin(type = Command.class, menuPath = "Image > Stacks > Merge channels")
+@Plugin(type = Command.class
+        , menuPath = "Image > Color > Convert to RGB"
+        , description = "Uses the current channel settings to create an RGB image."
+)
 public class ChannelMerger<T extends RealType<T>> extends ContextCommand {
 
      @Parameter(type=ItemIO.INPUT)
