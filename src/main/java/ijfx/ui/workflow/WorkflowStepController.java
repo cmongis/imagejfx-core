@@ -109,14 +109,8 @@ public class WorkflowStepController extends BorderPane implements ListCellContro
                 .getParameters()
                 .keySet()
                 .stream()
-                .map(str -> new WorkflowStepWidgetModel(step,str))
-                .peek(obj->{
-                    try {
-                        context.inject(obj);
-                    }
-                    catch(IllegalStateException e) {
-                    }
-                })
+                .map(str -> new WorkflowStepWidgetModel(context,step,str))
+                
                 .map((WidgetModel m)->{
                    InputWidget<? ,Node> widget = (InputWidget<?,Node>) widgetService.find(m);
                    if(widget != null) {

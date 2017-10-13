@@ -84,8 +84,7 @@ public class WorkflowStepEditPane extends BorderPane {
     public WidgetModel createModel(WorkflowStep step, String key) {
         try {
 
-            WorkflowStepWidgetModel workflowStepWidgetModel = new WorkflowStepWidgetModel(step, key);
-            context.inject(workflowStepWidgetModel);
+            WorkflowStepWidgetModel workflowStepWidgetModel = new WorkflowStepWidgetModel(context,step, key);
             return workflowStepWidgetModel;
 
         } catch (Exception e) {
