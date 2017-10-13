@@ -65,7 +65,8 @@ public class WorkflowStepWidgetModel<T> extends SuppliedWidgetModel<T> {
                     .setMax((Number) inputInfo.getMaximumValue())
                     .setSoftMin((Number) inputInfo.getSoftMinimum())
                     .setSoftMax((Number) inputInfo.getSoftMaximum())
-                    .setStepSize(inputInfo.getStepSize());
+                    .setStepSize(inputInfo.getStepSize())
+                    .setChoices(inputInfo.getChoices());
 
         }
 
