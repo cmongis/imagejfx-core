@@ -28,7 +28,10 @@ import org.scijava.plugin.Plugin;
  *
  * @author Cyril MONGIS, 2016
  */
-@Plugin(type = Command.class, menuPath = "Image > Color > Separate channels")
+@Plugin(type = Command.class
+        , menuPath = "Image > Color > Separate channels"
+        , description = "Create a new image (or stack) for each channel of the input image."
+)
 public class SeparateChannels extends SeparateCommandBase{
 
     @Override

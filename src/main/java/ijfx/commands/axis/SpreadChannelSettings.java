@@ -36,7 +36,11 @@ import org.scijava.plugin.Plugin;
  *
  * @author Cyril MONGIS, 2016
  */
-@Plugin(type = Command.class,menuPath="Image > Color > Spread channel setting")
+@Plugin(type = Command.class
+        ,menuPath="Image > Color > Spread channel setting"
+        ,description = "The LUT settings of the input image will be applied to all other"
+                + "open images (no data is modified, only the visualization)."
+)
 public class SpreadChannelSettings extends ContextCommand{
 
     //@Parameter(type=ItemIO.INPUT)

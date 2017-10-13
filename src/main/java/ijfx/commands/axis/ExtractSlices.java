@@ -38,7 +38,11 @@ import org.scijava.plugin.Plugin;
  *
  * @author Cyril MONGIS, 2016
  */
-@Plugin(type=Command.class,menuPath = "Image > Stacks > Extract slices...",initializer = "init")
+@Plugin(type=Command.class
+        ,menuPath = "Image > Stacks > Extract slices..."
+        ,initializer = "init"
+        ,description = "Create a new stack composed of all slices between a used-defined interval (XYZ stacks only)"
+)
 public class ExtractSlices extends ContextCommand {
     
     @Parameter(label="Slices to extract")

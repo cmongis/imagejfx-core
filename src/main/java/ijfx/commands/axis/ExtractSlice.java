@@ -34,7 +34,11 @@ import org.scijava.plugin.Plugin;
  *
  * @author Cyril MONGIS, 2016
  */
-@Plugin(type = Command.class, menuPath = "Image > Stacks > Extract slice",headless = false)
+@Plugin(
+        type = Command.class
+        , menuPath = "Image > Stacks > Extract slice"
+        ,headless = false
+,description  = "Create a new 2D image composed uniquely of the currently displayed slice.")
 public class ExtractSlice extends ContextCommand{
     
     @Parameter(type = ItemIO.INPUT)

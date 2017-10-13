@@ -34,7 +34,11 @@ import org.scijava.plugin.Plugin;
  *
  * @author Cyril MONGIS, 2016
  */
-@Plugin(type = Command.class, menuPath = "Image > Color > Isolate channel", initializer = "findCurrentChannel")
+@Plugin(type = Command.class
+        , menuPath = "Image > Color > Isolate channel"
+        , initializer = "findCurrentChannel"
+        , description = "Create a new image (or stack) composed uniquely of the current channel. All other dimensions are preserved."
+)
 public class IsolateChannel extends ContextCommand {
 
   

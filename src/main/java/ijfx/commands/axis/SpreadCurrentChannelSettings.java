@@ -38,7 +38,10 @@ import org.scijava.ui.UIService;
  *
  * @author Cyril MONGIS, 2016
  */
-@Plugin(type = Command.class, menuPath = "Image > Color > Spread current channel settings")
+@Plugin(type = Command.class
+        , menuPath = "Image > Color > Spread current channel settings"
+        , description = "The LUT setting of the current channel will be applied to all open images. (no data modified)"
+)
 public class SpreadCurrentChannelSettings extends ContextCommand {
 
     @Parameter(type = ItemIO.BOTH)
