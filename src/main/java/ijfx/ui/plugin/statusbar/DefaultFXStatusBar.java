@@ -25,6 +25,7 @@ import ijfx.ui.UiPlugin;
 import java.time.Duration;
 import javafx.application.Platform;
 import javafx.beans.Observable;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
@@ -114,6 +115,10 @@ public class DefaultFXStatusBar implements FXStatusBar, UiPlugin {
         statusProperty.bind(ijStatus);
         progressProperty.bind(ijProgress);
 
+        progressBar.visibleProperty().bind(Bindings.createBooleanBinding(this::shouldShowProgressBar, progressBar.progressProperty()));
+        
+        
+        
         // if the progress or status doen't change
         // for a certain time, the status will be hidden
         EventStreams
@@ -170,7 +175,8 @@ public class DefaultFXStatusBar implements FXStatusBar, UiPlugin {
 
     @Override
     public void setStatus(String message) {
-        //Platform.runLater(() -> ijStatus.setValue(message));
+        
+        Platform.runLater(() -> ijStatus.setValue(message));
     }
 
     @Override
@@ -183,16 +189,28 @@ public class DefaultFXStatusBar implements FXStatusBar, UiPlugin {
         return pane;
     }
 
+    
+    
     @Override
     public UiPlugin init() throws Exception {
-
+        
+        
+        
+        
+        pane.getStyleClass().add("fx-status-bar");
         progressBar.progressProperty().bind(progressProperty);
+        
         statusLabel.textProperty().bind(statusProperty);
 
         new OpacityTransitionBinding(pane, shouldShow);
 
         return this;
 
+    }
+    
+     
+    private boolean shouldShowProgressBar() {
+        return progressBar.getProgress() > 0;
     }
 
 }

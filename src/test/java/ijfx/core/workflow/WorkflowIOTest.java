@@ -26,8 +26,12 @@ import ijfx.core.datamodel.DefaultInterval;
 import ijfx.core.datamodel.LongInterval;
 import ijfx.core.image.ChannelSettings;
 import ijfx.core.image.DefaultChannelSettings;
+import ijfx.plugins.projection.MedianProjection;
+import ijfx.plugins.projection.Projection;
 import java.io.File;
 import java.io.IOException;
+import net.imagej.axis.Axes;
+import net.imagej.axis.AxisType;
 import net.imagej.lut.LUTService;
 import net.imagej.plugins.commands.imglib.GaussianBlur;
 import net.imglib2.display.ColorTable;
@@ -41,121 +45,113 @@ import org.scijava.plugin.Parameter;
  *
  * @author cyril
  */
-public class WorkflowIOTest extends IjfxTest{
-    
+public class WorkflowIOTest extends IjfxTest {
+
     @Parameter
     BatchService batchService;
-    
+
     @Parameter
     WorkflowIOService workflowIOService;
-    
+
     @Parameter
     LUTService lutService;
-    
+
     @Test
     public void channelSettings() throws IOException {
-        
-       
-        
-        
+
         ChannelSettings channelSettings = new DefaultChannelSettings()
                 .addSetting("GFP", 200, 400, new ColorTable8())
-                .addSetting("mCherry",100,300,new ColorTable16());
-        
-        
+                .addSetting("mCherry", 100, 300, new ColorTable16());
+
         File tmpFile = File.createTempFile("channelsettings", ".json");
-        
+
         ObjectMapper mapper = workflowIOService.getObjectMapper();
-        
+
         mapper.writeValue(tmpFile, channelSettings);
-        
+
         displayFile(tmpFile);
-        
+
         ChannelSettings loaded = mapper.readValue(tmpFile, ChannelSettings.class);
-        
+
         Assert.assertNotNull(loaded);
-        
-        
-        
-        
-        Assert.assertEquals("same number of channels",channelSettings.getChannelCount(),loaded.getChannelCount());
-        Assert.assertEquals("same channels",channelSettings.get(0).getChannelMin(),loaded.get(0).getChannelMin(),0.0);
-        
+
+        Assert.assertEquals("same number of channels", channelSettings.getChannelCount(), loaded.getChannelCount());
+        Assert.assertEquals("same channels", channelSettings.get(0).getChannelMin(), loaded.get(0).getChannelMin(), 0.0);
+
         System.out.println("Testing color tables...");
-        
-        for(int i = 0;i!=channelSettings.getChannelCount();i++) {
-            
-            
-            
+
+        for (int i = 0; i != channelSettings.getChannelCount(); i++) {
+
             ColorTable c1 = channelSettings.get(i).getColorTable();
             ColorTable c2 = loaded.get(i).getColorTable();
-            
-            Assert.assertEquals("Channel length "+(i+1), c1.getLength(),c2.getLength());
-            for(int j = 0;j!= c1.getLength();j++) {
-                Assert.assertEquals(String.format("Byte from channel %d / %d",i,j),c1.get(0, j),c2.get(0,j));
+
+            Assert.assertEquals("Channel length " + (i + 1), c1.getLength(), c2.getLength());
+            for (int j = 0; j != c1.getLength(); j++) {
+                Assert.assertEquals(String.format("Byte from channel %d / %d", i, j), c1.get(0, j), c2.get(0, j));
             }
         }
-        
+
         //Assert.assertEquals("same colot table byes", channelSettings.get(0).getColorTable().);
-        
     }
-    
+
     @Test
-    public void longInterval() throws IOException{
-        
-        LongInterval interval = new DefaultInterval(2, 10,0,20);
-        
-        
+    public void longInterval() throws IOException {
+
+        LongInterval interval = new DefaultInterval(2, 10, 0, 20);
+
         File tmpFile = File.createTempFile("longinterval", ".json");
-        
-        
+
         ObjectMapper mapper = workflowIOService.getObjectMapper();
-        
+
         mapper.writeValue(tmpFile, interval);
-        
+
         displayFile(tmpFile);
-        
-        
-        
+
         LongInterval loaded = mapper.readValue(tmpFile, LongInterval.class);
-        
-        Assert.assertNotNull("loaded interval not null",loaded);
-        
-        Assert.assertEquals("interval equals",loaded, interval);
-        
+
+        Assert.assertNotNull("loaded interval not null", loaded);
+
+        Assert.assertEquals("interval equals", loaded, interval);
+
     }
-    
-    
+
     @Test
     public void testWorkflowSaving() throws Exception {
-        
-        
-        
+
         Workflow workflow = batchService
                 .builder()
                 .addStep(GaussianBlur.class, "data", new File("hello.txt"))
-                //.addStep(GaussianBlur.class, "sigma",3.0)
                 .addStep(GaussianBlur.class, "sigma",3.0)
+                //.addStep(GaussianBlur.class, "sigma", 3.0)
+                .addStep(Projection.class, "projectionMethod", new MedianProjection(), "axisType", Axes.CHANNEL)
                 .getWorkflow();
-        
+
         File tmpFile = File.createTempFile("testIjfx", ".json");
-        
+
         workflowIOService.saveWorkflow(workflow, tmpFile);
-        
+
         System.out.println(org.apache.commons.io.FileUtils.readFileToString(tmpFile));
-        
+
         Workflow loadedWorkflow = workflowIOService.loadWorkflow(tmpFile);
-        
+
         Assert.assertEquals("workflow size", workflow.getStepList().size(), loadedWorkflow.getStepList().size());
         Assert.assertEquals(
-                "workflow params"
-                ,workflow.getStepList().get(1).getParameters().get("sigma")
-                ,loadedWorkflow.getStepList().get(1).getParameters().get("sigma")
+                "workflow params",
+                 workflow.getStepList().get(1).getParameters().get("sigma"),
+                 loadedWorkflow.getStepList().get(1).getParameters().get("sigma")
         );
-        
+        Assert.assertEquals(
+                "exotic parameter types",
+                 MedianProjection.class,
+                 workflow.getStepList().get(2).getParameters().get("projectionMethod").getClass()
+        );
+       
+        Assert.assertEquals(
+                "exotic parameter types",
+                 Axes.CHANNEL,
+                 workflow.getStepList().get(2).getParameters().get("axisType")
+        );
+
     }
-    
-    
-  
-    
+
 }

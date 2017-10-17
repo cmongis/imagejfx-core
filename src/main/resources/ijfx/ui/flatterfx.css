@@ -2500,6 +2500,9 @@ Label.chart-legend-item{
     -fx-pref-height:20px;
     -fx-min-height:10px;
 }
+.fx-status-bar .progress-bar {
+    -fx-pref-width:200px;
+}
 
 /*
     MetaData bar

@@ -82,7 +82,7 @@ public class FXUiCommandService extends DefaultUiCommandService implements IjfxS
         
         Button button = new Button(action.label(), fxIconService.getIconAsNode(action.iconPath()));
 
-        button.setTooltip(new Tooltip(action.description()));
+        //button.setTooltip(new Tooltip(action.description()));
 
         attacheDescription(button, action.description());
 

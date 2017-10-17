@@ -229,7 +229,7 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
                         anyAxisSliderInUse
                                 .or(bottomPane.hoverProperty()));
 
-        pixelValueLabel.setText("For now nothing to show but it's coming");
+        pixelValueLabel.setText("Hover me to access sliders");
         
         new TransitionBinding<Number>()
                 .bindOnFalse(sliderVBox.heightProperty())
@@ -324,7 +324,9 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
             // the canvas listener
             // listen for input events modify the display
             // in consequence
-            new CanvasListener(display, canvas);
+            canvasListener = new CanvasListener(display, canvas);
+            
+            
             
 
             // adding the canvas to an anchorpane
@@ -637,4 +639,5 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
         }
         modifier.refresh();
     }
+   
 }

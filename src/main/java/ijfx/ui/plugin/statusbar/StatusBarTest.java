@@ -45,7 +45,7 @@ public class StatusBarTest extends ContextCommand {
 
                 statusService.showStatus(i + "/ " + 100);
                 statusService.showProgress(i, 100);
-                Thread.sleep(1000);
+                Thread.sleep(300);
 
             }
         } catch (InterruptedException ex) {

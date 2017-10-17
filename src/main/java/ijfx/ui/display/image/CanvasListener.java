@@ -240,7 +240,7 @@ public class CanvasListener {
     }
 
     private void onMouseMoved(MouseEvent event, Tool tool) {
-        tool.onMouseMove(new MsMovedEvent(display, extractInputModifiers(event), 0, 0));
+        tool.onMouseMove(new MsMovedEvent(display, extractInputModifiers(event), toInt(event.getX()), toInt(event.getY())));
     }
 
     private void onMouseClicked(MouseEvent event) {
