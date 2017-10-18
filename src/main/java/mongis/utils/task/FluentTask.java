@@ -72,7 +72,7 @@ public class FluentTask<INPUT, OUTPUT> extends Task<OUTPUT> implements ProgressH
     private FailableBiConsumer<ProgressHandler, INPUT> longConsumer;
 
     // handlers
-    private Consumer<Throwable> onError = e -> logger.log(Level.SEVERE, null, e);
+    private Consumer<Throwable> onError = e -> getLogger().log(Level.SEVERE, null, e);
 
     private List<Consumer<OUTPUT>> onSuccess = new ArrayList<>();
 
@@ -82,7 +82,7 @@ public class FluentTask<INPUT, OUTPUT> extends Task<OUTPUT> implements ProgressH
     
     private static ExecutorService QUEUE = Executors.newFixedThreadPool(1);
     
-    private final static Logger logger = Logger.getLogger(FluentTask.class.getName());
+    private static Logger LOGGER = Logger.getLogger(FluentTask.class.getName());
 
     private double total = 1.0;
     private double progress = 0;
@@ -127,7 +127,7 @@ public class FluentTask<INPUT, OUTPUT> extends Task<OUTPUT> implements ProgressH
 
     public FluentTask<INPUT, OUTPUT> run(Runnable runnable) {
         if (runnable == null) {
-            logger.warning("Setting null as runnable");
+            getLogger().warning("Setting null as runnable");
             return this;
         }
         this.runnable = () -> runnable.run();
@@ -218,7 +218,7 @@ public class FluentTask<INPUT, OUTPUT> extends Task<OUTPUT> implements ProgressH
     @Override
     protected void failed() {
         super.failed();
-        Logger.getLogger(getClass().getName()).log(Level.SEVERE, String.format("%s failed", getCallerClassName()), getException());
+        getLogger().log(Level.SEVERE, String.format("%s failed", getCallerClassName()), getException());
         if (onError != null) {
             onError.accept(getException());
         }
@@ -261,7 +261,7 @@ public class FluentTask<INPUT, OUTPUT> extends Task<OUTPUT> implements ProgressH
     @Override
     public void succeeded() {
 
-        //logger.info(String.format("%s '%s' executed in %d", getClass().getSimpleName(), getTitle(), elapsed));
+        getLogger().fine(String.format("%s '%s' executed in %d", getClass().getSimpleName(), getTitle(), elapsed));
         super.succeeded();
         for(Consumer<OUTPUT> handler : onSuccess) {
             handler.accept(getValue());
@@ -273,7 +273,7 @@ public class FluentTask<INPUT, OUTPUT> extends Task<OUTPUT> implements ProgressH
 
     @Override
     public void cancelled() {
-        logger.info("cancelled...");
+        getLogger().info(getCallerClassName() + "task was cancelled...");
         super.cancelled();
     }
 
@@ -327,7 +327,7 @@ public class FluentTask<INPUT, OUTPUT> extends Task<OUTPUT> implements ProgressH
     @Override
     public void accept(INPUT t) {
 
-        logger.info("Consumed a new input " + t);
+        getLogger().fine("Consumed a new input " + t);
         setInput(t);
         start();
     }
@@ -358,7 +358,7 @@ public class FluentTask<INPUT, OUTPUT> extends Task<OUTPUT> implements ProgressH
 
     public FluentTask<INPUT, OUTPUT> submit(Consumer<Task> consumer) {
         if (consumer == null) {
-            logger.warning("Submitting task to null !");
+            getLogger().warning("Submitting task to null !");
         } else {
             consumer.accept(this);
         }
@@ -409,19 +409,27 @@ public class FluentTask<INPUT, OUTPUT> extends Task<OUTPUT> implements ProgressH
     */
     
     
-    private static ExecutorService getCommonQueue() {
+    public static ExecutorService getCommonQueue() {
         return QUEUE;
     }
     
-    private static ExecutorService getCommonPool() {
+    public static ExecutorService getCommonPool() {
         
         if(EXECUTOR == null) {
             EXECUTOR = Executors.newCachedThreadPool();
         }
         return EXECUTOR;   
     }
-    private static void setCommonPool(ExecutorService executorService) {
+    public static void setCommonPool(ExecutorService executorService) {
         EXECUTOR = executorService;
+    }
+    
+    public static void setDefaultLogger(Logger l) {
+       LOGGER = l;
+    }
+    
+    public static Logger getLogger() {
+        return LOGGER;
     }
 
 }
