@@ -284,6 +284,7 @@ public class FXUtilities {
             }
             return new FluentTask<Void,T>()
                     .call(()->t.call())
+                    .startInFXThread()
                     .get();
         } catch (InterruptedException ex) {
             Logger.getLogger(FXUtilities.class.getName()).log(Level.SEVERE, null, ex);
