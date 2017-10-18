@@ -33,7 +33,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import mongis.utils.FileButtonBinding;
+import mongis.utils.bindings.FileButtonBinding;
 import net.imagej.Dataset;
 import net.imagej.axis.Axes;
 import org.scijava.Context;

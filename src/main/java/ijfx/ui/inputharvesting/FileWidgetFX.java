@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import mongis.utils.FileButtonBinding;
+import mongis.utils.bindings.FileButtonBinding;
 import org.apache.commons.lang3.ArrayUtils;
 import org.scijava.plugin.Plugin;
 import org.scijava.widget.FileWidget;

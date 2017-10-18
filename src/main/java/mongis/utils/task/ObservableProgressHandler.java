@@ -17,57 +17,96 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package mongis.utils;
+package mongis.utils.task;
 
 import mongis.utils.task.ProgressHandler;
+import ijfx.core.property.Getter;
+import java.util.concurrent.Callable;
 
 /**
  *
- * @author Cyril MONGIS, 2016
+ * @author Cyril MONGIS
  */
-public class SilentProgressHandler implements ProgressHandler{
+public class ObservableProgressHandler implements ProgressHandler{
 
+    private double total = 1;
     
+    private double progress = 0;
+    
+    private String message;
+    
+    private Runnable onChange =  ()->{};
+
+    private Getter<Boolean> cancel = ()->false;
+    
+    
+    public ObservableProgressHandler() {
+        
+    }
+    
+    public ObservableProgressHandler(Runnable onChange) {
+        this();
+        setOnChange(onChange);
+    }
+    
+    public void setOnChange(Runnable onChange) {
+        this.onChange = onChange;
+    }
+
+    public void setCancel(Getter<Boolean> cancel) {
+        this.cancel = cancel;
+    }
+    
+    private void fireChangeEvent() {
+        onChange.run();
+    }
     
     
     @Override
+    public double getProgress() {
+        return progress;
+    }
+
+    @Override
     public void setProgress(double progress) {
+        this.progress = progress;
+        fireChangeEvent();
     }
 
     @Override
     public void setProgress(double workDone, double total) {
-    }
-
-    @Override
-    public void setProgress(long workDone, long total) {
-    }
-
-    @Override
-    public void setStatus(String message) {
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return false;
-    }
-
-    @Override
-    public void setTotal(double total) {
+        setProgress(workDone/total);
         
     }
 
     @Override
+    public void setProgress(long workDone, long total) {
+        setProgress(1.0 * workDone / total);
+    }
+
+    @Override
+    public void setStatus(String message) {
+        this.message = message;
+    }
+
+    @Override
+    public void setTotal(double total) {
+        this.total = total;
+    }
+
+    @Override
     public void increment(double inc) {
+        progress += inc/total;
+        fireChangeEvent();
     }
 
     @Override
-    public double getProgress() {
-        return 0;
+    public boolean isCancelled() {
+        return cancel.get();
     }
 
-    @Override
     public String getMessage() {
-        return "";
+        return message;
     }
     
     

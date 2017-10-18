@@ -19,9 +19,6 @@
  */
 package mongis.utils.task;
 
-import mongis.utils.ConsoleProgressHandler;
-import mongis.utils.SilentProgressHandler;
-
 /**
  *
  * @author Cyril MONGIS, 2016

@@ -45,7 +45,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
 import mongis.utils.FXUtilities;
 
-import mongis.utils.FileButtonBinding;
+import mongis.utils.bindings.FileButtonBinding;
 
 /**
  *

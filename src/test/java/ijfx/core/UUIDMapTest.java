@@ -19,9 +19,9 @@
  */
 package ijfx.core;
 
-import mongis.utils.DefaultUUIDMap;
-import mongis.utils.UUIDMap;
-import mongis.utils.UUIDWeakHashMap;
+import mongis.utils.uuidmap.DefaultUUIDMap;
+import mongis.utils.uuidmap.UUIDMap;
+import mongis.utils.uuidmap.UUIDWeakHashMap;
 import org.junit.Assert;
 import org.junit.Test;
 

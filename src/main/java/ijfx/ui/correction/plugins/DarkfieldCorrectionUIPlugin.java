@@ -28,7 +28,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import mongis.utils.FileButtonBinding;
+import mongis.utils.bindings.FileButtonBinding;
 import net.imagej.Dataset;
 import org.scijava.Context;
 import org.scijava.plugin.Parameter;

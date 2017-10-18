@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import mongis.utils.task.FluentTask;
 import mongis.utils.task.ProgressHandler;
-import mongis.utils.SilentProgressHandler;
+import mongis.utils.task.SilentProgressHandler;
 import net.imagej.Dataset;
 import net.imagej.display.ImageDisplay;
 import net.imagej.display.ImageDisplayService;

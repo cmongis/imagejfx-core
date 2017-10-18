@@ -33,13 +33,13 @@ import java.util.logging.Logger;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import mongis.utils.task.FluentTask;
 import net.imagej.ImageJ;
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
 import org.scijava.console.ConsoleService;
 import org.scijava.ui.UIService;
 import org.scijava.ui.UserInterface;
-import org.scijava.ui.swing.sdi.SwingSDIUI;
 import rx.Scheduler;
 import rx.schedulers.Schedulers;
 
@@ -66,7 +66,7 @@ public final class ImageJFX {
             // System.setProperty("java.util.logging.SimpleFormatter.format", 
             //"%1$tF %1$tT %4$s %2$s %5$s%6$s%n");
             System.setProperty("java.util.logging.SimpleFormatter.format", "[%4$s][%2$s] %5$s [%1$tc]%n%7");
-
+            FluentTask.setDefaultLogger(logger);
         }
 
         return logger;
@@ -92,7 +92,7 @@ public final class ImageJFX {
 
     public static final int CORE_NUMBER = getCoreNumber() > 1 ? getCoreNumber() - 1 : getCoreNumber();
 
-    private static final ExecutorService service = Executors.newCachedThreadPool();
+    private static final ExecutorService service = FluentTask.getCommonPool();
 
     private static final Scheduler publishSubjectScheduler = Schedulers.from(Executors.newSingleThreadExecutor());
 

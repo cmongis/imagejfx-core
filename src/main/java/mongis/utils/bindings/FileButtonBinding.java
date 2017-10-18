@@ -17,7 +17,7 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package mongis.utils;
+package mongis.utils.bindings;
 
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
@@ -33,6 +33,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import mongis.utils.FileUtils;
 
 /**
  *

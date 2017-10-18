@@ -44,7 +44,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.concurrent.Task;
 import mongis.utils.task.FluentTask;
 import mongis.utils.task.ProgressHandler;
-import mongis.utils.SilentProgressHandler;
+import mongis.utils.task.SilentProgressHandler;
 import net.imagej.Dataset;
 import net.imagej.ImageJService;
 import net.imagej.display.DatasetView;

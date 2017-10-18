@@ -50,7 +50,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javax.annotation.PreDestroy;
 import mongis.utils.FXUtilities;
-import mongis.utils.FileButtonBinding;
+import mongis.utils.bindings.FileButtonBinding;
 import mongis.utils.properties.ListChangeListenerBuilder;
 import mongis.utils.bindings.OpacityTransitionBinding;
 import org.scijava.Context;
