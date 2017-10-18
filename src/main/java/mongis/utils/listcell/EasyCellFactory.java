@@ -18,7 +18,7 @@
  * 	Copyright 2015,2016 Cyril MONGIS, Michael Knop
  *
  */
-package mongis.utils;
+package mongis.utils.listcell;
 
 import ijfx.ui.main.ImageJFX;
 import java.util.logging.Level;

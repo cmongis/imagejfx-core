@@ -40,7 +40,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
-import mongis.utils.UUIDWeakHashMap;
+import mongis.utils.uuidmap.UUIDWeakHashMap;
 import net.imagej.Dataset;
 import net.imagej.DatasetService;
 import net.imagej.ImgPlus;

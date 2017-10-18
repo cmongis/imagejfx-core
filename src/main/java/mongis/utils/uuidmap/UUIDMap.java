@@ -17,34 +17,35 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package mongis.utils.transition;
+package mongis.utils.uuidmap;
 
-import javafx.beans.binding.Binding;
-import javafx.beans.property.ReadOnlyProperty;
-import javafx.scene.Node;
+import java.util.UUID;
+import java.util.concurrent.Callable;
 
 /**
  *
- * @author Cyril MONGIS, 2016
+ * @author Cyril MONGIS
  */
-public class OpacityTransitionBinding extends TransitionBinding<Number>{
+public interface UUIDMap<T> {
+
+    Accessor<T> key(Object... keyComponent);
+
+    UUID getId(Object... keyComponents);
     
-    public OpacityTransitionBinding(Node node,ReadOnlyProperty<Boolean> property) {
-        super(0d, 1d);
+    public interface Accessor<T> {
+
+        UUIDMap<T> put(T t);
+
+        boolean has();
         
-        bind(property, node.opacityProperty());
+        public T get();
+        
+        public T getOrPut(T t);
+
+        public T getOrPutFrom(Callable<T> getter);
+
+        UUID id();
+
     }
-    
-    public OpacityTransitionBinding(Node node, Binding<Boolean> binding) {
-        super(0d,1d);
-        bind(binding,node.opacityProperty());
-    }
-    
-    
-    
-    public OpacityTransitionBinding(Node node, ReadOnlyProperty<Boolean> property,double onFalse, double onTrue) {
-        super(onFalse,onTrue);
-        bind(property,node.opacityProperty());
-    }
-    
+
 }

@@ -18,7 +18,7 @@
  * 	Copyright 2015,2016 Cyril MONGIS, Michael Knop
  *
  */
-package mongis.utils;
+package mongis.utils.bindings;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;

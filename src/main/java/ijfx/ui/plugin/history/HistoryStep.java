@@ -21,7 +21,7 @@
 package ijfx.ui.plugin.history;
 
 import ijfx.core.workflow.WorkflowStep;
-import mongis.utils.DraggableListCell;
+import mongis.utils.listcell.DraggableListCell;
 
 import org.scijava.Context;
 import org.scijava.plugin.Parameter;

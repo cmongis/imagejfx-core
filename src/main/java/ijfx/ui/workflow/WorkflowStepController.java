@@ -37,7 +37,7 @@ import org.controlsfx.control.PopOver;
 import org.scijava.Context;
 import org.scijava.plugin.Parameter;
 import mongis.utils.FXUtilities;
-import mongis.utils.ListCellController;
+import mongis.utils.listcell.ListCellController;
 import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
 import org.scijava.widget.WidgetService;

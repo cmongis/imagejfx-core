@@ -18,7 +18,7 @@
  * 	Copyright 2015,2016 Cyril MONGIS, Michael Knop
  *
  */
-package mongis.utils;
+package mongis.utils.listcell;
 
 import javafx.beans.Observable;
 import javafx.collections.ObservableList;
@@ -31,6 +31,7 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
+import mongis.utils.FXUtilities;
 
 /**
  *

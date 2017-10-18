@@ -44,7 +44,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
-import mongis.utils.BindingsUtils;
+import mongis.utils.bindings.BindingsUtils;
 import net.imagej.axis.Axes;
 import net.imagej.display.DatasetView;
 import net.imagej.display.ImageDisplayService;

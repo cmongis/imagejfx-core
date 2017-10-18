@@ -40,7 +40,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.HBox;
 import mongis.utils.task.TaskList;
-import mongis.utils.transition.OpacityTransitionBinding;
+import mongis.utils.bindings.OpacityTransitionBinding;
 import org.controlsfx.control.StatusBar;
 import org.reactfx.EventStreams;
 import org.scijava.plugin.Plugin;

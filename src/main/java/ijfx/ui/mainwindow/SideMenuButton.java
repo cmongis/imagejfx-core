@@ -29,7 +29,7 @@ import javafx.beans.property.StringProperty;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.util.Duration;
-import mongis.utils.transition.TransitionBinding;
+import mongis.utils.bindings.TransitionBinding;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 

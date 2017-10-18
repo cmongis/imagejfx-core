@@ -42,7 +42,7 @@ import ijfx.ui.UiConfiguration;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.input.MouseEvent;
-import mongis.utils.transition.TransitionBinding;
+import mongis.utils.bindings.TransitionBinding;
 import org.scijava.event.EventHandler;
 import org.scijava.menu.ShadowMenu;
 import org.scijava.menu.event.MenusAddedEvent;

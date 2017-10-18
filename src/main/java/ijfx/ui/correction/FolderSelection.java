@@ -52,7 +52,7 @@ import javax.annotation.PreDestroy;
 import mongis.utils.FXUtilities;
 import mongis.utils.FileButtonBinding;
 import mongis.utils.properties.ListChangeListenerBuilder;
-import mongis.utils.transition.OpacityTransitionBinding;
+import mongis.utils.bindings.OpacityTransitionBinding;
 import org.scijava.Context;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

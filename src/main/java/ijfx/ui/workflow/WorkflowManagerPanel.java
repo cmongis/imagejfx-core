@@ -35,8 +35,8 @@ import java.io.File;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.stage.FileChooser;
-import mongis.utils.ListCellController;
-import mongis.utils.ListCellControllerFactory;
+import mongis.utils.listcell.ListCellController;
+import mongis.utils.listcell.ListCellControllerFactory;
 import org.scijava.Context;
 
 public class WorkflowManagerPanel extends BorderPane {

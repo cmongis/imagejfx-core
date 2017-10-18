@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import mongis.utils.DefaultUUIDMap;
+import mongis.utils.uuidmap.DefaultUUIDMap;
 import net.imagej.Dataset;
 import net.imagej.axis.Axes;
 import net.imagej.display.DatasetView;

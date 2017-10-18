@@ -60,7 +60,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import mongis.utils.FXUtilities;
-import mongis.utils.transition.TransitionBinding;
+import mongis.utils.bindings.TransitionBinding;
 import net.imagej.display.DatasetView;
 import net.imagej.display.ImageCanvas;
 import net.imagej.display.ImageDisplay;

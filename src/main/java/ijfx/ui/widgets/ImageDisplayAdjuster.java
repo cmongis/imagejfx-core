@@ -60,7 +60,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.util.Duration;
 import mongis.utils.FXUtilities;
 import mongis.utils.SmartNumberStringConverter;
-import mongis.utils.transition.TransitionBinding;
+import mongis.utils.bindings.TransitionBinding;
 import net.imglib2.display.ColorTable;
 import net.mongis.usage.UsageLocation;
 import org.controlsfx.control.RangeSlider;

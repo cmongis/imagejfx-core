@@ -19,11 +19,11 @@
  */
 package mongis.utils.task;
 
-import ijfx.ui.main.ImageJFX;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -76,8 +76,12 @@ public class FluentTask<INPUT, OUTPUT> extends Task<OUTPUT> implements ProgressH
 
     private List<Consumer<OUTPUT>> onSuccess = new ArrayList<>();
 
-    private ExecutorService executor = ImageJFX.getThreadPool();
+    private ExecutorService executor = null;
 
+    private static ExecutorService EXECUTOR = null;
+    
+    private static ExecutorService QUEUE = Executors.newFixedThreadPool(1);
+    
     private final static Logger logger = Logger.getLogger(FluentTask.class.getName());
 
     private double total = 1.0;
@@ -85,6 +89,9 @@ public class FluentTask<INPUT, OUTPUT> extends Task<OUTPUT> implements ProgressH
 
     private long elapsed = 0;
 
+    
+    
+    
     public FluentTask() {
         super();
 
@@ -232,7 +239,7 @@ public class FluentTask<INPUT, OUTPUT> extends Task<OUTPUT> implements ProgressH
     }
 
     public FluentTask<INPUT, OUTPUT> start() {
-        executor.execute(this);
+        getExecutor().execute(this);
         return this;
     }
 
@@ -240,10 +247,14 @@ public class FluentTask<INPUT, OUTPUT> extends Task<OUTPUT> implements ProgressH
         Platform.runLater(this);
         return this;
     }
+    
+    public FluentTask<INPUT,OUTPUT> startInNewThread() {
+        new Thread(this).start();
+        return this;
+    }
 
     public FluentTask<INPUT, OUTPUT> queue() {
-        executor = ImageJFX.getThreadQueue();
-        executor.execute(this);
+        QUEUE.execute(this);
         return this;
     }
 
@@ -337,6 +348,11 @@ public class FluentTask<INPUT, OUTPUT> extends Task<OUTPUT> implements ProgressH
     }
 
     public ExecutorService getExecutor() {
+        
+        if(executor == null) {
+            executor = getCommonPool();
+        }
+        
         return executor;
     }
 
@@ -383,6 +399,29 @@ public class FluentTask<INPUT, OUTPUT> extends Task<OUTPUT> implements ProgressH
             }
         }
         return null;
+    }
+
+  
+    
+    
+    /*
+        Static method linked to the Executor
+    */
+    
+    
+    private static ExecutorService getCommonQueue() {
+        return QUEUE;
+    }
+    
+    private static ExecutorService getCommonPool() {
+        
+        if(EXECUTOR == null) {
+            EXECUTOR = Executors.newCachedThreadPool();
+        }
+        return EXECUTOR;   
+    }
+    private static void setCommonPool(ExecutorService executorService) {
+        EXECUTOR = executorService;
     }
 
 }

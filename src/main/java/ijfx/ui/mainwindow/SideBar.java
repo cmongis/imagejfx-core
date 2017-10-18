@@ -37,7 +37,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import mongis.utils.MemoryUtils;
-import mongis.utils.transition.TransitionBinding;
+import mongis.utils.bindings.TransitionBinding;
 
 /**
  *

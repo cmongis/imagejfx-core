@@ -33,7 +33,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import mongis.utils.FXUtilities;
-import mongis.utils.ListCellController;
+import mongis.utils.listcell.ListCellController;
 import static org.reactfx.util.Tuples.t;
 
 /**

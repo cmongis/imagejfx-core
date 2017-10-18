@@ -47,7 +47,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import mongis.utils.BindingsUtils;
+import mongis.utils.bindings.BindingsUtils;
 import mongis.utils.FXUtilities;
 
 /**

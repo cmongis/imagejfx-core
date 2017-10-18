@@ -17,30 +17,44 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package mongis.utils;
+package mongis.utils.bindings;
 
-import ijfx.ui.main.ImageJFX;
+import mongis.utils.task.FakeTask;
+import ijfx.ui.utils.BaseTester;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
+import javafx.scene.control.Button;
 
 /**
  *
  * @author Cyril MONGIS, 2016
  */
-public abstract class FunctionnalTask<T> extends Task<T> {
+public class TaskButtonBindingTester extends BaseTester{
+
+    Button button;
     
-    public FunctionnalTask<T> onSucceed(EventHandler<WorkerStateEvent> handler) {
-        setOnSucceeded(handler);
-        return this;
-    }
-    public FunctionnalTask<T> onFailed(EventHandler<WorkerStateEvent> handler) {
-        setOnFailed(handler);
-        return this;
+    @Override
+    public void initApp() {
+        
+        
+        button = new Button("Click me please :-)");
+        new TaskButtonBinding(button)
+                .setTextWhenRunning("I'm running man !")
+                .setTextWhenSucceed("I did it !")
+                .setTextWhenError("Damn, something happends")
+                .setTaskFactory(this::generateMe);
+        
+        
+        setContent(button);
+        
+        
     }
     
-    public void start() {
-        ImageJFX.getThreadPool().submit(this);
+    public static void main(String... args) {
+        launch(args);
     }
     
+    
+    private Task<Boolean> generateMe(TaskButtonBinding binding) {
+        return new FakeTask(4000);
+    }
 }

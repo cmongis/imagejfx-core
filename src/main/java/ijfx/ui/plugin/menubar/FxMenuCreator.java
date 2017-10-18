@@ -32,8 +32,8 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
-import mongis.utils.DefaultUUIDMap;
-import mongis.utils.UUIDMap;
+import mongis.utils.uuidmap.DefaultUUIDMap;
+import mongis.utils.uuidmap.UUIDMap;
 import net.mongis.usage.UsageType;
 import org.scijava.Context;
 

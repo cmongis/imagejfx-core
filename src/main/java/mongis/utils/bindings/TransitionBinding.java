@@ -17,7 +17,7 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package mongis.utils.transition;
+package mongis.utils.bindings;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;

@@ -17,9 +17,9 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package mongis.utils;
+package mongis.utils.uuidmap;
 
-import com.epublica.java.WeakValueHashMap;
+import mongis.utils.uuidmap.WeakValueHashMap;
 
 /**
  *

@@ -38,7 +38,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
-import mongis.utils.SimpleTask;
+import mongis.utils.task.FluentTask;
 
 /**
  *
@@ -82,7 +82,10 @@ public class LocalWorkflowService extends AbstractService implements MyWorkflowS
         workflowList.add(workflow);
 
         // start a new task in the background that saves the workflows
-        loadingScreenService.backgroundTask(new SimpleTask(() -> save(), "Saving workflows...").startInNewThread(), false);
+        loadingScreenService.backgroundTask(new FluentTask()
+                .setName("Saving...")
+                .run(this::save)
+                .startInNewThread(), false);
 
         return true;
     }
@@ -92,7 +95,13 @@ public class LocalWorkflowService extends AbstractService implements MyWorkflowS
         workflowList.remove(workflow);
 
         // see addWorkflow
-        loadingScreenService.backgroundTask(new SimpleTask(() -> save(), "Saving workflows...").startInNewThread(), false);
+        loadingScreenService
+                .backgroundTask(
+                        new FluentTask()
+                                .run(this::save)
+                                .setName("Saving workflow...")
+                                .startInNewThread()
+                        ,false);
         return true;
     }
 

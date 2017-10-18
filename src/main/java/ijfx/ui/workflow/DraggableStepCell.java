@@ -22,7 +22,7 @@ package ijfx.ui.workflow;
 import ijfx.core.workflow.WorkflowStep;
 import java.util.function.Consumer;
 import javafx.beans.Observable;
-import mongis.utils.DraggableListCell;
+import mongis.utils.listcell.DraggableListCell;
 import org.scijava.Context;
 
 /**

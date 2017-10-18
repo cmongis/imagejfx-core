@@ -1,4 +1,4 @@
-package com.epublica.java;
+package mongis.utils.uuidmap;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;

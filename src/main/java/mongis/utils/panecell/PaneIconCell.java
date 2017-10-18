@@ -49,7 +49,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import mongis.utils.task.FluentTask;
 
-import mongis.utils.BindingsUtils;
+import mongis.utils.bindings.BindingsUtils;
 import mongis.utils.FXUtilities;
 import mongis.utils.task.FailableCallback;
 

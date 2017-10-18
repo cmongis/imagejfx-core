@@ -44,7 +44,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.VBox;
-import mongis.utils.transition.OpacityTransitionBinding;
+import mongis.utils.bindings.OpacityTransitionBinding;
 import net.imagej.display.ImageDisplay;
 import net.imglib2.img.Img;
 import net.imglib2.type.logic.BitType;

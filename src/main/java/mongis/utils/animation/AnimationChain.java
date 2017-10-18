@@ -17,7 +17,7 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package mongis.utils;
+package mongis.utils.animation;
 
 import mongis.utils.task.FluentTask;
 import ijfx.ui.main.ImageJFX;
