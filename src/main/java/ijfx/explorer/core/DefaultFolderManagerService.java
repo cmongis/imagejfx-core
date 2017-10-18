@@ -49,8 +49,8 @@ import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import mongis.utils.CallbackTask;
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.FluentTask;
+import mongis.utils.task.ProgressHandler;
 import mongis.utils.SilentProgressHandler;
 import net.imagej.Dataset;
 import net.imagej.display.ImageDisplay;
@@ -193,7 +193,7 @@ public class DefaultFolderManagerService extends AbstractService implements Fold
 
         ExplorationMode mode = currentExplorationMode;
         logger.info("Updating current elements");
-        CallbackTask<Void, List<Explorable>> task = new CallbackTask<>();
+        FluentTask<Void, List<Explorable>> task = new FluentTask<>();
         task.setName("Fetching elements...");
 
         if (currentFolder == null) {
@@ -289,7 +289,7 @@ public class DefaultFolderManagerService extends AbstractService implements Fold
 
     @Override
     public void completeStatistics() {
-        loadingScreenService.frontEndTask(new CallbackTask<List<Explorable>, Integer>()
+        loadingScreenService.frontEndTask(new FluentTask<List<Explorable>, Integer>()
                 .callback(this::fetchMoreStatistics)
                 .setInput(getCurrentFolder().getFileList(ProgressHandler.NONE))
                 .then(this::onStatisticComputingEnded)

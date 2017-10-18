@@ -73,7 +73,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import mongis.utils.CallableTask;
-import mongis.utils.CallbackTask;
+import mongis.utils.task.FluentTask;
 import mongis.utils.FXUtilities;
 import mongis.utils.FluidWebViewWrapper;
 import net.imagej.Dataset;
@@ -417,7 +417,7 @@ public class CorrectionSelector extends BorderPane implements Activity {
 
     private void onSelectedItemChanged(Observable obs, Explorable oldValue, Explorable newValue) {
         if (newValue != null) {
-            new CallbackTask<Explorable, Dataset>()
+            new FluentTask<Explorable, Dataset>()
                     .setInput(newValue)
                     .callback(this::loadDataset)
                     .submit(loadingScreenService)

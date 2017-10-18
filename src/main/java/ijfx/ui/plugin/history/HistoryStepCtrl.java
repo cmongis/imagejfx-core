@@ -39,7 +39,7 @@ import org.scijava.Context;
 import org.scijava.plugin.Parameter;
 import mongis.utils.FXUtilities;
 import javafx.animation.FadeTransition;
-import mongis.utils.CallbackTask;
+import mongis.utils.task.FluentTask;
 
 /**
  *
@@ -225,7 +225,7 @@ public class HistoryStepCtrl extends BorderPane {
 
     @FXML
     public void execute() {
-        new CallbackTask<WorkflowStep, Boolean>()
+        new FluentTask<WorkflowStep, Boolean>()
                 .setInput(getStep())
                 .callback(historyExecutorService::executeStep)
                 .submit(loadingScreenService)

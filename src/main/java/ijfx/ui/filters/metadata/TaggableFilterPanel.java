@@ -31,8 +31,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import mongis.utils.CallbackTask;
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.FluentTask;
+import mongis.utils.task.ProgressHandler;
 import org.scijava.plugin.Parameter;
 
 /**
@@ -55,7 +55,7 @@ public class TaggableFilterPanel extends FilterPanel<Taggable> {
 
     public void updateFilters(ProgressHandler handler, List<? extends Taggable> items) {
 
-        new CallbackTask<List<? extends Taggable>, List<DataFilter<Taggable>>>()
+        new FluentTask<List<? extends Taggable>, List<DataFilter<Taggable>>>()
                 .setInput(items)
                 .callback(this::generateFilters)
                 .then(this::setFilters)

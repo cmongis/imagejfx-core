@@ -19,6 +19,7 @@
  */
 package mongis.utils;
 
+import mongis.utils.task.ProgressHandler;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 

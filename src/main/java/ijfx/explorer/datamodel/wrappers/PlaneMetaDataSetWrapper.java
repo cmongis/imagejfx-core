@@ -35,7 +35,7 @@ import io.scif.services.DatasetIOService;
 import java.io.File;
 import java.util.logging.Level;
 import javafx.scene.image.Image;
-import mongis.utils.CallbackTask;
+import mongis.utils.task.FluentTask;
 import net.imagej.Dataset;
 import org.scijava.Context;
 import org.scijava.plugin.Parameter;
@@ -116,7 +116,7 @@ public class PlaneMetaDataSetWrapper extends AbstractExplorable{
         @Override
         public void open() {
 
-            new CallbackTask()
+            new FluentTask()
                     .call(this::getDataset)
                     .then(dataset -> {
                         uiService.show(dataset);

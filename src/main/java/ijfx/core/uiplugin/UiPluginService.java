@@ -27,7 +27,7 @@ import java.util.Collection;
 import javafx.concurrent.Task;
 import net.imagej.ImageJService;
 import javafx.scene.Node;
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.ProgressHandler;
 
 /**
  *

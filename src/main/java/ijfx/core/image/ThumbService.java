@@ -36,7 +36,7 @@ import java.util.stream.LongStream;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javax.imageio.ImageIO;
-import mongis.utils.CallbackTask;
+import mongis.utils.task.FluentTask;
 import net.imagej.ImageJService;
 import net.imagej.display.ImageDisplay;
 import net.imagej.display.ImageDisplayService;
@@ -136,7 +136,7 @@ public class ThumbService extends AbstractService implements ImageJService {
 
         Image image = getThumb(interval, width, height);
 
-        new CallbackTask<>()
+        new FluentTask<>()
                 .tryRun(() -> saveImage(image, thumbFile))
                 .start();
 

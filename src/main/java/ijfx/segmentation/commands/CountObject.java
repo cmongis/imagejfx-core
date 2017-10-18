@@ -23,7 +23,7 @@ import ijfx.core.metadata.MetaDataSetDisplayService;
 import ijfx.core.segmentation.CountObjectSegmentationTask;
 import ijfx.core.segmentation.SegmentationService;
 import ijfx.explorer.datamodel.MetaDataOwnerDisplay;
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.ProgressHandler;
 import net.imagej.display.ImageDisplay;
 import org.scijava.command.Command;
 import org.scijava.command.ContextCommand;

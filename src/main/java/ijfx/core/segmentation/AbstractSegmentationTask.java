@@ -22,9 +22,9 @@ package ijfx.core.segmentation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import mongis.utils.CallbackTask;
-import mongis.utils.LongConsumer;
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.FluentTask;
+import mongis.utils.task.LongConsumer;
+import mongis.utils.task.ProgressHandler;
 import org.scijava.Context;
 import org.scijava.plugin.Parameter;
 
@@ -94,9 +94,9 @@ public abstract class AbstractSegmentationTask<T> implements SegmentationTask<T>
     }
 
     @Override
-    public CallbackTask<?, List<T>> executeAsync() {
+    public FluentTask<?, List<T>> executeAsync() {
 
-        return new CallbackTask<Void, List<T>>()
+        return new FluentTask<Void, List<T>>()
                 .call((progress) -> {
                     progress.setStatus("Segmenting...");
                     execute(progress);

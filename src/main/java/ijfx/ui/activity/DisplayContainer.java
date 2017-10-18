@@ -32,7 +32,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import jfxtras.scene.control.window.Window;
-import mongis.utils.CallbackTask;
+import mongis.utils.task.FluentTask;
 import org.scijava.display.Display;
 import org.scijava.display.DisplayService;
 import org.scijava.display.event.DisplayCreatedEvent;

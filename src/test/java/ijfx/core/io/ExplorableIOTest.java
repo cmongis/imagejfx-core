@@ -39,7 +39,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.ProgressHandler;
 import net.imagej.overlay.PolygonOverlay;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;

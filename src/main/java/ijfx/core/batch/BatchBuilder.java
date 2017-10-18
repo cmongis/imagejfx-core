@@ -36,8 +36,8 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import mongis.utils.CallbackTask;
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.FluentTask;
+import mongis.utils.task.ProgressHandler;
 import net.imagej.Dataset;
 import org.scijava.Context;
 import org.scijava.plugin.Parameter;
@@ -158,9 +158,9 @@ public class BatchBuilder {
 
     }
 
-    public CallbackTask<Boolean, Void> startAsync(boolean copy) {
+    public FluentTask<Boolean, Void> startAsync(boolean copy) {
 
-        return new CallbackTask<Boolean, Void>()
+        return new FluentTask<Boolean, Void>()
                 .setInput(copy)
                 .consume(this::start)
                 .start();

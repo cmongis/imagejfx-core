@@ -17,22 +17,15 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package mongis.async;
-
-import java.util.concurrent.Callable;
-import mongis.utils.CallableTask;
+package mongis.utils.task;
 
 /**
  *
  * @author Cyril MONGIS
  */
-public class Async {
-    
-    public static <T> CallableTask callable(Callable<T> callable) {
-        
-        return new CallableTask<T>(callable);
-        
-    }
-    
+@FunctionalInterface
+public interface FailableRunnable {
+
+    void run() throws Exception;
     
 }

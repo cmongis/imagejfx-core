@@ -17,7 +17,7 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package mongis.utils;
+package mongis.utils.task;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +34,7 @@ import javafx.concurrent.Task;
  *
  * @author Cyril MONGIS, 2016
  */
-public class TaskList2 {
+public class TaskList {
     
     ObservableList<Task> running = FXCollections.observableArrayList();
     ObservableList<Task> waiting = FXCollections.observableArrayList();
@@ -43,7 +43,7 @@ public class TaskList2 {
     
     Map<ObservableValue,Task> propertyToTask = new HashMap<>(); 
     
-    public TaskList2() {
+    public TaskList() {
           running.addListener(this::onOngoingListChange);
     }
     

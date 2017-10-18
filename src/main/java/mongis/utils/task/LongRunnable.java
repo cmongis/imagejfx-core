@@ -17,13 +17,13 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package mongis.utils;
+package mongis.utils.task;
 
 /**
  *
- * @author Cyril MONGIS, 2016
+ * @author Cyril MONGIS
  */
 @FunctionalInterface
-public interface LongCallback<PARAM,OUTPUT> {
-    public OUTPUT handle(ProgressHandler param1,PARAM param2) throws Exception;
+public interface LongRunnable {
+     void run(ProgressHandler handler) throws Exception;
 }

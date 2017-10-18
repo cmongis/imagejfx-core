@@ -27,7 +27,7 @@ import ijfx.core.workflow.Workflow;
 import ijfx.explorer.ExplorableList;
 import ijfx.explorer.commands.AbstractExplorableListCommand;
 import ijfx.ui.loading.LoadingScreenService;
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.ProgressHandler;
 import org.scijava.display.DisplayService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

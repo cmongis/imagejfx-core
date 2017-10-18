@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javafx.beans.property.IntegerProperty;
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.ProgressHandler;
 
 /**
  *

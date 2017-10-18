@@ -24,7 +24,7 @@ import ijfx.core.metadata.MetaDataSet;
 import java.io.File;
 import java.util.Collection;
 import java.util.function.Predicate;
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.ProgressHandler;
 
 /**
  *

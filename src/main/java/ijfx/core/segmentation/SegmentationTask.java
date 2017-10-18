@@ -20,8 +20,8 @@
 package ijfx.core.segmentation;
 
 import java.util.List;
-import mongis.utils.CallbackTask;
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.FluentTask;
+import mongis.utils.task.ProgressHandler;
 
 /**
  *
@@ -33,7 +33,7 @@ public interface SegmentationTask<T> {
     
     public SegmentationTask<T> setExecutor(SegmentationExecutor ex);
     
-    public CallbackTask<?,List<T>> executeAsync();
+    public FluentTask<?,List<T>> executeAsync();
     
     public SegmentationTask<T> execute(ProgressHandler handler);
     

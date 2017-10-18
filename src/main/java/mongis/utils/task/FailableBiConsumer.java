@@ -17,15 +17,15 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package mongis.utils;
+package mongis.utils.task;
 
 /**
  *
  * @author Cyril MONGIS
  */
 @FunctionalInterface
-public interface FailableConsumer<T> {
+public interface FailableBiConsumer<T, R> {
 
-    void accept(T t) throws Exception;
+    void accept(T t, R r);
     
 }

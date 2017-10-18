@@ -17,7 +17,7 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package mongis.utils;
+package mongis.utils.task;
 
 import ijfx.ui.main.ImageJFX;
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ import javafx.concurrent.Task;
  *
  * @author Cyril MONGIS, 2016
  */
-public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements ProgressHandler, Consumer<INPUT> {
+public class FluentTask<INPUT, OUTPUT> extends Task<OUTPUT> implements ProgressHandler, Consumer<INPUT> {
 
     private INPUT input;
 
@@ -78,47 +78,47 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
 
     private ExecutorService executor = ImageJFX.getThreadPool();
 
-    private final static Logger logger = Logger.getLogger(CallbackTask.class.getName());
+    private final static Logger logger = Logger.getLogger(FluentTask.class.getName());
 
     private double total = 1.0;
     private double progress = 0;
 
     private long elapsed = 0;
 
-    public CallbackTask() {
+    public FluentTask() {
         super();
 
         setName(getCallerClassName());
 
     }
 
-    public CallbackTask(INPUT input) {
+    public FluentTask(INPUT input) {
         this();
         setInput(input);
     }
 
-    public CallbackTask(FailableCallback<INPUT, OUTPUT> callback) {
+    public FluentTask(FailableCallback<INPUT, OUTPUT> callback) {
         this();
         this.callback = callback;
     }
 
-    public CallbackTask<INPUT, OUTPUT> setInput(Callable<INPUT> inputGetter) {
+    public FluentTask<INPUT, OUTPUT> setInput(Callable<INPUT> inputGetter) {
         this.inputGetter = inputGetter;
         return this;
     }
 
-    public CallbackTask<INPUT, OUTPUT> setName(String name) {
+    public FluentTask<INPUT, OUTPUT> setName(String name) {
         updateTitle(name);
         updateMessage(name);
         return this;
     }
 
-    public CallbackTask<INPUT, OUTPUT> callback(FailableCallback<INPUT, OUTPUT> callback) {
+    public FluentTask<INPUT, OUTPUT> callback(FailableCallback<INPUT, OUTPUT> callback) {
         this.callback = callback;
         return this;
     }
 
-    public CallbackTask<INPUT, OUTPUT> run(Runnable runnable) {
+    public FluentTask<INPUT, OUTPUT> run(Runnable runnable) {
         if (runnable == null) {
             logger.warning("Setting null as runnable");
             return this;
@@ -127,37 +127,37 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
         return this;
     }
 
-    public CallbackTask<INPUT, OUTPUT> run(LongRunnable longRunnable) {
+    public FluentTask<INPUT, OUTPUT> run(LongRunnable longRunnable) {
         this.longRunnable = longRunnable;
         return this;
     }
 
-    public CallbackTask<INPUT, OUTPUT> tryRun(FailableRunnable runnable) {
+    public FluentTask<INPUT, OUTPUT> tryRun(FailableRunnable runnable) {
         this.runnable = runnable;
         return this;
     }
 
-    public CallbackTask<INPUT, OUTPUT> consume(FailableConsumer<INPUT> consumer) {
+    public FluentTask<INPUT, OUTPUT> consume(FailableConsumer<INPUT> consumer) {
         this.consumer = consumer;
         return this;
     }
 
-    public CallbackTask<INPUT, OUTPUT> consume(FailableBiConsumer<ProgressHandler, INPUT> biConsumer) {
+    public FluentTask<INPUT, OUTPUT> consume(FailableBiConsumer<ProgressHandler, INPUT> biConsumer) {
         this.longConsumer = biConsumer;
         return this;
     }
 
-    public CallbackTask<INPUT, OUTPUT> call(FailableCallable<OUTPUT> callable) {
+    public FluentTask<INPUT, OUTPUT> call(FailableCallable<OUTPUT> callable) {
         this.callable = callable;
         return this;
     }
 
-    public CallbackTask<INPUT, OUTPUT> callback(LongCallback<INPUT, OUTPUT> longCallback) {
+    public FluentTask<INPUT, OUTPUT> callback(LongCallback<INPUT, OUTPUT> longCallback) {
         this.longCallback = longCallback;
         return this;
     }
 
-    public CallbackTask<INPUT, OUTPUT> call(LongCallable<OUTPUT> longCallable) {
+    public FluentTask<INPUT, OUTPUT> call(LongCallable<OUTPUT> longCallable) {
         this.longCallable = longCallable;
         return this;
     }
@@ -215,7 +215,7 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
         }
     }
 
-    public CallbackTask<INPUT, OUTPUT> setInput(INPUT input) {
+    public FluentTask<INPUT, OUTPUT> setInput(INPUT input) {
         this.input = input;
         return this;
     }
@@ -224,22 +224,22 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
         return input;
     }
 
-    public CallbackTask<INPUT, OUTPUT> startIn(ExecutorService executorService) {
+    public FluentTask<INPUT, OUTPUT> startIn(ExecutorService executorService) {
         executorService.execute(this);
         return this;
     }
 
-    public CallbackTask<INPUT, OUTPUT> start() {
+    public FluentTask<INPUT, OUTPUT> start() {
         executor.execute(this);
         return this;
     }
 
-    public CallbackTask<INPUT, OUTPUT> startInFXThread() {
+    public FluentTask<INPUT, OUTPUT> startInFXThread() {
         Platform.runLater(this);
         return this;
     }
 
-    public CallbackTask<INPUT, OUTPUT> queue() {
+    public FluentTask<INPUT, OUTPUT> queue() {
         executor = ImageJFX.getThreadQueue();
         executor.execute(this);
         return this;
@@ -264,26 +264,26 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
         super.cancelled();
     }
 
-    public CallbackTask<INPUT, OUTPUT> then(Consumer<OUTPUT> consumer) {
+    public FluentTask<INPUT, OUTPUT> then(Consumer<OUTPUT> consumer) {
         onSuccess.add(consumer);
         return this;
     }
 
-    public CallbackTask<INPUT, OUTPUT> thenRunnable(Runnable runnable) {
+    public FluentTask<INPUT, OUTPUT> thenRunnable(Runnable runnable) {
         return then(item -> runnable.run());
     }
 
-    public <NEXTOUTPUT> CallbackTask<OUTPUT, NEXTOUTPUT> thenTask(FailableCallback<OUTPUT, NEXTOUTPUT> callback) {
-        CallbackTask<OUTPUT, NEXTOUTPUT> task = new CallbackTask<OUTPUT, NEXTOUTPUT>()
+    public <NEXTOUTPUT> FluentTask<OUTPUT, NEXTOUTPUT> thenTask(FailableCallback<OUTPUT, NEXTOUTPUT> callback) {
+        FluentTask<OUTPUT, NEXTOUTPUT> task = new FluentTask<OUTPUT, NEXTOUTPUT>()
                 .setInput(this::getValue)
                 .callback(callback);
         then(task);
         return task;
     }
 
-    public CallbackTask<INPUT, OUTPUT> ui() throws Exception {
+    public FluentTask<INPUT, OUTPUT> ui() throws Exception {
         if (Platform.isFxApplicationThread()) {
-            CallbackTask.this.call();
+            FluentTask.this.call();
         } else {
             Platform.runLater(this);
         }
@@ -319,17 +319,17 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
         start();
     }
 
-    public CallbackTask<INPUT, OUTPUT> error(Consumer<Throwable> handler) {
+    public FluentTask<INPUT, OUTPUT> error(Consumer<Throwable> handler) {
         onError = handler;
         return this;
     }
 
-    public CallbackTask<INPUT, OUTPUT> setExecutor(ExecutorService executor) {
+    public FluentTask<INPUT, OUTPUT> setExecutor(ExecutorService executor) {
         this.executor = executor;
         return this;
     }
 
-    public CallbackTask<INPUT, OUTPUT> setIn(Property<Task> taskProperty) {
+    public FluentTask<INPUT, OUTPUT> setIn(Property<Task> taskProperty) {
         Platform.runLater(() -> taskProperty.setValue(this));
         return this;
     }
@@ -338,7 +338,7 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
         return executor;
     }
 
-    public CallbackTask<INPUT, OUTPUT> submit(Consumer<Task> consumer) {
+    public FluentTask<INPUT, OUTPUT> submit(Consumer<Task> consumer) {
         if (consumer == null) {
             logger.warning("Submitting task to null !");
         } else {
@@ -347,7 +347,7 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
         return this;
     }
 
-    public CallbackTask<INPUT, OUTPUT> submit(Consumer<Task> consumer, boolean condition) {
+    public FluentTask<INPUT, OUTPUT> submit(Consumer<Task> consumer, boolean condition) {
         if (condition) {
             return submit(consumer);
         } else {
@@ -366,7 +366,7 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
         setProgress(progress, total);
     }
 
-    public CallbackTask<INPUT, OUTPUT> setInitialProgress(double p) {
+    public FluentTask<INPUT, OUTPUT> setInitialProgress(double p) {
         setProgress(progress);
         return this;
     }
@@ -376,7 +376,7 @@ public class CallbackTask<INPUT, OUTPUT> extends Task<OUTPUT> implements Progres
         for (int i = 2; i < stElements.length; i++) {
             StackTraceElement ste = stElements[i];
 
-            if (ste.getClassName().contains(CallbackTask.class.getSimpleName()) == false) {
+            if (ste.getClassName().contains(FluentTask.class.getSimpleName()) == false) {
                 return stElements[i].getClassName() + "." + ste.getMethodName();
             }
         }

@@ -66,9 +66,9 @@ import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import mongis.utils.CallbackTask;
+import mongis.utils.task.FluentTask;
 import mongis.utils.FXUtilities;
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.ProgressHandler;
 import net.imagej.display.ImageDisplayService;
 import org.scijava.Context;
 import org.scijava.command.CommandService;
@@ -224,8 +224,7 @@ public class DefaultInteractiveSegmentationPanel extends BorderPane implements U
     private void addAction(FontAwesomeIcon icon, String label, Consumer<ProgressHandler> action, SplitMenuButton menuButton) {
 
         MenuItem item = new MenuItem(label, new FontAwesomeIconView(icon));
-        item.setOnAction(
-                event -> new CallbackTask<Void, Void>()
+        item.setOnAction(event -> new FluentTask<Void, Void>()
                         .callback((progress, voiid) -> {
                             action.accept(progress);
                             return null;

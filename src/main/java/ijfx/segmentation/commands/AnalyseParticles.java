@@ -27,7 +27,7 @@ import org.scijava.command.ContextCommand;
 import org.scijava.display.DisplayService;
 import org.scijava.plugin.Parameter;
 import ijfx.core.overlay.OverlayUtilsService;
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.ProgressHandler;
 import net.imglib2.img.Img;
 import net.imglib2.type.logic.BitType;
 import org.scijava.command.Command;

@@ -31,8 +31,8 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import mongis.utils.CallbackTask;
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.FluentTask;
+import mongis.utils.task.ProgressHandler;
 import net.imagej.Dataset;
 import net.imagej.display.ImageDisplay;
 import net.imglib2.RandomAccessibleInterval;
@@ -155,8 +155,8 @@ public class WorkflowBuilder {
         return this;
     }
 
-    public <OUTPUT> CallbackTask<BatchSingleInput, OUTPUT> thenMapToTask(Class<? extends OUTPUT> output) {
-        CallbackTask<BatchSingleInput, OUTPUT> task = new CallbackTask<>();
+    public <OUTPUT> FluentTask<BatchSingleInput, OUTPUT> thenMapToTask(Class<? extends OUTPUT> output) {
+        FluentTask<BatchSingleInput, OUTPUT> task = new FluentTask<>();
         then(task);
         return task;
     }
@@ -205,24 +205,24 @@ public class WorkflowBuilder {
         return inputs.stream().map(builder -> builder.getInput()).collect(Collectors.toList());
     }
 
-    public CallbackTask<?,Boolean> start() {
+    public FluentTask<?,Boolean> start() {
 
         DefaultWorkflow workflow = new DefaultWorkflow(steps);
 
-        return new CallbackTask<List<BatchSingleInput>, Boolean>()
+        return new FluentTask<List<BatchSingleInput>, Boolean>()
                 .setInput(getInputs())
                 .callback((progress, input) -> batchService.applyWorkflow(progress, input, workflow))
                 .start();
     }
 
-    public CallbackTask<?,Boolean> startAndShow() {
-        CallbackTask<?,Boolean> task = start();
+    public FluentTask<?,Boolean> startAndShow() {
+        FluentTask<?,Boolean> task = start();
         loadingScreenService.frontEndTask(task, true);
         return task;
     }
     
-    public CallbackTask<?, Boolean> getTask() {
-        return new CallbackTask<List<BatchSingleInput>, Boolean>()
+    public FluentTask<?, Boolean> getTask() {
+        return new FluentTask<List<BatchSingleInput>, Boolean>()
                 .call(this::runSync);
     }
 

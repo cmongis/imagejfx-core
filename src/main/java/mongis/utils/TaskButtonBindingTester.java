@@ -19,6 +19,7 @@
  */
 package mongis.utils;
 
+import mongis.utils.task.FakeTask;
 import ijfx.ui.utils.BaseTester;
 import javafx.concurrent.Task;
 import javafx.scene.control.Button;

@@ -19,6 +19,8 @@
  */
 package mongis.utils;
 
+import mongis.utils.task.ProgressHandler;
+
 /**
  *
  * @author Cyril MONGIS, 2016

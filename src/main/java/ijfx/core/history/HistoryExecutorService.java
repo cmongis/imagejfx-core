@@ -43,7 +43,7 @@ import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 import mongis.utils.FXUtilities;
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.ProgressHandler;
 
 /**
  *

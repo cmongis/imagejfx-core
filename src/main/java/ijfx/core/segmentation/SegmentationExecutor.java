@@ -20,7 +20,7 @@
 package ijfx.core.segmentation;
 
 import java.util.List;
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.ProgressHandler;
 
 /**
  *

@@ -91,7 +91,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import mongis.utils.CallableTask;
-import mongis.utils.CallbackTask;
+import mongis.utils.task.FluentTask;
 import mongis.utils.FXUtilities;
 import mongis.utils.TextFileUtils;
 import org.reactfx.EventStreams;
@@ -302,7 +302,7 @@ public class ExplorerActivity extends AnchorPane implements Activity {
     private void onViewClickEvent(DataClickEvent<Explorable> event) {
 
         if (event.isDoubleClick()) {
-            new CallbackTask<>()
+            new FluentTask<>()
                     .tryRun(event.getData()::open)
                     .start();
         } else {

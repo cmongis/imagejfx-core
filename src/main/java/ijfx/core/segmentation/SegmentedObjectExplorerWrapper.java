@@ -38,7 +38,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import mongis.utils.CallbackTask;
+import mongis.utils.task.FluentTask;
 import net.imagej.Dataset;
 import net.imagej.display.ImageDisplay;
 import net.imglib2.RandomAccessibleInterval;
@@ -165,7 +165,7 @@ public class SegmentedObjectExplorerWrapper extends AbstractTaggableWrapper<Segm
 
     @Override
     public void open() throws Exception {
-        new CallbackTask<File, Void>()
+        new FluentTask<File, Void>()
                 .setInput(getFile())
                 .callback(f -> {
                     overlayUtilsService.openOverlay(f, getWrappedTaggable().getOverlay());

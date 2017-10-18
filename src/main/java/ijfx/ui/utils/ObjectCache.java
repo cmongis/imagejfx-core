@@ -33,8 +33,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javafx.application.Platform;
 import mongis.utils.CallableTask;
-import mongis.utils.CallbackTask;
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.FluentTask;
+import mongis.utils.task.ProgressHandler;
 
 /**
  *
@@ -127,8 +127,8 @@ public class ObjectCache<T> {
         return cache.indexOf(items.get(0));
     }
 
-    public CallbackTask<Integer, List<T>> getAsync(Integer size, Consumer<List<T>> onFinshed) {
-        return new CallbackTask<Integer, List<T>>()
+    public FluentTask<Integer, List<T>> getAsync(Integer size, Consumer<List<T>> onFinshed) {
+        return new FluentTask<Integer, List<T>>()
                 .setInput(size)
                 .callback(this::get)
                 .then(onFinshed);

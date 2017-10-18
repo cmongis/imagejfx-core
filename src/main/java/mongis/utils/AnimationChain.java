@@ -19,6 +19,7 @@
  */
 package mongis.utils;
 
+import mongis.utils.task.FluentTask;
 import ijfx.ui.main.ImageJFX;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -111,7 +112,7 @@ public class AnimationChain {
 
     private class LaunchableRunnable implements Launchable {
 
-        protected CallbackTask callback = new CallbackTask();
+        protected FluentTask callback = new FluentTask();
 
         public LaunchableRunnable(Runnable runnable) {
             callback.run(runnable);

@@ -45,8 +45,8 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import mongis.utils.CallbackTask;
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.FluentTask;
+import mongis.utils.task.ProgressHandler;
 import org.scijava.Context;
 import org.scijava.event.EventService;
 import org.scijava.plugin.Parameter;
@@ -120,7 +120,7 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     @Override
     public void setFilter(Predicate<Explorable> predicate) {
 
-        new CallbackTask<Predicate<Explorable>, List<Explorable>>(predicate)
+        new FluentTask<Predicate<Explorable>, List<Explorable>>(predicate)
                 .callback(this::filter)
                 .then(this::setFilteredItems)
                 .start();
@@ -208,7 +208,7 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
 
     public void open(Iconazable explorable) {
 
-        new CallbackTask<Void, Boolean>()
+        new FluentTask<Void, Boolean>()
                 .setName("Opening file...")
                 .callback((progress, vd) -> {
                     try {

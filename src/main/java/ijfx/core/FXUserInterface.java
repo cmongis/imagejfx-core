@@ -47,7 +47,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import mongis.utils.CallbackTask;
+import mongis.utils.task.FluentTask;
 import mongis.utils.FXUtilities;
 import org.scijava.Context;
 import org.scijava.Priority;
@@ -74,7 +74,7 @@ import ijfx.ui.loading.ForegroundTaskSubmitted;
 import ijfx.ui.loading.LoadingScreenService;
 import javafx.scene.Node;
 import javafx.stage.DirectoryChooser;
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.ProgressHandler;
 import org.scijava.console.OutputEvent;
 import org.scijava.widget.FileWidget;
 
@@ -196,7 +196,7 @@ public class FXUserInterface extends Application implements UserInterface {
                 .forEach(uiContextService::addContextualView);
         
         // loading the plugins
-        Task task = new CallbackTask<Object, Collection<UiPlugin>>()
+        Task task = new FluentTask<Object, Collection<UiPlugin>>()
                 .call(uiPluginService::loadAll)
                 .then(this::onAllUiPluginLoaded)
                 .start();
@@ -386,7 +386,7 @@ public class FXUserInterface extends Application implements UserInterface {
         //}
           displayService.setActiveDisplay(display);
         //try {
-          new CallbackTask<Display<?>,Boolean>()
+          new FluentTask<Display<?>,Boolean>()
                     .setInput(display)
                     .callback(this::showDisplay)
                      .then(result->{

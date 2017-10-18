@@ -25,7 +25,7 @@ import java.io.File;
 import java.util.List;
 import javafx.beans.property.Property;
 import javafx.concurrent.Task;
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.ProgressHandler;
 
 /**
  *

@@ -28,7 +28,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import mongis.utils.CallbackTask;
+import mongis.utils.task.FluentTask;
 import org.scijava.Context;
 import org.scijava.command.Command;
 import org.scijava.command.CommandModule;
@@ -111,12 +111,12 @@ public class CommandRunner {
         return this;
     }
 
-    public <T> CallbackTask<Module, T> runAsync(Class<? extends Command> clazz, String outputName, boolean show) {
+    public <T> FluentTask<Module, T> runAsync(Class<? extends Command> clazz, String outputName, boolean show) {
 
         Module module = batchService.createModule(clazz);
 
         
-        CallbackTask<Module, T> task = new CallbackTask<Module, T>()
+        FluentTask<Module, T> task = new FluentTask<Module, T>()
                 .setInput(module)
                 .setName(title)
                 .callback((Module m) -> runModule(clazz, outputName));
@@ -151,7 +151,7 @@ public class CommandRunner {
 
     public CommandRunner run(String title, Class<? extends Command> clazz, Object... params) {
 
-        loadScreenService.frontEndTask(new CallbackTask<Object, Object>()
+        loadScreenService.frontEndTask(new FluentTask<Object, Object>()
                 .setName(title)
                 .run(() -> {
                     try {

@@ -39,7 +39,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
-import mongis.utils.CallbackTask;
+import mongis.utils.task.FluentTask;
 import org.scijava.module.ModuleInfo;
 import org.scijava.module.ModuleItem;
 
@@ -61,7 +61,7 @@ public class ModuleInfoPane extends BorderPane{
     public ModuleInfoPane() {
        
         // Webview is always created in the FX Thread
-        new CallbackTask<Void, WebView>()
+        new FluentTask<Void, WebView>()
                 .call(WebView::new)
                 .then(this::installWebView)
                 .startInFXThread();

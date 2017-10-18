@@ -52,7 +52,7 @@ import java.util.stream.Stream;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.ProgressHandler;
 import org.scijava.Context;
 import org.scijava.app.StatusService;
 import org.scijava.event.EventHandler;

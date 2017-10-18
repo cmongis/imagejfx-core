@@ -72,7 +72,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
-import mongis.utils.CallbackTask;
+import mongis.utils.task.FluentTask;
 import net.imagej.display.DatasetView;
 import net.imagej.display.ImageDisplay;
 import net.imagej.display.OverlayView;
@@ -289,7 +289,7 @@ public class OverlayPanel extends BorderPane implements UiPlugin {
 
     protected void updateTable() {
 
-        new CallbackTask<Overlay, Map<String, Double>>()
+        new FluentTask<Overlay, Map<String, Double>>()
                 .setInput(overlayProperty.getValue())
                 .callback(overlay -> {
                     return statsService.getStatisticsAsMap(imageDisplay, overlay);
@@ -389,7 +389,7 @@ public class OverlayPanel extends BorderPane implements UiPlugin {
 
         Timer timer = timerService.getTimer(this.getClass());
 
-        new CallbackTask<Overlay, XYChart.Series<Double, Double>>()
+        new FluentTask<Overlay, XYChart.Series<Double, Double>>()
                 .setInput(overlay)
                 .callback(this::getOverlayHistogram)
                 .then(serie -> {
@@ -450,7 +450,7 @@ public class OverlayPanel extends BorderPane implements UiPlugin {
         Line Chart related methods
      */
     private void updateLineChart(LineOverlay overlay) {
-        new CallbackTask<Overlay, XYChart.Series<Double, Double>>()
+        new FluentTask<Overlay, XYChart.Series<Double, Double>>()
                 .setInput(overlay)
                 .callback(this::getLineChartSerie)
                 .then(this::updateLineChart)

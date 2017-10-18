@@ -19,6 +19,7 @@
  */
 package mongis.utils;
 
+import mongis.utils.task.LongCallable;
 import ijfx.ui.main.ImageJFX;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;

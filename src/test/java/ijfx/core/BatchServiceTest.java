@@ -24,7 +24,7 @@ import ijfx.core.batch.BatchService;
 import ijfx.core.metadata.MetaData;
 import ijfx.core.segmentation.SegmentationService;
 import io.scif.services.DatasetIOService;
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.ProgressHandler;
 import net.imagej.DatasetService;
 import net.imagej.plugins.commands.assign.InvertDataValues;
 import net.imagej.plugins.commands.imglib.GaussianBlur;

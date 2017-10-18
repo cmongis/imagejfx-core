@@ -20,6 +20,7 @@
  */
 package mongis.utils;
 
+import mongis.utils.task.FluentTask;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.rjeschke.txtmark.Processor;
 import com.sun.javafx.tk.Toolkit;
@@ -143,8 +144,8 @@ public class FXUtilities {
         return new CallableTask<>(WebView::new).startInFXThread();
     }
 
-    public static CallbackTask<String, WebView> createWebView(Object root, String mdFile) {
-        return new CallbackTask<String, WebView>()
+    public static FluentTask<String, WebView> createWebView(Object root, String mdFile) {
+        return new FluentTask<String, WebView>()
                 .setInput(mdFile)
                 .callback(input -> {
                     WebView webView = new WebView();

@@ -19,7 +19,7 @@
  */
 package ijfx.updater;
 
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.ProgressHandler;
 import net.imagej.updater.FilesCollection;
 
 /**

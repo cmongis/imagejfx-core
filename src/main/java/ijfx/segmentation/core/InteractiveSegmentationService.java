@@ -47,7 +47,7 @@ import java.util.logging.Logger;
 import javafx.beans.Observable;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
-import mongis.utils.CallbackTask;
+import mongis.utils.task.FluentTask;
 import mongis.utils.DefaultUUIDMap;
 import mongis.utils.UUIDMap;
 import net.imagej.display.ImageDisplay;
@@ -358,7 +358,7 @@ public class InteractiveSegmentationService extends AbstractService implements I
             return this;
         }
 
-        public CallbackTask<?, ?> getTask() {
+        public FluentTask<?, ?> getTask() {
 
             if (batchSingleInput == null) {
                 try {

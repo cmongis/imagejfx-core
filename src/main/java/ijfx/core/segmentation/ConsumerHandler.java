@@ -22,8 +22,8 @@ package ijfx.core.segmentation;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import mongis.utils.LongConsumer;
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.LongConsumer;
+import mongis.utils.task.ProgressHandler;
 
 /**
  *

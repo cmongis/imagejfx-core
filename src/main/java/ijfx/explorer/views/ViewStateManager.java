@@ -26,7 +26,7 @@ import ijfx.explorer.views.ViewStateManager.ViewState;
 import ijfx.ui.filters.metadata.TaggableFilterPanel;
 import java.util.List;
 import java.util.WeakHashMap;
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.ProgressHandler;
 
 /**
  * Object responsible of synchronize the ExplorableViewModel state with view

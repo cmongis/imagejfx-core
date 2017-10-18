@@ -47,11 +47,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import mongis.utils.CallbackTask;
+import mongis.utils.task.FluentTask;
 
 import mongis.utils.BindingsUtils;
 import mongis.utils.FXUtilities;
-import mongis.utils.FailableCallback;
+import mongis.utils.task.FailableCallback;
 
 /**
  * The PaneIconCell is a generic class used to display items in form of Icons
@@ -265,19 +265,19 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
 
     protected void forceUpdate(T newItem) {
         //otherwise starting to charge everything
-        new CallbackTask<T, String>()
+        new FluentTask<T, String>()
                 .setInput(newItem)
                 .callback(titleFactory)
                 .then(this::setTitle)
                 .startIn(refreshThreadPool);
 
-        new CallbackTask<T, String>()
+        new FluentTask<T, String>()
                 .setInput(newItem)
                 .callback(subtitleFactory)
                 .then(this::setSubtitle)
                 .startIn(refreshThreadPool);
 
-        new CallbackTask<T, FontAwesomeIconView>()
+        new FluentTask<T, FontAwesomeIconView>()
                 .setInput(newItem)
                 .callback(iconFactory)
                 .then(this::setIcon)
@@ -286,7 +286,7 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
         /*
         
          */
-        new CallbackTask<T, String>()
+        new FluentTask<T, String>()
                 .setInput(newItem)
                 .callback(additionalInfoFactory)
                 .then(this::setAdditionalData)
@@ -314,7 +314,7 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
         
        
         
-        currentImageSearch = new CallbackTask<T, Image>()
+        currentImageSearch = new FluentTask<T, Image>()
                 .setInput(newItem)
                 .call(this::loadImage)
                 .then(this::setImage)

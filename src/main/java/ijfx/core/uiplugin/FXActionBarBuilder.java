@@ -32,7 +32,7 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Skin;
 import javafx.scene.control.Skinnable;
-import mongis.utils.CallbackTask;
+import mongis.utils.task.FluentTask;
 import mongis.utils.FXUtilities;
 import net.mongis.usage.UsageLocation;
 import org.scijava.Context;
@@ -145,10 +145,10 @@ public class FXActionBarBuilder {
     }
     
     
-    public CallbackTask updateAsync(List<Node> nodeList) {
+    public FluentTask updateAsync(List<Node> nodeList) {
         
         
-       return new CallbackTask<>()
+       return new FluentTask<>()
                 .run(this::build)
                 .then(o->{
                     nodeList.clear();

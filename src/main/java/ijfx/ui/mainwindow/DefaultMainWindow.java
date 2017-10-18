@@ -57,7 +57,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javax.management.Notification;
 import mongis.utils.BindingsUtils;
-import mongis.utils.TaskList2;
+import mongis.utils.task.TaskList;
 import mongis.utils.animation.Animations;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -139,7 +139,7 @@ public class DefaultMainWindow implements MainWindow {
 
     List<ContextualContainer<Node>> contextualContainer = new ArrayList<>();
 
-    private TaskList2 taskList = new TaskList2();
+    private TaskList taskList = new TaskList();
 
     private LoadingPopup loadingPopup;
 

@@ -40,7 +40,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import mongis.utils.CallbackTask;
+import mongis.utils.task.FluentTask;
 import mongis.utils.TimedBuffer;
 import net.imagej.autoscale.AutoscaleService;
 import net.imagej.autoscale.DataRange;
@@ -267,7 +267,7 @@ public class ThresholdSegmentation extends AbstractSegmentation {
 
     private void updateMask() {
 
-        new CallbackTask<Void, Img<BitType>>()
+        new FluentTask<Void, Img<BitType>>()
                 .call(this::generateMask)
                 .then(maskProperty::setValue)
                 .start();

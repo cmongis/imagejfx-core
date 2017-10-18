@@ -22,7 +22,7 @@ package ijfx.core.segmentation;
 import ijfx.commands.binary.BinaryToOverlay;
 import ijfx.core.metadata.MetaDataSet;
 import java.util.List;
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.ProgressHandler;
 import net.imagej.Dataset;
 import net.imagej.overlay.Overlay;
 import net.imglib2.img.Img;

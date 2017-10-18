@@ -28,7 +28,7 @@ import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import mongis.utils.ObservableProgressHandler;
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.ProgressHandler;
 import net.imagej.Dataset;
 import net.imagej.DatasetService;
 import net.imglib2.img.Img;

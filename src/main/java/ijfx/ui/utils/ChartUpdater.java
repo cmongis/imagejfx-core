@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.XYChart;
-import mongis.utils.CallbackTask;
+import mongis.utils.task.FluentTask;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.random.EmpiricalDistribution;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;

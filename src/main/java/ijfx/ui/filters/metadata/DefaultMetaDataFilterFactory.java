@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-import mongis.utils.CallbackTask;
+import mongis.utils.task.FluentTask;
 
 /**
  *
@@ -129,7 +129,7 @@ public class DefaultMetaDataFilterFactory<T extends MetaDataOwner> implements Me
         StringFilterWrapper wrapper = stringFilterCache.getNext();
         wrapper.setName(keyName);
         
-        new CallbackTask<Collection<String>,Void>()
+        new FluentTask<Collection<String>,Void>()
                 .consume(wrapper.getFilter()::setAllPossibleValues)
                 .setInput(possibleStringValues)
                 .start();

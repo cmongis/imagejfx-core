@@ -19,6 +19,7 @@
  */
 package mongis.utils;
 
+import mongis.utils.task.ProgressHandler;
 import ijfx.core.property.Getter;
 import java.util.concurrent.Callable;
 

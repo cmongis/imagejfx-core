@@ -32,8 +32,8 @@ import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
-import mongis.utils.CallbackTask;
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.FluentTask;
+import mongis.utils.task.ProgressHandler;
 import net.imagej.Dataset;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -73,7 +73,7 @@ public class CorrectionUiService extends AbstractService implements IjfxService 
 
     private void onSourceFolderChanged(Observable obs, File oldFile, File newFile) {
 
-        new CallbackTask<File, List<Explorable>>()
+        new FluentTask<File, List<Explorable>>()
                 .setInput(newFile)
                 .callback(this::checkFolder)
                 .then(this::onFoldedChecked)

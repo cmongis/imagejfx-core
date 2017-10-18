@@ -17,15 +17,13 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package mongis.utils;
+package mongis.utils.task;
 
 /**
  *
  * @author Cyril MONGIS
  */
 @FunctionalInterface
-public interface FailableRunnable {
-
-    void run() throws Exception;
-    
+public interface LongConsumer<PARAM> {
+    public void consume(ProgressHandler param1,PARAM param2);
 }

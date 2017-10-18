@@ -37,8 +37,8 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
-import mongis.utils.CallbackTask;
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.FluentTask;
+import mongis.utils.task.ProgressHandler;
 import mongis.utils.properties.ServiceProperty;
 
 /**
@@ -116,10 +116,10 @@ public class PaneCellController<T extends Object> {
      *
      * @param items List of items coming from the model
      */
-    public CallbackTask update(List<T> items) {
+    public FluentTask update(List<T> items) {
         currentItems = items;
 
-        return new CallbackTask<List<T>, List<PaneCell<T>>>()
+        return new FluentTask<List<T>, List<PaneCell<T>>>()
                 .setInput(items)
                 .callback(this::retrieveCells)
                 .then(this::onCellRetrieved)

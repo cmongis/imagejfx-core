@@ -30,8 +30,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.util.Callback;
-import mongis.utils.CallbackTask;
-import mongis.utils.FailableCallback;
+import mongis.utils.task.FluentTask;
+import mongis.utils.task.FailableCallback;
 
 /**
  *
@@ -62,7 +62,7 @@ public class SimplePaneCell<T> implements PaneCell<T> {
     public void setItem(T item) {
         title.setText(titleFactory.call(item));
         this.item = item;
-        new CallbackTask<T, Image>().setInput(item).callback(imageFactory).then(imageView::setImage).start();
+        new FluentTask<T, Image>().setInput(item).callback(imageFactory).then(imageView::setImage).start();
     }
 
     @Override

@@ -21,7 +21,7 @@ package ijfx.core.segmentation;
 
 import ijfx.core.metadata.MetaDataSet;
 import java.util.List;
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.ProgressHandler;
 import net.imagej.Dataset;
 import net.imglib2.img.Img;
 import net.imglib2.type.logic.BitType;

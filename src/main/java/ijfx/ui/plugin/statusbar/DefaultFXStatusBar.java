@@ -39,7 +39,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.HBox;
-import mongis.utils.TaskList2;
+import mongis.utils.task.TaskList;
 import mongis.utils.transition.OpacityTransitionBinding;
 import org.controlsfx.control.StatusBar;
 import org.reactfx.EventStreams;
@@ -81,7 +81,7 @@ public class DefaultFXStatusBar implements FXStatusBar, UiPlugin {
     /**
      * TaskList which handles the current task.
      */
-    private final TaskList2 taskList = new TaskList2();
+    private final TaskList taskList = new TaskList();
 
     /**
      * Value inverted each time the status or the progress changes

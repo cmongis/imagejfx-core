@@ -42,8 +42,8 @@ import java.util.stream.Stream;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.concurrent.Task;
-import mongis.utils.CallbackTask;
-import mongis.utils.ProgressHandler;
+import mongis.utils.task.FluentTask;
+import mongis.utils.task.ProgressHandler;
 import mongis.utils.SilentProgressHandler;
 import net.imagej.Dataset;
 import net.imagej.ImageJService;
@@ -144,7 +144,7 @@ public class BatchService extends AbstractService implements ImageJService {
     }
 
     public Task<Boolean> applyWorkflow(List<BatchSingleInput> inputs, Workflow workflow) {
-        return new CallbackTask<List<BatchSingleInput>, Boolean>()
+        return new FluentTask<List<BatchSingleInput>, Boolean>()
                 .setInput(inputs)
                 .callback((progress, input) -> applyWorkflow(progress, inputs, workflow));
     }
