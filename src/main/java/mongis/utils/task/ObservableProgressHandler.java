@@ -19,9 +19,8 @@
  */
 package mongis.utils.task;
 
-import mongis.utils.task.ProgressHandler;
-import ijfx.core.property.Getter;
 import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 
 /**
  *
@@ -37,7 +36,7 @@ public class ObservableProgressHandler implements ProgressHandler{
     
     private Runnable onChange =  ()->{};
 
-    private Getter<Boolean> cancel = ()->false;
+    private Supplier<Boolean> cancel = ()->false;
     
     
     public ObservableProgressHandler() {
@@ -53,7 +52,7 @@ public class ObservableProgressHandler implements ProgressHandler{
         this.onChange = onChange;
     }
 
-    public void setCancel(Getter<Boolean> cancel) {
+    public void setCancel(Supplier<Boolean> cancel) {
         this.cancel = cancel;
     }
     

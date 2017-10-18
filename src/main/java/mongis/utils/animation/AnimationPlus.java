@@ -19,7 +19,6 @@
  */
 package mongis.utils.animation;
 
-import ijfx.ui.main.ImageJFX;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -44,7 +43,7 @@ public interface AnimationPlus {
     
     public static AnimationPlus FADE_OUT_LEFT = (node,ms)->{
     
-        if(ms == null) ms = ImageJFX.getAnimationDuration();
+        if(ms == null) ms = Animations.getAnimationDuration();
         
         KeyFrame begin = new KeyFrame(Duration.millis(0),
                 new KeyValue(node.translateXProperty(),0)
@@ -65,7 +64,7 @@ public interface AnimationPlus {
     
     public static AnimationPlus FADE_IN_FROM_LEFT = (node,ms)->{
         
-        if(ms == null) ms = ImageJFX.getAnimationDuration();
+        if(ms == null) ms = Animations.getAnimationDuration();
         
          KeyFrame begin = new KeyFrame(Duration.millis(0),
                 new KeyValue(node.translateXProperty(),FADE_LEFT_TRANSLATE)

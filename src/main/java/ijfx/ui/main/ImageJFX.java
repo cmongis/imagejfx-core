@@ -96,13 +96,6 @@ public final class ImageJFX {
 
     private static final Scheduler publishSubjectScheduler = Schedulers.from(Executors.newSingleThreadExecutor());
 
-    public static double getAnimationDurationAsDouble() {
-        return ANIMATION_DURATION.toMillis();
-    }
-
-    public static Duration getAnimationDuration() {
-        return ANIMATION_DURATION;
-    }
 
     private static ResourceBundle resourceBundle;
 

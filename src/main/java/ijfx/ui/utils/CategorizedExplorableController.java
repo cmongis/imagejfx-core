@@ -20,14 +20,12 @@
 package ijfx.ui.utils;
 
 import ijfx.explorer.datamodel.Explorable;
-import ijfx.explorer.views.DataClickEvent;
 import ijfx.explorer.widgets.ExplorerIconCell;
 import ijfx.ui.loading.LoadingScreenService;
 import ijfx.ui.main.ImageJFX;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javafx.scene.Node;
 import javafx.scene.control.Label;

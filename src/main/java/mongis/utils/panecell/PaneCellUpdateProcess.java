@@ -19,7 +19,6 @@
  */
 package mongis.utils.panecell;
 
-import ijfx.ui.main.ImageJFX;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
@@ -29,6 +28,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javafx.application.Platform;
 import javafx.scene.Node;
+import mongis.utils.task.FluentTask;
 import rx.Subscriber;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -52,7 +52,7 @@ public class PaneCellUpdateProcess<T> {
 
     boolean cancelled = false;
 
-    Logger logger = ImageJFX.getLogger();
+    Logger logger = FluentTask.getLogger();
     
     public PaneCellUpdateProcess(List<T> items, List<PaneCell<T>> cachedController, List<Node> toUpdate, Callable<PaneCell<T>> factory) {
         this.items = items;

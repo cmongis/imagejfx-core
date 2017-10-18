@@ -27,6 +27,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import mongis.utils.UITesterBase;
 import net.imagej.ImageJ;
 import org.scijava.Context;
 import org.scijava.plugin.Parameter;
@@ -35,7 +36,7 @@ import org.scijava.plugin.Parameter;
  *
  * @author cyril
  */
-public abstract class IjfxUITester extends Application {
+public abstract class IjfxUITester extends UITesterBase {
 
     BorderPane borderPane = new BorderPane();
 
@@ -53,57 +54,19 @@ public abstract class IjfxUITester extends Application {
     
     public IjfxUITester() {
 
-       
-        ImageJ ij = new ImageJ();
+       super();
+       ImageJ ij = new ImageJ();
         
-        ij.context().inject(this);
-        
-        addAction("Refresh css",this::refreshCss);
-      
-        borderPane.setBottom(toolbar);
-    }
-
-    protected void setContent(Node node) {
-        borderPane.setCenter(node);
-    }
-
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-
-        this.primaryStage = primaryStage;
-        
-        borderPane.getStylesheets().add(ImageJFX.getStylesheet());
-        borderPane.getStyleClass().add("explorer-filter");
-
-        Scene scene = new Scene(borderPane);
-        primaryStage.setWidth(600);
-        primaryStage.setHeight(400);
-        primaryStage.setScene(scene);
-        primaryStage.show();
-        
-        borderPane.setCenter(initApp());
-
-        addAction("Reset",this::initApp);
-        
-    }
-
-    public void addAction(String label, Runnable action) {
-        Button button = new Button(label);
-        button.setOnAction(event -> action.run());
-        toolbar.getItems().add(button);
-    }
-
-    private void refreshCss() {
-        borderPane.getStylesheets().remove(ImageJFX.getStylesheet());
-        borderPane.getStylesheets().add(ImageJFX.getStylesheet());
-    }
+       ij.context().inject(this);
     
-    abstract public Node initApp();
-
-    public Stage getPrimaryStage() {
-        return primaryStage;
+     
     }
 
+   
+    @Override
+    public String getStyleSheet() {
+        return ImageJFX.getStylesheet();
+    }
     
     
 }

@@ -17,7 +17,7 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package mongis.utils;
+package ijfx.ui.utils;
 
 import com.github.rjeschke.txtmark.Processor;
 import ijfx.ui.RichMessageDisplayer;
@@ -28,6 +28,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebView;
+import mongis.utils.FXUtilities;
 
 /**
  *

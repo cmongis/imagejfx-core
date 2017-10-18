@@ -20,13 +20,13 @@
  */
 package mongis.utils.animation;
 
-import ijfx.ui.main.ImageJFX;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.logging.Level;
 import javafx.animation.Transition;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
+import mongis.utils.task.FluentTask;
 
 /**
  *
@@ -49,7 +49,7 @@ public class TransitionQueue {
                     
                 handler.handle(event);
                 } catch (Exception e) {
-                    ImageJFX.getLogger().log(Level.SEVERE,null,e);
+                    FluentTask.getLogger().log(Level.SEVERE,null,e);
                 }
 
             }

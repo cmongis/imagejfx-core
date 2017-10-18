@@ -20,7 +20,7 @@
 package ijfx.ui.widgets;
 
 import ijfx.ui.filter.DataFilter;
-import ijfx.ui.utils.CollectionsUtils;
+import mongis.utils.CollectionsUtils;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;

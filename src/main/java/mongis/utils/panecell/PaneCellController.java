@@ -20,8 +20,7 @@
 package mongis.utils.panecell;
 
 import com.google.common.collect.Lists;
-import ijfx.ui.main.ImageJFX;
-import ijfx.ui.utils.CollectionsUtils;
+import mongis.utils.CollectionsUtils;
 import ijfx.ui.utils.ObjectCache;
 
 import java.util.Collection;
@@ -70,7 +69,7 @@ public class PaneCellController<T extends Object> {
 
     private Callable<PaneCell<T>> cellFactory;
 
-    private Logger logger = ImageJFX.getLogger();
+    private Logger logger = FluentTask.getLogger();
 
     private Pane pane;
 

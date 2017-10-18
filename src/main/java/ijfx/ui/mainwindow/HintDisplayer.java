@@ -199,7 +199,7 @@ public class HintDisplayer {
             highligther.setOnMouseClicked(event -> {
 
                 // creating a transition
-                Transition transition = Animations.DISAPPEARS_RIGHT.configure(highligther, ImageJFX.getAnimationDurationAsDouble());
+                Transition transition = Animations.DISAPPEARS_RIGHT.configure(highligther, Animations.getAnimationDurationAsDouble());
 
                 // and when the transition if finished
                 transition
@@ -230,7 +230,7 @@ public class HintDisplayer {
                 hint.setRead();
             });
 
-            Animations.APPEARS_LEFT.configure(highligther, ImageJFX.getAnimationDurationAsDouble()).play();
+            Animations.APPEARS_LEFT.configure(highligther, Animations.getAnimationDurationAsDouble()).play();
 
         } catch (Exception e) {
 

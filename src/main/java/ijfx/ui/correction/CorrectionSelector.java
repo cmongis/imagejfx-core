@@ -74,7 +74,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import mongis.utils.task.FluentTask;
 import mongis.utils.FXUtilities;
-import mongis.utils.FluidWebViewWrapper;
+import ijfx.ui.utils.FluidWebViewWrapper;
 import net.imagej.Dataset;
 import org.scijava.Context;
 import org.scijava.display.DisplayService;

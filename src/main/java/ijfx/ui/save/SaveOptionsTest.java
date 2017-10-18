@@ -19,19 +19,15 @@
  */
 package ijfx.ui.save;
 
-import ijfx.ui.utils.BaseTester;
-import java.io.IOException;
-import javafx.application.Application;
+import ijfx.ui.utils.IjfxUITester;
 import static javafx.application.Application.launch;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
+import javafx.scene.Node;
 
 /**
  *
  * @author Pierre BONNEAU
  */
-public class SaveOptionsTest extends BaseTester{
+public class SaveOptionsTest extends IjfxUITester{
     
     
     SaveOptions saveOptions;
@@ -41,11 +37,11 @@ public class SaveOptionsTest extends BaseTester{
     }
 
     @Override
-    public void initApp() {
+    public Node initApp() {
         
         
         saveOptions = new DefaultSaveOptions();
-        setContent(saveOptions.getContent());
+        return saveOptions.getContent();
     }
     
     

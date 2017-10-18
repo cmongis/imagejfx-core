@@ -17,45 +17,45 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package mongis.utils;
-
-import ijfx.ui.utils.BaseTester;
+package mongis.utils.panecell;
+import javafx.scene.input.MouseEvent;
 
 /**
  *
- * @author Cyril MONGIS, 2016
+ * @author Cyril MONGIS
  */
-public class RequestBufferTester extends BaseTester{
+public class DataClickEvent<T> {
+    
+    private final T data;
+    
+    private final MouseEvent event;
+    
+    private boolean doubleClick;
 
-    RequestBuffer buffer = new RequestBuffer(1);
-    
-    public RequestBufferTester() {
-        
-        super();
-        addAction("Launch", this::test);
-        
+    public DataClickEvent(T data, MouseEvent event, boolean doubleClick) {
+        this.data = data;
+        this.event = event;
+        this.doubleClick = doubleClick;
     }
 
+    public boolean isDoubleClick() {
+        return doubleClick;
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public MouseEvent getEvent() {
+        return event;
+    }
     
-    
-    
-    
-    @Override
-    public void initApp() {
-        
+    public boolean isCtrlDown() {
+        return event.isControlDown();
     }
     
     
-    public void test() {
-        for(int i = 0;i!=20000;i++) {
-            buffer.queue(this::showSomething);
-        }
-    }
     
-    public void showSomething() {
-    }
     
-    public static void main(String[] args) {
-        launch(args);
-    }
+    
 }

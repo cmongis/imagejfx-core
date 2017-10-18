@@ -21,8 +21,8 @@ package ijfx.explorer.display;
 
 import ijfx.explorer.ExplorableViewModel;
 import ijfx.explorer.datamodel.Explorable;
-import ijfx.explorer.views.DataClickEvent;
 import java.util.function.Consumer;
+import mongis.utils.panecell.DataClickEvent;
 
 /**
  *

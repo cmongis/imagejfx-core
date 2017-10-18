@@ -20,7 +20,6 @@
 package mongis.utils.animation;
 
 import mongis.utils.task.FluentTask;
-import ijfx.ui.main.ImageJFX;
 import java.util.LinkedList;
 import java.util.Queue;
 import javafx.animation.Animation;
@@ -46,12 +45,12 @@ public class AnimationChain {
     }
 
     public AnimationChain animate(Node node, Animations animation) {
-        play(animation.configure(node, ImageJFX.getAnimationDurationAsDouble()));
+        play(animation.configure(node, Animations.getAnimationDurationAsDouble()));
         return this;
     }
     
     public AnimationChain animate(Node node, AnimationPlus animation) {
-        play(animation.configure(node, ImageJFX.getAnimationDuration()));
+        play(animation.configure(node, Animations.getAnimationDuration()));
         return this;
     }
 

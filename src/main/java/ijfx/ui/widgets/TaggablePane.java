@@ -25,7 +25,7 @@ import ijfx.explorer.datamodel.DefaultTag;
 import ijfx.explorer.datamodel.Tag;
 import ijfx.explorer.datamodel.Taggable;
 import ijfx.ui.main.ImageJFX;
-import ijfx.ui.utils.CollectionsUtils;
+import mongis.utils.CollectionsUtils;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;

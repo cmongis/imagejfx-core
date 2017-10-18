@@ -17,7 +17,7 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.ui.utils;
+package mongis.utils;
 
 import java.util.Collection;
 import java.util.Comparator;

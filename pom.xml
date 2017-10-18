@@ -43,6 +43,13 @@
             <id>jcenter</id>
             <url>https://jcenter.bintray.com/</url>
         </repository>
+        
+        <repository>
+            <id>central</id>
+            <name>cyrilmongis-releases</name>
+            <url>http://jfrog.cyrilmongis.net/artifactory/mongis-utils</url>
+        </repository>
+        
     </repositories>
         
     <dependencies>
@@ -227,6 +234,11 @@
             <groupId>com.mitchellbosecke</groupId>
             <artifactId>pebble</artifactId>
             <version> 2.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>net.mongis</groupId>
+            <artifactId>mongis-utils</artifactId>
+            <version>1.1</version>
         </dependency>
 
     </dependencies>

@@ -36,7 +36,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebView;
-import mongis.utils.FluidWebViewWrapper;
+import ijfx.ui.utils.FluidWebViewWrapper;
 
 /**
  *

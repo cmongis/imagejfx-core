@@ -22,6 +22,7 @@ package ijfx.explorer.views;
 import ijfx.explorer.datamodel.Explorable;
 import java.util.function.Consumer;
 import javafx.scene.input.MouseEvent;
+import mongis.utils.panecell.DataClickEvent;
 
 /**
  *

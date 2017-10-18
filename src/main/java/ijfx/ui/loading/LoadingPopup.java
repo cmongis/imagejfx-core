@@ -308,7 +308,7 @@ public class LoadingPopup extends PopupControl {
 
     @Override
     public void hide() {
-        Transition configure = Animations.FADEOUT.configure(getSkin().getNode(), ImageJFX.getAnimationDurationAsDouble());
+        Transition configure = Animations.FADEOUT.configure(getSkin().getNode(), Animations.getAnimationDurationAsDouble());
         configure.setOnFinished(event -> super.hide());
         configure.play();
     }

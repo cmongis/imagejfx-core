@@ -148,7 +148,7 @@ public class LoadingIcon extends StackPane {
             double scale = 1 + circleGrowth;
             // circle animatino : hearbeat
             SequentialTransition st = new SequentialTransition();
-            Duration halfTime = Duration.millis(ImageJFX.getAnimationDurationAsDouble() / 3);
+            Duration halfTime = Duration.millis(Animations.getAnimationDurationAsDouble() / 3);
             ScaleTransition scaleUp = new ScaleTransition(halfTime, circle);
             scaleUp.setToX(scale);
             scaleUp.setToY(scale);
@@ -166,12 +166,12 @@ public class LoadingIcon extends StackPane {
     }
     
     public void play() {
-        Animations.FADEIN.configure(this, ImageJFX.getAnimationDurationAsDouble());
+        Animations.FADEIN.configure(this, Animations.getAnimationDurationAsDouble());
         getIconAnimation().play();
     }
     
     public void stop() {
-        Animations.FADEOUT.configure(this, ImageJFX.getAnimationDurationAsDouble());
+        Animations.FADEOUT.configure(this, Animations.getAnimationDurationAsDouble());
         getIconAnimation().stop();
     }
     

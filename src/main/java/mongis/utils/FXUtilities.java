@@ -329,10 +329,8 @@ public class FXUtilities {
 
     public static void injectFXML(Object rootController, String location) throws IOException {
         FXMLLoader loader = new FXMLLoader(rootController.getClass().getResource(location));
-        //FXMLLoader loader = new FXMLLoader();
         loader.setRoot(rootController);
         loader.setController(rootController);
-        //loader.setResources(ImageJFX.getResourceBundle());
 
         loader.setLocation(rootController.getClass().getResource(location));
         loader.setClassLoader(rootController.getClass().getClassLoader());

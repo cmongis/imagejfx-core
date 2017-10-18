@@ -20,6 +20,7 @@
  */
 package mongis.utils.animation;
 
+import ijfx.ui.main.ImageJFX;
 import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -39,6 +40,14 @@ import javafx.util.Duration;
  */
 // configure and node and generate a animation.
 public interface Animations {
+
+    public static Duration getAnimationDuration() {
+        return ImageJFX.ANIMATION_DURATION;
+    }
+
+    public static double getAnimationDurationAsDouble() {
+        return ImageJFX.ANIMATION_DURATION.toMillis();
+    }
 
     /**
      *

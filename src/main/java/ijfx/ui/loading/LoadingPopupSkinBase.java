@@ -155,12 +155,12 @@ public class LoadingPopupSkinBase extends StackPane implements Skin<LoadingPopup
     
     private void onShowing(Observable obs, Boolean oldValue, Boolean showing) {
         if(showing) {
-            Animations.FADEIN.configure(this, ImageJFX.getAnimationDurationAsDouble()).play();
+            Animations.FADEIN.configure(this, Animations.getAnimationDurationAsDouble()).play();
            icon.play();
         }
         else {
             icon.stop();
-            Animations.FADEOUT.configure(this,ImageJFX.getAnimationDurationAsDouble()).play();
+            Animations.FADEOUT.configure(this,Animations.getAnimationDurationAsDouble()).play();
         }
     }
     

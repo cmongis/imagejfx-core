@@ -17,9 +17,10 @@
      Copyright 2015,2016 Cyril MONGIS, Michael Knop
 	
  */
-package ijfx.ui.utils;
+package mongis.utils;
 
-import ijfx.ui.main.ImageJFX;
+import java.util.ArrayList;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -27,12 +28,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import mongis.utils.task.FluentTask;
 
 /**
  *
  * @author Cyril MONGIS, 2016
  */
-public abstract class BaseTester extends Application {
+public abstract class UITesterBase extends Application {
 
     BorderPane borderPane = new BorderPane();
 
@@ -40,13 +42,10 @@ public abstract class BaseTester extends Application {
 
     Stage primaryStage;
     
-    public BaseTester() {
-
-       
-       
-        
-        addAction("Refresh css",this::refreshCss);
-      
+    Logger logger = FluentTask.getLogger();
+    
+    public UITesterBase() {
+        addAction("Refresh css",this::refreshCss);      
         borderPane.setBottom(toolbar);
     }
 
@@ -59,20 +58,28 @@ public abstract class BaseTester extends Application {
 
         this.primaryStage = primaryStage;
         
-        borderPane.getStylesheets().add(ImageJFX.getStylesheet());
-        borderPane.getStyleClass().add("explorer-filter");
+        
 
         Scene scene = new Scene(borderPane);
+        
+        if(getStyleSheet() != null) {
+            scene.getStylesheets().add(getStyleSheet());
+        }
+        
         primaryStage.setWidth(600);
         primaryStage.setHeight(400);
         primaryStage.setScene(scene);
         primaryStage.show();
         
-        initApp();
+        borderPane.setCenter(initApp());
 
         addAction("Reset",this::initApp);
         
     }
+    
+    public String getStyleSheet() {
+        return null;
+    };
 
     public void addAction(String label, Runnable action) {
         Button button = new Button(label);
@@ -81,11 +88,12 @@ public abstract class BaseTester extends Application {
     }
 
     private void refreshCss() {
-        borderPane.getStylesheets().remove(ImageJFX.getStylesheet());
-        borderPane.getStylesheets().add(ImageJFX.getStylesheet());
+        ArrayList<String> styles = new ArrayList<>(borderPane.getStylesheets());
+        borderPane.getStylesheets().removeAll(styles);
+        borderPane.getStylesheets().addAll(styles);
     }
     
-    abstract public void initApp();
+    abstract public Node initApp();
 
     public Stage getPrimaryStage() {
         return primaryStage;

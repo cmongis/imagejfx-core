@@ -20,20 +20,21 @@
 package mongis.utils.bindings;
 
 import mongis.utils.task.FakeTask;
-import ijfx.ui.utils.BaseTester;
+import mongis.utils.UITesterBase;
 import javafx.concurrent.Task;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 
 /**
  *
  * @author Cyril MONGIS, 2016
  */
-public class TaskButtonBindingTester extends BaseTester{
+public class TaskButtonBindingTester extends UITesterBase{
 
     Button button;
     
     @Override
-    public void initApp() {
+    public Node initApp() {
         
         
         button = new Button("Click me please :-)");
@@ -44,7 +45,7 @@ public class TaskButtonBindingTester extends BaseTester{
                 .setTaskFactory(this::generateMe);
         
         
-        setContent(button);
+       return button;
         
         
     }
@@ -54,7 +55,14 @@ public class TaskButtonBindingTester extends BaseTester{
     }
     
     
+    
+    
     private Task<Boolean> generateMe(TaskButtonBinding binding) {
         return new FakeTask(4000);
+    }
+
+    @Override
+    public String getStyleSheet() {
+        return null;
     }
 }

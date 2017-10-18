@@ -39,6 +39,7 @@ import org.scijava.Context;
 import org.scijava.plugin.Parameter;
 import mongis.utils.FXUtilities;
 import javafx.animation.FadeTransition;
+import mongis.utils.animation.Animations;
 import mongis.utils.task.FluentTask;
 
 /**
@@ -98,7 +99,7 @@ public class HistoryStepCtrl extends BorderPane {
         addEventHandler(MouseEvent.MOUSE_ENTERED, this::showButtons);
         addEventHandler(MouseEvent.MOUSE_EXITED, this::hideButtons);
 
-        FadeTransition tr = new FadeTransition(ImageJFX.getAnimationDuration(), buttonHBox);
+        FadeTransition tr = new FadeTransition(Animations.getAnimationDuration(), buttonHBox);
         tr.setToValue(.3);
         tr.setDelay(Duration.millis(3000));
         tr.play();
@@ -107,14 +108,14 @@ public class HistoryStepCtrl extends BorderPane {
 
     public void showButtons(MouseEvent event) {
 
-        FadeTransition tr = new FadeTransition(ImageJFX.getAnimationDuration(), buttonHBox);
+        FadeTransition tr = new FadeTransition(Animations.getAnimationDuration(), buttonHBox);
         tr.setToValue(1.0);
         tr.play();
         //Animations.FADEIN.configure(buttonHBox, ImageJFX.getAnimationDurationAsDouble()).play();
     }
 
     public void hideButtons(MouseEvent event) {
-        FadeTransition tr = new FadeTransition(ImageJFX.getAnimationDuration(), buttonHBox);
+        FadeTransition tr = new FadeTransition(Animations.getAnimationDuration(), buttonHBox);
         tr.setToValue(.3);
         tr.play();
     }

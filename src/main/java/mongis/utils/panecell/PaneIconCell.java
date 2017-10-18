@@ -21,8 +21,6 @@ package mongis.utils.panecell;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import ijfx.explorer.views.DataClickEvent;
-import ijfx.ui.main.ImageJFX;
 
 import ijfx.ui.utils.LoadingIcon;
 import java.io.IOException;
@@ -110,7 +108,7 @@ public class PaneIconCell<T> extends BorderPane implements PaneCell<T> {
     private Consumer<DataClickEvent<T>> onClickEvent = t -> {
     };
 
-    Logger logger = ImageJFX.getLogger();
+    Logger logger = FluentTask.getLogger();
 
     private boolean isInsideScrollWindow = false;
 

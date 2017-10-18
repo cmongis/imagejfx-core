@@ -19,7 +19,6 @@
  */
 package mongis.utils.panecell;
 
-import ijfx.explorer.views.DataClickEvent;
 import java.util.function.Consumer;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;

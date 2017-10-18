@@ -21,7 +21,7 @@ package ijfx.ui.filter.string;
 
 import ijfx.ui.filter.StringFilter;
 import ijfx.ui.main.ImageJFX;
-import ijfx.ui.utils.CollectionsUtils;
+import mongis.utils.CollectionsUtils;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;

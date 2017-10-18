@@ -33,7 +33,7 @@ import ijfx.explorer.datamodel.Explorable;
 import ijfx.ui.RichMessageDisplayer;
 import ijfx.ui.main.ImageJFX;
 import ijfx.ui.save.SaveOptions;
-import ijfx.ui.utils.CollectionsUtils;
+import mongis.utils.CollectionsUtils;
 import ijfx.ui.widgets.ExplorableSelector;
 import ijfx.ui.widgets.SaveOptionDialog;
 import java.io.IOException;

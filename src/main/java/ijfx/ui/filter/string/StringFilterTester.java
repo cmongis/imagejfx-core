@@ -20,18 +20,19 @@
 package ijfx.ui.filter.string;
 
 import ijfx.ui.filter.StringFilter;
-import ijfx.ui.utils.BaseTester;
+import mongis.utils.UITesterBase;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import javafx.scene.Node;
 
 /**
  *
  * @author Tuan anh TRINH
  */
-public class StringFilterTester extends BaseTester {
+public class StringFilterTester extends UITesterBase {
 
     StringFilter stringFilter;
 
@@ -46,10 +47,12 @@ public class StringFilterTester extends BaseTester {
     }
     
     @Override
-    public void initApp() {
+    public Node initApp() {
         stringFilter = new DefaultStringFilter();
-        setContent(stringFilter.getContent());
-        updateValues();
+        
+        //updateValues();
+        
+        return stringFilter.getContent();
     }
     
     private void updateValues() {

@@ -19,7 +19,6 @@
  */
 package mongis.utils.listcell;
 
-import ijfx.ui.main.ImageJFX;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import javafx.beans.Observable;
@@ -27,6 +26,7 @@ import javafx.scene.Node;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.util.Callback;
+import mongis.utils.task.FluentTask;
 
 /**
  *
@@ -56,7 +56,7 @@ public class ListCellControllerFactory<T> implements Callback<ListView<T>, ListC
                         ctrl = listCellControllerCreator.call();
                       
                     }  catch (Exception ex) {
-                       ImageJFX.getLogger().log(Level.SEVERE, null, ex);
+                       FluentTask.getLogger().log(Level.SEVERE, null, ex);
                     }
                 }
                 return (Node)ctrl;

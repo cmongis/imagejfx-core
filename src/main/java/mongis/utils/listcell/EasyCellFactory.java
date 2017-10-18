@@ -20,12 +20,12 @@
  */
 package mongis.utils.listcell;
 
-import ijfx.ui.main.ImageJFX;
 import java.util.logging.Level;
 import javafx.scene.Node;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.util.Callback;
+import mongis.utils.task.FluentTask;
 
 /**
  *
@@ -53,7 +53,7 @@ public class EasyCellFactory<T, C extends Node & ListCellController<T>> implemen
                     try {
                         ctrl = clazz.getDeclaredConstructor().newInstance();
                     }  catch (Exception ex) {
-                       ImageJFX.getLogger().log(Level.SEVERE, null, ex);
+                       FluentTask.getLogger().log(Level.SEVERE, null, ex);
                     }
                 }
                 return ctrl;

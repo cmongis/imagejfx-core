@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import javafx.scene.Node;
 import javafx.scene.control.SelectionModel;
+import mongis.utils.panecell.DataClickEvent;
 import org.scijava.plugin.SciJavaPlugin;
 
 /**

@@ -28,6 +28,7 @@ import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Node;
+import mongis.utils.animation.Animations;
 
 /**
  *
@@ -71,12 +72,12 @@ public class SideMenuBinding {
 
         if (newValue) {
             KeyValue kv = new KeyValue(node.translateXProperty(), 0, Interpolator.LINEAR);
-            KeyFrame kf = new KeyFrame(ImageJFX.getAnimationDuration(), kv);
+            KeyFrame kf = new KeyFrame(Animations.getAnimationDuration(), kv);
             timeline.getKeyFrames().add(kf);
             timeline.play();
         } else {
             KeyValue kv = new KeyValue(node.translateXProperty(), -1 * (node.getBoundsInParent().getWidth() + xWhenHidden), Interpolator.LINEAR);
-            KeyFrame kf = new KeyFrame(ImageJFX.getAnimationDuration(), kv);
+            KeyFrame kf = new KeyFrame(Animations.getAnimationDuration(), kv);
             timeline.getKeyFrames().add(kf);
             timeline.play();
         }
