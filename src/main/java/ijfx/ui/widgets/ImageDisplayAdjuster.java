@@ -70,6 +70,7 @@ import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
 import ijfx.core.uiplugin.UiCommand;
 import ijfx.core.uiplugin.UiCommandService;
+import ijfx.ui.utils.FXUtils;
 
 /**
  *
@@ -316,7 +317,7 @@ public class ImageDisplayAdjuster extends BorderPane {
                 setGraphic(null);
                 return;
             }
-            setGraphic(new ImageView(FXUtilities.colorTableToImage(newValue, getLUTWidth(), 24)));
+            setGraphic(new ImageView(FXUtils.colorTableToImage(newValue, getLUTWidth(), 24)));
         }
     }
 

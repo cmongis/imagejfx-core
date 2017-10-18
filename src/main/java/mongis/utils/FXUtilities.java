@@ -21,14 +21,9 @@
 package mongis.utils;
 
 import mongis.utils.task.FluentTask;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.rjeschke.txtmark.Processor;
 import com.sun.javafx.tk.Toolkit;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import ijfx.ui.main.ImageJFX;
-import ijfx.ui.RichMessageDisplayer;
-import ijfx.ui.utils.HelpConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -69,7 +64,6 @@ import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import net.imglib2.display.ColorTable;
 
 /**
  *
@@ -77,7 +71,6 @@ import net.imglib2.display.ColorTable;
  */
 public class FXUtilities {
 
-    private static final ObjectMapper mapper = new ObjectMapper();
 
     private static final Logger logger = Logger.getLogger(FXUtilities.class.getName());
 
@@ -94,14 +87,12 @@ public class FXUtilities {
         try {
             return setLoaderUrl(createLoader(), url).load();
         } catch (IOException ex) {
-            ImageJFX.getLogger();
+            logger.log(Level.SEVERE,null,ex);
         }
         return null;
     }
 
-    public static ResourceBundle getResourceBundle() {
-        return ImageJFX.getResourceBundle();
-    }
+    
 
     private static FXMLLoader createLoader() {
         return new FXMLLoader();
@@ -114,7 +105,7 @@ public class FXUtilities {
 
     private static FXMLLoader setLoaderUrl(FXMLLoader loader, URL url) {
         loader.setLocation(url);
-        loader.setResources(getResourceBundle());
+        //loader.setResources(getResourceBundle());
         return loader;
     }
 
@@ -135,7 +126,7 @@ public class FXUtilities {
             Node controller = (Node) loader.getController();
             return controller;
         } catch (IOException ex) {
-            ImageJFX.getLogger();
+            logger.log(Level.SEVERE,null,ex);
             return null;
         }
     }
@@ -146,22 +137,6 @@ public class FXUtilities {
                 .startInFXThread();
     }
 
-    public static FluentTask<String, WebView> createWebView(Object root, String mdFile) {
-        return new FluentTask<String, WebView>()
-                .setInput(mdFile)
-                .callback(input -> {
-                    WebView webView = new WebView();
-                    RichMessageDisplayer displayer = new RichMessageDisplayer(webView)
-                            .addStringProcessor(Processor::process);
-                    try {
-                        displayer.setContent(root.getClass(), input);
-                    } catch (Exception e) {
-                        ImageJFX.getLogger().log(Level.SEVERE, null, e);
-                    }
-                    return webView;
-                }).submit(Platform::runLater);
-
-    }
 
     public static void modifyUiThreadSafe(Runnable r) {
         if (Platform.isFxApplicationThread()) {
@@ -308,27 +283,10 @@ public class FXUtilities {
         try {
             injectFXML(rootAndController);
         } catch (IOException ioe) {
-            ImageJFX.getLogger().log(Level.SEVERE, null, ioe);
+            logger.log(Level.SEVERE, null, ioe);
         }
     }
 
-    public static HelpConfiguration getHelpConfiguration(Object object) {
-        String file = object.getClass().getSimpleName() + ".json";
-
-        URL resource = object.getClass().getResource(file);
-        if (resource != null) {
-            try {
-                HelpConfiguration readValue = mapper.readValue(resource.openStream(), HelpConfiguration.class);
-                return readValue;
-
-            } catch (Exception e) {
-                logger.log(Level.WARNING, "Error when loading " + file, e);
-                return null;
-            }
-        } else {
-            return null;
-        }
-    }
 
     public static Node lookup(String id, Node node) {
 
@@ -419,7 +377,7 @@ public class FXUtilities {
                 try {
                     injectFXML(controller);
                 } catch (Exception e) {
-                    ImageJFX.getLogger().log(Level.SEVERE, null, e);
+                    logger.log(Level.SEVERE, null, e);
                 }
             });
         } catch (Exception e) {
@@ -486,9 +444,9 @@ public class FXUtilities {
         try {
             return task.get();
         } catch (InterruptedException ex) {
-            ImageJFX.getLogger().log(Level.SEVERE, "Error when selecting file", ex);
+            logger.log(Level.SEVERE, "Error when selecting file", ex);
         } catch (ExecutionException ex) {
-            ImageJFX.getLogger().log(Level.SEVERE, "Error when selecting file", ex);
+            logger.log(Level.SEVERE, "Error when selecting file", ex);
         }
 
         return null;
@@ -531,9 +489,9 @@ public class FXUtilities {
 
             return task.get();
         } catch (InterruptedException ex) {
-            ImageJFX.getLogger();
+            logger.log(Level.SEVERE,null,ex);
         } catch (ExecutionException ex) {
-            ImageJFX.getLogger();
+            logger.log(Level.SEVERE,null,ex);
         }
 
         return null;
@@ -565,7 +523,7 @@ public class FXUtilities {
 
             return task.get();
         } catch (Exception ex) {
-            ImageJFX.getLogger().log(Level.SEVERE, null, ex);
+           logger.log(Level.SEVERE,null,ex);
         }
         return null;
 
@@ -607,9 +565,9 @@ public class FXUtilities {
 
             return task.get();
         } catch (InterruptedException ex) {
-            ImageJFX.getLogger();
+            logger.log(Level.SEVERE,null,ex);
         } catch (ExecutionException ex) {
-            ImageJFX.getLogger();
+             logger.log(Level.SEVERE,null,ex);
         }
 
         return null;
@@ -701,27 +659,6 @@ public class FXUtilities {
         styleDialogButtons(dialog, BUTTON_SUCCESS_CLASS, FontAwesomeIcon.CHECK, ButtonType.APPLY, ButtonType.NEXT, ButtonType.OK, ButtonType.YES);
     }
 
-    public static Image colorTableToImage(ColorTable table, int width, int height) {
-        return colorTableToImage(table, width, height, 2);
-    }
-
-    public static Image colorTableToImage(ColorTable table, int width, int height, int border) {
-
-        WritableImage image = new WritableImage(width, height);
-
-        PixelWriter pixelWriter = image.getPixelWriter();
-
-        int color;
-        for (int x = border; x != width - border; x++) {
-            color = table.lookupARGB(border, width - 1 - (border * 2), x);
-            for (int y = border; y != height - border; y++) {
-                pixelWriter.setArgb(x, y, color);
-            }
-        }
-
-        return image;
-
-    }
 
     public static void makeListViewMultipleSelection(ListView listView) {
 

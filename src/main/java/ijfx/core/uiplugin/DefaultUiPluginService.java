@@ -41,6 +41,7 @@ import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 import ijfx.ui.UiConfiguration;
+import ijfx.ui.utils.FXUtils;
 import ijfx.ui.utils.HelpConfiguration;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -186,7 +187,7 @@ public final class DefaultUiPluginService extends AbstractService implements UiP
                 setLocalization(pluginId, uiConfiguration.localization());
 
                 // attaching description
-                HelpConfiguration helpConfiguration = FXUtilities.getHelpConfiguration(uiPlugin);
+                HelpConfiguration helpConfiguration = FXUtils.getHelpConfiguration(uiPlugin);
                 if (helpConfiguration != null) {
                     final Node root = uiPlugin.getUiElement();
                     helpConfiguration
