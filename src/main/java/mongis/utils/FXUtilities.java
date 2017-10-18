@@ -140,8 +140,10 @@ public class FXUtilities {
         }
     }
 
-    public static CallableTask<WebView> createWebView() {
-        return new CallableTask<>(WebView::new).startInFXThread();
+    public static FluentTask<Void,WebView> createWebView() {
+        return new FluentTask<Void,WebView>()
+                .call(WebView::new)
+                .startInFXThread();
     }
 
     public static FluentTask<String, WebView> createWebView(Object root, String mdFile) {
@@ -280,8 +282,8 @@ public class FXUtilities {
             if (Platform.isFxApplicationThread()) {
                 return t.call();
             }
-            return new CallableTask<T>(t)
-                    .startInFXThread()
+            return new FluentTask<Void,T>()
+                    .call(()->t.call())
                     .get();
         } catch (InterruptedException ex) {
             Logger.getLogger(FXUtilities.class.getName()).log(Level.SEVERE, null, ex);

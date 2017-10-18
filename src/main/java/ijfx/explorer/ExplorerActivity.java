@@ -90,7 +90,6 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import mongis.utils.CallableTask;
 import mongis.utils.task.FluentTask;
 import mongis.utils.FXUtilities;
 import mongis.utils.TextFileUtils;
@@ -256,8 +255,8 @@ public class ExplorerActivity extends AnchorPane implements Activity {
             currentView.setValue(views.get(0));
 
             // add the items to the menu in the background
-            new CallableTask<List<MenuItem>>()
-                    .setCallable(this::initMoreActionButton)
+            new FluentTask<Void,List<MenuItem>>()
+                    .call(this::initMoreActionButton)
                     .then(
                             items -> moreMenuButton.getItems().addAll(0, items))
                     .start();

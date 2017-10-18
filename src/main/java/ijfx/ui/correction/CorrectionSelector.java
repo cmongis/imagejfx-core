@@ -72,7 +72,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import mongis.utils.CallableTask;
 import mongis.utils.task.FluentTask;
 import mongis.utils.FXUtilities;
 import mongis.utils.FluidWebViewWrapper;
@@ -342,8 +341,8 @@ public class CorrectionSelector extends BorderPane implements Activity {
     @Override
     public Task updateOnShow() {
 
-        return new CallableTask<List<? extends Explorable>>()
-                .setCallable(correctionUiService::getSelectedObjects)
+        return new FluentTask<Void,List<? extends Explorable>>()
+                .call(correctionUiService::getSelectedObjects)
                 .then(this::setItems);
 
     }
@@ -444,8 +443,8 @@ public class CorrectionSelector extends BorderPane implements Activity {
     private void onDatasetLoaded(Dataset dataset) {
         exampleDataset.setValue(dataset);
 
-        new CallableTask<Image>()
-                .setCallable(() -> thumbService.getThumb(dataset, 150, 150))    
+        new FluentTask<Void,Image>()
+                .call(() -> thumbService.getThumb(dataset, 150, 150))    
                 .then(previewImageView::setImage)
                 .start();
 

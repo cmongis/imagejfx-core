@@ -147,6 +147,8 @@ public class FluentTask<INPUT, OUTPUT> extends Task<OUTPUT> implements ProgressH
         return this;
     }
 
+    
+    
     public FluentTask<INPUT, OUTPUT> call(FailableCallable<OUTPUT> callable) {
         this.callable = callable;
         return this;

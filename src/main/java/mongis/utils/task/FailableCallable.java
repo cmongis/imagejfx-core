@@ -19,12 +19,14 @@
  */
 package mongis.utils.task;
 
+import java.util.concurrent.Callable;
+
 /**
  *
  * @author Cyril MONGIS
  */
 @FunctionalInterface
-public interface FailableCallable<T> {
+public interface FailableCallable<T> extends Callable<T> {
 
     T call() throws Exception;
     

@@ -32,7 +32,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javafx.application.Platform;
-import mongis.utils.CallableTask;
 import mongis.utils.task.FluentTask;
 import mongis.utils.task.ProgressHandler;
 
@@ -171,7 +170,8 @@ public class ObjectCache<T> {
             // christalizing the start index
             final int start = i;
 
-            CallableTask<List<T>> task = new CallableTask<List<T>>(() -> get(handler, start, required))
+            FluentTask<Void,List<T>> task = new FluentTask<Void,List<T>>()
+                    .call(() -> get(handler, start, required))
                     .then(onFinshed);
 
             logger.info("Adding task to fragmentation thread");
