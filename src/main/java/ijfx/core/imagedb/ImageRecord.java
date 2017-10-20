@@ -25,7 +25,7 @@ import java.io.File;
 import java.util.Date;
 
 /**
- *
+ * Object representing a record in the database
  * @author Cyril MONGIS, 2016
  */
 @JsonSerialize(as = DefaultImageRecord.class)

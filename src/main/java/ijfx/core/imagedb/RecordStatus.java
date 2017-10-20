@@ -20,7 +20,7 @@
 package ijfx.core.imagedb;
 
 /**
- *
+ * 
  * @author Cyril MONGIS, 2016
  */
 public enum RecordStatus {
