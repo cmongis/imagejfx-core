@@ -23,7 +23,6 @@ import ijfx.core.datamodel.DatasetHolder;
 import ijfx.core.workflow.DefaultWorkflow;
 import ijfx.core.workflow.DefaultWorkflowStep;
 import ijfx.core.workflow.Workflow;
-import ijfx.explorer.ExplorerService;
 import ijfx.ui.main.ImageJFX;
 import ijfx.ui.utils.NamingUtils;
 import io.scif.services.DatasetIOService;
@@ -42,6 +41,7 @@ import net.imagej.Dataset;
 import org.scijava.Context;
 import org.scijava.plugin.Parameter;
 import org.scijava.ui.UIService;
+import ijfx.explorer.ExplorerViewService;
 
 /**
  *
@@ -55,7 +55,7 @@ public class BatchBuilder {
     Context context;
 
     @Parameter
-    ExplorerService explorerService;
+    ExplorerViewService explorerService;
 
     @Parameter
     BatchService batchService;

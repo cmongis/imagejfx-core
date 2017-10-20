@@ -25,36 +25,46 @@ import java.io.File;
 import java.util.Collection;
 import java.util.function.Predicate;
 import mongis.utils.task.ProgressHandler;
+import org.apache.commons.io.filefilter.IOFileFilter;
 
 /**
+ * The Explorer Service takes care of indexing images inside the folder. It also
+ * keeps record of previously indexed files in order to speed up indexing
+ * process.
  *
  * @author Cyril MONGIS, 2016
  */
-public interface ImageRecordService extends IjfxService{
-    
-    
+public interface ExplorerService extends IjfxService {
+
     public boolean isPresent(File file);
-    
+
     // add a single record to the database
     public void addRecord(ImageRecord imageRecord);
-    
-    
+
     // adds a record manually
     public ImageRecord addRecord(File file, MetaDataSet metaDataSet);
-   
+
     // get the record, if doesn't exist, calculates it
     public ImageRecord getRecord(File file);
-    
+
     // get all the record
     public Collection<? extends ImageRecord> getRecords();
-    
+
     // query a list of record using the following condition
     public Collection<? extends ImageRecord> queryRecords(Predicate<ImageRecord> query);
-    
+
     public Collection<? extends ImageRecord> getRecordsFromDirectory(ProgressHandler handler, File file);
- 
+
     public void forceSave();
-    
-     public final static String JSON_FILE = "image_record.json";
-    
+
+    public final static String JSON_FILE = "image_record.json";
+
+    public IOFileFilter getIOFileFilter();
+
+    public String[] getSupportedExtensions();
+
+    Collection<File> getAllImagesFromDirectory(File file);
+
+    Collection<File> getAllImagesFromDirectory(File file, boolean recursive);
+
 }

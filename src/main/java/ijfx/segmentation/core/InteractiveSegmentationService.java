@@ -22,7 +22,7 @@ package ijfx.segmentation.core;
 import ijfx.core.IjfxService;
 import ijfx.core.batch.BatchSingleInput;
 import ijfx.core.image.ImagePlaneService;
-import ijfx.core.imagedb.MetaDataExtractionService;
+import ijfx.core.metadata.MetaDataService;
 import ijfx.core.metadata.MetaDataSetDisplayService;
 import ijfx.core.overlay.MeasurementService;
 import ijfx.core.overlay.OverlayStatService;
@@ -31,7 +31,6 @@ import ijfx.core.segmentation.SegmentationService;
 import ijfx.core.uicontext.UiContextService;
 import ijfx.core.workflow.Workflow;
 import ijfx.core.workflow.WorkflowBuilder;
-import ijfx.explorer.ExplorerService;
 import ijfx.ui.UiContexts;
 import ijfx.ui.display.image.FXImageDisplay;
 import ijfx.ui.loading.LoadingScreenService;
@@ -59,7 +58,6 @@ import net.imglib2.img.Img;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.IntervalView;
-import org.scijava.Priority;
 import org.scijava.display.event.DisplayActivatedEvent;
 import org.scijava.event.EventHandler;
 import org.scijava.plugin.Parameter;
@@ -67,6 +65,7 @@ import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
+import ijfx.explorer.ExplorerViewService;
 
 /**
  *
@@ -90,7 +89,7 @@ public class InteractiveSegmentationService extends AbstractService implements I
     MeasurementService measurementService;
 
     @Parameter
-    MetaDataExtractionService metaDataSrv;
+    MetaDataService metaDataSrv;
 
     @Parameter
     LoadingScreenService loadingScreenService;
@@ -99,7 +98,7 @@ public class InteractiveSegmentationService extends AbstractService implements I
     UiContextService uiContextService;
 
     @Parameter
-    ExplorerService explorerService;
+    ExplorerViewService explorerService;
 
     @Parameter
     ImagePlaneService imagePlaneService;

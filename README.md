@@ -1,14 +1,59 @@
 # ImageJFX Core
 
+
+
+
+
 This package contains the core elements of ImageJ-FX which are : 
 
 * the JavaFX UI elements
 * the UiContext Service
 * the UiPlugins
 
-## Missing important features
+## Be Aware
+
+Before you install ImageJ-FX, please be aware that ImageJ-FX
+still remains on a experimental state and does not support
+ImageJ1 Scripts or plugins.
+
+I would recommend you to install it on a separate Fiji / ImageJ2 installation
+installation
+
+## Installation
+
+For testing, download the [latest version of Fiji](http://fiji.sc/#download) and run
+it. You must now install the ImageJ-FX repository in order to receive to download
+its latest version through the official ImageJ update system.
+
+### Easy update site installation
+
+Download [this script](https://github.com/cmongis/imagejfx-core/raw/master/install-ijfx.js)
+ and drag it into Fiji's window. A script window will open. 
+Click on *Run it* and it will install the ImageJ-FX update site, launch
+the update process. After some time, you should the list of 
+jar files to install. Click on "*Apply all changes*".
+Once the process over, close Fiji and restart the program.
+ImageJ-FX should open.
+
+### Manual Update site installation
+
+Open Fiji and go to "*Help > Update...*". This will launch
+the update process. Once the process over, you should
+see a window appearing. Click on the bottom left button "Advanced"
+then "Add update site". Fill its name "ImageJ-FX" and address
+"http://site.imagejfx.net". Validate the change and 
+click on "Apply all changes" to start the installation
+process. Restart Fiji. Your newly installed ImageJ-FX window should appear instead
+of the classical user interface.
+
+
+
+## Missing important features in ImageJ-FX
+
 *	ImageJ1 Plugin support and installation
 *	3D support
+
+
 
 
 ## License

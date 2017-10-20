@@ -33,12 +33,6 @@ public interface ImageLoaderService extends ImageJService {
 
 
 
-    public IOFileFilter getIOFileFilter();
-
-    public String[] getSupportedExtensions();
-
-    Collection<File> getAllImagesFromDirectory(File file);
-    
-    Collection<File> getAllImagesFromDirectory(File file, boolean recursive);
+   
     
 }

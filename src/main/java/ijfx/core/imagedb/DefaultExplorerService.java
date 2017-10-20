@@ -19,11 +19,15 @@
  */
 package ijfx.core.imagedb;
 
+import com.google.common.collect.Lists;
+import ijfx.core.hash.HashService;
+import ijfx.core.metadata.MetaDataService;
 import ijfx.core.metadata.MetaDataSet;
 import ijfx.core.notification.NotificationService;
 import ijfx.core.prefs.JsonPreferenceService;
 import ijfx.ui.main.ImageJFX;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -35,9 +39,20 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import mongis.utils.TextFileUtils;
 import mongis.utils.task.ProgressHandler;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.AndFileFilter;
+import org.apache.commons.io.filefilter.CanReadFileFilter;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.OrFileFilter;
+import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.scijava.Context;
 import org.scijava.Priority;
 import org.scijava.app.StatusService;
 import org.scijava.plugin.Parameter;
@@ -51,7 +66,7 @@ import rx.subjects.PublishSubject;
  * @author Cyril MONGIS, 2016
  */
 @Plugin(type = Service.class, priority = Priority.VERY_LOW_PRIORITY)
-public class DefaultImageRecordService extends AbstractService implements ImageRecordService {
+public class DefaultExplorerService extends AbstractService implements ExplorerService {
 
     Executor executor = Executors.newFixedThreadPool(1);
 
@@ -60,7 +75,7 @@ public class DefaultImageRecordService extends AbstractService implements ImageR
     Queue<File> fileQueue = new LinkedList<>();
 
     @Parameter
-    MetaDataExtractionService metadataExtractorService;
+    MetaDataService metadataExtractorService;
 
     @Parameter
     ImageLoaderService imageLoaderService;
@@ -78,25 +93,21 @@ public class DefaultImageRecordService extends AbstractService implements ImageR
 
     private static String FILE_ADDED = "%s images where analyzed.";
 
-
     PublishSubject<ImageRecord> saveQueue = PublishSubject.create();
-    
-    
+
     @Override
     public void initialize() {
         super.initialize();
-        
+
         saveQueue
                 .observeOn(ImageJFX.getPublishSubjectScheduler())
-                .filter(imageRecord->getRecordMap().containsValue(imageRecord) == false)
-                
-                .buffer(10,TimeUnit.SECONDS)
-                .filter(list->list.isEmpty() == false)
-                .subscribe(list->save());
-        
-        
+                .filter(imageRecord -> getRecordMap().containsValue(imageRecord) == false)
+                .buffer(10, TimeUnit.SECONDS)
+                .filter(list -> list.isEmpty() == false)
+                .subscribe(list -> save());
+
     }
-    
+
     @Override
     public boolean isPresent(File file) {
         return getRecordMap().containsKey(file);
@@ -138,7 +149,9 @@ public class DefaultImageRecordService extends AbstractService implements ImageR
         ImageRecord imageRecord;
         if (getRecordMap().containsKey(file) == false) {
             imageRecord = new DefaultImageRecord(file, metadataExtractorService.extractMetaData(file));
-            if(imageRecord.getMetaDataSet().size() == 0) throw new IllegalArgumentException("Error when reading file metadata : "+file.getName());
+            if (imageRecord.getMetaDataSet().size() == 0) {
+                throw new IllegalArgumentException("Error when reading file metadata : " + file.getName());
+            }
             addRecord(imageRecord);
         } else {
             imageRecord = getRecordMap().get(file);
@@ -146,7 +159,6 @@ public class DefaultImageRecordService extends AbstractService implements ImageR
 
         return imageRecord;
     }
-    
 
     private void save() {
         jsonPreferenceService.savePreference(getRecords(), JSON_FILE);
@@ -162,7 +174,7 @@ public class DefaultImageRecordService extends AbstractService implements ImageR
         List<ImageRecord> records = new ArrayList<>();
 
         statusService.showStatus(1, 10, "Analyzing folder : " + directory.getName());
-        Collection<File> files = imageLoaderService.getAllImagesFromDirectory(directory);
+        Collection<File> files = getAllImagesFromDirectory(directory);
         int count = 0;
         int total = files.size();
 
@@ -173,21 +185,96 @@ public class DefaultImageRecordService extends AbstractService implements ImageR
                 .map(f -> {
                     handler.increment(1.0);
                     try {
-                     return getRecord(f);
-                    }
-                    catch(Exception e) {
+                        return getRecord(f);
+                    } catch (Exception e) {
                         return null;
                     }
                 })
-                .filter(record ->record != null)
+                .filter(record -> record != null)
                 .collect(Collectors.toList());
 
         return collect;
-      
+
     }
 
     public void forceSave() {
         ImageJFX.getThreadPool().execute(this::save);
+    }
+
+    @Parameter
+    private Context context;
+    @Parameter
+    private HashService hashService;
+
+    private final String FORMAT_FILE_NAME = "/supportedFormats.txt";
+    public List<String> formats = new ArrayList<>();
+
+    @Override
+    public IOFileFilter getIOFileFilter() {
+        List<IOFileFilter> suffixFilters = new ArrayList<>();
+        for (String ext : getSupportedExtensions()) {
+
+            suffixFilters.add(new SuffixFileFilter(ext));
+        }
+        IOFileFilter suffixFilter = new OrFileFilter(suffixFilters);
+        return suffixFilter;
+    }
+
+    public static IOFileFilter canReadFilter(IOFileFilter filter) {
+        return new AndFileFilter(filter, CanReadFileFilter.CAN_READ);
+    }
+
+    public static IOFileFilter getDirectoryFilter() {
+        return DirectoryFileFilter.INSTANCE;
+    }
+
+    @Override
+    public String[] getSupportedExtensions() {
+        if (formats.isEmpty()) {
+            loadFormats();
+        }
+        int size = formats.size();
+        String[] extensions = new String[size];
+        for (int i = 0; i < size; i++) {
+            String filterExt = formats.get(i);
+            extensions[i] = filterExt.substring(2, filterExt.length());
+        }
+        return extensions;
+    }
+
+    private void loadFormats() {
+        try {
+            formats.clear();
+            String formatsFromFile = TextFileUtils.readFileFromJar(ImageJFX.class, FORMAT_FILE_NAME);
+
+            String[] lines = formatsFromFile.split("\n");
+            for (String ext : lines) {
+                formats.add("*" + ext);
+            }
+        } catch (IOException ex) {
+            ImageJFX.getLogger().log(Level.SEVERE, "Error when loading the file containing all the possible formats.", ex);
+        }
+    }
+
+    @Override
+    public Collection<File> getAllImagesFromDirectory(File file) {
+        if (file.isDirectory() == false) {
+            return Lists.newArrayList(file);
+        }
+        return FileUtils.listFiles(file, getSupportedExtensions(), true);
+    }
+
+    @Override
+    public Collection<File> getAllImagesFromDirectory(File file, boolean recursive) {
+        if (recursive) {
+            return getAllImagesFromDirectory(file);
+        } else {
+            final IOFileFilter filter = getIOFileFilter();
+            return Stream.of(file.listFiles())
+                    .filter(filter::accept)
+                    .collect(Collectors.toList());
+
+        }
     }
 
 }

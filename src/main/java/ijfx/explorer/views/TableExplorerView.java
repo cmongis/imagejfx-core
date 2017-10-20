@@ -22,7 +22,6 @@ package ijfx.explorer.views;
 import ijfx.core.hint.HintService;
 import ijfx.core.metadata.MetaDataKeyPriority;
 import ijfx.core.metadata.MetaDataSetUtils;
-import ijfx.explorer.ExplorerService;
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.datamodel.Tag;
 import ijfx.ui.display.metadataowner.MetaDataOwnerHelper;
@@ -49,6 +48,7 @@ import mongis.utils.panecell.DataClickEvent;
 import org.scijava.event.EventService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import ijfx.explorer.ExplorerViewService;
 
 /**
  *
@@ -65,7 +65,7 @@ public class TableExplorerView implements ExplorerView {
     private EventService eventService;
 
     @Parameter
-    private ExplorerService explorerService;
+    private ExplorerViewService explorerService;
 
     @Parameter
     private HintService hintService;

@@ -32,7 +32,6 @@ import ijfx.core.uicontext.UiContextProperty;
 import ijfx.core.uicontext.UiContextService;
 import ijfx.core.uiplugin.Localization;
 import ijfx.explorer.ExplorableList;
-import ijfx.explorer.ExplorerService;
 import ijfx.explorer.core.FolderManagerService;
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.segmentation.commands.AnalyseParticles;
@@ -75,6 +74,7 @@ import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.UIService;
+import ijfx.explorer.ExplorerViewService;
 
 /**
  *
@@ -139,7 +139,7 @@ public class DefaultInteractiveSegmentationPanel extends BorderPane implements U
     private FolderManagerService folderManagerService;
 
     @Parameter
-    ExplorerService explorerService;
+    ExplorerViewService explorerService;
 
     /*
         Attributes

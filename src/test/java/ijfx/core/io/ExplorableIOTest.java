@@ -27,7 +27,6 @@ import ijfx.core.overlay.io.PolygonOverlayBuilder;
 import ijfx.core.segmentation.DefaultSegmentedObject;
 import ijfx.core.segmentation.SegmentedObjectExplorerWrapper;
 import ijfx.explorer.ExplorableList;
-import ijfx.explorer.ExplorerService;
 import ijfx.explorer.core.FolderManagerService;
 import ijfx.explorer.datamodel.DefaultTag;
 import ijfx.explorer.datamodel.Explorable;
@@ -48,6 +47,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.scijava.plugin.Parameter;
+import ijfx.explorer.ExplorerViewService;
 
 /**
  *
@@ -63,7 +63,7 @@ public class ExplorableIOTest extends IjfxTest{
     OverlayStatService overlayStatsService;
     
     @Parameter
-    ExplorerService explorerService;
+    ExplorerViewService explorerService;
     
     @Parameter
     FolderManagerService folderManagerService;

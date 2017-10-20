@@ -24,10 +24,10 @@ import ijfx.core.uiplugin.AbstractUiCommand;
 import ijfx.core.uiplugin.UiCommand;
 import ijfx.explorer.ExplorableList;
 import ijfx.explorer.ExplorerActivity;
-import ijfx.explorer.ExplorerService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.UIService;
+import ijfx.explorer.ExplorerViewService;
 
 /**
  *
@@ -37,7 +37,7 @@ import org.scijava.ui.UIService;
 public class OpenInWindow extends AbstractUiCommand<ExplorerActivity>{
 
     @Parameter
-    ExplorerService explorerService;
+    ExplorerViewService explorerService;
     
     @Parameter
     UIService displayService;

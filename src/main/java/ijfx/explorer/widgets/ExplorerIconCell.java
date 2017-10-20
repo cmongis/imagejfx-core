@@ -20,11 +20,11 @@
 package ijfx.explorer.widgets;
 
 import ijfx.core.datamodel.Iconazable;
-import ijfx.explorer.ExplorerService;
 import ijfx.explorer.datamodel.Explorable;
 import javafx.scene.image.Image;
 import mongis.utils.panecell.PaneIconCell;
 import org.scijava.plugin.Parameter;
+import ijfx.explorer.ExplorerViewService;
 
 /**
  *
@@ -33,7 +33,7 @@ import org.scijava.plugin.Parameter;
 public class ExplorerIconCell extends PaneIconCell<Explorable>{
     
     @Parameter
-    ExplorerService explorerService;
+    ExplorerViewService explorerService;
     
     public ExplorerIconCell() {
         super();

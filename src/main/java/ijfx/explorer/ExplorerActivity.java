@@ -134,7 +134,7 @@ public class ExplorerActivity extends AnchorPane implements Activity {
     private FolderManagerService folderManagerService;
 
     @Parameter
-    private ExplorerService explorerService;
+    private ExplorerViewService explorerService;
 
     @Parameter
     private LoadingScreenService loadingScreenService;

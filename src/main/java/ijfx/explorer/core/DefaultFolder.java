@@ -24,21 +24,16 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import ijfx.core.fswatch.DirectoryWatchService;
 import ijfx.core.fswatch.FileChangeListener;
 import ijfx.core.imagedb.ImageRecord;
-import ijfx.core.imagedb.ImageRecordService;
-import ijfx.core.imagedb.MetaDataExtractionService;
+import ijfx.core.metadata.MetaDataService;
+
 import ijfx.core.overlay.io.OverlayIOService;
-import ijfx.core.segmentation.ObjectSegmentedEvent;
-import ijfx.core.segmentation.SegmentedObject;
-import ijfx.core.segmentation.SegmentedObjectExplorerWrapper;
 import ijfx.core.stats.ImageStatisticsService;
 
 import ijfx.core.timer.TimerService;
-import ijfx.explorer.ExplorerService;
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.datamodel.wrappers.OverlayExplorableWrapper;
 import ijfx.explorer.datamodel.wrappers.PlaneMetaDataSetWrapper;
 import ijfx.explorer.events.FolderUpdatedEvent;
-import ijfx.explorer.wrappers.MetaDataSetExplorerWrapper;
 import ijfx.ui.loading.LoadingScreenService;
 import ijfx.ui.main.ImageJFX;
 import java.io.File;
@@ -55,9 +50,10 @@ import javafx.concurrent.Task;
 import mongis.utils.task.ProgressHandler;
 import org.scijava.Context;
 import org.scijava.app.StatusService;
-import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
 import org.scijava.plugin.Parameter;
+import ijfx.explorer.ExplorerViewService;
+import ijfx.core.imagedb.ExplorerService;
 
 /**
  *
@@ -74,7 +70,7 @@ public class DefaultFolder implements Folder, FileChangeListener {
     Logger logger = ImageJFX.getLogger();
 
     @Parameter
-    private ImageRecordService imageRecordService;
+    private ExplorerService imageRecordService;
 
     @Parameter
     private EventService eventService;
@@ -92,7 +88,7 @@ public class DefaultFolder implements Folder, FileChangeListener {
     private StatusService statusService;
 
     @Parameter
-    private MetaDataExtractionService metadataExtractionService;
+    private MetaDataService metadataService;
 
     @Parameter
     private DirectoryWatchService dirWatchService;
@@ -104,7 +100,7 @@ public class DefaultFolder implements Folder, FileChangeListener {
     private LoadingScreenService loadingScreenService;
     
     @Parameter
-    private ExplorerService explorerService;
+    private ExplorerViewService explorerService;
     
     private String status = "Click to open";
     
@@ -182,7 +178,7 @@ public class DefaultFolder implements Folder, FileChangeListener {
   
     private Explorable addPlanes(Explorable explorable) {
 
-        List<Explorable> planeExplorableList = metadataExtractionService.extractPlaneMetaData(explorable.getMetaDataSet())
+        List<Explorable> planeExplorableList = metadataService.extractPlaneMetaData(explorable.getMetaDataSet())
                 .stream()
                 .map(m -> new PlaneMetaDataSetWrapper(context, m))
                 .collect(Collectors.toList());

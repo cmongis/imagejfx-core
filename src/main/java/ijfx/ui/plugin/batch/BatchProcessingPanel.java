@@ -32,7 +32,6 @@ import ijfx.core.workflow.Workflow;
 import ijfx.explorer.ExplorableDisplay;
 import ijfx.explorer.ExplorableViewModel;
 import ijfx.explorer.ExplorerActivity;
-import ijfx.explorer.ExplorerService;
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.events.DisplayedListChanged;
 import ijfx.explorer.events.ExploredListChanged;
@@ -78,6 +77,7 @@ import org.scijava.event.EventHandler;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.UIService;
+import ijfx.explorer.ExplorerViewService;
 
 /**
  *
@@ -114,7 +114,7 @@ public class BatchProcessingPanel extends BorderPane implements UiPlugin {
     private BatchService batchService;
 
     @Parameter
-    private ExplorerService explorerService;
+    private ExplorerViewService explorerService;
 
     @Parameter
     private UIService uiService;

@@ -21,7 +21,6 @@ package ijfx.explorer;
 
 import ijfx.core.datamodel.Iconazable;
 import ijfx.core.imagedb.ImageRecord;
-import ijfx.core.imagedb.ImageRecordService;
 import ijfx.core.metadata.MetaData;
 import ijfx.core.timer.Timer;
 import ijfx.core.timer.TimerService;
@@ -53,13 +52,14 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
+import ijfx.core.imagedb.ExplorerService;
 
 /**
  *
  * @author Cyril MONGIS, 2016
  */
 @Plugin(type = Service.class)
-public class DefaultExplorerService extends AbstractService implements ExplorerService {
+public class DefaultExplorerViewService extends AbstractService implements ExplorerViewService {
 
     List<Explorable> explorableList = new ArrayList<>();
 
@@ -75,7 +75,7 @@ public class DefaultExplorerService extends AbstractService implements ExplorerS
     private TimerService timerService;
 
     @Parameter
-    private ImageRecordService imageRecordService;
+    private ExplorerService imageRecordService;
 
     private final Logger logger = ImageJFX.getLogger();
 

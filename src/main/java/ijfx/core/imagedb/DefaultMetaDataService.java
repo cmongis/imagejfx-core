@@ -21,6 +21,7 @@ package ijfx.core.imagedb;
 
 import ijfx.core.metadata.FileSizeMetaData;
 import ijfx.core.metadata.MetaData;
+import ijfx.core.metadata.MetaDataService;
 import ijfx.core.metadata.MetaDataSet;
 import ijfx.core.metadata.MetaDataSetType;
 import ijfx.core.timer.Timer;
@@ -54,11 +55,12 @@ import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 
 /**
- *
+ * 
  * @author Cyril MONGIS, 2016
  */
-@Plugin(type = Service.class, priority = Priority.VERY_LOW_PRIORITY)
-public class DefaultMetaDataService extends AbstractService implements MetaDataExtractionService {
+//@Plugin(type = Service.class, priority = Priority.VERY_LOW_PRIORITY)
+@Deprecated
+public class DefaultMetaDataService extends AbstractService implements MetaDataService {
 
     private SCIFIO scifio;
     private SCIFIOConfig config;

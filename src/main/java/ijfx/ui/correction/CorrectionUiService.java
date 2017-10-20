@@ -21,7 +21,6 @@ package ijfx.ui.correction;
 
 import ijfx.core.IjfxService;
 import ijfx.core.imagedb.ImageLoaderService;
-import ijfx.explorer.ExplorerService;
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.ui.loading.LoadingScreenService;
 import java.io.File;
@@ -39,6 +38,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
+import ijfx.explorer.ExplorerViewService;
 
 /**
  *
@@ -54,7 +54,7 @@ public class CorrectionUiService extends AbstractService implements IjfxService 
     LoadingScreenService loadingScreenService;
 
     @Parameter
-    ExplorerService indexationService;
+    ExplorerViewService indexationService;
 
     private final ObjectProperty<List<Explorable>> fileListProperty = new SimpleObjectProperty();
 

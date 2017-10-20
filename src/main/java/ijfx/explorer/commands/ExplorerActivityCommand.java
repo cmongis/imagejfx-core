@@ -22,11 +22,11 @@ package ijfx.explorer.commands;
 import ijfx.core.uiplugin.AbstractUiCommand;
 import ijfx.core.uiplugin.UiCommand;
 import ijfx.explorer.ExplorerActivity;
-import ijfx.explorer.ExplorerService;
 import ijfx.explorer.core.FolderManagerService;
 import ijfx.explorer.datamodel.Explorable;
 import java.util.List;
 import org.scijava.plugin.Parameter;
+import ijfx.explorer.ExplorerViewService;
 
 /**
  *
@@ -35,7 +35,7 @@ import org.scijava.plugin.Parameter;
 public abstract class ExplorerActivityCommand extends AbstractUiCommand<ExplorerActivity>{
     
     @Parameter
-    private ExplorerService explorerService;
+    private ExplorerViewService explorerService;
     
     @Parameter
     private FolderManagerService folderManagerService;
@@ -49,7 +49,7 @@ public abstract class ExplorerActivityCommand extends AbstractUiCommand<Explorer
         process(explorerService.getSelectedItems());
     }
 
-    public ExplorerService explorerService() {
+    public ExplorerViewService explorerService() {
         return explorerService;
     }
 

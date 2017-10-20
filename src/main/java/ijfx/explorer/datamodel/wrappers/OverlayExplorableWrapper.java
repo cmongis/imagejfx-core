@@ -21,7 +21,6 @@ package ijfx.explorer.datamodel.wrappers;
 
 import ijfx.core.image.ImagePlaneService;
 import ijfx.core.image.PreviewService;
-import ijfx.core.imagedb.ImageRecordService;
 import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataSetType;
 import ijfx.core.metadata.MetaDataSetUtils;
@@ -45,6 +44,7 @@ import net.imagej.display.DefaultImageDisplay;
 import net.imagej.display.ImageDisplayService;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.RealType;
+import ijfx.core.imagedb.ExplorerService;
 
 /**
  *
@@ -64,7 +64,7 @@ public class OverlayExplorableWrapper extends AbstractExplorable {
     private OverlayStatService overlayStatService;
 
     @Parameter
-    private ImageRecordService imageRecordService;
+    private ExplorerService imageRecordService;
 
     @Parameter
     private OverlayDrawingService drawerService;

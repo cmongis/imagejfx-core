@@ -37,7 +37,7 @@ import mongis.utils.task.ProgressHandler;
  *
  * @author Cyril MONGIS, 2016
  */
-public interface ExplorerService extends IjfxService,ExplorableViewModel {
+public interface ExplorerViewService extends IjfxService,ExplorableViewModel {
 
 
     void setItems(List<? extends Explorable> items);

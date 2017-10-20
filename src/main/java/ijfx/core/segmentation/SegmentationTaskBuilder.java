@@ -23,8 +23,6 @@ import com.google.common.collect.Lists;
 import ijfx.commands.binary.BinaryToOverlay;
 import ijfx.core.batch.item.BatchItemBuilder;
 import ijfx.core.image.ImagePlaneService;
-import ijfx.core.imagedb.ImageRecordService;
-import ijfx.core.imagedb.MetaDataExtractionService;
 import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataService;
 import ijfx.core.metadata.MetaDataSet;
@@ -35,7 +33,6 @@ import ijfx.core.workflow.DefaultWorkflow;
 import ijfx.core.workflow.Workflow;
 import ijfx.core.workflow.WorkflowService;
 import ijfx.core.workflow.WorkflowStep;
-import ijfx.explorer.ExplorerService;
 import ijfx.explorer.core.FolderManagerService;
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.ui.main.ImageJFX;
@@ -60,6 +57,8 @@ import org.scijava.Context;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.ui.UIService;
+import ijfx.explorer.ExplorerViewService;
+import ijfx.core.imagedb.ExplorerService;
 
 /**
  *
@@ -97,10 +96,10 @@ public class SegmentationTaskBuilder {
     ImageDisplayService imageDisplayService;
 
     @Parameter
-    ImageRecordService imageRecordService;
+    ExplorerService imageRecordService;
 
     @Parameter
-    ExplorerService explorerService;
+    ExplorerViewService explorerService;
 
     @Parameter
     FolderManagerService folderManagerService;
@@ -108,9 +107,7 @@ public class SegmentationTaskBuilder {
     @Parameter
     UIService uiService;
 
-    @Parameter
-    MetaDataExtractionService metaDataExtractionService;
-
+   
     @Parameter
     WorkflowService workflowService;
 

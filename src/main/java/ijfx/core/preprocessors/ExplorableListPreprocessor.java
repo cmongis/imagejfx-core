@@ -23,7 +23,6 @@ import ijfx.core.activity.ActivityService;
 import ijfx.explorer.ExplorableDisplay;
 import ijfx.explorer.ExplorableList;
 import ijfx.explorer.ExplorerActivity;
-import ijfx.explorer.ExplorerService;
 import org.scijava.Priority;
 import org.scijava.display.DisplayService;
 import org.scijava.module.Module;
@@ -33,6 +32,7 @@ import org.scijava.module.process.AbstractPreprocessorPlugin;
 import org.scijava.module.process.PreprocessorPlugin;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import ijfx.explorer.ExplorerViewService;
 
 /**
  *
@@ -51,7 +51,7 @@ public class ExplorableListPreprocessor extends AbstractPreprocessorPlugin{
     ModuleService moduleService;
     
     @Parameter
-    ExplorerService explorerService;
+    ExplorerViewService explorerService;
     
     @Override
     public void process(Module module) {

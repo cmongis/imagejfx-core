@@ -30,7 +30,6 @@ import ijfx.core.stats.ImageStatisticsService;
 import ijfx.core.uicontext.UiContextService;
 import ijfx.explorer.ExplorationMode;
 import ijfx.explorer.ExplorerActivity;
-import ijfx.explorer.ExplorerService;
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.explorer.datamodel.wrappers.PlaneMetaDataSetWrapper;
 import ijfx.explorer.events.ExplorationModeChangeEvent;
@@ -63,6 +62,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
+import ijfx.explorer.ExplorerViewService;
 
 /**
  *
@@ -76,7 +76,7 @@ public class DefaultFolderManagerService extends AbstractService implements Fold
     Folder currentFolder;
 
     @Parameter
-    ExplorerService explorerService;
+    ExplorerViewService explorerService;
 
     @Parameter
     EventService eventService;
