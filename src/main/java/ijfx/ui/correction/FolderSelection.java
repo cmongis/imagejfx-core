@@ -22,10 +22,10 @@ package ijfx.ui.correction;
 import com.github.rjeschke.txtmark.Processor;
 import ijfx.core.activity.Activity;
 import ijfx.core.activity.ActivityService;
+import ijfx.core.imagedb.ExplorerService;
 import javafx.fxml.FXML;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
-import ijfx.core.imagedb.ImageLoaderService;
 import ijfx.core.workflow.MyWorkflowService;
 import ijfx.core.workflow.Workflow;
 import ijfx.core.workflow.WorkflowBuilder;
@@ -44,7 +44,6 @@ import javafx.beans.Observable;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -86,7 +85,7 @@ public class FolderSelection extends BorderPane implements Activity {
     OpacityTransitionBinding opacityBinding;
 
     @Parameter
-    ImageLoaderService imageLoaderService;
+    ExplorerService explorerService;
 
     @Parameter
     CorrectionUiService correctionUiService;

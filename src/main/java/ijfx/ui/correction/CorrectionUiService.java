@@ -20,7 +20,7 @@
 package ijfx.ui.correction;
 
 import ijfx.core.IjfxService;
-import ijfx.core.imagedb.ImageLoaderService;
+import ijfx.core.imagedb.ExplorerService;
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.ui.loading.LoadingScreenService;
 import java.io.File;
@@ -48,7 +48,7 @@ import ijfx.explorer.ExplorerViewService;
 public class CorrectionUiService extends AbstractService implements IjfxService {
 
     @Parameter
-    ImageLoaderService imageLoaderService;
+    ExplorerService explorerService;
 
     @Parameter
     LoadingScreenService loadingScreenService;

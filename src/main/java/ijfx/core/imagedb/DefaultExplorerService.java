@@ -68,32 +68,30 @@ import rx.subjects.PublishSubject;
 @Plugin(type = Service.class, priority = Priority.VERY_LOW_PRIORITY)
 public class DefaultExplorerService extends AbstractService implements ExplorerService {
 
-    Executor executor = Executors.newFixedThreadPool(1);
+    private Executor executor = Executors.newFixedThreadPool(1);
 
-    HashMap<File, DefaultImageRecord> recordMap;
+    private HashMap<File, DefaultImageRecord> recordMap;
 
-    Queue<File> fileQueue = new LinkedList<>();
-
-    @Parameter
-    MetaDataService metadataExtractorService;
+    private Queue<File> fileQueue = new LinkedList<>();
 
     @Parameter
-    ImageLoaderService imageLoaderService;
+    private MetaDataService metadataExtractorService;
+
+  
+    @Parameter
+    private JsonPreferenceService jsonPreferenceService;
+
+    private final static Logger logger = ImageJFX.getLogger();
 
     @Parameter
-    JsonPreferenceService jsonPreferenceService;
-
-    Logger logger = ImageJFX.getLogger();
+    private NotificationService notificationService;
 
     @Parameter
-    NotificationService notificationService;
-
-    @Parameter
-    StatusService statusService;
+    private StatusService statusService;
 
     private static String FILE_ADDED = "%s images where analyzed.";
 
-    PublishSubject<ImageRecord> saveQueue = PublishSubject.create();
+    private final PublishSubject<ImageRecord> saveQueue = PublishSubject.create();
 
     @Override
     public void initialize() {
