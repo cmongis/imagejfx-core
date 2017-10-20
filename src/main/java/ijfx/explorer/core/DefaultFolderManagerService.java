@@ -20,6 +20,7 @@
 package ijfx.explorer.core;
 
 import ijfx.core.activity.ActivityService;
+import ijfx.core.io.ExplorableIOService;
 import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataService;
 import ijfx.core.metadata.MetaDataSetType;
@@ -273,17 +274,25 @@ public class DefaultFolderManagerService extends AbstractService implements Fold
 
     private synchronized void load() {
 
-       
         Map<String, String> folderMap = jsonPrefService.loadMapFromJson(FOLDER_PREFERENCE_FILE, String.class, String.class);
         folderMap.forEach((name, folderPath) -> {
             File file = new File(folderPath);
             if (file.exists() == false) {
                 return;
             }
-            DefaultFolder folder = new DefaultFolder(file);
-            context.inject(folder);
-            folder.setName(name);
-            folderList.add(folder);
+            Folder folder;
+            if (file.isDirectory()) {
+                folder = new DefaultFolder(file);
+                context.inject(folder);
+                folderList.add(folder);
+
+            } else if (file.getName().endsWith(ExplorableIOService.DB_EXTENSION)) {
+                folder = new DatabaseFolder(context, file);
+                folderList.add(folder);
+            } else {
+                return;
+            }
+
         });
     }
 
@@ -369,11 +378,11 @@ public class DefaultFolderManagerService extends AbstractService implements Fold
 
     @Override
     public Stream<Explorable> extractPlanes(Explorable exp) {
-        return  metaDataExtractionService
-                            .extractPlaneMetaData(exp.getMetaDataSet())
-                            .stream()
-                            .map(m -> new PlaneMetaDataSetWrapper(getContext(), m));
-                            
+        return metaDataExtractionService
+                .extractPlaneMetaData(exp.getMetaDataSet())
+                .stream()
+                .map(m -> new PlaneMetaDataSetWrapper(getContext(), m));
+
     }
 
 }
