@@ -59,7 +59,7 @@ import org.scijava.ui.UIService;
  * @author Cyril MONGIS
  */
 @Plugin(type = UiPlugin.class)
-@UiConfiguration(id = "console-plugin", context = "always", localization = Localization.TOP_RIGHT)
+@UiConfiguration(id = "console-plugin", context = "debug", localization = Localization.TOP_RIGHT)
 public class ConsoleUIPlugin implements UiPlugin {
 
     @FXML

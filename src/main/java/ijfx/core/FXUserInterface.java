@@ -208,7 +208,10 @@ public class FXUserInterface extends Application implements UserInterface {
 
     public void onAllUiPluginLoaded(Collection<UiPlugin> plugins) {
         uiContextService.enter("imagej", "visualize", "always");
-
+        
+        if(new File("./src").exists()) {
+            uiContextService.enter("debug");
+        }
         activityService.open(DisplayContainer.class);
         ImageJFX.getThreadPool().submit(uiContextService::update);
         logger.info("Initialization finished");
