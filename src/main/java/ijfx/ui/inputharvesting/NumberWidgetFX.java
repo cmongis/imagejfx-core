@@ -57,7 +57,9 @@ public class NumberWidgetFX extends AbstractFXInputWidget<Number> implements Num
     }
 
     public Number check(Number number, Number def) {
-
+        if(number == null) {
+            number = def;
+        }
         if (number.intValue() == Integer.MIN_VALUE
                 || number.intValue() == Integer.MAX_VALUE
                 || number.doubleValue() == Double.MIN_VALUE
@@ -73,7 +75,7 @@ public class NumberWidgetFX extends AbstractFXInputWidget<Number> implements Num
         super.set(model);
 
         Number min = check(model.getMin(),0);
-        Number max = check(model.getMax(),100);
+        Number max = check(model.getMax(),10000);
 
        
         Number stepSize = check(model.getStepSize(),1);

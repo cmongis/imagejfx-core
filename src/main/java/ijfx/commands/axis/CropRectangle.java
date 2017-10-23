@@ -41,7 +41,7 @@ import org.scijava.plugin.Plugin;
  *
  * @author cyril
  */
-@Plugin(type = Command.class, label = "Crop Rectangle...", menuPath = "Image > Crop FX...")
+@Plugin(type = Command.class, label = "Crop Rectangle...", menuPath = "Image > Crop FX...",initializer = "init")
 public class CropRectangle extends ContextCommand {
 
     @Parameter
