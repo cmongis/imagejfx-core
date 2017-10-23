@@ -121,9 +121,15 @@ public class DefaultFolderManagerService extends AbstractService implements Fold
 
     @Override
     public Folder addFolder(File file) {
-        Folder f = new DefaultFolder(file);
-        context.inject(f);
-        return addFolder(f);
+        Folder folder = null;
+        if (file.isDirectory()) {
+            folder = new DefaultFolder(context, file);
+        } else if (file.getName().endsWith(ExplorableIOService.DB_EXTENSION)) {
+            folder = new DatabaseFolder(context, file);
+        } else {
+            throw new IllegalArgumentException("File should be a directory or Database file.");
+        }
+        return addFolder(folder);
     }
 
     protected Folder addFolder(Folder f) {
@@ -282,8 +288,7 @@ public class DefaultFolderManagerService extends AbstractService implements Fold
             }
             Folder folder;
             if (file.isDirectory()) {
-                folder = new DefaultFolder(file);
-                context.inject(folder);
+                folder = new DefaultFolder(context,file);
                 folderList.add(folder);
 
             } else if (file.getName().endsWith(ExplorableIOService.DB_EXTENSION)) {

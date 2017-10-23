@@ -20,14 +20,13 @@
 package ijfx.commands.explorable;
 
 import ijfx.core.io.ExplorableIOService;
+import ijfx.explorer.core.FolderManagerService;
 import ijfx.explorer.datamodel.Explorable;
 import java.io.File;
 import java.util.List;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.DialogPrompt;
-import org.scijava.ui.UIService;
 import org.scijava.widget.FileWidget;
 
 /**
@@ -44,17 +43,16 @@ public class SaveAsDatabase extends AbstractExplorableDisplayCommand{
     @Parameter
     ExplorableIOService explorableIOService;
     
-   
+    @Parameter
+    FolderManagerService folderManagerService;
     
     @Override
     public void run(List<? extends Explorable> items) throws Exception {
         
         if(outputFile == null) return;
-        
-        
-        
+
         explorableIOService.saveAll(items, outputFile);
-        
+        folderManagerService.addFolder(outputFile);
         uiService.showDialog("Database exported successfully", DialogPrompt.MessageType.INFORMATION_MESSAGE);
         
     }

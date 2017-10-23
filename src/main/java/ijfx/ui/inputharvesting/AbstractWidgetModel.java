@@ -302,6 +302,11 @@ public abstract class AbstractWidgetModel implements WidgetModel {
         return this;
     }
     public AbstractWidgetModel setChoices(List<?> choices) {
+        
+        if(choices == null) {
+            return this;
+        }
+        
         this.choices.addAll(choices.stream().map(o->o.toString()).collect(Collectors.toList()));
         return this;
     }

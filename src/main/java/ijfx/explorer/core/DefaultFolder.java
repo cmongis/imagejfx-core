@@ -106,11 +106,9 @@ public class DefaultFolder implements Folder, FileChangeListener {
     
     Property<Task> currentTaskProperty = new SimpleObjectProperty<>();
 
-    public DefaultFolder() {
-
-    }
-
-    public DefaultFolder(File file) {
+    
+    public DefaultFolder(Context context, File file) {
+        context.inject(this);
         setPath(file.getAbsolutePath());
     }
 
