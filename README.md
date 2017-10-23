@@ -19,13 +19,13 @@ ImageJ1 Scripts or plugins.
 I would recommend you to install it on a separate Fiji / ImageJ2 installation
 installation
 
-## Installation
+## 1. Installation
 
 For testing, download the [latest version of Fiji](http://fiji.sc/#download) and run
 it. You must now install the ImageJ-FX repository in order to receive to download
 its latest version through the official ImageJ update system.
 
-### Easy update site installation
+#### 1.1 Easy update site installation
 
 Download [this script](https://github.com/cmongis/imagejfx-core/raw/master/install-ijfx.js)
  and drag it into Fiji's window. A script window will open. 
@@ -35,7 +35,7 @@ jar files to install. Click on "*Apply all changes*".
 Once the process over, close Fiji and restart the program.
 ImageJ-FX should open.
 
-### Manual Update site installation
+#### 1.2 Manual Update site installation
 
 Open Fiji and go to "*Help > Update...*". This will launch
 the update process. Once the process over, you should
@@ -48,7 +48,7 @@ of the classical user interface.
 
 
 
-## Missing important features in ImageJ-FX
+## 3. Missing  features
 
 *	ImageJ1 Plugin support and installation
 *	3D support
@@ -56,7 +56,7 @@ of the classical user interface.
 
 
 
-## License
+## 4. License
 ImageJ FX is a user interface running on top of ImageJ and written in Java using the JavaFX technology. 
  
 Copyright (C) 2015  Cyril MONGIS
