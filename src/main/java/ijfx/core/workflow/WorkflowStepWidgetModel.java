@@ -58,6 +58,7 @@ public class WorkflowStepWidgetModel<T> extends SuppliedWidgetModel<T> {
         if (moduleInfo != null) {
             setType(moduleInfo.getInput(key).getType());
             ModuleItem<?> inputInfo = moduleInfo.getInput(key);
+            if(inputInfo == null) return;
             this
                     .setWidgetStyle(inputInfo.getWidgetStyle())
                     .setLabel(key)
