@@ -40,6 +40,7 @@ public class ActivateDebugMode extends ContextCommand{
     @Override
     public void run() {
         uiContextService.toggleContext(DEBUG_CONTEXT, !uiContextService.isCurrent(DEBUG_CONTEXT));
+        uiContextService.update();
     }
     
     
