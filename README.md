@@ -1,25 +1,12 @@
-# ImageJFX Core
-
-
-
-
-
-This package contains the core elements of ImageJ-FX which are : 
-
-* the JavaFX UI elements
-* the UiContext Service
-* the UiPlugins
-
 ## Be Aware
-
-Before you install ImageJ-FX, please be aware that ImageJ-FX
+Before you install **ImageJ-FX**, please be aware that ImageJ-FX
 still remains on a experimental state and does not support
 ImageJ1 Scripts or plugins.
 
 I would recommend you to install it on a separate Fiji / ImageJ2 installation
 installation
 
-## 1. Installation
+### 1. Installation
 
 For testing, download the [latest version of Fiji](http://fiji.sc/#download) and run
 it. You must now install the ImageJ-FX repository in order to receive to download
@@ -48,7 +35,7 @@ of the classical user interface.
 
 
 
-## 3. Missing  features
+### 3. Missing  features
 
 *	ImageJ1 Plugin support and installation
 *	3D support
@@ -56,7 +43,7 @@ of the classical user interface.
 
 
 
-## 4. License
+### 4. License
 ImageJ FX is a user interface running on top of ImageJ and written in Java using the JavaFX technology. 
  
 Copyright (C) 2015  Cyril MONGIS
