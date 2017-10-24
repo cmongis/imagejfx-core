@@ -9,8 +9,8 @@ installation
 ### 1. Installation
 
 For testing, download the [latest version of Fiji](http://fiji.sc/#download) and run
-it. You must now install the ImageJ-FX repository in order to receive to download
-its latest version through the official ImageJ update system.
+it. You must now install the ImageJ-FX repository in order to download the latest ImageJ-FX version and
+receive occasional updates.
 
 #### 1.1 Easy update site installation
 
