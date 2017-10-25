@@ -50,12 +50,10 @@ import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.util.Duration;
 import mongis.utils.FXUtilities;
@@ -65,12 +63,13 @@ import net.imglib2.display.ColorTable;
 import net.mongis.usage.UsageLocation;
 import org.controlsfx.control.RangeSlider;
 import org.scijava.Context;
-import org.scijava.command.Command;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
 import ijfx.core.uiplugin.UiCommand;
 import ijfx.core.uiplugin.UiCommandService;
 import ijfx.ui.utils.FXUtils;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 
 /**
  *
@@ -118,10 +117,10 @@ public class ImageDisplayAdjuster extends BorderPane {
 
     @Parameter
     UiCommandService uiActionService;
-    
+
     @Parameter
     FXUiCommandService fxUiActionService;
-    
+
     private HoverDescriptionBinding descriptionBinding;
 
     public ImageDisplayAdjuster(Context context) {
@@ -140,12 +139,30 @@ public class ImageDisplayAdjuster extends BorderPane {
                 .bind(descriptionBinding.isActive(), descriptionLabel.prefHeightProperty())
                 .setDuration(Duration.millis(200));
 
-        
-        
         init();
 
     }
 
+    private void onMinDatasetValueChanged(Observable obs, Number oldValue, Number newValue) {
+        
+        if(newValue.doubleValue() > rangeSlider.getMax()) {
+            rangeSlider.setMax(newValue.doubleValue());
+        }
+        rangeSlider.setMin(newValue.doubleValue());
+        
+    }
+    
+    
+
+    private void onMaxDatasetValueChanged(Observable obs, Number oldValue, Number newValue) {
+        
+        if(newValue.doubleValue() < rangeSlider.getMin()) {
+            rangeSlider.setMin(newValue.doubleValue());
+        }
+        rangeSlider.setMax(newValue.doubleValue());
+        
+    }
+    
     public Property<FXImageDisplay> imageDisplayProperty() {
         return imageDisplayProperty;
     }
@@ -161,10 +178,18 @@ public class ImageDisplayAdjuster extends BorderPane {
 
     private void startListening(FXImageDisplay view) {
 
-        rangeSlider.minProperty().bind(Bindings.multiply(view.datasetMinProperty(),0.77));
-        rangeSlider.maxProperty().bind(Bindings.multiply(view.datasetMaxProperty(),1.33));
-        rangeSlider.highValueProperty().bindBidirectional(view.currentLUTMaxProperty());
-        rangeSlider.lowValueProperty().bindBidirectional(view.currentLUTMinProperty());
+        DependantBirectionalBinding<Number> maxDependantBirectionalBinding = new DependantBirectionalBinding<>(rangeSlider.highValueProperty(), view.currentLUTMaxProperty(), rangeSlider.highValueChangingProperty());
+        DependantBirectionalBinding<Number> minDependantBirectionalBinding = new DependantBirectionalBinding<>(rangeSlider.lowValueProperty(), view.currentLUTMinProperty(), rangeSlider.lowValueChangingProperty());
+
+        view.datasetMinProperty().addListener(this::onMinDatasetValueChanged);
+        view.datasetMaxProperty().addListener(this::onMaxDatasetValueChanged);
+        //rangeSlider.maxProperty().bind(Bindings.multiply(view.datasetMaxProperty(), 1.33));
+        
+        minDependantBirectionalBinding.refresh();
+        maxDependantBirectionalBinding.refresh();
+        
+        //rangeSlider.highValueProperty().bindBidirectional(view.currentLUTMaxProperty());
+        //rangeSlider.lowValueProperty().bindBidirectional(view.currentLUTMinProperty());
 
         comboBox.valueProperty().bindBidirectional(view.currentLUTProperty());
     }
@@ -172,8 +197,8 @@ public class ImageDisplayAdjuster extends BorderPane {
     private void stopListening(FXImageDisplay view) {
         rangeSlider.minProperty().unbind();
         rangeSlider.maxProperty().unbind();
-        rangeSlider.highValueProperty().unbindBidirectional(view.currentLUTMaxProperty());
-        rangeSlider.lowValueProperty().unbindBidirectional(view.currentLUTMinProperty());
+        //rangeSlider.highValueProperty().unbindBidirectional(view.currentLUTMaxProperty());
+        //rangeSlider.lowValueProperty().unbindBidirectional(view.currentLUTMinProperty());
         comboBox.valueProperty().unbindBidirectional(view.currentLUTProperty());
     }
 
@@ -182,7 +207,7 @@ public class ImageDisplayAdjuster extends BorderPane {
         rangeSlider = new RangeSlider();
 
         contentBorderPane.setTop(rangeSlider);
-        
+
         Usage.listenSwitch(rangeSlider.lowValueChangingProperty(), "Chaneing Low value", CHANNEL_ADJUSTER);
         Usage.listenSwitch(rangeSlider.highValueChangingProperty(), "Changing high value", CHANNEL_ADJUSTER);
 
@@ -221,70 +246,35 @@ public class ImageDisplayAdjuster extends BorderPane {
         Bindings.bindBidirectional(maxValueTextField.textProperty(), rangeSlider.highValueProperty(), smartNumberStringConverter);
 
         channelSlider.setVisible(false);
-        
-        
+
         initActions();
 
     }
 
     public void refresh() {
-        
+
     }
-    
+
     private void initActions() {
-        
+
         List<UiCommand<ImageDisplayAdjuster>> actions = uiActionService.getAssociatedAction(ImageDisplayAdjuster.class);
-        
+
         int len = actions.size();
         int limit = len > 3 ? 3 : len;
         final ImageDisplayAdjuster me = this;
         actions
-                    .subList(0, limit)
-                    .stream()
-                    .map(action->fxUiActionService.createButton(action, me))
-                    .collect(Collectors.toCollection(toolbar::getItems));
-        
-        if(len > limit) {
+                .subList(0, limit)
+                .stream()
+                .map(action -> fxUiActionService.createButton(action, me))
+                .collect(Collectors.toCollection(toolbar::getItems));
+
+        if (len > limit) {
             actions
                     .subList(limit, len)
                     .stream()
-                    .map(action->fxUiActionService.createMenuItem(action, me))
-                    
+                    .map(action -> fxUiActionService.createMenuItem(action, me))
                     .collect(Collectors.toCollection(moreMenuButton::getItems));
 
-        }
-       
-        
-    }
-    
-    private List<LUTView> generateLUTViews() {
-
-        return displayRangeService.availableColorTableProperty()
-                .stream()
-                .map(LUTView::new)
-                .collect(Collectors.toList());
-
-    }
-
-    private class StaticLabelCell<T> extends ListCell<T> {
-
-        final String text;
-
-        final Label label;
-
-        public StaticLabelCell(String text) {
-            this.text = text;
-            label = new Label(text);
-            setGraphic(label);
-
-            itemProperty().addListener(this::onItemChanged);
-
-            setContentDisplay(ContentDisplay.TEXT_ONLY);
-
-        }
-
-        private void onItemChanged(Observable obs, T oldValue, T newValue) {
-            setGraphic(label);
         }
 
     }
@@ -301,11 +291,11 @@ public class ImageDisplayAdjuster extends BorderPane {
 
             itemProperty().addListener(this::onItemChanged);
 
-            comboBox.widthProperty().addListener((obs,oldValue,newValue)->{
-            
+            comboBox.widthProperty().addListener((obs, oldValue, newValue) -> {
+
                 updateGraphics(itemProperty().getValue());
             });
-            
+
         }
 
         private void onItemChanged(Observable obs, ColorTable oldValue, ColorTable newValue) {
@@ -313,7 +303,7 @@ public class ImageDisplayAdjuster extends BorderPane {
         }
 
         private void updateGraphics(ColorTable newValue) {
-            if(newValue == null || getLUTWidth() <= 0) {
+            if (newValue == null || getLUTWidth() <= 0) {
                 setGraphic(null);
                 return;
             }
@@ -321,62 +311,10 @@ public class ImageDisplayAdjuster extends BorderPane {
         }
     }
 
-    private class LUTView {
-
-        private final ColorTable colorTable;
-
-        public LUTView(ColorTable colorTable) {
-            this.colorTable = colorTable;
-        }
-
-        public ColorTable getColorTable() {
-            return colorTable;
-        }
-
-        @Override
-        public boolean equals(Object table) {
-
-            if (table instanceof ColorTable == false) {
-                return false;
-            }
-
-            ColorTable table2 = (ColorTable) table;
-
-            return compare(getColorTable(), table2);
-
-        }
-
-        private boolean compare(ColorTable table1, ColorTable table2) {
-
-            if (table1.getLength() != table2.getLength()) {
-                return false;
-            }
-
-            for (int i = 0; i != table1.getLength(); i++) {
-                for (int c = 0; c != 3; c++) {
-
-                    if (table1.get(c, i) != table2.get(c, i)) {
-                        return false;
-                    }
-
-                }
-            }
-            return true;
-
-        }
-
-    }
-
     public ReadOnlyBooleanProperty inUseProperty() {
         return inUseProperty;
     }
 
-    
-    private void listenButton(Button item) {
-         descriptionBinding.bind(item, item.getTooltip().getText());
-         Usage.listenButton(item, CHANNEL_ADJUSTER, item.getText());
-    }
-    
     public ImageDisplayAdjuster addButton(String name, FontAwesomeIcon icon, String description, EventHandler<ActionEvent> runnable) {
 
         Button item = new Button(name, GlyphsDude.createIcon(icon));
@@ -391,56 +329,9 @@ public class ImageDisplayAdjuster extends BorderPane {
 
         return this;
     }
+
     public int getCurrentChannel() {
         return imageDisplayProperty.getValue().getCurrentChannel();
-    }
-
-    
-    /**
-    public ImageDisplayAdjuster addButton(String name, FontAwesomeIcon icon, String description, Class<? extends Command> module, Object... parameters) {
-
-        return addButton(name, icon, description, event -> {
-            commandService.run(module, true, parameters);
-        });
-    }
-
-    public ImageDisplayAdjuster addAction(String name, FontAwesomeIcon icon, String description, Class<? extends Command> module, Object... parameters) {
-
-        // initializing the menu item
-        final MenuItem item = new MenuItem(name, GlyphsDude.createIcon(icon));
-
-        //final HoverListener hoverListener = new HoverListener(item);
-        // binding the description of the item to the description displayer
-        //descriptionBinding.bind(hoverListener, description);
-        item.setOnAction(event -> {
-            commandService.run(module, true, parameters);
-        });
-
-        // adidng usage gathering
-        Usage.listenClick(item, CHANNEL_ADJUSTER);
-
-        moreMenuButton.getItems().add(item);
-
-        return this;
-    }*/
-
-    // Helper class that indicate when the mouse hovers an menu item
-    private class HoverListener extends SimpleBooleanProperty {
-
-        public HoverListener(MenuItem item) {
-            super(false);
-            //item.addEventHandler(MouseEvent., this::onMouseEntered);
-            //item.addEventHandler(MouseEvent.MOUSE_EXITED_TARGET, this::onMouseExited);
-        }
-
-        private void onMouseEntered(MouseEvent event) {
-            setValue(true);
-        }
-
-        private void onMouseExited(MouseEvent event) {
-            setValue(false);
-        }
-
     }
 
     private class HoverDescriptionBinding {

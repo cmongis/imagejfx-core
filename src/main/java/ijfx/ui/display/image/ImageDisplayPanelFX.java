@@ -574,7 +574,7 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
                 button.imageDisplayProperty().setValue(display);
                 button.channelProperty().set(channel);
                 buttonHBox.getChildren().add(button);
-                
+                button.refresh();
                
             }
 

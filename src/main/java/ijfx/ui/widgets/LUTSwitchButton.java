@@ -221,7 +221,7 @@ public class LUTSwitchButton extends Button {
 
     private void setAsCurrentChannel() {
         getDisplay().setCurrentChannel(getChannelId());
-        getDisplay().updateAsync();
+       // getDisplay().updateAsync();
     }
 
     private Boolean isCurrentChannel() {
@@ -304,6 +304,11 @@ public class LUTSwitchButton extends Button {
 
     private Double getRectangleSize() {
         return isCurrentChannel() && isSelected() ? RECTANGLE_SIZE_WHEN_CURRENT_CHANNEL : RECTANGLE_SIZE;
+    }
+    
+    public void refresh() {
+        channelActivatedProperty.getValue();
+        channelSelectedProperty.getValue();
     }
 
 }

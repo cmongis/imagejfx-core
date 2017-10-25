@@ -50,7 +50,7 @@ public class DisplayRangeService extends AbstractService implements IjfxService 
 
     private static final String MINIMUM = "minimum";
     private static final String MAXIMUM = "maximum";
-    private final DefaultUUIDMap<Double> datasetChannelMin = new DefaultUUIDMap();
+    private final DefaultUUIDMap<Double> datasetChannelMinMax = new DefaultUUIDMap();
 
     ObservableList<ColorTable> colorTableList;
 
@@ -87,7 +87,7 @@ public class DisplayRangeService extends AbstractService implements IjfxService 
         if (dataset.getType().getBitsPerPixel() <= 8) {
             return 0;
         }
-        return datasetChannelMin.key(dataset, channel, MINIMUM).getOrPut(dataset.getChannelMinimum(channel));
+        return datasetChannelMinMax.key(dataset, channel, MINIMUM).getOrPut(dataset.getChannelMinimum(channel));
     }
 
     public Number getDatasetMaximum(Dataset dataset, int channel) {
@@ -100,7 +100,7 @@ public class DisplayRangeService extends AbstractService implements IjfxService 
         if (dataset.getType().getBitsPerPixel() == 8) {
             return 255;
         }
-        return datasetChannelMin.key(dataset, channel, MAXIMUM).getOrPut(dataset.getChannelMaximum(channel));
+        return datasetChannelMinMax.key(dataset, channel, MAXIMUM).getOrPut(dataset.getChannelMaximum(channel));
     }
 
     private ColorTable loadLUT(URL url) {
@@ -112,11 +112,11 @@ public class DisplayRangeService extends AbstractService implements IjfxService 
     }
 
     public void saveDatasetMinimum(Dataset dataset, int channel, double value) {
-        datasetChannelMin.key(dataset, channel, MINIMUM).put(value);
+        datasetChannelMinMax.key(dataset, channel, MINIMUM).put(value);
     }
 
     public void saveDatasetMaximum(Dataset dataset, int channel, double value) {
-        datasetChannelMin.key(dataset, channel, MAXIMUM).put(value);
+        datasetChannelMinMax.key(dataset, channel, MAXIMUM).put(value);
     }
 
     public ColorTable getEquivalentTable(ColorTable table) {
