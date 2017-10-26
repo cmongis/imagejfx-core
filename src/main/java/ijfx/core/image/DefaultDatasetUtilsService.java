@@ -379,7 +379,7 @@ public class DefaultDatasetUtilsService extends AbstractService implements Datas
         config.imgOpenerSetComputeMinMax(false);
         config.imgOpenerSetOpenAllImages(false);
         config.groupableSetGroupFiles(false);
-
+        
         final ImgOpener imageOpener = new ImgOpener(getContext());
 
         try {
