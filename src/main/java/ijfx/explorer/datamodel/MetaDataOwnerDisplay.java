@@ -70,6 +70,21 @@ public class MetaDataOwnerDisplay extends AbstractDisplay<MetaDataOwnerList>{
        return get(0).addAll(list);
     }
     
+    @Override
+    public boolean canDisplay(Class<?> type) {
+        return super.canDisplay(type) || type.isAssignableFrom(MetaDataSet.class);
+    }
+    
+    @Override
+    public void display(Object object) {
+        if(object != null && object.getClass().isAssignableFrom(MetaDataSet.class)) {
+            this.add((MetaDataSet)object);
+        }
+        else {
+            super.display(object);
+        }
+    }
+    
     
     
 }

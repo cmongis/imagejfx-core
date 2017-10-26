@@ -20,6 +20,8 @@
 package ijfx.ui.display.image;
 
 import ijfx.core.image.DisplayRangeService;
+import ijfx.core.timer.Timer;
+import ijfx.core.timer.TimerService;
 import ijfx.core.utils.AxisUtils;
 import ijfx.ui.main.ImageJFX;
 import java.util.concurrent.ExecutorService;
@@ -65,6 +67,9 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
     @Parameter
     private DisplayRangeService displayRangeService;
 
+    @Parameter
+    private TimerService timerService;
+    
     /*
         Properties
      */
@@ -89,7 +94,9 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
     private final ExecutorService refreshThread = Executors.newFixedThreadPool(1);
 
     private final Boolean updateLock = Boolean.TRUE;
-
+    
+    
+    
     public DefaultFXImageDisplay() {
         super();
 
@@ -113,8 +120,12 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
     public void updateAsync() {
         refreshThread.execute(() -> {
             if(getDatasetView() == null) return;
+            Timer timer = timerService.getTimer(FXImageDisplay.class);
+            timer.start();
             getDatasetView().getProjector().map();
+           
             update();
+            timer.elapsed("projection");
         });
     }
 

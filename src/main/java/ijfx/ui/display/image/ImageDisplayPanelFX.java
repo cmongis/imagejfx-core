@@ -19,12 +19,15 @@
  */
 package ijfx.ui.display.image;
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import ijfx.core.image.DisplayRangeService;
+import ijfx.core.metadata.MetaDataSet;
 import ijfx.core.overlay.OverlayDrawingService;
 import ijfx.core.overlay.OverlayUtilsService;
 import ijfx.core.timer.Timer;
 import ijfx.core.timer.TimerService;
 import ijfx.core.uicontext.UiContextService;
+import ijfx.explorer.datamodel.MetaDataOwnerDisplay;
 import ijfx.ui.display.overlay.MoveablePoint;
 import ijfx.ui.display.overlay.OverlayModifier;
 import ijfx.ui.display.tool.HandTool;
@@ -73,9 +76,11 @@ import net.imglib2.type.numeric.RealType;
 import org.reactfx.EventStreams;
 import org.scijava.Context;
 import org.scijava.display.Display;
+import org.scijava.display.DisplayService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.tool.ToolService;
+import org.scijava.ui.UIService;
 import org.scijava.ui.viewer.DisplayWindow;
 import org.scijava.util.RealCoords;
 
@@ -126,32 +131,37 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
         Services
      */
     @Parameter
-    TimerService timerService;
+    private TimerService timerService;
 
     @Parameter
-    ImageDisplayService imageDisplayService;
+    private ImageDisplayService imageDisplayService;
 
     @Parameter
-    ToolService toolService;
+    private ToolService toolService;
 
     @Parameter
-    Context context;
+    private Context context;
 
     @Parameter
-    OverlayDrawingService overlayDrawingService;
+    private OverlayDrawingService overlayDrawingService;
 
     @Parameter
-    OverlayUtilsService overlayUtilsService;
+    private OverlayUtilsService overlayUtilsService;
 
     @Parameter
-    OverlayService overlayService;
+    private OverlayService overlayService;
     
     @Parameter
-    UiContextService uiContextService;
+    private UiContextService uiContextService;
 
     @Parameter
-    DisplayRangeService displayRangeService;
+    private DisplayRangeService displayRangeService;
     
+    @Parameter
+    private DisplayService displayService;
+    
+    @Parameter
+    private UIService uiService;
     
     /*
         Drawing related
@@ -184,8 +194,23 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
 
     private final BooleanProperty anyAxisSliderInUse = new SimpleBooleanProperty(true);
 
+    private final MetaDataSet debugInfos = new MetaDataSet();
     
+    private Display debugInfosDisplay = null;
     
+    /*
+        Debug INFO keys
+    */
+    
+    public static final String SX = "Camera X";
+    public static final String SY = "Camera Y";
+    public static final String CANVAS_WIDTH = "Camera Width";
+    public static final String CANVAS_HEIGHT = "Camera Height";
+    
+    public static final String ZOOM = "Zoom level";
+    
+    public static final String VIEWPORT_WIDTH = "Viewport width";
+    public static final String VIEWPORT_HEIGHT = "Viewport height";
     
     public ImageDisplayPanelFX() {
 
@@ -260,6 +285,8 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
         //.addAction("Spread the settings of this channel...",FontAwesomeIcon.UPLOAD,"Copy the color settings of this channel and apply it to all open images.",SpreadCurrentChannelSettings.class)
         //.addAction("Spread all channels settings...",FontAwesomeIcon.UPLOAD,"Take the color settings of each channels and apply it to all opened images.",SpreadChannelSettings.class);;
         // adjuster.datasetViewProperty().setValue((DefaultFXImageDisplay)display);
+        
+       // adjuster.addButton("Debug infos", FontAwesomeIcon.COG, null, event->displayDebugInfos());
         packed = true;
 
     }
@@ -486,13 +513,21 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
         RealCoords center = viewport.getPanCenter();
         
         double zoomFactor = viewport.getZoomFactor();
-
-        final double sx = center.x - (viewport.getViewportWidth() / 2 / zoomFactor);
-        final double sy = center.y - (viewport.getViewportHeight() / 2 / zoomFactor);
+        
+        
+        
+        double sx = center.x - (viewport.getViewportWidth() / 2 / zoomFactor);
+        double sy = center.y - (viewport.getViewportHeight() / 2 / zoomFactor);
 
         final double sw = 1.0 * viewport.getViewportWidth() / zoomFactor;
         final double sh = 1.0 * viewport.getViewportHeight() / zoomFactor;
 
+        if(sx < 0 ) {
+            sx = 0;
+        }
+        if(sy < 0) {
+            sy = 0;
+        }
        
         // the target image (which is the canvas itself
         final double tx = 0;
@@ -500,6 +535,16 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
         final double tw = canvas.getWidth();
         final double th = canvas.getHeight();
 
+        
+        debugInfos.putGeneric(SX,sx);
+        debugInfos.putGeneric(SY,sy);
+        debugInfos.putGeneric(VIEWPORT_WIDTH,sw);
+        debugInfos.putGeneric(VIEWPORT_HEIGHT,sh);
+        debugInfos.putGeneric(CANVAS_WIDTH,tw);
+        debugInfos.putGeneric(CANVAS_HEIGHT,th);
+        
+        ImageJFX.getThreadQueue().submit(this::refreshDebugInfos);
+        
         canvas.getGraphicsContext2D().clearRect(0, 0, tw, th);
         // drawing the part of the image seen by the camera into
         // the canvas
@@ -639,5 +684,27 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
         }
         modifier.refresh();
     }
-   
+    
+    
+    public MetaDataSet getDebugInfos() {
+        return debugInfos;
+    }
+    
+    public Display displayDebugInfos() {
+        
+       debugInfosDisplay =  displayService.createDisplay(debugInfos);
+       
+       uiService.show(debugInfosDisplay);
+       
+        return debugInfosDisplay;
+    }
+    
+    public void refreshDebugInfos() {
+        if(debugInfosDisplay != null) {
+            debugInfosDisplay.update();
+        }
+    }
+    
+    
+    
 }
