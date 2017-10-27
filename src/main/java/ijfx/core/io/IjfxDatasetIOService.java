@@ -107,7 +107,7 @@ public class IjfxDatasetIOService extends DefaultDatasetIOService implements Ijf
 
             config.imgOpenerSetImgFactoryHeuristic(new CellImgFactoryHeuristic());
             config.imgOpenerSetComputeMinMax(false);
-            //config.imgOpenerSetOpenAllImages(false);
+            config.imgOpenerSetOpenAllImages(false);
             config.groupableSetGroupFiles(false);
             statusService.showStatus(String.format("Image bigger than %d MB. Opening as virtual...", SIZE_THRESHOLD));
         }
@@ -116,8 +116,9 @@ public class IjfxDatasetIOService extends DefaultDatasetIOService implements Ijf
         Metadata parse = null;
 
         try {
-            
+
             parse = scifio.format().getFormat(source).createParser().parse(source);
+
         } catch (Exception e) {
             try {
                 logger.info("Parsing using BioFormatsFormat");
@@ -132,17 +133,17 @@ public class IjfxDatasetIOService extends DefaultDatasetIOService implements Ijf
             throw new IOException(source);
         }
         statusService.showStatus("Opening image " + file.getName() + "...");
-        logger.info("Loading dataset "+file.getName());
+        logger.info("Loading dataset " + file.getName());
         if (parse.getImageCount() == 1) {
-           
-            Dataset dataset =  super.open(source,config);
+
+            Dataset dataset = super.open(source, config);
             timer.elapsed("loading dataset");
             return dataset;
         } else {
-            logger.info(String.format("Multiserieis opening for %s",file.getName()));
+            logger.info(String.format("Multiserieis opening for %s", file.getName()));
             config.imgOpenerSetOpenAllImages(true);
             config.imgOpenerSetRange(new Range((long) 0, new Long(parse.getImageCount() - 1)));
-            Dataset dataset =  open(source, config);
+            Dataset dataset = open(source, config);
             timer.elapsed("loading dataset");
             return dataset;
         }
