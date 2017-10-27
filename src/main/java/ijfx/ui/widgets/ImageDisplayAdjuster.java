@@ -180,11 +180,15 @@ public class ImageDisplayAdjuster extends BorderPane {
 
         DependantBirectionalBinding<Number> maxDependantBirectionalBinding = new DependantBirectionalBinding<>(rangeSlider.highValueProperty(), view.currentLUTMaxProperty(), rangeSlider.highValueChangingProperty());
         DependantBirectionalBinding<Number> minDependantBirectionalBinding = new DependantBirectionalBinding<>(rangeSlider.lowValueProperty(), view.currentLUTMinProperty(), rangeSlider.lowValueChangingProperty());
-
+        
         view.datasetMinProperty().addListener(this::onMinDatasetValueChanged);
         view.datasetMaxProperty().addListener(this::onMaxDatasetValueChanged);
         //rangeSlider.maxProperty().bind(Bindings.multiply(view.datasetMaxProperty(), 1.33));
         
+        rangeSlider.setLowValue(view.getCurrentLUTMin());
+        rangeSlider.setHighValue(view.getCurrentLUTMax());
+        rangeSlider.setMin(view.getDatasetMin());
+        rangeSlider.setMax(view.getDatasetMax());
         minDependantBirectionalBinding.refresh();
         maxDependantBirectionalBinding.refresh();
         
