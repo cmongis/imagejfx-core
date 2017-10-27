@@ -62,6 +62,7 @@ import mongis.utils.animation.Animations;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import ijfx.core.uiplugin.UiCommand;
+import ijfx.ui.loading.LoadingScreenService;
 import ijfx.ui.main.ImageJFX;
 import java.io.File;
 import java.time.Duration;
@@ -75,6 +76,8 @@ import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.TransferMode;
 import mongis.utils.FXUtilities;
 import mongis.utils.bindings.TransitionBinding;
+import mongis.utils.task.FluentTask;
+import mongis.utils.task.ProgressHandler;
 import org.reactfx.Change;
 import org.reactfx.EventStreams;
 import org.scijava.ui.dnd.DragAndDropService;
@@ -144,7 +147,7 @@ public class DefaultMainWindow implements MainWindow {
     private LoadingPopup loadingPopup;
 
     private HintDisplayer hintDisplayer;
-    
+
     @Parameter
     UiContextService uiContextService;
 
@@ -165,12 +168,15 @@ public class DefaultMainWindow implements MainWindow {
 
     @Parameter
     DragAndDropService dragAndDropService;
-    
+
+    @Parameter
+    LoadingScreenService loadingScreenService;
+
     /**
      * Represents the displayed description
      */
     private final StringProperty currentDescription = new SimpleStringProperty(null);
-    
+
     /**
      * Represents temporary displayed description
      */
@@ -200,8 +206,6 @@ public class DefaultMainWindow implements MainWindow {
             mainBorderPane.setOpacity(1.0);
             mainBorderPane.setCenter(new Label("Loading..."));
 
-            
-
             getLoadingPopup().taskProperty().bind(taskList.foregroundTaskProperty());
             getLoadingPopup()
                     .setCanCancel(false)
@@ -212,28 +216,25 @@ public class DefaultMainWindow implements MainWindow {
 
             // configuring the description label
             descriptionLabel.textProperty().bind(currentDescription);
-            
-            
-            
+
             descriptionTransisiontBinding = new TransitionBinding<Number>(0, 70)
                     .bind(currentDescription.isNull(), descriptionLabel.translateYProperty());
             descriptionTransisiontBinding.onValueChanged(currentDescription, Boolean.FALSE, Boolean.FALSE);
-            
+
             // now we want to buffer fast change so only the last value is taken account
             // Only went the temporary description stop changing for 500 milliseconds,
             // the current description is updated with the last value
             EventStreams
                     .changesOf(temporaryDescription)
                     .successionEnds(Duration.ofMillis(150))
-                    .subscribe((Change<String> ch)->{
-                       currentDescription.setValue(ch.getNewValue());
+                    .subscribe((Change<String> ch) -> {
+                        currentDescription.setValue(ch.getNewValue());
                     });
-            
+
             currentDescription.setValue(null);
             configureSideBar(new SideBar());
-            
+
             hintDisplayer = new HintDisplayer(mainAnchorPane);
-            
 
         } catch (IOException ex) {
             Logger.getLogger(DefaultMainWindow.class.getName()).log(Level.SEVERE, "Error when loading the DefaultMainWindow FXML", ex);
@@ -373,7 +374,7 @@ public class DefaultMainWindow implements MainWindow {
 
     @Override
     public void displayNotification(Notification notification) {
-        
+
     }
 
     @Override
@@ -383,12 +384,12 @@ public class DefaultMainWindow implements MainWindow {
 
         final String label = SciJavaUtils.getLabel(action);
         final String description = SciJavaUtils.getDescription(action);
-        
+
         SideMenuButton sideMenuButton = new SideMenuButton(label, icon);
         sideMenuButton.setOnMouseClicked(event -> {
             action.run(this);
         });
-        
+
         uiCommandService.attacheDescription(sideMenuButton, description);
         sideBar.addButton(sideMenuButton);
     }
@@ -435,17 +436,29 @@ public class DefaultMainWindow implements MainWindow {
     public void onDragDropped(DragEvent event) {
         FXUtilities.toggleCssStyle(mainBorderPane, "drag-over", false);
 
-        Dragboard dragboard = event.getDragboard();
+        final Dragboard dragboard = event.getDragboard();
         if (dragboard.hasFiles()) {
 
-            dragboard.getFiles()
-                    .stream()
-                    .forEach((File f) -> {
-                        ImageJFX.getThreadPool().execute(() -> dragAndDropService.drop(f, null));
-                    });
+            new FluentTask<List<File>, Void>()
+                    .setInput(dragboard.getFiles())
+                    .consume(this::handleDroppedFiles)
+                    .setName("Please wait...")
+                    .start()
+                    .submit(loadingScreenService);
+
             event.setDropCompleted(true);
             event.consume();
         }
+    }
+
+    private void handleDroppedFiles(ProgressHandler handler, List<File> files) {
+        handler.setProgress(0.2);
+        files
+                .stream()
+                .forEach((File f) -> {
+                    ImageJFX.getThreadPool().execute(() -> dragAndDropService.drop(f, null));
+                });
+        handler.setProgress(1, 1);
     }
 
     @FXML

@@ -23,6 +23,7 @@ import io.scif.Metadata;
 import io.scif.config.SCIFIOConfig;
 import io.scif.img.ImgFactoryHeuristic;
 import io.scif.img.cell.SCIFIOCellImgFactory;
+import java.util.Arrays;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.type.NativeType;
@@ -39,7 +40,22 @@ public class CellImgFactoryHeuristic implements ImgFactoryHeuristic {
     
     @Override
     public <T extends NativeType<T>> ImgFactory<T> createFactory(Metadata mtdt, SCIFIOConfig.ImgMode[] ims, T t) throws IncompatibleTypeException {
-        return new SCIFIOCellImgFactory<>(10);
+        long[] axes= mtdt.get(0).getAxesLengths();
+        int[] sizes = new int[axes.length];
+        
+        
+        for(int i = 0;i!=axes.length;i++) {
+            if(i < 2) {
+                
+                sizes[i] = 10;
+            }
+            else {
+                sizes[i] = 1;
+            }
+            
+        }
+        
+        return new SCIFIOCellImgFactory<>(sizes);
     }
     
 }

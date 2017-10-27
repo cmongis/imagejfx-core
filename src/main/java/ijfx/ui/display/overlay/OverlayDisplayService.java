@@ -20,10 +20,14 @@
 package ijfx.ui.display.overlay;
 
 import ijfx.core.IjfxService;
+import ijfx.ui.display.image.CanvasListener;
 import ijfx.ui.main.ImageJFX;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.OverlayService;
 import net.imagej.overlay.Overlay;
 import org.scijava.Context;
 import org.scijava.plugin.Parameter;
@@ -31,6 +35,8 @@ import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
+import org.scijava.util.IntCoords;
+import org.scijava.util.RealCoords;
 
 /**
  *
@@ -47,6 +53,9 @@ public class OverlayDisplayService extends AbstractService implements IjfxServic
     @Parameter
     Context context;
 
+    @Parameter
+    OverlayService overlayService;
+    
     Logger logger = ImageJFX.getLogger();
     
     private final Map<Class<? extends Overlay>, OverlayDrawer> drawerMap = new HashMap<>();
@@ -98,6 +107,35 @@ public class OverlayDisplayService extends AbstractService implements IjfxServic
         } else {
             return drawerMap.get(overlay.getClass());
         }
+    }
+    
+    public boolean isOnOverlay(ImageDisplay display, double xOnCanvas, double yOnCanvas, Overlay overlay) {
+         OverlayDrawer drawer = getDrawer(overlay);
+
+        if (drawer == null) {
+            return false;
+        }
+
+        RealCoords onData = display.getCanvas().panelToDataCoords(new IntCoords(toInt(xOnCanvas), toInt(yOnCanvas)));
+
+        boolean result = drawer.isOnOverlay(overlay, onData.x, onData.y);
+        return result;
+    }
+    
+    
+    public Overlay findOverlay(ImageDisplay display, double xOnCanvas, double yOnCanvas) {
+        
+       return overlayService
+               .getOverlays(display)
+               .stream()
+               .filter(overlay->isOnOverlay(display, xOnCanvas, yOnCanvas, overlay))
+               .findFirst()
+               .orElse(null);
+        
+    }
+    
+    private int toInt(double d) {
+        return CanvasListener.toInt(d);
     }
 
 }

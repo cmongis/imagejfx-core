@@ -19,6 +19,7 @@
  */
 package ijfx.ui.display.tool;
 
+import ijfx.ui.display.image.ImageCanvasUtils;
 import ijfx.ui.main.ImageJFX;
 import java.util.List;
 import java.util.logging.Logger;
@@ -37,8 +38,8 @@ import org.scijava.util.RealCoords;
 public class RectangleTool extends AbstractPathTool<RectangleOverlay> {
 
     
-    
-   
+    private boolean move = false;
+       
     @Override
     protected void onPath(List<RealCoords> coords) {
         
@@ -62,9 +63,13 @@ public class RectangleTool extends AbstractPathTool<RectangleOverlay> {
         }
 
     }
+    
+
 
     @Override
     protected RectangleOverlay createOverlay() {
+        
+       
         return new RectangleOverlay(getContext());
     }
 

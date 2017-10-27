@@ -69,7 +69,7 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
 
     @Parameter
     private TimerService timerService;
-    
+
     /*
         Properties
      */
@@ -94,9 +94,7 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
     private final ExecutorService refreshThread = Executors.newFixedThreadPool(1);
 
     private final Boolean updateLock = Boolean.TRUE;
-    
-    
-    
+
     public DefaultFXImageDisplay() {
         super();
 
@@ -119,11 +117,13 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
 
     public void updateAsync() {
         refreshThread.execute(() -> {
-            if(getDatasetView() == null) return;
+            if (getDatasetView() == null) {
+                return;
+            }
             Timer timer = timerService.getTimer(FXImageDisplay.class);
             timer.start();
             getDatasetView().getProjector().map();
-           
+
             update();
             timer.elapsed("projection");
         });
@@ -155,12 +155,11 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
     @Override
     public void setCurrentLUTMin(double min) {
 
-      
         getDatasetView().setChannelRange(getCurrentChannel(), min, getCurrentLUTMax());
         getDataset().setChannelMinimum(getCurrentChannel(), min);
-          
+
         currentLUTMinProperty().fireValueChangedEvent();
-        
+
         updateAsync();
     }
 
@@ -180,12 +179,10 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
 
     @Override
     public void setCurrentLUTMax(double max) {
-        
-        
+
         getDatasetView().setChannelRange(getCurrentChannel(), getCurrentLUTMin(), max);
         getDataset().setChannelMaximum(getCurrentChannel(), max);
-     
-        
+
         currentLUTMaxProperty().fireValueChangedEvent();
         updateAsync();
     }
@@ -208,8 +205,6 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
     public double getDatasetMin() {
 
         double min = displayRangeService.getDatasetMinimum(getDatasetView().getData(), getCurrentChannel()).doubleValue();
-
-      
 
         return min;
 
@@ -254,8 +249,13 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
 
             setPosition(channel, Axes.CHANNEL);
 
-            
             updateAsync();
+        } else {
+            datasetMinProperty().fireValueChangedEvent();
+            datasetMaxProperty().fireValueChangedEvent();
+            currentLUTProperty().fireValueChangedEvent();
+            currentLUTMinProperty().fireValueChangedEvent();
+            currentLUTMaxProperty().fireValueChangedEvent();
         }
     }
 
@@ -264,11 +264,10 @@ public class DefaultFXImageDisplay extends DefaultImageDisplay implements FXImag
         super.setPosition(position, axisType);
         if (Axes.CHANNEL.equals(axisType)) {
             currentChannelProperty().fireValueChangedEvent();
-            
+
             datasetMinProperty().fireValueChangedEvent();
             datasetMaxProperty().fireValueChangedEvent();
-            
-            
+
             currentLUTProperty().fireValueChangedEvent();
             currentLUTMinProperty().fireValueChangedEvent();
             currentLUTMaxProperty().fireValueChangedEvent();

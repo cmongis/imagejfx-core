@@ -58,6 +58,10 @@ public abstract class AbstractPathTool<T extends Overlay> extends ReactiveTool {
     
     private final Executor executor = Executors.newFixedThreadPool(1);
     
+    private int lastPositionX = 0;
+    private int lastPositionY = 0;
+    
+    
     @Override
     void onStart() {
 
@@ -93,7 +97,7 @@ public abstract class AbstractPathTool<T extends Overlay> extends ReactiveTool {
 
     @Override
     public void onMouseDown(MsPressedEvent event) {
-        
+        updateLastPosition(event.getX(), event.getY());
         startStream();
         
         
@@ -110,5 +114,26 @@ public abstract class AbstractPathTool<T extends Overlay> extends ReactiveTool {
         }
         return overlay;
     }
+
+    public int getLastPositionX() {
+        return lastPositionX;
+    }
+
+    public int getLastPositionY() {
+        return lastPositionY;
+    }
+    
+    private void updateLastPosition(int x, int y) {
+        lastPositionX = x;
+        lastPositionY = y;
+    }
+    
+    protected RealCoords diff(List<RealCoords> coords,int indexA, int indexB) {
+        return new RealCoords(coords.get(indexB).x-coords.get(indexA).x,coords.get(indexB).y-coords.get(indexA).y);
+    }
+    
+   
+    
+    
 
 }

@@ -53,16 +53,16 @@ public class CropRectangle extends ContextCommand {
     @Parameter(type = ItemIO.OUTPUT)
     Dataset output;
 
-    @Parameter(label = "X")
+    @Parameter(label = "X",persist = false)
     int x;
 
-    @Parameter(label = "Y")
+    @Parameter(label = "Y", persist = false)
     int y;
 
-    @Parameter(label = "Width")
+    @Parameter(label = "Width", persist = false)
     int width;
 
-    @Parameter(label = "Height")
+    @Parameter(label = "Height", persist = false)
     int height;
 
     @Parameter

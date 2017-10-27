@@ -23,10 +23,14 @@ import ijfx.core.overlay.OverlaySelectionService;
 import ijfx.core.overlay.OverlayUtilsService;
 import ijfx.ui.display.overlay.OverlayDisplayService;
 import ijfx.ui.display.overlay.OverlayDrawer;
+import ijfx.ui.display.tool.MoveOverlayTool;
 import ijfx.ui.main.ImageJFX;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.InputEvent;
@@ -39,6 +43,7 @@ import net.imagej.display.OverlayService;
 import net.imagej.display.OverlayView;
 import net.imagej.display.ZoomService;
 import net.imagej.overlay.Overlay;
+import static org.reactfx.util.Tuples.t;
 import org.scijava.display.event.input.KyPressedEvent;
 import org.scijava.display.event.input.KyReleasedEvent;
 import org.scijava.display.event.input.MsButtonEvent;
@@ -87,6 +92,8 @@ public class CanvasListener {
     OverlaySelectionService overlaySelectionService;
 
     ExecutorService executor = ImageJFX.getThreadQueue();
+
+    Logger logger = ImageJFX.getLogger();
 
     final ImageCanvas viewport;
 
@@ -189,7 +196,12 @@ public class CanvasListener {
     }
 
     private void onDragEvent(MouseEvent event) {
-
+        
+        if(overlayService.getActiveOverlay(display) != null) {
+            toolService.setActiveTool(toolService.getTool(MoveOverlayTool.class));
+        }
+        
+        
         onDragEvent(event, getActiveTool());
 
         getAlwaysActiveTools()
@@ -235,9 +247,30 @@ public class CanvasListener {
         onMouseMoved(event, getActiveTool());
 
         getAlwaysActiveTools()
-                .forEach(tool -> onMouseMoved(event, tool));
+                .forEach(new ToolExecutor<>(event,this::onMouseMoved));
 
     }
+
+    private class ToolExecutor<T> implements Consumer<Tool> {
+
+        final T t;
+        final BiConsumer<T, Tool> biconsumer;
+
+        public ToolExecutor(T t,BiConsumer<T, Tool> biconsumer) {
+            this.t = t;
+            this.biconsumer = biconsumer;
+        }
+
+        @Override
+        public void accept(Tool tool) {
+            try {
+                biconsumer.accept(t,tool);
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, "Error when executing action from " + tool.getClass().getSimpleName(), e);
+            }
+        }
+    }
+
 
     private void onMouseMoved(MouseEvent event, Tool tool) {
         tool.onMouseMove(new MsMovedEvent(display, extractInputModifiers(event), toInt(event.getX()), toInt(event.getY())));
@@ -270,7 +303,7 @@ public class CanvasListener {
     /*
         Helpers
      */
-    private int toInt(double d) {
+    public static int toInt(double d) {
         return new Double(d).intValue();
     }
 
