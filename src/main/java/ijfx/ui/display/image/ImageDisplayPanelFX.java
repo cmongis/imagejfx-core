@@ -27,6 +27,7 @@ import ijfx.core.overlay.OverlayUtilsService;
 import ijfx.core.timer.Timer;
 import ijfx.core.timer.TimerService;
 import ijfx.core.uicontext.UiContextService;
+import ijfx.core.utils.AxisUtils;
 import ijfx.explorer.datamodel.MetaDataOwnerDisplay;
 import ijfx.ui.display.overlay.MoveablePoint;
 import ijfx.ui.display.overlay.OverlayModifier;
@@ -50,6 +51,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.chart.Axis;
 import javafx.scene.control.Label;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
@@ -64,6 +66,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import mongis.utils.FXUtilities;
 import mongis.utils.bindings.TransitionBinding;
+import net.imagej.axis.Axes;
 import net.imagej.display.DatasetView;
 import net.imagej.display.ImageCanvas;
 import net.imagej.display.ImageDisplay;
@@ -212,6 +215,8 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
     public static final String VIEWPORT_WIDTH = "Viewport width";
     public static final String VIEWPORT_HEIGHT = "Viewport height";
     
+    private static final String HOVER_ME_TEXT = "Hover me to access sliders";
+    
     public ImageDisplayPanelFX() {
 
         try {
@@ -254,7 +259,7 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
                         anyAxisSliderInUse
                                 .or(bottomPane.hoverProperty()));
 
-        pixelValueLabel.setText("Hover me to access sliders");
+        pixelValueLabel.setText(HOVER_ME_TEXT);
         
         new TransitionBinding<Number>()
                 .bindOnFalse(sliderVBox.heightProperty())
@@ -403,12 +408,29 @@ public class ImageDisplayPanelFX extends AnchorPane implements ImageDisplayPanel
         // reseting the list
         sliderVBox.getChildren().clear();
         axisSliderList.clear();
-
+        
+        int dimensionToDisplay = display.numDimensions();
+        
+       if(AxisUtils.hasAxisType(display, Axes.CHANNEL)) {
+           dimensionToDisplay--;
+       }
+        
+        if(dimensionToDisplay == 2) {
+            pixelValueLabel.setText("");
+        }
+        else {
+            pixelValueLabel.setText(HOVER_ME_TEXT);
+        }
+        
         // creating the sliders
         for (int i = 2; i != display.numDimensions(); i++) {
 
+            if(display.axis(i).type().equals(Axes.CHANNEL)) {
+                continue;
+            }
+            
             AxisSlider slider = new AxisSlider(display, i);
-
+            
             sliderVBox.getChildren().add(slider);
             axisSliderList.add(slider);
             EventStreams

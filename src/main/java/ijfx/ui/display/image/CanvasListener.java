@@ -27,6 +27,7 @@ import ijfx.ui.display.tool.MoveOverlayTool;
 import ijfx.ui.main.ImageJFX;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -91,7 +92,7 @@ public class CanvasListener {
     @Parameter
     OverlaySelectionService overlaySelectionService;
 
-    ExecutorService executor = ImageJFX.getThreadQueue();
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     Logger logger = ImageJFX.getLogger();
 
@@ -196,12 +197,7 @@ public class CanvasListener {
     }
 
     private void onDragEvent(MouseEvent event) {
-        
-        if(overlayService.getActiveOverlay(display) != null) {
-            toolService.setActiveTool(toolService.getTool(MoveOverlayTool.class));
-        }
-        
-        
+
         onDragEvent(event, getActiveTool());
 
         getAlwaysActiveTools()
@@ -247,7 +243,7 @@ public class CanvasListener {
         onMouseMoved(event, getActiveTool());
 
         getAlwaysActiveTools()
-                .forEach(new ToolExecutor<>(event,this::onMouseMoved));
+                .forEach(new ToolExecutor<>(event, this::onMouseMoved));
 
     }
 
@@ -256,7 +252,7 @@ public class CanvasListener {
         final T t;
         final BiConsumer<T, Tool> biconsumer;
 
-        public ToolExecutor(T t,BiConsumer<T, Tool> biconsumer) {
+        public ToolExecutor(T t, BiConsumer<T, Tool> biconsumer) {
             this.t = t;
             this.biconsumer = biconsumer;
         }
@@ -264,13 +260,12 @@ public class CanvasListener {
         @Override
         public void accept(Tool tool) {
             try {
-                biconsumer.accept(t,tool);
+                biconsumer.accept(t, tool);
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "Error when executing action from " + tool.getClass().getSimpleName(), e);
             }
         }
     }
-
 
     private void onMouseMoved(MouseEvent event, Tool tool) {
         tool.onMouseMove(new MsMovedEvent(display, extractInputModifiers(event), toInt(event.getX()), toInt(event.getY())));
@@ -292,10 +287,14 @@ public class CanvasListener {
         for (Overlay overlay : overlays) {
             if (isOnOverlay(event.getX(), event.getY(), overlay)) {
                 overlaySelectionService.selectOnlyOneOverlay(display, overlay);
+
+                toolService.setActiveTool(toolService.getTool(MoveOverlayTool.class));
+
                 return;
             }
         }
         overlaySelectionService.unselectedAll(display);
+
         display.update();
 
     }
@@ -357,4 +356,5 @@ public class CanvasListener {
         boolean result = drawer.isOnOverlay(overlay, onData.x, onData.y);
         return result;
     }
+
 }
