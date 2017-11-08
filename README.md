@@ -1,16 +1,12 @@
-## Be Aware
-Before you install **ImageJ-FX**, please be aware that ImageJ-FX
+## Be Aware before installing ImageJ-FX
+ImageJ-FX
 still remains on a experimental state and does not support
-ImageJ1 Scripts or plugins.
-
-I would recommend you to install it on a separate Fiji / ImageJ2 installation
-installation
+ImageJ1 Scripts or plugins. Thus, after installing ImageJ-FX on your installation, you won't be able to move back to the old Fiji. For these reaons, I would recommend you to install ImageJ-FX on a separate Fiji / ImageJ2 installation.
 
 ### 1. Installation
 
-For testing, download the [latest version of Fiji](http://fiji.sc/#download) and run
-it. You must now install the ImageJ-FX repository in order to download the latest ImageJ-FX version and
-receive occasional updates.
+For a safe testing, download the [latest version of Fiji](http://fiji.sc/#download), extract it, and start
+it. The next step consists into adding ImageJ-FX repository to your update site list in order to download the latest ImageJ-FX version and receive occasional updates.
 
 #### 1.1 Easy update site installation
 
