@@ -1,9 +1,16 @@
 pipeline {
     agent none
     stages {
-        stage("Build ImageJFX") {
-            agent { docker 'airdock/oraclejdk:1.8' }
 
+        stage("Build docker") {
+            agent any
+            steps {
+                    sh 'docker build -f Dockerfile.docker ./docker -t local/ijfx-builder'
+            }
+        }
+
+        stage("Build ImageJFX") {
+            agent { docker 'local/ijfx-builder' 
             steps {
                     sh 'bash 0-build.sh'
             }
