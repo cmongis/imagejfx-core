@@ -6,3 +6,6 @@ mvn install
 mvn assembly:assembly
 
 
+cd packaging
+javac SHA1.java
+cd ..

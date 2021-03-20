@@ -1,21 +1,17 @@
 pipeline {
-    agent any
+    agent none
     stages {
         stage("Build ImageJFX") {
-            agent {
-                docker { image 'airdock/oraclejdk:1.8' }
-                steps {
+            agent { docker 'airdock/oraclejdk:1.8' }
+
+            steps {
                     sh 'bash 0-build.sh'
-     
-                }
             }
         }
         stage('Synchronize with repository') {
-            agent {
-                docker { image 'nodejs:10'}
-                steps {
+            agent { docker 'nodejs:10' }
+            steps {
                     sh 'bash 1-package.sh'
-                }
             }
         }
     }
