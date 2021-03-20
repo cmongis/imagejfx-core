@@ -26,12 +26,14 @@ import io.scif.img.cell.SCIFIOCellImgFactory;
 import java.util.Arrays;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgFactory;
+import net.imglib2.img.cell.CellImgFactory;
 import net.imglib2.type.NativeType;
 
 /**
  *
  * @author Cyril MONGIS, 2016
  */
+@Deprecated
 public class CellImgFactoryHeuristic implements ImgFactoryHeuristic {
     
     public CellImgFactoryHeuristic() {
@@ -39,7 +41,7 @@ public class CellImgFactoryHeuristic implements ImgFactoryHeuristic {
     }
     
     @Override
-    public <T extends NativeType<T>> ImgFactory<T> createFactory(Metadata mtdt, SCIFIOConfig.ImgMode[] ims, T t) throws IncompatibleTypeException {
+     public <T> ImgFactory<T> createFactory(Metadata mtdt, SCIFIOConfig.ImgMode[] ims, T t) throws IncompatibleTypeException {
         long[] axes= mtdt.get(0).getAxesLengths();
         int[] sizes = new int[axes.length];
         
@@ -55,7 +57,8 @@ public class CellImgFactoryHeuristic implements ImgFactoryHeuristic {
             
         }
         
-        return new SCIFIOCellImgFactory<>(sizes);
+        return new SCIFIOCellImgFactory(sizes);
     }
-    
+
+ 
 }

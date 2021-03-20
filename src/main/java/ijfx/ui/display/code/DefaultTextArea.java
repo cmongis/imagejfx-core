@@ -22,7 +22,6 @@ package ijfx.ui.display.code;
 import ijfx.ui.main.ImageJFX;
 import java.io.File;
 import java.util.Collection;
-import java.util.Hashtable;
 import java.util.List;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
@@ -37,7 +36,6 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.Paragraph;
 import org.fxmisc.richtext.model.PlainTextChange;
-import org.fxmisc.richtext.model.RichTextChange;
 import org.fxmisc.richtext.model.SimpleEditableStyledDocument;
 import org.fxmisc.richtext.model.StyledDocument;
 import org.fxmisc.richtext.model.StyledText;
@@ -245,7 +243,7 @@ public class DefaultTextArea extends AnchorPane{
      * When a line start with four spaces, replace it by a tabulation (for python especialy)
      */
     public void convertTab (){
-        for (Paragraph<Collection<String>, StyledText<Collection<String>>, Collection<String>> paragraph : this.codeArea.getParagraphs()){
+        for (Paragraph<Collection<String>,  StyledText<Collection<String>>, Collection<String>> paragraph : this.codeArea.getParagraphs()){
             if (paragraph.getText().startsWith("    ")){
                 paragraph.getText().replaceFirst("    ", "\t");
             }

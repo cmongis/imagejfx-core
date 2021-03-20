@@ -22,10 +22,10 @@ package ijfx.core.uicontext.calculator;
 import ijfx.explorer.ExplorableDisplay;
 import ijfx.ui.display.code.ScriptDisplay;
 import net.imagej.display.ImageDisplay;
-import net.imagej.table.TableDisplay;
 import org.scijava.display.Display;
 import org.scijava.display.TextDisplay;
 import org.scijava.plugin.Plugin;
+import org.scijava.table.TableDisplay;
 
 /**
  *

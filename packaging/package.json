@@ -1,0 +1,31 @@
+{
+  "name": "imagejfx-repo-assembler",
+  "version": "1.0.0",
+  "description": "",
+  "main": "ijfxServer.js",
+  "dependencies": {
+    "adm-zip": "^0.4.7",
+    "body-parser": "^1.18.1",
+    "color-log": "0.0.2",
+    "dateformat": "^3.0.0",
+    "express": "^4.15.3",
+    "express-form-data": "^2.0.0",
+    "express-handlebars": "^3.0.0",
+    "flightplan": "^0.6.17",
+    "js2xmlparser": "^3.0.0",
+    "jsontoxml": "0.0.11",
+    "line-reader": "^0.4.0",
+    "regex": "^0.1.1",
+    "request": "^2.81.0",
+    "seq": "^0.3.5",
+    "string-builder": "^0.1.4",
+    "xml2js": "^0.4.19"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pack": "node run-assembly.js"
+  },
+  "author": "",
+  "license": "ISC"
+}

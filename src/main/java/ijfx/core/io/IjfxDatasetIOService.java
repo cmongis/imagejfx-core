@@ -39,6 +39,7 @@ import io.scif.services.DatasetIOService;
 import io.scif.services.DefaultDatasetIOService;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -57,6 +58,8 @@ import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import org.scijava.Priority;
 import org.scijava.app.StatusService;
+import org.scijava.io.location.Location;
+import org.scijava.io.location.LocationService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.Service;
@@ -81,6 +84,9 @@ public class IjfxDatasetIOService extends DefaultDatasetIOService implements Ijf
 
     @Parameter
     private TimerService timerService;
+
+    @Parameter
+    private LocationService locationService;
 
     private SCIFIO scifio;
 
@@ -116,15 +122,25 @@ public class IjfxDatasetIOService extends DefaultDatasetIOService implements Ijf
         Metadata parse = null;
 
         try {
-
-            parse = scifio.format().getFormat(source).createParser().parse(source);
+            Location sourceLocation = locationService.resolve(source);
+            parse = scifio
+                    .format()
+                    .getFormat(sourceLocation)
+                    .createParser()
+                    .parse(sourceLocation);
 
         } catch (Exception e) {
             try {
                 logger.info("Parsing using BioFormatsFormat");
-                parse = scifio.format().getFormatFromClass(BioFormatsFormat.class).createParser().parse(source);
+                
+                parse = scifio.format()
+                            .getFormatFromClass(BioFormatsFormat.class)
+                            .createParser()
+                            .parse(locationService.resolve(source));
             } catch (FormatException fe) {
                 ImageJFX.getLogger().log(Level.SEVERE, source, fe);
+            } catch (URISyntaxException ex) {
+                ImageJFX.getLogger().log(Level.SEVERE, null, ex);
             }
         }
         timer.elapsed("parsing metadata");

@@ -20,6 +20,7 @@
 package ijfx.core.workflow;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.DatabindContext;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonDeserializer;
@@ -164,41 +165,5 @@ public class WorkflowIOService extends AbstractService implements IjfxService {
         return mapper;
     }
     
-    private class MyTypeResolver extends TypeIdResolverBase {
-
-        @Override
-        public JavaType typeFromId(String id) {
-            if (id.contains("net.imagej.threshold")) {
-                return _baseType.forcedNarrowBy(ThresholdMethod.class);
-            } else {
-                try {
-                    return TypeFactory.defaultInstance().constructType(ClassUtil.findClass(id));
-                } catch (ClassNotFoundException ex) {
-                    Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
-                    throw new IllegalStateException("cannot find class '" + id + "'");
-                }
-            }
-        }
-
-        @Override
-        public String idFromValue(Object value) {
-            return value.getClass().getName();
-
-        }
-
-        @Override
-        public String idFromValueAndType(Object value, Class<?> suggestedType) {
-
-            return suggestedType.getName();
-
-        }
-
-        public JsonTypeInfo.Id getMechanism() {
-            return JsonTypeInfo.Id.CUSTOM;
-
-        }
-        
-        
-
-    }
+    
 }

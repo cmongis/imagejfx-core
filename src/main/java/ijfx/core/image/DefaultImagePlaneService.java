@@ -27,6 +27,7 @@ import ijfx.core.utils.DimensionUtils;
 import ijfx.ui.main.ImageJFX;
 import io.scif.MetadataLevel;
 import io.scif.config.SCIFIOConfig;
+import io.scif.img.DefaultImgFactoryHeuristic;
 import io.scif.services.DatasetIOService;
 import java.io.File;
 import java.io.IOException;
@@ -81,11 +82,14 @@ public class DefaultImagePlaneService extends AbstractService implements ImagePl
     private Dataset computeVirtualDataset(String file) {
         try {
             Timer timer = timerService.getTimer(this.getClass());
+            DefaultImgFactoryHeuristic defaultImgFactoryHeuristic = new DefaultImgFactoryHeuristic();
+           
             SCIFIOConfig config = new SCIFIOConfig();
             config.imgOpenerSetComputeMinMax(false);
             config.imgOpenerSetOpenAllImages(false);
-            //config.imgOpenerSetImgModes(SCIFIOConfig.ImgMode.CELL,SCIFIOConfig.ImgMode.PLANAR);
-            config.imgOpenerSetImgFactoryHeuristic(new CellImgFactoryHeuristic());
+            config.imgOpenerSetImgModes(SCIFIOConfig.ImgMode.CELL,SCIFIOConfig.ImgMode.PLANAR);
+            //config.imgOpenerSetImgFactoryHeuristic(new CellImgFactoryHeuristic());
+            //config.imgOpenerSetImgFactoryHeuristic();
             config.parserSetLevel(MetadataLevel.MINIMUM);
             timer.start();
             Dataset open = datasetIoService.open(file, config);

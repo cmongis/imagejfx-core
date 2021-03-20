@@ -26,7 +26,7 @@ import net.imagej.display.ImageDisplay;
 import net.imagej.display.ImageDisplayService;
 import net.imagej.display.OverlayService;
 import net.imagej.overlay.Overlay;
-import net.imagej.table.DefaultGenericTable;
+import net.imagej.table.DefaultResultsTable;
 import org.scijava.Context;
 
 import org.scijava.command.Command;
@@ -78,7 +78,7 @@ public class OverlayStatCommand implements Command{
                 .filter(o -> o != null)
                 .collect(Collectors.toList());
 
-        DefaultGenericTable resultTable = new DefaultGenericTable();
+        DefaultResultsTable resultTable = new DefaultResultsTable();
         if (map.size() > 0) {
             int headerNumber = map.get(0).keySet().size();
 

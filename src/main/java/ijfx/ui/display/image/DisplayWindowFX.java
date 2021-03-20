@@ -28,6 +28,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import jfxtras.scene.control.window.CloseIcon;
 import jfxtras.scene.control.window.Window;
+
 import org.scijava.display.Display;
 import org.scijava.display.DisplayService;
 import org.scijava.display.event.DisplayDeletedEvent;

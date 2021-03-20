@@ -32,6 +32,7 @@ import io.scif.config.SCIFIOConfig;
 import io.scif.filters.ReaderFilter;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -44,6 +45,8 @@ import net.imagej.axis.Axes;
 import net.imagej.axis.CalibratedAxis;
 import net.imagej.display.ImageDisplay;
 import org.scijava.Priority;
+import org.scijava.io.location.Location;
+import org.scijava.io.location.LocationService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
@@ -66,6 +69,9 @@ public class DefaultMetaDataService extends AbstractService implements MetaDataS
 
     @Parameter
     TimerService timerService;
+    
+    @Parameter
+    LocationService locationService;
 
     public DefaultMetaDataService() {
         super();
@@ -98,12 +104,20 @@ public class DefaultMetaDataService extends AbstractService implements MetaDataS
         try {
             // ReaderFilter reader = getReaderFilter(file);
             t.start();
-
+            Location fileLocation = locationService.resolve(file.getAbsolutePath());
             Metadata metadata;
             try {
-                metadata = getSCIFIO().format().getFormat(file.getAbsolutePath()).createParser().parse(file.getAbsolutePath());
+                metadata = getSCIFIO()
+                            .format()
+                            .getFormat(fileLocation)
+                            .createParser()
+                            .parse(fileLocation);
             } catch (FormatException e) {
-                metadata = getSCIFIO().format().getFormatFromClass(BioFormatsFormat.class).createParser().parse(file);
+                metadata = getSCIFIO()
+                            .format()
+                            .getFormatFromClass(BioFormatsFormat.class)
+                            .createParser()
+                            .parse(fileLocation);
             }
             if (metadata == null) {
                 throw new FormatException(String.format("Couldn't find a format for %s", file.getName()));
@@ -158,14 +172,18 @@ public class DefaultMetaDataService extends AbstractService implements MetaDataS
             logger.log(Level.SEVERE, String.format(WRONG_FORMAT, file.getName()), ex);
         } catch (IOException ex) {
             logger.log(Level.SEVERE, String.format(ACCESS_PROBLEM, file.getName()), ex);
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(DefaultMetaDataService.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return metadataset;
 
     }
 
-    private ReaderFilter getReaderFilter(File file) throws FormatException, IOException {
-        return scifio.initializer().initializeReader(file.getAbsolutePath(), config);
+    private ReaderFilter getReaderFilter(File file) throws FormatException, IOException, URISyntaxException {
+        return scifio
+                    .initializer()
+                    .initializeReader(locationService.resolve(file.getAbsolutePath()), config);
     }
 
     public List<MetaDataSet> extractPlaneMetaData(MetaDataSet metadataset) {

@@ -20,7 +20,6 @@
  */
 package ijfx.ui.workflow;
 
-import com.squareup.okhttp.internal.Internal;
 import ijfx.core.workflow.WorkflowStep;
 import ijfx.core.workflow.WorkflowStepWidgetModel;
 import ijfx.ui.inputharvesting.InputPanelFX;

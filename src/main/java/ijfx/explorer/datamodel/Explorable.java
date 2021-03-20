@@ -22,8 +22,7 @@ package ijfx.explorer.datamodel;
 import ijfx.core.datamodel.DatasetHolder;
 import ijfx.core.datamodel.Iconazable;
 import ijfx.core.metadata.MetaDataOwner;
-import ijfx.ui.main.ImageJFX;
-import org.scijava.Context;
+
 
 /**
  *

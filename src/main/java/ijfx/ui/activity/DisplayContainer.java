@@ -20,24 +20,15 @@
 package ijfx.ui.activity;
 
 import ijfx.core.activity.Activity;
-import ijfx.explorer.datamodel.wrappers.FileExplorableWrapper;
-import ijfx.ui.main.ImageJFX;
 import ijfx.ui.utils.CategorizedExplorableController;
-import java.io.File;
-import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import jfxtras.scene.control.window.Window;
-import mongis.utils.task.FluentTask;
 import org.scijava.display.Display;
 import org.scijava.display.DisplayService;
-import org.scijava.display.event.DisplayCreatedEvent;
-import org.scijava.display.event.DisplayDeletedEvent;
-import org.scijava.event.EventHandler;
 import org.scijava.io.RecentFileService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

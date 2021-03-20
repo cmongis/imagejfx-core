@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 import mongis.utils.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.scijava.Context;
+import org.scijava.io.location.LocationService;
 import org.scijava.plugin.Parameter;
 
 /**
@@ -41,6 +42,9 @@ public class SaveToFileWrapper extends AbstractSaverWrapper {
 
     @Parameter
     private DatasetIOService datasetIoService;
+    
+    @Parameter
+    private LocationService locationService;
 
     private String suffix = null;
 
@@ -93,7 +97,7 @@ public class SaveToFileWrapper extends AbstractSaverWrapper {
         String savePath = saveTo.getAbsolutePath();
 
         try {
-            if (datasetIoService.canSave(savePath) == false) {
+            if (datasetIoService.canSave(locationService.resolve(savePath)) == false) {
                 savePath = FileUtils.changeExtensionTo(savePath, "tif");
             }
         } catch (Exception e) {

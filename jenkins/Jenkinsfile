@@ -1,0 +1,26 @@
+pipeline {
+    agent none
+    stages {
+        stage("Build imagejfx") {
+            agent {
+                docker { image 'openjdk:*' }
+                steps {
+                    sh 'mvn install'
+                    sh 'mvn assembly:assembly'
+                    sh 'mkdir -p jars'
+                    sh 'mkdir -p dist'
+                    sh 'cp -v target/imagejfx-core*bin/lib/* jars/'
+                    sh 'cp -v target/imagejfx*.jar jars/'
+                }
+            }
+        }
+        stage('Generate repo') {
+            agent {
+                docker { image 'nodejs:8'}
+                steps {
+                    sh 'cd packaging && npm install && npm run-script pack'
+                }
+            }
+        }
+    }
+}

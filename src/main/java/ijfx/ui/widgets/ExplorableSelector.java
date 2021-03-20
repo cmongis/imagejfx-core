@@ -19,12 +19,12 @@
  */
 package ijfx.ui.widgets;
 
-import static com.squareup.okhttp.internal.Internal.logger;
 import ijfx.core.metadata.MetaData;
 import ijfx.core.metadata.MetaDataKeyPriority;
 import ijfx.explorer.datamodel.Explorable;
 import ijfx.ui.display.metadataowner.ExplorableTableHelper;
 import ijfx.ui.display.metadataowner.MetaDataOwnerHelper;
+import ijfx.ui.main.ImageJFX;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
@@ -143,7 +143,7 @@ public class ExplorableSelector extends BorderPane {
 
             //new OpacityTransitionBinding(this, selectedCountProperty.emptyProperty().not());
         } catch (IOException ex) {
-            logger.log(Level.SEVERE, null, ex);
+            ImageJFX.getLogger().log(Level.SEVERE, null, ex);
             markedItemProperty = null;
         }
         

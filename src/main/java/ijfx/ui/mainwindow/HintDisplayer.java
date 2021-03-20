@@ -19,7 +19,6 @@
  */
 package ijfx.ui.mainwindow;
 
-import static com.squareup.okhttp.internal.Internal.logger;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import static ij.gui.Line.getWidth;
@@ -236,7 +235,7 @@ public class HintDisplayer {
 
             isHintDisplaying = false;
             nextHint();
-            logger.log(Level.SEVERE, "Error when showing hint.", e);
+            ImageJFX.getLogger().log(Level.SEVERE, "Error when showing hint.", e);
         }
 
     }
