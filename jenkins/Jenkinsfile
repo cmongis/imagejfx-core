@@ -10,7 +10,7 @@ pipeline {
         }
 
         stage("Build ImageJFX") {
-            agent { docker 'local/ijfx-builder' 
+            agent { docker 'local/ijfx-builder' }
             steps {
                     sh 'bash 0-build.sh'
             }
