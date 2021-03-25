@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-export IJFX_DIST_FOLDER="${VARIABLE:-$(pwd)/dist}"
+export IJFX_DIST_FOLDER="${IJFX_DIST_FOLDER:-$(pwd)/dist}"
 echo $IJFX_DIST_FOLDER;
 
 

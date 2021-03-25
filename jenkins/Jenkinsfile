@@ -5,7 +5,7 @@ pipeline {
         stage("Build docker") {
             agent any
             steps {
-                    sh 'docker build -f Dockerfile.docker ./docker -t local/ijfx-builder'
+                    sh 'docker build -f docker/Dockerfile.build ./docker -t local/ijfx-builder'
             }
         }
 
@@ -16,10 +16,10 @@ pipeline {
             }
         }
         stage('Synchronize with repository') {
-            agent { docker 'nodejs:10' }
+            agent any
             steps {
                     sh 'bash 1-package.sh'
             }
         }
     }
-}
+
