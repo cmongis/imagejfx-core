@@ -67,7 +67,7 @@
             <groupId>io.scif</groupId>
             <artifactId>scifio</artifactId>
            
-            <version>0.41.0</version>
+            <version>0.43.3</version>
         </dependency>
         <dependency>
             <groupId>com.github.jai-imageio</groupId>
